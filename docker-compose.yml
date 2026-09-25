@@ -1,0 +1,53 @@
+# Docker Compose for Panama PortOps-AI MLOps Stack
+# Adheres strictly to MLOps Masterclass Section 21:
+# - Service 1: FastAPI Inference Microservice (Port 8000)
+# - Service 2: Streamlit Interactive Executive Dashboard (Port 8501)
+# - Shared volumes for models and feature store
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: portops-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - MODEL_NAME=Panama_PortOps_LightGBM
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./logs:/app/logs
+      - ./models:/app/models:ro
+      - ./data/gold:/app/data/gold:ro
+    command: ["uvicorn", "src.serving.api:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: portops-dashboard
+    restart: unless-stopped
+    ports:
+      - "8501:8501"
+    environment:
+      - ENVIRONMENT=production
+    volumes:
+      - ./logs:/app/logs
+      - ./models:/app/models:ro
+      - ./data/gold:/app/data/gold:ro
+      - ./reports:/app/reports:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    command: ["streamlit", "run", "apps/dashboard.py", "--server.port=8501", "--server.address=0.0.0.0"]
+
+networks:
+  default:
+    name: portops-mlops-network

@@ -1,0 +1,419 @@
+{
+  "author": "Desarrollado v1.0 Miguel Ben\u00edtez",
+  "benchmark_comparison": {
+    "lightgbm": {
+      "avg_wape": 0.0911,
+      "avg_mae": 11300.67,
+      "avg_rmse": 15079.81,
+      "avg_r2": 0.9594,
+      "avg_latency_ms": 3.535,
+      "status": "Champion"
+    },
+    "random_forest": {
+      "avg_wape": 0.091,
+      "avg_mae": 11351.96,
+      "avg_rmse": 15084.98,
+      "avg_r2": 0.9588,
+      "avg_latency_ms": 3.923,
+      "status": "Challenger"
+    },
+    "gradient_boosting": {
+      "avg_wape": 0.0978,
+      "avg_mae": 12186.44,
+      "avg_rmse": 15852.75,
+      "avg_r2": 0.9545,
+      "avg_latency_ms": 30.786,
+      "status": "Challenger"
+    },
+    "ridge_elasticnet": {
+      "avg_wape": 1917.3807,
+      "avg_mae": 261942746.84,
+      "avg_rmse": 2646459305.04,
+      "avg_r2": -0.0188,
+      "avg_latency_ms": 0.164,
+      "status": "Challenger"
+    }
+  },
+  "splits_summary": [
+    {
+      "split": 1,
+      "period": "2022-01 to 2022-12",
+      "lightgbm_wape": 0.0947,
+      "random_forest_wape": 0.0877,
+      "gradient_boosting_wape": 0.1009,
+      "ridge_elasticnet_wape": 0.0802,
+      "lightgbm_r2": 0.9618,
+      "random_forest_r2": 0.9687,
+      "lgbm_rmse": 14219.23,
+      "lgbm_mae": 11209.56
+    },
+    {
+      "split": 2,
+      "period": "2023-01 to 2023-12",
+      "lightgbm_wape": 0.0814,
+      "random_forest_wape": 0.0772,
+      "gradient_boosting_wape": 0.0791,
+      "ridge_elasticnet_wape": 0.085,
+      "lightgbm_r2": 0.9686,
+      "random_forest_r2": 0.9708,
+      "lgbm_rmse": 12850.49,
+      "lgbm_mae": 9400.05
+    },
+    {
+      "split": 3,
+      "period": "2024-01 to 2026-08",
+      "lightgbm_wape": 0.0973,
+      "random_forest_wape": 0.1081,
+      "gradient_boosting_wape": 0.1133,
+      "ridge_elasticnet_wape": 5751.9769,
+      "lightgbm_r2": 0.9478,
+      "random_forest_r2": 0.9368,
+      "lgbm_rmse": 18169.7,
+      "lgbm_mae": 13292.39
+    }
+  ],
+  "diagnostics": {
+    "residual_stats": {
+      "mean_residual": 7788.59,
+      "std_residual": 16415.73,
+      "median_absolute_error": 9891.24,
+      "skewness": 0.4058,
+      "sample_points": 192
+    },
+    "residual_points": [
+      {
+        "date": "2024-01",
+        "y_true": 765117.0,
+        "y_pred": 714693.1,
+        "residual": 50423.9
+      },
+      {
+        "date": "2024-02",
+        "y_true": 731479.0,
+        "y_pred": 704149.3,
+        "residual": 27329.7
+      },
+      {
+        "date": "2024-03",
+        "y_true": 802471.0,
+        "y_pred": 731224.7,
+        "residual": 71246.3
+      },
+      {
+        "date": "2024-04",
+        "y_true": 793187.0,
+        "y_pred": 750062.1,
+        "residual": 43124.9
+      },
+      {
+        "date": "2024-05",
+        "y_true": 861785.0,
+        "y_pred": 773959.5,
+        "residual": 87825.5
+      },
+      {
+        "date": "2024-06",
+        "y_true": 796837.0,
+        "y_pred": 786380.4,
+        "residual": 10456.6
+      },
+      {
+        "date": "2024-07",
+        "y_true": 847765.0,
+        "y_pred": 773865.0,
+        "residual": 73900.0
+      },
+      {
+        "date": "2024-08",
+        "y_true": 831792.0,
+        "y_pred": 827802.3,
+        "residual": 3989.7
+      },
+      {
+        "date": "2024-09",
+        "y_true": 779464.0,
+        "y_pred": 795845.4,
+        "residual": -16381.4
+      },
+      {
+        "date": "2024-10",
+        "y_true": 784739.0,
+        "y_pred": 778127.7,
+        "residual": 6611.3
+      },
+      {
+        "date": "2024-11",
+        "y_true": 774729.0,
+        "y_pred": 779802.1,
+        "residual": -5073.1
+      },
+      {
+        "date": "2024-12",
+        "y_true": 800406.0,
+        "y_pred": 759573.2,
+        "residual": 40832.8
+      },
+      {
+        "date": "2025-01",
+        "y_true": 799568.0,
+        "y_pred": 746893.2,
+        "residual": 52674.8
+      },
+      {
+        "date": "2025-02",
+        "y_true": 717143.0,
+        "y_pred": 736373.5,
+        "residual": -19230.5
+      },
+      {
+        "date": "2025-03",
+        "y_true": 851400.0,
+        "y_pred": 731383.8,
+        "residual": 120016.2
+      },
+      {
+        "date": "2025-04",
+        "y_true": 802854.0,
+        "y_pred": 769663.1,
+        "residual": 33190.9
+      },
+      {
+        "date": "2025-05",
+        "y_true": 845594.0,
+        "y_pred": 746845.3,
+        "residual": 98748.7
+      },
+      {
+        "date": "2025-06",
+        "y_true": 813003.0,
+        "y_pred": 807839.1,
+        "residual": 5163.9
+      },
+      {
+        "date": "2025-07",
+        "y_true": 881648.0,
+        "y_pred": 782935.4,
+        "residual": 98712.6
+      },
+      {
+        "date": "2025-08",
+        "y_true": 851476.0,
+        "y_pred": 817447.3,
+        "residual": 34028.7
+      },
+      {
+        "date": "2025-09",
+        "y_true": 806151.0,
+        "y_pred": 809829.9,
+        "residual": -3678.9
+      },
+      {
+        "date": "2025-10",
+        "y_true": 872157.0,
+        "y_pred": 801828.5,
+        "residual": 70328.5
+      },
+      {
+        "date": "2025-11",
+        "y_true": 821590.0,
+        "y_pred": 793221.9,
+        "residual": 28368.1
+      },
+      {
+        "date": "2025-12",
+        "y_true": 852773.0,
+        "y_pred": 788080.3,
+        "residual": 64692.7
+      },
+      {
+        "date": "2026-01",
+        "y_true": 865677.0,
+        "y_pred": 799877.2,
+        "residual": 65799.8
+      },
+      {
+        "date": "2026-02",
+        "y_true": 697585.0,
+        "y_pred": 768107.0,
+        "residual": -70522.0
+      },
+      {
+        "date": "2026-03",
+        "y_true": 789973.0,
+        "y_pred": 745806.8,
+        "residual": 44166.2
+      },
+      {
+        "date": "2026-04",
+        "y_true": 824749.0,
+        "y_pred": 727423.0,
+        "residual": 97326.0
+      },
+      {
+        "date": "2026-05",
+        "y_true": 860983.0,
+        "y_pred": 738636.3,
+        "residual": 122346.7
+      },
+      {
+        "date": "2026-06",
+        "y_true": 876499.0,
+        "y_pred": 775492.0,
+        "residual": 101007.0
+      },
+      {
+        "date": "2026-07",
+        "y_true": 937957.0,
+        "y_pred": 824761.2,
+        "residual": 113195.8
+      },
+      {
+        "date": "2026-08",
+        "y_true": 891616.0,
+        "y_pred": 846828.8,
+        "residual": 44787.2
+      }
+    ],
+    "feature_importances": [
+      {
+        "name": "empty_ratio",
+        "gain": 101
+      },
+      {
+        "name": "teu_total_lag_1",
+        "gain": 95
+      },
+      {
+        "name": "teu_total_rolling_max_3m",
+        "gain": 89
+      },
+      {
+        "name": "teu_total_growth_mom",
+        "gain": 89
+      },
+      {
+        "name": "teu_total_rolling_std_3m",
+        "gain": 61
+      },
+      {
+        "name": "teu_total_lag_3",
+        "gain": 59
+      },
+      {
+        "name": "transshipment_ratio",
+        "gain": 56
+      },
+      {
+        "name": "teu_total_lag_2",
+        "gain": 52
+      },
+      {
+        "name": "nat_roro_units_lag1",
+        "gain": 50
+      },
+      {
+        "name": "nat_vlsfo_sales_tm_lag1",
+        "gain": 49
+      },
+      {
+        "name": "empty_ratio_rolling_std_3m",
+        "gain": 48
+      },
+      {
+        "name": "empty_ratio_growth_mom",
+        "gain": 46
+      },
+      {
+        "name": "teu_total_growth_yoy",
+        "gain": 45
+      },
+      {
+        "name": "teu_total_rolling_min_3m",
+        "gain": 43
+      },
+      {
+        "name": "teu_unit_factor",
+        "gain": 43
+      }
+    ],
+    "collinearity": {
+      "high_correlation_pairs": [
+        {
+          "feature_1": "teu_total_lag_2",
+          "feature_2": "teu_total_lag_3",
+          "correlation": 0.9743
+        },
+        {
+          "feature_1": "teu_total_lag_1",
+          "feature_2": "teu_total_lag_2",
+          "correlation": 0.9741
+        },
+        {
+          "feature_1": "teu_total_lag_1",
+          "feature_2": "teu_total_lag_3",
+          "correlation": 0.9615
+        },
+        {
+          "feature_1": "teu_total_lag_3",
+          "feature_2": "teu_total_lag_12",
+          "correlation": 0.8744
+        },
+        {
+          "feature_1": "teu_total_lag_2",
+          "feature_2": "teu_total_lag_12",
+          "correlation": 0.865
+        },
+        {
+          "feature_1": "teu_total_lag_1",
+          "feature_2": "teu_total_lag_12",
+          "correlation": 0.8567
+        }
+      ],
+      "vif_scores": {
+        "transshipment_ratio": 1.53,
+        "local_ratio": 2.17,
+        "empty_ratio": 1.58,
+        "teu_unit_factor": 1.36,
+        "month_sin": 7.48,
+        "month_cos": 6.87,
+        "quarter_sin": 6.18,
+        "quarter_cos": 6.52,
+        "is_cny_impact_month": 1.39,
+        "is_peak_shipping_season": 3.92
+      }
+    },
+    "confounders": [
+      {
+        "id": "chinese_new_year",
+        "name": "Estacionalidad Global (A\u00f1o Nuevo Chino / Golden Week)",
+        "type": "Temporal & External Shock",
+        "effect": "Par\u00e1lisis en f\u00e1bricas de Asia que contrae fletes transpac\u00edficos en Febrero.",
+        "treatment": "Desacoplado mediante features c\u00edclicas sin/cos y bandera de dominio binaria is_cny.",
+        "what": "Identificaci\u00f3n y aislamiento del choque ex\u00f3geno asi\u00e1tico anual que provoca ca\u00eddas de hasta -19.4% en los vol\u00famenes de TEUs en febrero en Panam\u00e1.",
+        "how": "Se model\u00f3 la estacionalidad anual mediante arm\u00f3nicos c\u00edclicos continuos sin(2*pi*mes/12) y cos(2*pi*mes/12), complementados con una variable binaria is_cny=1 en enero y febrero para capturar la ventana de Blank Sailings de las navieras.",
+        "why": "Sin este desacoplamiento expl\u00edcito, los algoritmos de Machine Learning atribuir\u00edan err\u00f3neamente la ca\u00edda invernal a una p\u00e9rdida estructural de demanda o competitividad portuaria de Panam\u00e1, sesgando negativamente las predicciones de primavera y verano."
+      },
+      {
+        "id": "canal_drought",
+        "name": "Restricci\u00f3n de Calado en Canal de Panam\u00e1 (Sequ\u00eda El Ni\u00f1o)",
+        "type": "Exogenous Environmental Constraint",
+        "effect": "Reduce calado de buques Neopanamax de 50 a 44 pies y limita cupos diarios a 18-24 tr\u00e1nsitos.",
+        "treatment": "Capturado mediante lags de ventas de combustible marino (VLSFO) e indicadores bitemporales de litoral.",
+        "what": "Aislamiento de la restricci\u00f3n f\u00edsica hidrol\u00f3gica en los lagos Gat\u00fan y Alhajuela sobre la demanda observada de trasbordo en el Pac\u00edfico y Atl\u00e1ntico.",
+        "how": "Se integraron en el Feature Store series macroecon\u00f3micas de ventas nacionales de bunkering (VLSFO en TM rezagado t-1), unidades RoRo y variables fijas de litoral (Atl\u00e1ntico vs Pac\u00edfico).",
+        "why": "La sequ\u00eda no reduce la necesidad de comercio de los clientes globales, sino la capacidad f\u00edsica transoce\u00e1nica. Vincular el combustible marino y el litoral permite al modelo entender variaciones de ruta sin degradar la estimaci\u00f3n de la demanda base."
+      },
+      {
+        "id": "terminal_capacity",
+        "name": "Capacidad Instalada de Terminal (STS Cranes / Patio)",
+        "type": "Infrastructure Structural Constraint",
+        "effect": "Confunde la demanda de mercado potencial con el techo f\u00edsico de gr\u00faas p\u00f3rtico de la terminal.",
+        "treatment": "Controlado mediante modelo de efectos fijos con One-Hot Encoding por puerto y ratios normalizados.",
+        "what": "Diferenciaci\u00f3n matem\u00e1tica entre la demanda real de mercado y los l\u00edmites f\u00edsicos de atraque y gr\u00faas p\u00f3rtico Super Post-Panamax de cada terminal.",
+        "how": "Se implement\u00f3 una parametrizaci\u00f3n de efectos fijos mediante One-Hot Encoding para las 6 terminales paname\u00f1as, combinada con ratios normalizados (trasbordo, vac\u00edos/llenos, TEU/unidad) en lugar de magnitudes brutas absolutas.",
+        "why": "Terminales como Balboa o MIT poseen infraestructura para mover >250k TEUs/mes, mientras terminales agr\u00edcolas mueven vol\u00famenes de nicho. Mezclar sus din\u00e1micas sin efectos fijos crear\u00eda un sesgo de agregaci\u00f3n severo en los nodos de decisi\u00f3n."
+      }
+    ],
+    "author": "Desarrollado v1.0 Miguel Ben\u00edtez"
+  }
+}

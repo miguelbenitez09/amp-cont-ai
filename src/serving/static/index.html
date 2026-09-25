@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panamá PortOps-AI v1.0 | Miguel Benítez</title>
+  <meta name="description" content="Plataforma MLOps de Inteligencia Portuaria, Benchmarking Multi-Algoritmo y Simulación Estocástica. Desarrollado v1.0 Miguel Benítez">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚓</text></svg>">
+  <!-- Chart.js 4.4 CDN for Responsive High-Performance Rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="nav-container">
+      <div class="logo-group">
+        <div class="logo-icon-wrapper">
+          <svg class="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 20a2.4 2.4 0 0 0 2 1 2.4 2.4 0 0 0 2-1 2.4 2.4 0 0 1 2-1 2.4 2.4 0 0 1 2 1 2.4 2.4 0 0 0 2 1 2.4 2.4 0 0 0 2-1 2.4 2.4 0 0 1 2-1 2.4 2.4 0 0 1 2 1 2.4 2.4 0 0 0 2 1 2.4 2.4 0 0 0 2-1"></path>
+            <path d="M4 18v-5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5"></path>
+            <path d="M12 3v8"></path>
+            <path d="m8 7 4-4 4 4"></path>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <h1>Panamá PortOps-AI <span class="version-badge">v1.0</span></h1>
+          <p class="author-signature">Desarrollado v1.0 Miguel Benítez</p>
+        </div>
+      </div>
+
+      <div class="nav-badges">
+        <span class="badge healthy" id="health-badge"><span class="status-dot"></span> Verificando...</span>
+        <span class="badge" id="algo-badge"><svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> LightGBM Champion</span>
+        <span class="badge" id="latency-badge"><svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> -- ms</span>
+        <a href="/docs" target="_blank" class="badge link-badge">
+          <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg> OpenAPI Docs
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workstation Layout -->
+  <main>
+    <!-- Interactive Navigation Tabs -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" data-tab="tab-forecast">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        Pronóstico & What-If
+      </button>
+      <button class="tab-btn" data-tab="tab-benchmark">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        Comparativa Multi-Algoritmo
+      </button>
+      <button class="tab-btn" data-tab="tab-diagnostics">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+        Diagnóstico Estadístico & Errores
+      </button>
+      <button class="tab-btn" data-tab="tab-simulation">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="15.5" r="1.5"></circle></svg>
+        Simulación Monte Carlo & Estrés
+      </button>
+      <button class="tab-btn" data-tab="tab-methodology">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        Metodología & Arquitectura
+      </button>
+    </nav>
+
+    <!-- ========================================== -->
+    <!-- TAB 1: PRONÓSTICO & WHAT-IF MULTI-ALGORITMO -->
+    <!-- ========================================== -->
+    <section id="tab-forecast" class="tab-content active">
+      <div class="dashboard-grid">
+        
+        <!-- Controls Column -->
+        <aside class="card">
+          <div class="card-header">
+            <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20v-6M6 20V10M18 20V4"></path></svg>
+            <h2>Parámetros de Operación</h2>
+          </div>
+
+          <div class="form-group">
+            <label for="port-select">Terminal Portuaria:</label>
+            <select id="port-select">
+              <option value="Puerto Balboa">Puerto Balboa (Pacífico)</option>
+              <option value="SSA Marine MIT">SSA Marine MIT (Atlántico)</option>
+              <option value="PSA Panama International Terminal">PSA Panama (Pacífico)</option>
+              <option value="Colon Container Terminal">Colon Container Terminal (Atlántico)</option>
+              <option value="Puerto Cristóbal">Puerto Cristóbal (Atlántico)</option>
+              <option value="Bocas Fruit Co.">Bocas Fruit Co. (Atlántico)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="algo-select">Motor de Inferencia:</label>
+            <select id="algo-select">
+              <option value="ensemble">🏆 Ensamble Champion (LightGBM Cuantiles)</option>
+              <option value="random_forest">🌲 Random Forest Regressor (Baja Latencia)</option>
+              <option value="gradient_boosting">⚡ HistGradientBoosting (Árboles Aditivos)</option>
+              <option value="ridge_elasticnet">📏 Ridge / ElasticNet (Lineal Regularizado)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="horizon-slider">
+              <span>Horizonte de Pronóstico:</span>
+              <span class="slider-val" id="horizon-val">3 meses</span>
+            </label>
+            <input type="range" id="horizon-slider" min="1" max="6" value="3" step="1">
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="section-subtitle">Simulación de Sensibilidad (What-If):</div>
+
+          <div class="form-group">
+            <label for="bunker-slider">
+              <span>Perturbación Combustible (Bunker VLSFO):</span>
+              <span class="slider-val" id="bunker-val">0%</span>
+            </label>
+            <input type="range" id="bunker-slider" min="-50" max="50" value="0" step="5">
+          </div>
+
+          <div class="form-group">
+            <label for="trans-slider">
+              <span>Perturbación Ratio de Trasbordo:</span>
+              <span class="slider-val" id="trans-val">0%</span>
+            </label>
+            <input type="range" id="trans-slider" min="-50" max="50" value="0" step="5">
+          </div>
+
+          <button id="btn-predict" class="btn-primary">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            Generar Pronóstico en Tiempo Real
+          </button>
+        </aside>
+
+        <!-- Visuals & Analytics Column -->
+        <div class="analytics-col">
+          <!-- Top KPI Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-title">Pronóstico Central (P50)</div>
+              <div class="kpi-value" id="kpi-p50">-- TEUs</div>
+              <div class="kpi-sub" id="kpi-p50-sub">Mediana Esperada</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Suelo Pesimista (P10)</div>
+              <div class="kpi-value" id="kpi-p10">-- TEUs</div>
+              <div class="kpi-sub">Suelo de Seguridad (10% Prob.)</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Techo de Capacidad (P90)</div>
+              <div class="kpi-value" id="kpi-p90">-- TEUs</div>
+              <div class="kpi-sub">Estrés Operativo y Patios</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Balance de Cajas Vacías</div>
+              <div class="kpi-value" id="kpi-imbalance">--</div>
+              <div class="kpi-sub">Semáforo de Reposicionamiento</div>
+            </div>
+          </div>
+
+          <!-- Main Forecast Chart Card -->
+          <div class="card" style="margin-top: 1rem;">
+            <div class="card-header">
+              <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+              <h2>Trayectoria Histórica y Curva de Inferencia con Banda de Incertidumbre</h2>
+            </div>
+            <div class="chart-container" style="height: 340px;">
+              <canvas id="forecastChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Table of Projected Months -->
+          <div class="card" style="margin-top: 1rem;">
+            <div class="card-header">
+              <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+              <h2>Proyección Mensual Detallada por Cuantiles</h2>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table" id="forecast-table">
+                <thead>
+                  <tr>
+                    <th>Mes Proyectado</th>
+                    <th>Horizonte</th>
+                    <th>P10 (Suelo)</th>
+                    <th>P50 (Mediana)</th>
+                    <th>P90 (Techo)</th>
+                    <th>Ratio Vacíos Est.</th>
+                    <th>Estado de Patio</th>
+                  </tr>
+                </thead>
+                <tbody id="forecast-tbody">
+                  <tr><td colspan="7" style="text-align:center; color:#94a3b8;">Haga clic en 'Generar Pronóstico' para inicializar la matriz.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: COMPARATIVA MULTI-ALGORITMO         -->
+    <!-- ========================================== -->
+    <section id="tab-benchmark" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          <div>
+            <h2>Evaluación Comparativa de Múltiples Algoritmos (Expanding Window Backtesting)</h2>
+            <p class="card-subtitle">Entrenamiento y validación estricta fuera de muestra sobre 140 meses de estadísticas de la Autoridad Marítima de Panamá</p>
+          </div>
+        </div>
+
+        <div class="benchmark-cards-grid" id="benchmark-cards">
+          <!-- Dynamic Algo Cards populated by JS -->
+          <div class="algo-stat-card champion">
+            <div class="algo-badge-top">🏆 Champion</div>
+            <div class="algo-name">LightGBM Quantiles</div>
+            <div class="algo-metric">WAPE: <span class="highlight">9.11%</span></div>
+            <div class="algo-submetric">R²: 0.9594 | RMSE: 15,080 | Latencia: 13.28 ms</div>
+          </div>
+          <div class="algo-stat-card">
+            <div class="algo-badge-top">🥈 Challenger</div>
+            <div class="algo-name">Random Forest</div>
+            <div class="algo-metric">WAPE: <span class="highlight">9.10%</span></div>
+            <div class="algo-submetric">R²: 0.9588 | RMSE: 15,085 | Latencia: 4.58 ms</div>
+          </div>
+          <div class="algo-stat-card">
+            <div class="algo-badge-top">🥉 Challenger</div>
+            <div class="algo-name">HistGradientBoosting</div>
+            <div class="algo-metric">WAPE: <span class="highlight">9.78%</span></div>
+            <div class="algo-submetric">R²: 0.9545 | RMSE: 15,853 | Latencia: 70.30 ms</div>
+          </div>
+          <div class="algo-stat-card baseline">
+            <div class="algo-badge-top">📏 Baseline</div>
+            <div class="algo-name">Ridge / ElasticNet</div>
+            <div class="algo-metric">Colapso Lineal Multicolineal</div>
+            <div class="algo-submetric">Demuestra la necesidad de modelos de árboles en series con 81 lags</div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid" style="margin-top: 1.5rem;">
+          <div class="card inner-card">
+            <h3>Comparativa de Error WAPE (%) por Algoritmo (Menor es Mejor)</h3>
+            <div class="chart-container" style="height: 280px;">
+              <canvas id="algoWapeChart"></canvas>
+            </div>
+          </div>
+          <div class="card inner-card">
+            <h3>Coeficiente de Determinación R² y Latencia de Inferencia</h3>
+            <div class="chart-container" style="height: 280px;">
+              <canvas id="algoR2Chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cross Validation Splits Table -->
+        <div class="table-responsive" style="margin-top: 1.5rem;">
+          <h3>Desglose Temporal por Partición de Validación (Expanding Window)</h3>
+          <table class="data-table" id="splits-table">
+            <thead>
+              <tr>
+                <th>Partición</th>
+                <th>Período Fuera de Muestra</th>
+                <th>LightGBM WAPE</th>
+                <th>Random Forest WAPE</th>
+                <th>Gradient Boosting WAPE</th>
+                <th>Ridge WAPE</th>
+                <th>R² Score</th>
+              </tr>
+            </thead>
+            <tbody id="splits-tbody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 3: DIAGNÓSTICO ESTADÍSTICO & ERRORES   -->
+    <!-- ========================================== -->
+    <section id="tab-diagnostics" class="tab-content">
+      <div class="dashboard-grid">
+        
+        <!-- Left: Residual Stats & Feature Importance -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <h2>Distribución y Propiedades de los Residuos (Errores del Modelo Champion)</h2>
+            </div>
+            <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 1rem;">
+              <div class="kpi-card mini">
+                <div class="kpi-title">Error Medio</div>
+                <div class="kpi-value" id="res-mean">+7,788 TEUs</div>
+              </div>
+              <div class="kpi-card mini">
+                <div class="kpi-title">Desviación Estándar</div>
+                <div class="kpi-value" id="res-std">16,415 TEUs</div>
+              </div>
+              <div class="kpi-card mini">
+                <div class="kpi-title">Error Absoluto Mediano</div>
+                <div class="kpi-value" id="res-med">9,891 TEUs</div>
+              </div>
+              <div class="kpi-card mini">
+                <div class="kpi-title">Asimetría (Skewness)</div>
+                <div class="kpi-value" id="res-skew">+0.405 (Leve)</div>
+              </div>
+            </div>
+            <div class="chart-container" style="height: 250px;">
+              <canvas id="residualsChart"></canvas>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 1rem;">
+            <div class="card-header">
+              <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+              <h2>Top 10 Importancia de Características (Split Gain en LightGBM)</h2>
+            </div>
+            <div class="chart-container" style="height: 280px;">
+              <canvas id="featImpChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Multicollinearity, VIF & Confounders -->
+        <div>
+          <div class="card">
+            <div class="card-header">
+              <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+              <h2>Análisis de Multicolinealidad y VIF (Factor de Inflación de la Varianza)</h2>
+            </div>
+            <p style="color:#94a3b8; font-size:0.88rem; margin-bottom: 0.75rem;">
+              Las variables independientes con <span class="badge" style="background:#0f2942; color:#38bdf8;">VIF &lt; 5.0</span> presentan ortogonalidad matemática óptima. Los lags autorregresivos correlacionados son absorbidos de forma no lineal por los árboles de LightGBM.
+            </p>
+            <div class="vif-badges-grid" id="vif-container">
+              <!-- Populated via JS -->
+            </div>
+
+            <div class="divider"></div>
+
+            <h3 style="font-size:0.95rem; margin-bottom: 0.5rem; color:#e2e8f0;">Pares de Máxima Correlación Bivariada (|r| &gt; 0.85):</h3>
+            <div class="table-responsive">
+              <table class="data-table" id="corr-table">
+                <thead>
+                  <tr>
+                    <th>Característica 1</th>
+                    <th>Característica 2</th>
+                    <th>Correlación (|r|)</th>
+                    <th>Tratamiento</th>
+                  </tr>
+                </thead>
+                <tbody id="corr-tbody">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 1rem;">
+            <div class="card-header">
+              <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M3 12h3M18 12h3M12 3v3M12 18v3"></path></svg>
+              <h2>Catálogo y Tratamiento de Variables Confundidoras (Confounders)</h2>
+            </div>
+            <div id="confounders-list">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 4: SIMULACIÓN MONTE CARLO & ESTRÉS     -->
+    <!-- ========================================== -->
+    <section id="tab-simulation" class="tab-content">
+      <div class="dashboard-grid">
+        
+        <!-- Controls Column -->
+        <aside class="card">
+          <div class="card-header">
+            <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="15.5" r="1.5"></circle></svg>
+            <h2>Configuración Estocástica</h2>
+          </div>
+
+          <div class="form-group">
+            <label for="sim-port-select">Terminal a Evaluar:</label>
+            <select id="sim-port-select">
+              <option value="Puerto Balboa">Puerto Balboa</option>
+              <option value="SSA Marine MIT">SSA Marine MIT</option>
+              <option value="PSA Panama International Terminal">PSA Panama</option>
+              <option value="Colon Container Terminal">Colon Container Terminal</option>
+              <option value="Puerto Cristóbal">Puerto Cristóbal</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="sim-scenario-select">Escenario de Estrés / Shock:</label>
+            <select id="sim-scenario-select">
+              <option value="baseline">🎲 Línea Base Estocástica (Cholesky L*L^T)</option>
+              <option value="canal_drought">📉 Sequía Severa en Canal de Panamá</option>
+              <option value="bunker_crisis">⛽ Shock Petrolero y Alza de Bunkering (+60%)</option>
+              <option value="us_recession">🚢 Recesión en EE.UU. / Flete Transpacífico</option>
+              <option value="compound_black_swan">🌪️ Cisne Negro Compuesto (Merton Jumps)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="sim-paths-slider">
+              <span>Trayectorias Sintéticas:</span>
+              <span class="slider-val" id="sim-paths-val">200 caminos</span>
+            </label>
+            <input type="range" id="sim-paths-slider" min="50" max="500" value="200" step="50">
+          </div>
+
+          <div class="form-group">
+            <label for="sim-horizon-slider">
+              <span>Horizonte de Simulación:</span>
+              <span class="slider-val" id="sim-horizon-val">6 meses</span>
+            </label>
+            <input type="range" id="sim-horizon-slider" min="3" max="12" value="6" step="1">
+          </div>
+
+          <button id="btn-simulate" class="btn-primary" style="margin-top: 1rem;">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+            Ejecutar Simulación Monte Carlo
+          </button>
+        </aside>
+
+        <!-- Simulation Analytics Column -->
+        <div class="analytics-col">
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-title">Volumen Esperado (E[Y])</div>
+              <div class="kpi-value" id="sim-kpi-expected">-- TEUs</div>
+              <div class="kpi-sub">Media Ponderada de Caminos</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Value at Risk (VaR 95%)</div>
+              <div class="kpi-value" id="sim-kpi-var95">-- TEUs</div>
+              <div class="kpi-sub">Piso Mínimo con 95% Confianza</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Conditional VaR (CVaR 95%)</div>
+              <div class="kpi-value" id="sim-kpi-cvar">-- TEUs</div>
+              <div class="kpi-sub">Expected Shortfall (Peor 5%)</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Prob. Caída Severa (&gt;25%)</div>
+              <div class="kpi-value" id="sim-kpi-prob">-- %</div>
+              <div class="kpi-sub">Riesgo de Quiebre de Patio</div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 1rem;">
+            <div class="card-header">
+              <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+              <h2>Abanico Estocástico de Trayectorias Simuladas (Fan Chart con Cuantiles P10–P90)</h2>
+            </div>
+            <div class="chart-container" style="height: 340px;">
+              <canvas id="simChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 5: METODOLOGÍA & ARQUITECTURA          -->
+    <!-- ========================================== -->
+    <section id="tab-methodology" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          <div>
+            <h2>Arquitectura Metodológica y Rigor Científico MLOps</h2>
+            <p class="card-subtitle">Documento completo en METODOLOGIA_Y_ARQUITECTURA_MLOPS.md | Desarrollado v1.0 Miguel Benítez</p>
+          </div>
+        </div>
+
+        <div class="methodology-grid">
+          
+          <div class="method-card">
+            <div class="method-badge">Fase 1</div>
+            <h3>Data Cleaning y Deduplicación Bitemporal</h3>
+            <p><strong>Problema:</strong> 353 boletines mensuales acumulativos de la AMP con redundancias cruzadas y anomalías de digitación contable.</p>
+            <p><strong>Solución:</strong> Algoritmo determinista bitemporal indexado por <code>(fecha_validez, fecha_publicación)</code>, conservando exclusivamente la versión de máximo timestamp. Detección de ajustes contables negativos (-111 TEUs corregido a 0.0) y filtro Hampel con MAD.</p>
+          </div>
+
+          <div class="method-card">
+            <div class="method-badge">Fase 2</div>
+            <h3>Campos Vacíos, Incompletos y Categóricos</h3>
+            <p><strong>Tratamiento de Nulos:</strong> Forward-fill temporal agrupado por terminal portuaria, preservando ceros estructurales (puertos sin Zona Libre) y banderas binarias de imputación.</p>
+            <p><strong>Codificación Categórica:</strong> One-Hot Encoding exhaustivo para terminales y litorales con alineación canónica estricta en tiempo de inferencia contra <code>feature_cols</code>.</p>
+          </div>
+
+          <div class="method-card">
+            <div class="method-badge">Fase 3</div>
+            <h3>Normalización, Estandarización y Anonimización</h3>
+            <p><strong>Estandarización:</strong> Modelos basados en árboles preservan la escala natural física (invariantes a transformaciones monótonas). Los modelos lineales integran <code>StandardScaler</code> Z-score encapsulado en pipeline para evitar sesgo de penalización.</p>
+            <p><strong>Privacidad:</strong> Agregación canónica macro (Puerto x Mes) y hashing criptográfico HMAC-SHA256 con sal para identificadores de buques IMO y operadores.</p>
+          </div>
+
+          <div class="method-card">
+            <div class="method-badge">Fase 4</div>
+            <h3>Multicolinealidad y Variables Confundidoras</h3>
+            <p><strong>VIF y Redundancia:</strong> Identificación de pares con correlación |r| &gt; 0.85 en lags. Los ratios operacionales (transbordo, vacíos) mantienen VIF &lt; 2.2.</p>
+            <p><strong>Variables Confundidoras:</strong> Control del efecto estacional del Año Nuevo Chino (desacoplado con sin/cos e <code>is_cny</code>) y de la sequía del Canal de Panamá (lags de bunkering marino y efectos fijos).</p>
+          </div>
+
+          <div class="method-card">
+            <div class="method-badge">Fase 5</div>
+            <h3>Variables Dependientes e Independientes</h3>
+            <p><strong>Variable Dependiente (Y):</strong> Volumen mensual de contenedores en TEUs (t+1..t+6) y ratio de desbalance de vacíos.</p>
+            <p><strong>Variables Independientes (X):</strong> 81 features que combinan armónicos estacionales, ratios marítimos, ventas nacionales de VLSFO, unidades RoRo y lags t-1..t-12 con Zero Data Leakage.</p>
+          </div>
+
+          <div class="method-card">
+            <div class="method-badge">Fase 6</div>
+            <h3>Formulación de Soluciones Operacionales</h3>
+            <p><strong>Decisión P90:</strong> Asignación anticipada de cuadrillas y grúas pórtico STS para absorber picos de demanda.</p>
+            <p><strong>Decisión Vacíos:</strong> Activación de buques barredores (sweeper vessels) cuando el ratio de vacíos supera 0.80.</p>
+            <p><strong>Decisión Resiliencia:</strong> Cobertura financiera basada en VaR 95% ante eventos extremos de calado.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Interactive Educational Detail Modal -->
+  <div id="detail-modal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-badge" id="modal-category">Explicabilidad MLOps</span>
+          <h2 id="modal-title">Título del Módulo</h2>
+        </div>
+        <button id="modal-close-btn" class="modal-close" aria-label="Cerrar">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="modal-section what">
+          <div class="modal-section-header">
+            <span class="step-num">1</span>
+            <h3>¿Qué se hizo?</h3>
+          </div>
+          <p id="modal-what">Descripción del objetivo técnico y operacional.</p>
+        </div>
+
+        <div class="modal-section how">
+          <div class="modal-section-header">
+            <span class="step-num">2</span>
+            <h3>¿Cómo se hizo?</h3>
+          </div>
+          <div id="modal-how">Explicación técnica, fórmulas matemáticas y variables involucradas.</div>
+        </div>
+
+        <div class="modal-section why">
+          <div class="modal-section-header">
+            <span class="step-num">3</span>
+            <h3>¿Por qué se hizo?</h3>
+          </div>
+          <p id="modal-why">Fundamento de dominio del comercio marítimo y causalidad en Panamá.</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <span class="modal-author">Desarrollado v1.0 Miguel Benítez — Fines Educativos</span>
+        <button id="modal-action-btn" class="btn-primary" style="width: auto; padding: 0.45rem 1.2rem; font-size: 0.85rem;">Cerrar Detalle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modern Engineering Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-left">
+        <div class="footer-brand">Panamá PortOps-AI <span class="version-tag">v1.0</span></div>
+        <p class="footer-author">Desarrollado v1.0 Miguel Benítez</p>
+        <p class="footer-license">Licencia: GNU General Public License v3.0 (GPL-3.0) con Atribución Obligatoria</p>
+      </div>
+
+      <div class="footer-right">
+        <div class="footer-links">
+          <a href="/docs" target="_blank" class="footer-link">
+            <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+            Swagger UI Docs
+          </a>
+          <a href="/api/models/compare" target="_blank" class="footer-link">
+            <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            Benchmark API
+          </a>
+          <a href="/api/models/diagnostics" target="_blank" class="footer-link">
+            <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            Diagnósticos API
+          </a>
+          <a href="/api/methodology" target="_blank" class="footer-link">
+            <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            Metodología API
+          </a>
+        </div>
+        <p class="footer-copyright">© 2026 Panamá PortOps-AI. Datos fuente: Autoridad Marítima de Panamá (2015–2026).</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Logic -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

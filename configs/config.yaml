@@ -1,0 +1,42 @@
+# MLOps Pipeline Configuration for Autoridad Marítima de Panamá (AMP)
+# Follows MLOps Masterclass Section 2.3 & 54
+
+project:
+  name: "amp-maritime-mlops"
+  version: "1.0.0"
+  description: "End-to-End MLOps Pipeline for Container & Bunkering Analytics at AMP Panama"
+
+paths:
+  raw_dir: "data/raw"
+  metadata_dir: "data/metadata"
+  silver_dir: "data/silver"
+  gold_dir: "data/gold"
+  logs_dir: "logs"
+  reports_dir: "reports"
+
+data_quality:
+  max_missing_ratio: 0.05
+  min_year: 2015
+  max_year: 2026
+  valid_ports:
+    - "Bocas Fruit Co."
+    - "Colon Container Terminal"
+    - "SSA Marine MIT"
+    - "Puerto Balboa"
+    - "Puerto Cristóbal"
+    - "PSA Panama International Terminal"
+  valid_litorals:
+    - "Pacífico"
+    - "Atlántico"
+
+feature_engineering:
+  lags: [1, 2, 3, 12]
+  rolling_windows: [3, 6, 12]
+  ewma_spans: [3, 6]
+  cyclic_features:
+    - "month"
+    - "quarter"
+  ratios:
+    - "transshipment_ratio"
+    - "empty_ratio"
+    - "teu_per_unit_factor"

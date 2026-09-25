@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, models, or simulation engine, please cite it as below."
+authors:
+  - family-names: "Benítez"
+    given-names: "Miguel"
+    alias: "mbeni"
+title: "Panama PortOps-AI: Production MLOps Ecosystem & Stochastic Simulation Engine for Panamanian Port Logistics"
+version: 1.0.0
+date-released: 2026-09-25
+license: GPL-3.0-or-later
+repository-code: "https://github.com/mbeni/amp-cont-ai"
+keywords:
+  - "mlops"
+  - "maritime logistics"
+  - "panama canal"
+  - "lightgbm"
+  - "monte carlo simulation"
+  - "quantile regression"
+  - "value at risk"
+  - "stress testing"

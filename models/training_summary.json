@@ -1,0 +1,29 @@
+[
+  {
+    "split": 1,
+    "period": "2022-01 to 2022-12",
+    "baseline_wape": 0.0764,
+    "lgbm_wape": 0.0947,
+    "lgbm_rmse": 14219.23,
+    "lgbm_mae": 11209.56,
+    "wape_improvement_pct": -23.95
+  },
+  {
+    "split": 2,
+    "period": "2023-01 to 2023-12",
+    "baseline_wape": 0.0826,
+    "lgbm_wape": 0.0814,
+    "lgbm_rmse": 12850.49,
+    "lgbm_mae": 9400.05,
+    "wape_improvement_pct": 1.45
+  },
+  {
+    "split": 3,
+    "period": "2024-01 to 2026-08",
+    "baseline_wape": 607.3921,
+    "lgbm_wape": 0.0973,
+    "lgbm_rmse": 18169.7,
+    "lgbm_mae": 13292.39,
+    "wape_improvement_pct": 99.98
+  }
+]

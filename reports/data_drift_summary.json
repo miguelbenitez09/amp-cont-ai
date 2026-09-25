@@ -1,0 +1,11 @@
+{
+  "status": "STABLE",
+  "reference_window": "2015-01 to 2024-01-01",
+  "current_window": "2024-01-01 to 2026-08",
+  "total_monitored_features": 16,
+  "drifted_features_count": 0,
+  "share_of_drifted_features": 0.0,
+  "drift_share_threshold": 0.25,
+  "retraining_recommended": false,
+  "html_report_path": "reports\\data_drift_report.html"
+}
