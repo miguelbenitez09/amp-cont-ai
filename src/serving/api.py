@@ -1010,7 +1010,7 @@ def simulate_external_feature_concatenation(req: ExternalFeatureRequest):
             "mathematical_derivation": formula
         },
         "impact_simulation": {
-            "estimated_throughput_delta_pct": f"{delta_teu_pct:+d}%",
+            "estimated_throughput_delta_pct": f"{delta_teu_pct:+.2f}%",
             "elasticity_coefficient": estimated_elasticity,
             "feature_importance_projected_rank": "Top 12 en LightGBM Feature Store",
             "pipeline_concatenation_instruction": (
