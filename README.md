@@ -17,6 +17,7 @@
 ---
 
 ## 📑 Tabla de Contenidos General
+- 📘 **Tratado Maestro de Pipeline y Extensibilidad:** [`MANUAL_TECNICO_Y_ARQUITECTURA_MLOPS.md`](MANUAL_TECNICO_Y_ARQUITECTURA_MLOPS.md) *(Manual detallado con glosario para todo público, fórmulas, paso a paso e ingesta de APIs externas)*.
 1. [Misión Cívica, Educativa y Marco Normativo (Ley 6 de 2002)](#1-misión-cívica-educativa-y-marco-normativo-ley-6-de-2002)
 2. [Arquitectura del Ecosistema y Pipeline Medallion](#2-arquitectura-del-ecosistema-y-pipeline-medallion)
 3. [Fundamentos Teóricos, Inferencia Causal (DAGs) y Limpieza Robusta](#3-fundamentos-teóricos-inferencia-causal-dags-y-limpieza-robusta)

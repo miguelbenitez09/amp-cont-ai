@@ -32,7 +32,11 @@
 
       <div class="nav-badges">
         <span class="badge healthy" id="health-badge"><span class="status-dot"></span> Verificando...</span>
-        <span class="badge" id="algo-badge"><svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> LightGBM Champion</span>
+        <button class="badge btn-gear" id="btn-settings-gear" title="Abrir panel de configuración del modelo y simulación de nuevas variables">
+          <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span id="algo-badge-text">LightGBM Champion</span>
+          <span class="gear-badge-tag">⚙️ Ajustes</span>
+        </button>
         <span class="badge" id="latency-badge"><svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> -- ms</span>
         <a href="/docs" target="_blank" class="badge link-badge">
           <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg> OpenAPI Docs
@@ -717,10 +721,18 @@
       </div>
       
       <div class="modal-body">
+        <div class="modal-section simple" style="border-left: 3px solid #38bdf8; background: rgba(56, 189, 248, 0.08); margin-bottom: 1rem;">
+          <div class="modal-section-header">
+            <span class="step-num" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">💡</span>
+            <h3 style="color: #38bdf8;">Explicación Sencilla (Para Todo Público)</h3>
+          </div>
+          <p id="modal-simple" style="color: #e2e8f0; font-size: 0.92rem; line-height: 1.6;">Explicación intuitiva en palabras claras y cotidianas sin tecnicismos.</p>
+        </div>
+
         <div class="modal-section what">
           <div class="modal-section-header">
             <span class="step-num">1</span>
-            <h3>¿Qué se hizo?</h3>
+            <h3>¿Qué se hizo? (Definición Técnica)</h3>
           </div>
           <p id="modal-what">Descripción del objetivo técnico y operacional.</p>
         </div>
@@ -728,7 +740,7 @@
         <div class="modal-section how">
           <div class="modal-section-header">
             <span class="step-num">2</span>
-            <h3>¿Cómo se hizo?</h3>
+            <h3>¿Cómo se hizo? (Fórmulas Matemáticas y Algoritmos)</h3>
           </div>
           <div id="modal-how">Explicación técnica, fórmulas matemáticas y variables involucradas.</div>
         </div>
@@ -736,7 +748,7 @@
         <div class="modal-section why">
           <div class="modal-section-header">
             <span class="step-num">3</span>
-            <h3>¿Por qué se hizo?</h3>
+            <h3>¿Por qué se hizo? (Impacto en la Logística de Panamá)</h3>
           </div>
           <p id="modal-why">Fundamento de dominio del comercio marítimo y causalidad en Panamá.</p>
         </div>
@@ -745,6 +757,228 @@
       <div class="modal-footer">
         <span class="modal-author">Desarrollado v1.0 Miguel Benítez — Fines Educativos</span>
         <button id="modal-action-btn" class="btn-primary" style="width: auto; padding: 0.45rem 1.2rem; font-size: 0.85rem;">Cerrar Detalle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL DE CONFIGURACIÓN & EXTENSIBILIDAD    -->
+  <!-- ========================================== -->
+  <div id="settings-modal" class="modal-backdrop">
+    <div class="modal-card settings-card">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <span class="modal-badge-cat">SISTEMA MLOPS • GOBERNANZA & EXTENSIBILIDAD</span>
+          <h2 id="settings-modal-title">⚙️ Configuración del Modelo & Nuevas Variables</h2>
+          <p class="settings-subtitle">Ajuste de hiperparámetros de inferencia, umbrales de vacíos y simulador para agregar nuevas fuentes de datos (AIS, Canal de Panamá, Fletes Internacionales).</p>
+        </div>
+        <button id="settings-close-btn" class="modal-close" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <div class="settings-tabs-nav">
+        <button class="settings-tab-btn active" data-settings-tab="stab-config">⚙️ Parámetros de Inferencia</button>
+        <button class="settings-tab-btn" data-settings-tab="stab-extensibility">🔌 Ingesta de Nuevas APIs (AIS / Clima)</button>
+        <button class="settings-tab-btn" data-settings-tab="stab-glossary">📖 Glosario Pedagógico ML</button>
+        <button class="settings-tab-btn" data-settings-tab="stab-export">📥 Exportar Datos</button>
+      </div>
+      
+      <div class="modal-body settings-body">
+        
+        <!-- Tab 1: Parámetros de Inferencia -->
+        <div id="stab-config" class="settings-tab-content active">
+          <div class="settings-form-grid">
+            <div class="form-group">
+              <label for="cfg-quantile-band">Banda de Incertidumbre Cuantílica:</label>
+              <select id="cfg-quantile-band">
+                <option value="P10_P90" selected>P10 - P90 (80% Cobertura - Estándar Operativo)</option>
+                <option value="P05_P95">P05 - P95 (90% Cobertura - Conservador / Expansión)</option>
+                <option value="P25_P75">P25 - P75 (50% Cobertura - Rango Intercuartílico)</option>
+              </select>
+              <small class="field-hint">Define la amplitud del abanico de incertidumbre mostrado en los gráficos de pronóstico.</small>
+            </div>
+
+            <div class="form-group">
+              <label for="cfg-empty-surplus">
+                <span>Umbral de Alerta de Superávit de Vacíos:</span>
+                <span class="slider-val" id="cfg-empty-surplus-val">0.80</span>
+              </label>
+              <input type="range" id="cfg-empty-surplus" min="0.60" max="0.95" step="0.05" value="0.80">
+              <small class="field-hint">Alerta cuando el ratio de contenedores vacíos supera este nivel (congestión de patio).</small>
+            </div>
+
+            <div class="form-group">
+              <label for="cfg-empty-deficit">
+                <span>Umbral de Alerta de Déficit de Vacíos:</span>
+                <span class="slider-val" id="cfg-empty-deficit-val">0.20</span>
+              </label>
+              <input type="range" id="cfg-empty-deficit" min="0.05" max="0.40" step="0.05" value="0.20">
+              <small class="field-hint">Alerta cuando faltan cajas vacías para exportación (riesgo para exportadores).</small>
+            </div>
+
+            <div class="form-group">
+              <label for="cfg-mc-paths">Trayectorias Monte Carlo por Defecto:</label>
+              <select id="cfg-mc-paths">
+                <option value="200">200 Rutas (Rápido - 15 ms)</option>
+                <option value="500" selected>500 Rutas (Recomendado - 35 ms)</option>
+                <option value="1000">1,000 Rutas (Alta Precisión - 70 ms)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="settings-actions">
+            <button id="btn-save-config" class="btn btn-primary">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              Guardar Configuración en Caliente
+            </button>
+            <span id="config-save-status" class="save-status-msg"></span>
+          </div>
+        </div>
+
+        <!-- Tab 2: Extensibilidad y Nuevas APIs -->
+        <div id="stab-extensibility" class="settings-tab-content">
+          <div class="extensibility-explainer">
+            <h3>¿Cómo sumar nuevas variables externas al modelo sin romper nada?</h3>
+            <p>El ecosistema <strong>Panamá PortOps-AI</strong> está diseñado para recibir datos satelitales (AIS), batimetría de la Cuenca del Canal o índices de fletes internacionales. Antes de ingresar al modelo, cada dato pasa por un <strong>Data Quality Gate</strong> (filtro de calidad estricto) y se normaliza matemáticamente para evitar que valores grandes distorsionen los cálculos.</p>
+          </div>
+
+          <div class="ext-simulator-box">
+            <h4>Simulador de Ingesta y Calidad de Nueva Variable</h4>
+            <div class="settings-form-grid">
+              <div class="form-group">
+                <label for="ext-port">Terminal Objetivo:</label>
+                <select id="ext-port">
+                  <option value="Puerto Balboa">Puerto Balboa (Pacífico)</option>
+                  <option value="SSA Marine MIT">SSA Marine MIT (Atlántico)</option>
+                  <option value="PSA Panama International Terminal">PSA Panama (Pacífico)</option>
+                  <option value="Colon Container Terminal">Colon Container Terminal (Atlántico)</option>
+                  <option value="Puerto Cristóbal">Puerto Cristóbal (Atlántico)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="ext-feature-name">Nombre de Variable Externa:</label>
+                <select id="ext-feature-name">
+                  <option value="ais_avg_draft_meters">AIS: Calado Dinámico Medio (metros)</option>
+                  <option value="gatun_lake_level_feet">ACP: Nivel de Lago Gatún (pies sobre el mar)</option>
+                  <option value="fbx_freight_index_usd">Fletes: Freightos Baltic Index (USD/FEU)</option>
+                  <option value="anchorage_wait_hours">AIS: Horas de Espera en Fondeadero</option>
+                  <option value="nino_34_sst_anomaly">NOAA: Anomalía Temperatura Mar Niño 3.4 (°C)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="ext-feature-value">Valor Empírico a Probar:</label>
+                <input type="number" id="ext-feature-value" step="0.1" value="14.2">
+              </div>
+
+              <div class="form-group">
+                <label for="ext-norm-method">Método de Normalización:</label>
+                <select id="ext-norm-method">
+                  <option value="robust_mad" selected>Hampel MAD (Robusto ante outliers marítimos)</option>
+                  <option value="z_score">Z-Score Estándar (Media 0, Desviación 1)</option>
+                  <option value="min_max">Min-Max Scaling (Escalado entre 0 y 1)</option>
+                  <option value="log_ratio">Log-Ratio ln(1 + x/x_base)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="settings-actions">
+              <button id="btn-simulate-ext" class="btn btn-primary">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                Auditar Calidad y Simular Concatenación
+              </button>
+            </div>
+
+            <div id="ext-result-box" class="ext-result-box" style="display:none;">
+              <div class="ext-result-header">
+                <span class="badge" id="ext-quality-badge">Gate: Aprobado</span>
+                <span id="ext-formula-badge" class="formula-badge">z = (x - median) / MAD</span>
+              </div>
+              <div class="ext-result-details" id="ext-result-details"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Glosario Pedagógico Accesible de Términos ML -->
+        <div id="stab-glossary" class="settings-tab-content">
+          <div class="glossary-grid">
+            
+            <div class="glossary-item">
+              <div class="glossary-term">📦 TEU (Twenty-foot Equivalent Unit)</div>
+              <p>Es la unidad mundial de medida en transporte marítimo. Corresponde a un contenedor estándar de 20 pies de largo. Un contenedor grande de 40 pies equivale a 2 TEUs. Es la variable principal ($Y$) que predice nuestro modelo.</p>
+            </div>
+
+            <div class="glossary-item">
+              <div class="glossary-term">🎯 WAPE (Weighted Absolute Percentage Error)</div>
+              <p><strong>¿Qué significa?:</strong> Es el porcentaje promedio de error del modelo. Un WAPE de <strong>9.11%</strong> significa que, en promedio, el modelo acierta con más de un <strong>90.89% de precisión</strong> en todo el sistema portuario de Panamá, ponderando más los puertos grandes donde se mueve más carga.</p>
+            </div>
+
+            <div class="glossary-item">
+              <div class="glossary-term">📈 Coeficiente R² (R-cuadrado)</div>
+              <p><strong>¿Qué significa?:</strong> Mide qué porcentaje de los cambios y subidas y bajadas del tráfico portuario es capaz de explicar el modelo. Un R² de <strong>0.9594</strong> significa que explica casi el <strong>96% de la realidad</strong>, dejando solo un 4% de variación debida a eventos totalmente aleatorios.</p>
+            </div>
+
+            <div class="glossary-item">
+              <div class="glossary-term">📊 Cuantiles P10, P50 y P90 (Incertidumbre)</div>
+              <p>En lugar de dar un único número "mágico", el modelo entrega un rango realista:
+                <br>• <strong>P50 (Mediana):</strong> El escenario más probable.
+                <br>• <strong>P10 (Piso):</strong> Nivel mínimo seguro de demanda (solo un 10% de probabilidad de caer por debajo).
+                <br>• <strong>P90 (Techo de Capacidad):</strong> Nivel pico de estrés para saber si se llenará el patio o si harán falta grúas pórtico y cuadrillas de estibadores adicionales.
+              </p>
+            </div>
+
+            <div class="glossary-item">
+              <div class="glossary-term">📉 Residuo del Modelo (Error Real)</div>
+              <p>Es simplemente la resta entre lo que realmente ocurrió en un mes y lo que el modelo había pronosticado ($y_{\text{real}} - \hat{y}_{\text{pred}}$). Si la media de los residuos está cerca de cero, significa que el modelo no tiene favoritismos ni sesgos sistemáticos.</p>
+            </div>
+
+            <div class="glossary-item">
+              <div class="glossary-term">🔍 VIF (Factor de Inflación de la Varianza)</div>
+              <p>Mide si dos variables dicen exactamente lo mismo (redundancia o multicolinealidad). Si una variable tiene un VIF mayor a 10, es como tener dos relojes que marcan la misma hora; el sistema la filtra para no confundir al algoritmo.</p>
+            </div>
+
+            <div class="glossary-item">
+              <div class="glossary-term">🔀 Variables Confundidoras (Confounders)</div>
+              <p>Factores que hacen creer falsamente que una cosa causa la otra. Por ejemplo, en Panamá se vende más combustible marino (bunkering) no solo cuando hay más carga, sino también cuando hay <strong>buques varados en fondeadero esperando turno en el Canal</strong>. El modelo desacopla estas trampas calculando el ratio de eficiencia TEU/BBL.</p>
+            </div>
+
+            <div class="glossary-item">
+              <div class="glossary-term">🎲 Simulación de Monte Carlo y Cholesky</div>
+              <p>Un método matemático que recrea cientos de futuros posibles (sequías, crisis globales, cierres de rutas) respetando cómo se relacionan las variables entre sí (factorización de Cholesky), para calcular el <strong>Valor en Riesgo (VaR 95%)</strong> y saber qué tan resistente es cada puerto ante contingencias.</p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Tab 4: Exportación de Datos -->
+        <div id="stab-export" class="settings-tab-content">
+          <div class="export-box">
+            <h3>Exportación de Resultados Operativos</h3>
+            <p>Descarga directamente los pronósticos, diagnósticos o benchmarks en formatos abiertos para auditoría o integración en sistemas ERP de logística:</p>
+            
+            <div class="export-btn-grid">
+              <button id="btn-export-forecast-json" class="btn btn-secondary">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Exportar Pronóstico Activo (JSON)
+              </button>
+              <button id="btn-export-forecast-csv" class="btn btn-secondary">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Exportar Pronóstico a Tabla (CSV)
+              </button>
+              <button id="btn-export-benchmark-json" class="btn btn-secondary">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Exportar Benchmark de 4 Algoritmos (JSON)
+              </button>
+            </div>
+            <p id="export-status" class="save-status-msg" style="margin-top:1rem;"></p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <span class="modal-author">Panamá PortOps-AI v1.0 • Desarrollado v1.0 Miguel Benítez • Fines Educativos</span>
+        <button id="settings-action-btn" class="btn-primary" style="width: auto; padding: 0.45rem 1.2rem; font-size: 0.85rem;">Cerrar Panel</button>
       </div>
     </div>
   </div>

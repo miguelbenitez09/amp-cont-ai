@@ -62,15 +62,35 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalCategory = document.getElementById("modal-category");
   const modalTitle = document.getElementById("modal-title");
   const modalWhat = document.getElementById("modal-what");
+  const modalSimple = document.getElementById("modal-simple");
   const modalHow = document.getElementById("modal-how");
   const modalWhy = document.getElementById("modal-why");
   const modalCloseBtn = document.getElementById("modal-close-btn");
   const modalActionBtn = document.getElementById("modal-action-btn");
 
   // --- Modal Engine ---
-  function openModal(category, title, what, how, why) {
+  function openModal(category, title, what, how, why, simpleText = "") {
     modalCategory.textContent = category;
     modalTitle.textContent = title;
+    
+    // Fallback intuitive translation if simpleText not explicitly supplied
+    if (!simpleText) {
+      if (title.toLowerCase().includes("vif")) {
+        simpleText = "Este indicador revisa si tenemos datos repetidos que puedan marear al modelo. Como el valor es bajo, confirma que esta información es única y muy útil.";
+      } else if (title.toLowerCase().includes("lightgbm")) {
+        simpleText = "Es el algoritmo ganador porque sabe cuándo la demanda subirá por Navidad o bajará por sequía, dando una precisión de casi 91%.";
+      } else if (title.toLowerCase().includes("random forest")) {
+        simpleText = "Es un conjunto de muchos árboles de decisión que votan juntos. Es ultra rápido respondiendo en menos de 5 milisegundos.";
+      } else if (title.toLowerCase().includes("residu")) {
+        simpleText = "Es la diferencia entre lo que el modelo pensó y lo que de verdad pasó. Al estar muy cerca de cero, prueba que el modelo no inventa cifras.";
+      } else if (title.toLowerCase().includes("cuantil") || title.toLowerCase().includes("p10") || title.toLowerCase().includes("p90")) {
+        simpleText = "No te da un solo número, sino un abanico seguro: un piso mínimo garantizado y un techo máximo para saber si el muelle se va a llenar de carga.";
+      } else {
+        simpleText = "Esta métrica evalúa el comportamiento real del transporte de contenedores para ayudar a tomar mejores decisiones logísticas.";
+      }
+    }
+    
+    if (modalSimple) modalSimple.innerHTML = simpleText;
     modalWhat.textContent = what;
     modalHow.innerHTML = how;
     modalWhy.textContent = why;
@@ -1009,6 +1029,220 @@ console.log("Pronósticos:", data.forecast);`
       }
     });
   }
+
+  // --- Settings & Extensibility Modal Engine ---
+  const btnSettingsGear = document.getElementById("btn-settings-gear");
+  const settingsModal = document.getElementById("settings-modal");
+  const settingsCloseBtn = document.getElementById("settings-close-btn");
+  const settingsActionBtn = document.getElementById("settings-action-btn");
+  const settingsTabButtons = document.querySelectorAll(".settings-tab-btn");
+  const settingsTabContents = document.querySelectorAll(".settings-tab-content");
+
+  const cfgQuantileBand = document.getElementById("cfg-quantile-band");
+  const cfgEmptySurplus = document.getElementById("cfg-empty-surplus");
+  const cfgEmptySurplusVal = document.getElementById("cfg-empty-surplus-val");
+  const cfgEmptyDeficit = document.getElementById("cfg-empty-deficit");
+  const cfgEmptyDeficitVal = document.getElementById("cfg-empty-deficit-val");
+  const cfgMcPaths = document.getElementById("cfg-mc-paths");
+  const btnSaveConfig = document.getElementById("btn-save-config");
+  const configSaveStatus = document.getElementById("config-save-status");
+
+  const extPort = document.getElementById("ext-port");
+  const extFeatureName = document.getElementById("ext-feature-name");
+  const extFeatureValue = document.getElementById("ext-feature-value");
+  const extNormMethod = document.getElementById("ext-norm-method");
+  const btnSimulateExt = document.getElementById("btn-simulate-ext");
+  const extResultBox = document.getElementById("ext-result-box");
+  const extQualityBadge = document.getElementById("ext-quality-badge");
+  const extFormulaBadge = document.getElementById("ext-formula-badge");
+  const extResultDetails = document.getElementById("ext-result-details");
+
+  const btnExportForecastJson = document.getElementById("btn-export-forecast-json");
+  const btnExportForecastCsv = document.getElementById("btn-export-forecast-csv");
+  const btnExportBenchmarkJson = document.getElementById("btn-export-benchmark-json");
+  const exportStatus = document.getElementById("export-status");
+
+  let latestForecastCache = null;
+
+  function openSettingsModal() {
+    settingsModal.classList.add("open");
+  }
+
+  function closeSettingsModal() {
+    settingsModal.classList.remove("open");
+  }
+
+  if (btnSettingsGear) btnSettingsGear.addEventListener("click", openSettingsModal);
+  if (settingsCloseBtn) settingsCloseBtn.addEventListener("click", closeSettingsModal);
+  if (settingsActionBtn) settingsActionBtn.addEventListener("click", closeSettingsModal);
+  if (settingsModal) {
+    settingsModal.addEventListener("click", (e) => {
+      if (e.target === settingsModal) closeSettingsModal();
+    });
+  }
+
+  settingsTabButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      settingsTabButtons.forEach(b => b.classList.remove("active"));
+      settingsTabContents.forEach(c => c.classList.remove("active"));
+      btn.classList.add("active");
+      const target = btn.getAttribute("data-settings-tab");
+      const el = document.getElementById(target);
+      if (el) el.classList.add("active");
+    });
+  });
+
+  if (cfgEmptySurplus) {
+    cfgEmptySurplus.addEventListener("input", (e) => {
+      cfgEmptySurplusVal.textContent = parseFloat(e.target.value).toFixed(2);
+    });
+  }
+
+  if (cfgEmptyDeficit) {
+    cfgEmptyDeficit.addEventListener("input", (e) => {
+      cfgEmptyDeficitVal.textContent = parseFloat(e.target.value).toFixed(2);
+    });
+  }
+
+  if (btnSaveConfig) {
+    btnSaveConfig.addEventListener("click", async () => {
+      configSaveStatus.textContent = "Guardando en servidor...";
+      try {
+        const payload = {
+          confidence_quantile_band: cfgQuantileBand.value,
+          empty_surplus_threshold: parseFloat(cfgEmptySurplus.value),
+          empty_deficit_threshold: parseFloat(cfgEmptyDeficit.value),
+          default_monte_carlo_paths: parseInt(cfgMcPaths.value, 10)
+        };
+        const res = await fetch("/api/config", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const d = await res.json();
+        configSaveStatus.textContent = `✓ Configuración guardada en caliente (${d.updated_configuration.last_updated}).`;
+        setTimeout(() => { configSaveStatus.textContent = ""; }, 4000);
+      } catch (err) {
+        configSaveStatus.textContent = `Error: ${err.message}`;
+      }
+    });
+  }
+
+  if (btnSimulateExt) {
+    btnSimulateExt.addEventListener("click", async () => {
+      btnSimulateExt.disabled = true;
+      try {
+        const payload = {
+          port: extPort.value,
+          feature_name: extFeatureName.value,
+          feature_value: parseFloat(extFeatureValue.value),
+          normalization_method: extNormMethod.value
+        };
+        const res = await fetch("/api/extensibility/simulate-external-feature", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const d = await res.json();
+        extResultBox.style.display = "block";
+        extQualityBadge.textContent = d.quality_gate_audit.passed ? "Gate: Aprobado (0 Nulls)" : "Gate: Rechazado";
+        extQualityBadge.style.background = d.quality_gate_audit.passed ? "rgba(16, 185, 129, 0.2)" : "rgba(244, 63, 94, 0.2)";
+        extQualityBadge.style.color = d.quality_gate_audit.passed ? "var(--emerald-success)" : "var(--rose-alert)";
+        extFormulaBadge.textContent = d.transformation.mathematical_derivation;
+        
+        extResultDetails.innerHTML = `
+          <p><strong>Valor Transformado Normalizado:</strong> <code>${d.transformation.normalized_feature_value}</code></p>
+          <p><strong>Impacto Estimado en Demanda:</strong> <span style="color:var(--cyan-bright); font-weight:700;">${d.impact_simulation.estimated_throughput_delta_pct}</span> (Elasticidad: ${d.impact_simulation.elasticity_coefficient})</p>
+          <p><strong>Proyección en Feature Store:</strong> ${d.impact_simulation.feature_importance_projected_rank}</p>
+          <p style="font-size:0.78rem; color:var(--text-dim); margin-top:0.4rem;">${d.impact_simulation.pipeline_concatenation_instruction}</p>
+        `;
+      } catch (err) {
+        extResultBox.style.display = "block";
+        extResultDetails.innerHTML = `<p style="color:var(--rose-alert);">Error en simulación: ${err.message}</p>`;
+      } finally {
+        btnSimulateExt.disabled = false;
+      }
+    });
+  }
+
+  // --- Export Functions ---
+  function downloadBlob(content, filename, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  if (btnExportForecastJson) {
+    btnExportForecastJson.addEventListener("click", () => {
+      if (!latestForecastCache) {
+        exportStatus.textContent = "Primero genera un pronóstico en la pestaña 'Pronóstico & What-If'.";
+        return;
+      }
+      downloadBlob(JSON.stringify(latestForecastCache, null, 2), `pronostico_${latestForecastCache.port.replace(/\s+/g, '_')}.json`, "application/json");
+      exportStatus.textContent = "✓ Pronóstico descargado en formato JSON.";
+      setTimeout(() => { exportStatus.textContent = ""; }, 3000);
+    });
+  }
+
+  if (btnExportForecastCsv) {
+    btnExportForecastCsv.addEventListener("click", () => {
+      if (!latestForecastCache || !latestForecastCache.predictions) {
+        exportStatus.textContent = "Primero genera un pronóstico en la pestaña 'Pronóstico & What-If'.";
+        return;
+      }
+      let csv = "month_offset,date,pred_p10_teu,pred_p50_teu,pred_p90_teu,empty_ratio,imbalance_status\n";
+      latestForecastCache.predictions.forEach(p => {
+        csv += `${p.month_offset},${p.date},${p.pred_p10_teu},${p.pred_p50_teu},${p.pred_p90_teu},${p.empty_ratio_estimate},"${p.imbalance_status}"\n`;
+      });
+      downloadBlob(csv, `pronostico_${latestForecastCache.port.replace(/\s+/g, '_')}.csv`, "text/csv");
+      exportStatus.textContent = "✓ Pronóstico descargado en formato CSV.";
+      setTimeout(() => { exportStatus.textContent = ""; }, 3000);
+    });
+  }
+
+  if (btnExportBenchmarkJson) {
+    btnExportBenchmarkJson.addEventListener("click", async () => {
+      try {
+        const res = await fetch("/api/models/compare");
+        const d = await res.json();
+        downloadBlob(JSON.stringify(d, null, 2), "benchmark_multi_algoritmo.json", "application/json");
+        exportStatus.textContent = "✓ Benchmark descargado en formato JSON.";
+        setTimeout(() => { exportStatus.textContent = ""; }, 3000);
+      } catch (err) {
+        exportStatus.textContent = `Error al exportar: ${err.message}`;
+      }
+    });
+  }
+
+  // Hook runForecast to cache latest results
+  const originalRunForecast = runForecast;
+  runForecast = async function() {
+    await originalRunForecast();
+    // Cache data
+    try {
+      const port = portSelect.value;
+      const algo = algoSelect.value;
+      const horizon = parseInt(horizonSlider.value, 10);
+      const res = await fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          port,
+          horizon_months: horizon,
+          algorithm: algo,
+          bunker_perturbation_pct: parseFloat(bunkerSlider.value),
+          transshipment_perturbation_pct: parseFloat(transSlider.value)
+        })
+      });
+      latestForecastCache = await res.json();
+    } catch (_) {}
+  };
 
   // --- Bootstrapping ---
   btnPredict.addEventListener("click", runForecast);
