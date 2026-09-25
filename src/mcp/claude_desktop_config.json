@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "panama-portops-ai": {
+      "command": "python",
+      "args": [
+        "-m",
+        "src.mcp.server"
+      ],
+      "env": {
+        "PYTHONPATH": ".",
+        "APP_AUTHOR": "Desarrollado v1.0 Miguel Benítez",
+        "PORT_OPS_ENVIRONMENT": "production"
+      }
+    }
+  }
+}

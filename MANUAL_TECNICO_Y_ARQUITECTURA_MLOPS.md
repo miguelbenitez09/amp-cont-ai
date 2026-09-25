@@ -237,9 +237,9 @@ make serve
 python -m uvicorn src.serving.api:app --host 127.0.0.1 --port 8000
 ```
 
-### 8.2 Endpoints Clave del Microservicio FastAPI:
-- **`GET /`**: Landing Page responsive interactiva y adaptativa para WebView móvil y desktop.
-- **`GET /docs`**: Documentación Swagger UI con ejemplos en vivo de Python, cURL y JavaScript.
+### 8.2 Endpoints del Microservicio FastAPI:
+- **`GET /`**: Landing Page responsive interactiva y adaptativa para WebView móvil y desktop con consola API en vivo.
+- **`GET /docs`**: Documentación Swagger UI interactiva con ejemplos ejecutables en Python, cURL y JavaScript.
 - **`POST /predict`**: Inferencia cuantílica multi-algoritmo con evaluación What-If.
 - **`POST /predict/batch`**: Inferencia simultánea para las 6 terminales portuarias panameñas.
 - **`GET /api/models/compare`**: Matriz comparativa de WAPE, MAE, RMSE, R² y latencias de los 4 algoritmos.
@@ -247,6 +247,30 @@ python -m uvicorn src.serving.api:app --host 127.0.0.1 --port 8000
 - **`POST /simulate`**: Simulación Monte Carlo coordinada con cópulas de Cholesky y saltos de Poisson.
 - **`GET /api/config` & `POST /api/config`**: Consulta y actualización en caliente de parámetros de inferencia y umbrales de vacíos sin reiniciar el servidor.
 - **`POST /api/extensibility/simulate-external-feature`**: Simulador interactivo para verificar y proyectar el impacto de nuevas variables externas antes de concatenarlas al pipeline permanente.
+- **`GET /api/infrastructure/status`**: Monitoreo en tiempo real del estado de salud de los adaptadores de base de datos (DuckDB, PostgreSQL, Redis), herramientas MCP activas, inventario de secretos y aceleradores de hardware.
+- **`POST /api/rag/query`**: Motor de búsqueda semántica RAG con citas exactas sobre la Ley 56 de 2008, Ley 6 de 2002 y arquitectura MLOps, protegido con Guardrails semánticos.
+- **`POST /api/guardrails/validate`**: Auditoría multicapa previa a la inferencia (límites físicos de terminales y detección de prompt injection).
+- **`GET /api/export/provenance`**: Ficha técnica de auditoría y procedencia de datos reales (cobertura 140 meses AMP/INEC, 81 features, hash SHA-256).
+- **`POST /api/export/dataset`**: Motor de exportación de datos con nombre de archivo personalizable por el usuario, formato CSV/JSON y vista previa en tiempo real.
+
+### 8.3 Infraestructura Empresarial y Escalabilidad Modular:
+1. **Adaptadores Universales de Persistencia (`src/infrastructure/db/`):**
+   - `DuckDBAdapter`: Motor columnar in-process para análisis vectorial ultrarrápido (< 0.5 ms) sobre los Parquets de Gold.
+   - `PostgresTimescaleAdapter`: Soporte nativo para PostgreSQL 16 con TimescaleDB para almacenamiento de telemetría continua y series temporales particionadas.
+   - `RedisCacheAdapter`: Capa de caché en memoria para almacenar resultados de inferencias cuantílicas con latencias inferiores a 2 milisegundos, incluyendo fallback automático en memoria local cuando el cluster Redis no está activo.
+2. **Servidor MCP Nativo (Model Context Protocol) (`src/mcp/`):**
+   - Implementa el estándar oficial MCP 2024-11-05 sobre transporte stdio y HTTP/SSE.
+   - Expone 5 herramientas seguras (`get_port_forecast`, `run_monte_carlo_risk_simulation`, `compare_model_benchmarks`, `simulate_external_feature`, `query_maritime_knowledge`) para Claude Desktop, Cursor, Antigravity y agentes autónomos.
+3. **Motor RAG y Base de Conocimiento Jurídico-Portuaria (`src/rag/`):**
+   - Indexa vectorialmente decretos de la Ley 56 de 2008 (General de Puertos), Ley 6 de 2002 (Transparencia) y avisos a la navegación de la ACP.
+   - Resuelve preguntas de operadores logísticos generando respuestas contextualmente ancladas (*context-grounded*) sin alucinaciones.
+4. **Guardrails de Inferencia y Seguridad (`src/guardrails/`):**
+   - Filtro físico: previene volúmenes negativos de TEUs o que excedan los 600,000 TEUs/mes por terminal.
+   - Monotonicidad de cuantiles: asegura que ningún modelo de árbol produzca $P_{10} > P_{50}$ o $P_{50} > P_{90}$.
+   - Sanitización semántica: filtra vectores de ataque como inyección de prompts (`ignore previous instructions`, `drop table`).
+5. **Aceleración por Hardware (CUDA, OpenMP y vLLM):**
+   - LightGBM optimizado para CPU multinúcleo con OpenMP y compatible con GPUs NVIDIA mediante el parámetro `device=cuda`.
+   - Compatibilidad arquitectónica para desplegar modelos de lenguaje en RAG utilizando el motor de alto rendimiento **vLLM** con PagedAttention en clústeres Kubernetes con nodos GPU.
 
 ---
 

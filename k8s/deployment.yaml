@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: amp-portops-api
+  namespace: amp-portops
+  labels:
+    app: amp-portops-api
+    tier: serving
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: amp-portops-api
+  template:
+    metadata:
+      labels:
+        app: amp-portops-api
+    spec:
+      containers:
+        - name: serving-api
+          image: miguelbenitez09/amp-portops-ai:v1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+              name: http
+          envFrom:
+            - configMapRef:
+                name: amp-portops-config
+            - secretRef:
+                name: amp-portops-secrets
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "4Gi"
+              cpu: "2000m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /api/config
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3

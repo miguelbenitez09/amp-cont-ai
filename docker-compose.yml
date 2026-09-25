@@ -1,10 +1,9 @@
-# Docker Compose for Panama PortOps-AI MLOps Stack
-# Adheres strictly to MLOps Masterclass Section 21:
-# - Service 1: FastAPI Inference Microservice (Port 8000)
-# - Service 2: Streamlit Interactive Executive Dashboard (Port 8501)
-# - Shared volumes for models and feature store
+# Docker Compose for Panama PortOps-AI Enterprise MLOps Stack
+# Author: Desarrollado v1.0 Miguel Benítez
+# License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 
 services:
+  # 1. High-Performance Serving API with CUDA / CPU Support
   api:
     build:
       context: .
@@ -17,10 +16,17 @@ services:
       - ENVIRONMENT=production
       - MODEL_NAME=Panama_PortOps_LightGBM
       - LOG_LEVEL=INFO
+      - DATABASE_URL=postgresql://postgres:panama_portops_pass@timescaledb:5432/amp_portops
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - AUTHOR=Desarrollado v1.0 Miguel Benítez
     volumes:
       - ./logs:/app/logs
       - ./models:/app/models:ro
-      - ./data/gold:/app/data/gold:ro
+      - ./data:/app/data
+    depends_on:
+      redis:
+        condition: service_healthy
     command: ["uvicorn", "src.serving.api:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -28,6 +34,52 @@ services:
       timeout: 5s
       retries: 3
 
+  # 2. Redis In-Memory Quantile Cache Layer
+  redis:
+    image: redis:7-alpine
+    container_name: portops-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "512mb", "--maxmemory-policy", "allkeys-lru"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # 3. TimescaleDB Enterprise Time-Series Database
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: portops-timescaledb
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=panama_portops_pass
+      - POSTGRES_DB=amp_portops
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # 4. Model Context Protocol (MCP) Server for AI Agents
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: portops-mcp
+    restart: unless-stopped
+    environment:
+      - ENVIRONMENT=production
+      - AUTHOR=Desarrollado v1.0 Miguel Benítez
+    command: ["python", "-m", "src.mcp.server"]
+
+  # 5. Streamlit Interactive Executive Dashboard
   dashboard:
     build:
       context: .
@@ -42,11 +94,13 @@ services:
       - ./logs:/app/logs
       - ./models:/app/models:ro
       - ./data/gold:/app/data/gold:ro
-      - ./reports:/app/reports:ro
     depends_on:
       api:
         condition: service_healthy
     command: ["streamlit", "run", "apps/dashboard.py", "--server.port=8501", "--server.address=0.0.0.0"]
+
+volumes:
+  timescale_data:
 
 networks:
   default:

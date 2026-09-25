@@ -297,7 +297,57 @@ for pred in data['forecast']:
 
 ---
 
-## 9. Guía de Despliegue en GitHub, Seguridad y CI/CD
+## 9. Infraestructura Empresarial: Adaptadores DB, Servidor MCP, RAG y Kubernetes
+
+La versión 1.0 incorpora una arquitectura desacoplada y modular diseñada para entornos de producción de alta disponibilidad:
+
+### 9.1 Adaptadores Universales de Base de Datos (`src/infrastructure/db/`)
+- **DuckDB Columnar (`DuckDBAdapter`):** Motor analítico embebido ultra-rápido para escaneo vectorial de los 140 meses de microdatos Parquet (`container_features.parquet`).
+- **PostgreSQL / TimescaleDB (`PostgresTimescaleAdapter`):** Soporte de hipertablas particionadas por mes para telemetría continua de buques y puertos con pool de conexiones (`psycopg2.pool`).
+- **Redis In-Memory Cache (`RedisCacheAdapter`):** Cacheo predictivo de cuantiles $P_{10}, P_{50}, P_{90}$ y simulaciones estocásticas con latencia sub-2ms y fallback de memoria integrado.
+- **Factoría Unificada (`DatabaseFactory`):** Selección automática del motor de almacenamiento mediante la variable de entorno `DATABASE_URL`.
+
+### 9.2 Servidor MCP Nativo (Model Context Protocol) (`src/mcp/`)
+El sistema expone un servidor MCP compatible con la especificación JSON-RPC 2.0 (noviembre 2024), permitiendo a agentes de IA (**Claude Desktop, Cursor, Antigravity**) invocar directamente herramientas del modelo:
+- `get_port_forecast`: Inferencia probabilística por terminal.
+- `run_monte_carlo_risk_simulation`: Evaluación estocástica de trayectorias con factor de Cholesky y saltos de Merton.
+- `compare_model_benchmarks`: Consulta de métricas multi-algoritmo.
+- `simulate_external_feature`: Evaluación de Quality Gates y normalización matemática.
+- `query_maritime_knowledge`: Búsqueda semántica con base documental.
+
+*Configuración lista para Claude Desktop:* `src/mcp/claude_desktop_config.json`.
+
+### 9.3 Asistente RAG Marítimo y Jurídico de Panamá (`src/rag/`)
+Motor de búsqueda semántica con TF-IDF y similitud coseno sobre el marco legal y operativo panameño:
+- **Ley 56 de 2008 (General de Puertos):** Concesiones, calados mínimos obligatorios (14.5m a 16m) y fiscalización de la AMP.
+- **Ley 6 de 2002 (Transparencia):** Acceso público a microdatos de comercio exterior e interés ciudadano.
+- **Regulaciones ACP:** Avisos a la navegación (Advisories to Shipping) y niveles del Lago Gatún.
+
+### 9.4 Guardrails de Inferencia y Gestor de Secretos
+- **Guardrail Físico:** Validación de rangos no negativos y límite físico instalado (< 600,000 TEUs/mes).
+- **Guardrail Cuantílico:** Verificación obligatoria de la relación monotónica matemática $P_{10} \le P_{50} \le P_{90}$.
+- **Guardrail Semántico:** Detección de patrones de inyección de prompts y ejecución de código en consultas RAG.
+- **Gestor de Secretos (`SecretManager`):** Enmascaramiento criptográfico de credenciales (`sk-****`) en interfaces y logs.
+
+### 9.5 Orquestación: Docker Compose y Kubernetes (`k8s/`)
+El proyecto incluye manifiestos listos para despliegue industrial en clústeres Kubernetes:
+```bash
+# Despliegue con Docker Compose (API + Redis + TimescaleDB + MCP + Streamlit):
+docker compose up -d
+
+# Despliegue en Kubernetes:
+kubectl apply -f k8s/namespace.yaml
+kubectl apply -f k8s/configmap.yaml
+kubectl apply -f k8s/secret.yaml
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+kubectl apply -f k8s/ingress.yaml
+kubectl apply -f k8s/hpa.yaml
+```
+
+---
+
+## 10. Guía de Despliegue en GitHub, Seguridad y CI/CD
 
 ### Seguridad de Credenciales
 > [!CAUTION]

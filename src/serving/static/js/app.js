@@ -1165,9 +1165,40 @@ console.log("Pronósticos:", data.forecast);`
     });
   }
 
-  // --- Export Functions ---
-  function downloadBlob(content, filename, type) {
-    const blob = new Blob([content], { type });
+  // --- Real Data Export Engine with Customizable Filename & Provenance ---
+  const exportScopeSelect = document.getElementById("export-scope");
+  const exportFormatSelect = document.getElementById("export-format");
+  const exportFilenameInput = document.getElementById("export-filename");
+  const btnResetFilename = document.getElementById("btn-reset-filename");
+  const btnPreviewExport = document.getElementById("btn-preview-export");
+  const btnDoExport = document.getElementById("btn-do-export");
+  const exportPreviewContainer = document.getElementById("export-preview-container");
+  const exportPreviewTable = document.getElementById("export-preview-table");
+  const previewBadge = document.getElementById("preview-badge");
+  const previewFilenameLabel = document.getElementById("preview-filename-label");
+  const exportStatus = document.getElementById("export-status");
+
+  function getSuggestedFilename() {
+    const scope = exportScopeSelect ? exportScopeSelect.value : "forecasts";
+    const fmt = exportFormatSelect ? exportFormatSelect.value : "csv";
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    if (scope === "forecasts") return `amp_pronosticos_operativos_${dateStr}.${fmt}`;
+    if (scope === "benchmarks") return `amp_benchmark_4_modelos_${dateStr}.${fmt}`;
+    return `amp_senales_acp_ais_fletes_${dateStr}.${fmt}`;
+  }
+
+  function updateFilenameSuggestion() {
+    if (exportFilenameInput) {
+      exportFilenameInput.value = getSuggestedFilename();
+    }
+  }
+
+  if (exportScopeSelect) exportScopeSelect.addEventListener("change", updateFilenameSuggestion);
+  if (exportFormatSelect) exportFormatSelect.addEventListener("change", updateFilenameSuggestion);
+  if (btnResetFilename) btnResetFilename.addEventListener("click", updateFilenameSuggestion);
+
+  function downloadBlob(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -1178,44 +1209,133 @@ console.log("Pronósticos:", data.forecast);`
     URL.revokeObjectURL(url);
   }
 
-  if (btnExportForecastJson) {
-    btnExportForecastJson.addEventListener("click", () => {
-      if (!latestForecastCache) {
-        exportStatus.textContent = "Primero genera un pronóstico en la pestaña 'Pronóstico & What-If'.";
-        return;
-      }
-      downloadBlob(JSON.stringify(latestForecastCache, null, 2), `pronostico_${latestForecastCache.port.replace(/\s+/g, '_')}.json`, "application/json");
-      exportStatus.textContent = "✓ Pronóstico descargado en formato JSON.";
-      setTimeout(() => { exportStatus.textContent = ""; }, 3000);
-    });
-  }
-
-  if (btnExportForecastCsv) {
-    btnExportForecastCsv.addEventListener("click", () => {
-      if (!latestForecastCache || !latestForecastCache.predictions) {
-        exportStatus.textContent = "Primero genera un pronóstico en la pestaña 'Pronóstico & What-If'.";
-        return;
-      }
-      let csv = "month_offset,date,pred_p10_teu,pred_p50_teu,pred_p90_teu,empty_ratio,imbalance_status\n";
-      latestForecastCache.predictions.forEach(p => {
-        csv += `${p.month_offset},${p.date},${p.pred_p10_teu},${p.pred_p50_teu},${p.pred_p90_teu},${p.empty_ratio_estimate},"${p.imbalance_status}"\n`;
-      });
-      downloadBlob(csv, `pronostico_${latestForecastCache.port.replace(/\s+/g, '_')}.csv`, "text/csv");
-      exportStatus.textContent = "✓ Pronóstico descargado en formato CSV.";
-      setTimeout(() => { exportStatus.textContent = ""; }, 3000);
-    });
-  }
-
-  if (btnExportBenchmarkJson) {
-    btnExportBenchmarkJson.addEventListener("click", async () => {
+  // Preview Data Table
+  if (btnPreviewExport) {
+    btnPreviewExport.addEventListener("click", async () => {
+      exportStatus.textContent = "Cargando vista previa de datos reales...";
       try {
-        const res = await fetch("/api/models/compare");
+        const scope = exportScopeSelect.value;
+        const res = await fetch("/api/export/dataset", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            scope: scope,
+            format: "json",
+            filename: exportFilenameInput.value.trim() || getSuggestedFilename()
+          })
+        });
         const d = await res.json();
-        downloadBlob(JSON.stringify(d, null, 2), "benchmark_multi_algoritmo.json", "application/json");
-        exportStatus.textContent = "✓ Benchmark descargado en formato JSON.";
-        setTimeout(() => { exportStatus.textContent = ""; }, 3000);
+        const records = d.data || [];
+        if (records.length === 0) {
+          exportStatus.textContent = "No hay registros disponibles para el scope seleccionado.";
+          return;
+        }
+
+        const previewRows = records.slice(0, 5);
+        const columns = Object.keys(previewRows[0]);
+
+        let theadHtml = "<thead><tr>" + columns.map(c => `<th>${c}</th>`).join("") + "</tr></thead>";
+        let tbodyHtml = "<tbody>" + previewRows.map(row => {
+          return "<tr>" + columns.map(c => `<td>${row[c] !== null && row[c] !== undefined ? row[c] : "-"}</td>`).join("") + "</tr>";
+        }).join("") + "</tbody>";
+
+        exportPreviewTable.innerHTML = theadHtml + tbodyHtml;
+        previewBadge.textContent = `Vista Previa: Mostrando ${previewRows.length} de ${d.total_records} Registros`;
+        previewFilenameLabel.textContent = `Archivo destino: ${d.filename}`;
+        exportPreviewContainer.style.display = "block";
+        exportStatus.textContent = `✓ Vista previa cargada con base en ${d.provenance_metadata.temporal_coverage.continuous_months} meses auditados de la AMP.`;
       } catch (err) {
-        exportStatus.textContent = `Error al exportar: ${err.message}`;
+        exportStatus.textContent = `Error en vista previa: ${err.message}`;
+      }
+    });
+  }
+
+  // Generate and Download Real Dataset
+  if (btnDoExport) {
+    btnDoExport.addEventListener("click", async () => {
+      btnDoExport.disabled = true;
+      exportStatus.textContent = "Generando conjunto de datos oficial...";
+      try {
+        const scope = exportScopeSelect.value;
+        const format = exportFormatSelect.value;
+        let chosenFilename = exportFilenameInput.value.trim();
+        if (!chosenFilename) {
+          chosenFilename = getSuggestedFilename();
+          exportFilenameInput.value = chosenFilename;
+        }
+        if (!chosenFilename.endsWith(`.${format}`)) {
+          chosenFilename += `.${format}`;
+        }
+
+        const res = await fetch("/api/export/dataset", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            scope: scope,
+            format: format,
+            filename: chosenFilename
+          })
+        });
+
+        const d = await res.json();
+        if (format === "csv") {
+          downloadBlob(d.content, d.filename, "text/csv;charset=utf-8;");
+        } else {
+          downloadBlob(JSON.stringify(d, null, 2), d.filename, "application/json;charset=utf-8;");
+        }
+
+        exportStatus.innerHTML = `✓ <strong>${d.filename}</strong> descargado exitosamente (${d.total_records} registros reales, Fuente: ${d.provenance_metadata.institutional_source}).`;
+      } catch (err) {
+        exportStatus.textContent = `Error al exportar datos: ${err.message}`;
+      } finally {
+        btnDoExport.disabled = false;
+      }
+    });
+  }
+
+  // --- RAG (Retrieval-Augmented Generation) Legal Query Handler ---
+  const ragQueryInput = document.getElementById("rag-query-input");
+  const btnExecRag = document.getElementById("btn-exec-rag");
+  const ragResultPanel = document.getElementById("rag-result-panel");
+
+  if (btnExecRag && ragQueryInput && ragResultPanel) {
+    btnExecRag.addEventListener("click", async () => {
+      const q = ragQueryInput.value.trim();
+      if (!q) return;
+
+      btnExecRag.disabled = true;
+      ragResultPanel.style.display = "block";
+      ragResultPanel.innerHTML = "<em>Consultando base jurídica marítima y manual MLOps con Guardrails semánticos...</em>";
+
+      try {
+        const res = await fetch("/api/rag/query", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: q, top_k: 2 })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.detail ? JSON.stringify(data.detail) : "Error en consulta RAG");
+        }
+
+        const resp = data.rag_response;
+        let citationsHtml = "";
+        if (resp.top_matches && resp.top_matches.length > 0) {
+          citationsHtml = resp.top_matches.map(m => `
+            <span class="rag-citation">⚖️ Referencia Legal / Técnica: <strong>${m.title}</strong> — <em>${m.citation}</em> (Relevancia: ${(m.relevance_score * 100).toFixed(1)}%)</span>
+          `).join("");
+        }
+
+        ragResultPanel.innerHTML = `
+          <div><strong>Respuesta Fundamentada:</strong></div>
+          <p style="margin: 0.35rem 0;">${resp.synthesized_response}</p>
+          ${citationsHtml}
+        `;
+      } catch (err) {
+        ragResultPanel.innerHTML = `<span style="color:var(--rose-alert);">Error en RAG: ${err.message}</span>`;
+      } finally {
+        btnExecRag.disabled = false;
       }
     });
   }

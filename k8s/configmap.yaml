@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: amp-portops-config
+  namespace: amp-portops
+data:
+  APP_ENV: "production"
+  APP_PORT: "8000"
+  LOG_LEVEL: "INFO"
+  DEFAULT_MONTE_CARLO_PATHS: "500"
+  DEFAULT_QUANTILE_BAND: "P10_P90"
+  REDIS_HOST: "amp-redis-service"
+  REDIS_PORT: "6379"
+  AUTHOR: "Desarrollado v1.0 Miguel Benítez"

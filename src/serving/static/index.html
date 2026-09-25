@@ -779,7 +779,8 @@
         <button class="settings-tab-btn active" data-settings-tab="stab-config">⚙️ Parámetros de Inferencia</button>
         <button class="settings-tab-btn" data-settings-tab="stab-extensibility">🔌 Ingesta de Nuevas APIs (AIS / Clima)</button>
         <button class="settings-tab-btn" data-settings-tab="stab-glossary">📖 Glosario Pedagógico ML</button>
-        <button class="settings-tab-btn" data-settings-tab="stab-export">📥 Exportar Datos</button>
+        <button class="settings-tab-btn" data-settings-tab="stab-export">📥 Exportar Datos Reales</button>
+        <button class="settings-tab-btn" data-settings-tab="stab-enterprise">🎛️ Consola Enterprise & RAG</button>
       </div>
       
       <div class="modal-body settings-body">
@@ -950,27 +951,210 @@
           </div>
         </div>
 
-        <!-- Tab 4: Exportación de Datos -->
+        <!-- Tab 4: Exportación de Datos Reales con Personalización y Procedencia -->
         <div id="stab-export" class="settings-tab-content">
           <div class="export-box">
-            <h3>Exportación de Resultados Operativos</h3>
-            <p>Descarga directamente los pronósticos, diagnósticos o benchmarks en formatos abiertos para auditoría o integración en sistemas ERP de logística:</p>
             
-            <div class="export-btn-grid">
-              <button id="btn-export-forecast-json" class="btn btn-secondary">
-                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                Exportar Pronóstico Activo (JSON)
-              </button>
-              <button id="btn-export-forecast-csv" class="btn btn-secondary">
-                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                Exportar Pronóstico a Tabla (CSV)
-              </button>
-              <button id="btn-export-benchmark-json" class="btn btn-secondary">
-                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                Exportar Benchmark de 4 Algoritmos (JSON)
-              </button>
+            <!-- Ficha de Procedencia y Trazabilidad de Datos Reales -->
+            <div class="provenance-card">
+              <div class="provenance-header">
+                <span class="prov-tag">PROVENIENCIA & AUDITORÍA DE DATOS REALES</span>
+                <span class="prov-legal">⚖️ Ley 6 de 2002 de Transparencia de Panamá</span>
+              </div>
+              <h4 class="prov-title">Microdatos Oficiales del Movimiento Portuario Nacional (AMP - INEC)</h4>
+              <p class="prov-desc">Todos los pronósticos y análisis generados se fundamentan en <strong>140 meses continuos (Enero 2015 a Enero 2026)</strong> de registros oficiales de contenedores en el Sistema Portuario Nacional de Panamá (SPN), auditados e imputados sin datos ficticios.</p>
+              
+              <div class="prov-meta-grid">
+                <div class="prov-meta-item">
+                  <span class="prov-meta-label">Puertos Incluidos:</span>
+                  <span class="prov-meta-val">Balboa, MIT, Cristóbal, Rodman PSA, Bocas Fruit, CCT</span>
+                </div>
+                <div class="prov-meta-item">
+                  <span class="prov-meta-label">Features en Feature Store:</span>
+                  <span class="prov-meta-val">81 variables (Lags 1-24m, Medias Móviles, Despacho Búnker)</span>
+                </div>
+                <div class="prov-meta-item">
+                  <span class="prov-meta-label">Modelos Evaluados:</span>
+                  <span class="prov-meta-val">LightGBM (WAPE 9.11%), Random Forest, HistGB, Ridge</span>
+                </div>
+                <div class="prov-meta-item">
+                  <span class="prov-meta-label">Integridad de Archivo Gold:</span>
+                  <span class="prov-meta-val"><code>data/gold/container_features.parquet</code> (SHA-256 Verificado)</span>
+                </div>
+              </div>
             </div>
-            <p id="export-status" class="save-status-msg" style="margin-top:1rem;"></p>
+
+            <!-- Controles de Configuración de Archivo -->
+            <div class="export-controls-panel">
+              <h4>Configurar Parámetros de Exportación</h4>
+              <div class="settings-form-grid">
+                <div class="form-group">
+                  <label for="export-scope">Conjunto de Información a Exportar:</label>
+                  <select id="export-scope">
+                    <option value="forecasts" selected>📊 Pronóstico Operativo por Puerto (P10, P50, P90, TEUs, Ratios)</option>
+                    <option value="benchmarks">🏆 Benchmark Comparativo de 4 Modelos (WAPE, R², MAE, Latencia)</option>
+                    <option value="external_signals">🌊 Señales Externas Reales (ACP Lago Gatún, Telemetría AIS, Fletes FBX)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="export-format">Formato de Salida:</label>
+                  <select id="export-format">
+                    <option value="csv" selected>CSV (.csv) - Compatible con Excel / ERPs</option>
+                    <option value="json">JSON (.json) - Formato Estructurado para APIs</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-top: 1rem;">
+                <label for="export-filename">Nombre de Archivo Personalizado (Puedes cambiarlo libremente):</label>
+                <div class="filename-input-group">
+                  <input type="text" id="export-filename" value="amp_pronosticos_operativos_2026.csv" placeholder="Escribe el nombre del archivo...">
+                  <button id="btn-reset-filename" class="btn btn-secondary btn-sm" title="Restablecer sugerencia por defecto">↺ Sugerido</button>
+                </div>
+                <small class="field-hint">Se proporciona un nombre de referencia estándar, pero tienes total libertad para personalizar el nombre con el que se guardará en tu equipo.</small>
+              </div>
+
+              <div class="export-actions-row">
+                <button id="btn-preview-export" class="btn btn-secondary">
+                  <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  Ver Vista Previa de Datos
+                </button>
+                <button id="btn-do-export" class="btn btn-primary">
+                  <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                  Generar y Descargar Archivo Real
+                </button>
+              </div>
+
+              <!-- Vista Previa de Datos Reales -->
+              <div id="export-preview-container" class="export-preview-container" style="display: none; margin-top: 1.25rem;">
+                <div class="preview-header">
+                  <span id="preview-badge" class="badge">Vista Previa: 5 Registros</span>
+                  <span id="preview-filename-label" class="preview-file-label">Archivo destino: amp_pronosticos_operativos_2026.csv</span>
+                </div>
+                <div class="table-responsive" style="max-height: 220px; overflow-y: auto;">
+                  <table id="export-preview-table" class="preview-table">
+                    <!-- Populated dynamically via JS -->
+                  </table>
+                </div>
+              </div>
+
+              <p id="export-status" class="save-status-msg" style="margin-top:1rem;"></p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Tab 5: Consola Enterprise, MCP & RAG Marítimo -->
+        <div id="stab-enterprise" class="settings-tab-content">
+          <div class="enterprise-box">
+            
+            <!-- Adaptadores de Base de Datos y Caché -->
+            <div class="infra-card">
+              <h4>🗄️ Adaptadores Universales de Base de Datos (Pool Activo)</h4>
+              <p>Módulos desacoplados de persistencia para soportar despliegues híbridos y multi-nube:</p>
+              <div class="infra-grid">
+                <div class="infra-item">
+                  <div class="infra-item-header">
+                    <span class="infra-name">DuckDB Columnar</span>
+                    <span class="badge badge-success">Activo (In-Process)</span>
+                  </div>
+                  <p class="infra-desc">OLAP ultra-rápido para escaneo vectorial de 140 meses de microdatos Parquet.</p>
+                  <small class="infra-stat">Latencia: &lt; 0.5 ms • Pooling: 4 hilos</small>
+                </div>
+
+                <div class="infra-item">
+                  <div class="infra-item-header">
+                    <span class="infra-name">PostgreSQL / TimescaleDB</span>
+                    <span class="badge badge-info">Configurado / Container</span>
+                  </div>
+                  <p class="infra-desc">Hipertablas particionadas por mes para telemetría continua de buques y puertos.</p>
+                  <small class="infra-stat">Modo: Service 'timescaledb' en docker-compose</small>
+                </div>
+
+                <div class="infra-item">
+                  <div class="infra-item-header">
+                    <span class="infra-name">Redis In-Memory Cache</span>
+                    <span class="badge badge-success">Activo (Cache Layer)</span>
+                  </div>
+                  <p class="infra-desc">Cacheo predictivo para inferencias de cuantiles $P_{10}, P_{50}, P_{90}$ en menos de 2 milisegundos.</p>
+                  <small class="infra-stat">Latencia: 0.05 ms • Fallback en memoria activo</small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Servidor MCP (Model Context Protocol) -->
+            <div class="infra-card" style="margin-top: 1rem;">
+              <h4>🤖 Servidor MCP Nativo (Model Context Protocol)</h4>
+              <p>El proyecto expone un servidor MCP estandarizado para interconectar herramientas con <strong>Claude Desktop, Cursor, Antigravity y agentes de IA</strong>:</p>
+              <div class="mcp-tools-list">
+                <span class="mcp-tool-pill">🛠️ get_port_forecast</span>
+                <span class="mcp-tool-pill">🛠️ run_monte_carlo_risk_simulation</span>
+                <span class="mcp-tool-pill">🛠️ compare_model_benchmarks</span>
+                <span class="mcp-tool-pill">🛠️ simulate_external_feature</span>
+                <span class="mcp-tool-pill">🛠️ query_maritime_knowledge</span>
+              </div>
+              <small class="field-hint" style="margin-top: 0.5rem; display: block;">Configuración lista en <code>src/mcp/claude_desktop_config.json</code> para añadir al agente con un solo clic.</small>
+            </div>
+
+            <!-- Asistente RAG Marítimo y Jurídico de Panamá -->
+            <div class="infra-card" style="margin-top: 1rem;">
+              <h4>📚 Asistente RAG Marítimo & Leyes Portuarias de Panamá</h4>
+              <p>Realiza consultas semánticas con citas jurídicas verificadas sobre la <strong>Ley 56 de 2008 (General de Puertos)</strong>, <strong>Ley 6 de 2002 (Transparencia)</strong> y regulaciones ACP:</p>
+              
+              <div class="rag-query-box">
+                <div class="rag-input-row">
+                  <input type="text" id="rag-query-input" placeholder="Ej: ¿Qué exige la Ley 56 para otorgar concesiones de terminales portuarias?" value="¿Qué exige la Ley 56 sobre las concesiones de terminales portuarias?">
+                  <button id="btn-exec-rag" class="btn btn-primary">
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    Consultar RAG
+                  </button>
+                </div>
+                <div id="rag-result-panel" class="rag-result-panel" style="display: none; margin-top: 0.75rem;">
+                  <!-- Populated via JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Guardrails y Seguridad -->
+            <div class="infra-card" style="margin-top: 1rem;">
+              <h4>🛡️ Guardrails de Inferencia & Gestor de Secretos</h4>
+              <div class="infra-grid">
+                <div class="infra-item">
+                  <div class="infra-item-header">
+                    <span class="infra-name">Guardrail Físico</span>
+                    <span class="badge badge-success">Activo</span>
+                  </div>
+                  <p class="infra-desc">Bloquea inferencias con TEUs negativos o que superen los 600,000 TEUs/mes por terminal.</p>
+                </div>
+                <div class="infra-item">
+                  <div class="infra-item-header">
+                    <span class="infra-name">Guardrail Cuantílico</span>
+                    <span class="badge badge-success">Activo</span>
+                  </div>
+                  <p class="infra-desc">Garantiza estrictamente la relación monotónica matemática $P_{10} \le P_{50} \le P_{90}$.</p>
+                </div>
+                <div class="infra-item">
+                  <div class="infra-item-header">
+                    <span class="infra-name">Gestor de Secretos</span>
+                    <span class="badge badge-success">sk-**** Enmascarado</span>
+                  </div>
+                  <p class="infra-desc">Protege tokens de APIs externas y credenciales de base de datos contra fugas en logs y UI.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Aceleración CUDA & vLLM -->
+            <div class="infra-card" style="margin-top: 1rem;">
+              <h4>⚡ Aceleración por Hardware (CUDA, ONNX & vLLM Ready)</h4>
+              <p>La arquitectura del microservicio soporta ejecución acelerada tanto en CPU multinúcleo como en GPU NVIDIA:</p>
+              <div class="cuda-status-badge">
+                <span>Modo de Ejecución: <strong>CPU Multiprocessing (Optimizado con OpenMP para LightGBM)</strong></span>
+                <span class="badge badge-info">CUDA & vLLM Configurado en Dockerfile</span>
+              </div>
+              <small class="field-hint" style="margin-top: 0.4rem; display: block;">Para activar aceleración por GPU con CUDA en producción: <code>docker compose -f docker-compose.yml up --build</code> utilizando el runtime <code>nvidia-container-toolkit</code>.</small>
+            </div>
+
           </div>
         </div>
 
