@@ -190,50 +190,149 @@
         <div class="card landing-api-console">
           <div class="card-header">
             <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"></path></svg>
-            <h2>Consola de Integración y Uso de APIs (Python, cURL, JS)</h2>
+            <div>
+              <h2>Consola de Integración y Uso de APIs (Python, cURL, JS) • Grado Gubernamental & Enterprise</h2>
+              <p class="api-console-desc" style="margin-bottom: 0;">
+                Configura los parámetros de inferencia en tiempo real, observa cómo se regenera el código seguro para tu lenguaje y ejecuta una petición real con diagnóstico pedagógico y cumplimiento de normas ISO.
+              </p>
+            </div>
           </div>
 
-          <p class="api-console-desc">
-            Prueba cómo interactuar directamente con el microservicio predictivo. Puedes copiar el código listo para tu aplicación o ejecutar una petición real directamente desde este navegador:
-          </p>
+          <!-- Barra de Parámetros Dinámicos Interactivos -->
+          <div class="api-params-toolbar">
+            <div class="api-param-item">
+              <label for="api-ctrl-port">Terminal Portuaria:</label>
+              <select id="api-ctrl-port">
+                <option value="Puerto Balboa" selected>Puerto Balboa (Pacífico)</option>
+                <option value="SSA Marine MIT">SSA Marine MIT (Atlántico)</option>
+                <option value="PSA Panama International Terminal">PSA Panama (Pacífico)</option>
+                <option value="Colon Container Terminal">Colon Container Terminal (Atlántico)</option>
+                <option value="Puerto Cristóbal">Puerto Cristóbal (Atlántico)</option>
+                <option value="Bocas Fruit Co.">Bocas Fruit Co. (Almirante)</option>
+              </select>
+            </div>
 
+            <div class="api-param-item">
+              <label for="api-ctrl-horizon">Horizonte:</label>
+              <select id="api-ctrl-horizon">
+                <option value="1">1 Mes Adelante</option>
+                <option value="3" selected>3 Meses (Trimestral)</option>
+                <option value="6">6 Meses (Semestral)</option>
+              </select>
+            </div>
+
+            <div class="api-param-item">
+              <label for="api-ctrl-algo">Algoritmo Predictivo:</label>
+              <select id="api-ctrl-algo">
+                <option value="ensemble" selected>LightGBM Cuantiles P10/P50/P90 (Champion)</option>
+                <option value="random_forest">Random Forest Regressor (Challenger)</option>
+                <option value="gradient_boosting">HistGradientBoosting (Challenger)</option>
+                <option value="ridge_elasticnet">Ridge / ElasticNet Pipeline (Baseline)</option>
+              </select>
+            </div>
+
+            <div class="api-param-item">
+              <label for="api-ctrl-auth">Autenticación & Secretos:</label>
+              <select id="api-ctrl-auth">
+                <option value="bearer" selected>Gubernamental / Bearer Token ($AMP_API_SECRET_KEY)</option>
+                <option value="vault">Secrets Manager (AWS Secrets / HashiCorp Vault)</option>
+                <option value="open">Desarrollo Local (Sin Autenticación)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Sensibilidad What-If en la Consola -->
+          <div class="api-whatif-row">
+            <div class="api-slider-group">
+              <label for="api-ctrl-bunker">Sensibilidad Búnker VLSFO: <span id="api-ctrl-bunker-val" class="highlight-val">0%</span></label>
+              <input type="range" id="api-ctrl-bunker" min="-50" max="50" step="5" value="0">
+            </div>
+            <div class="api-slider-group">
+              <label for="api-ctrl-trans">Sensibilidad Trasbordo: <span id="api-ctrl-trans-val" class="highlight-val">0%</span></label>
+              <input type="range" id="api-ctrl-trans" min="-50" max="50" step="5" value="0">
+            </div>
+          </div>
+
+          <!-- Selector de Lenguaje -->
           <div class="api-lang-tabs">
-            <button class="api-lang-btn active" data-lang="curl">cURL (Terminal)</button>
-            <button class="api-lang-btn" data-lang="python">Python (requests)</button>
-            <button class="api-lang-btn" data-lang="javascript">JavaScript (fetch)</button>
+            <button class="api-lang-btn active" data-lang="curl">cURL (Terminal / Bash)</button>
+            <button class="api-lang-btn" data-lang="python">Python (requests & httpx)</button>
+            <button class="api-lang-btn" data-lang="javascript">JavaScript (fetch / Node.js)</button>
           </div>
 
+          <!-- Bloque de Código Reactivo -->
           <div class="code-preview-container">
-            <pre id="api-code-snippet"><code class="language-bash">curl -X POST "http://127.0.0.1:8000/predict" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "port": "Puerto Balboa",
-    "horizon_months": 3,
-    "algorithm": "ensemble",
-    "bunker_perturbation_pct": 0.0,
-    "transshipment_perturbation_pct": 0.0
-  }'</code></pre>
+            <pre id="api-code-snippet"><code class="language-bash"></code></pre>
             <button class="btn btn-copy" id="btn-copy-code" title="Copiar código al portapapeles">
               <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
               Copiar
             </button>
           </div>
 
+          <!-- Fila de Ejecución en Vivo -->
           <div class="live-test-row">
             <button class="btn btn-primary" id="btn-live-test">
               <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
               Ejecutar Petición Real al Microservicio
             </button>
-            <span class="live-test-status" id="live-test-status">Presiona el botón para comprobar respuesta en vivo</span>
+            <span class="live-test-status" id="live-test-status">Presiona el botón para ejecutar con los parámetros seleccionados</span>
           </div>
 
+          <!-- Caja de Respuesta en Vivo con Desglose Pedagógico -->
           <div class="live-response-box" id="live-response-box" style="display: none;">
             <div class="response-header">
               <span class="response-badge" id="response-status-badge">200 OK</span>
-              <span class="response-time" id="response-time-badge">12 ms</span>
+              <span class="response-time" id="response-time-badge">-- ms</span>
+            </div>
+            
+            <!-- Desglose Pedagógico Explicativo -->
+            <div id="response-pedagogical-breakdown" class="response-pedagogical-breakdown">
+              <!-- Populated via JS -->
+            </div>
+
+            <div class="response-raw-toggle-row">
+              <span class="raw-label">Payload JSON Crudo del Servidor:</span>
             </div>
             <pre><code id="live-response-code"></code></pre>
           </div>
+
+          <!-- Guía de Cumplimiento Normativo ISO para Entidades Públicas -->
+          <div class="iso-compliance-box">
+            <div class="iso-box-header">
+              <span class="iso-shield">🛡️</span>
+              <div>
+                <h4>Cumplimiento de Estándares Internacionales ISO para Entidades Gubernamentales</h4>
+                <p>Panamá PortOps-AI implementa controles rigurosos para satisfacer las exigencias de auditoría de la Autoridad Nacional para la Innovación Gubernamental (AIG), Contraloría General y organismos internacionales:</p>
+              </div>
+            </div>
+
+            <div class="iso-grid">
+              <div class="iso-item">
+                <span class="iso-badge">ISO/IEC 27001:2022</span>
+                <strong>Seguridad de la Información (SGSI)</strong>
+                <p>Cifrado TLS 1.3 en tránsito, AES-256 en reposo, tokens de servicio aislados y rotación de claves cada 90 días con <code>SecretManager</code>.</p>
+              </div>
+
+              <div class="iso-item">
+                <span class="iso-badge">ISO/IEC 42001:2023</span>
+                <strong>Gestión de Inteligencia Artificial (AIMS)</strong>
+                <p>Explicabilidad algorítmica obligatoria ($P_{10}, P_{50}, P_{90}$), mitigación de sesgos causales (do-calculus) y cero fuga de datos (Zero Lookahead).</p>
+              </div>
+
+              <div class="iso-item">
+                <span class="iso-badge">ISO/IEC 27701:2019</span>
+                <strong>Privacidad de Datos (Ley 81 de 2019)</strong>
+                <p>Anonimización criptográfica irreversible de consignatarios y buques. Agregación macro-terminal mensual para impedir reidentificación.</p>
+              </div>
+
+              <div class="iso-item">
+                <span class="iso-badge">ISO 22301:2019</span>
+                <strong>Continuidad del Negocio (BCMS)</strong>
+                <p>Orquestación en Kubernetes con sondas Liveness/Readiness, autoescalado horizontal (HPA) y caché Redis en memoria (&lt; 2ms).</p>
+              </div>
+            </div>
+          </div>
+
         </div>
 
       </div>

@@ -252,8 +252,66 @@ python -m uvicorn src.serving.api:app --host 127.0.0.1 --port 8000
 - **`POST /api/guardrails/validate`**: Auditoría multicapa previa a la inferencia (límites físicos de terminales y detección de prompt injection).
 - **`GET /api/export/provenance`**: Ficha técnica de auditoría y procedencia de datos reales (cobertura 140 meses AMP/INEC, 81 features, hash SHA-256).
 - **`POST /api/export/dataset`**: Motor de exportación de datos con nombre de archivo personalizable por el usuario, formato CSV/JSON y vista previa en tiempo real.
+- **`GET /api/lakehouse/catalog`**: Catálogo taxonómico unificado de los 17 Ministerios de Panamá, Autoridad del Canal de Panamá (ACP) e IMHPA.
+- **`POST /api/lakehouse/query`**: Consulta filtrada de series temporales estructuradas del Lakehouse nacional (indicadores ministeriales, tránsitos ACP, clima y disrupciones).
+- **`GET /api/governance/iso-compliance`**: Declaración formal de cumplimiento de normas ISO 27001, 42001, 27701 y 22301 para adopción y compras públicas gubernamentales.
 
-### 8.3 Infraestructura Empresarial y Escalabilidad Modular:
+### 8.3 Lakehouse Nacional de Panamá y Scraper de los 17 Ministerios (`src/data/lakehouse/` & `src/data/scrapers/`)
+El repositorio expande el pipeline tradicional hacia un **Lakehouse Nacional de Inteligencia Portuaria y Macroeconómica** que reúne 140 meses de microdatos empíricos continuos (2015–2026):
+1. **Scraper de los 17 Ministerios de la República de Panamá:**
+   - **MICI & ZLC:** Exportaciones manufactureras, empresas SEM/EMMA y movimiento comercial de reexportación e importación de la Zona Libre de Colón.
+   - **MEF & DGI:** Crecimiento del PIB trimestral, inflación IPC anual, recaudación fiscal marítima y cánones de concesiones de terminales portuarias.
+   - **MOP:** Estado de la red vial logística y programas de mantenimiento en los puentes Centenario y de las Américas.
+   - **MIAMBIENTE:** Estrés hídrico en la Cuenca Hidrográfica del Canal de Panamá (CHCP) y volumen de precipitaciones nacionales.
+   - **MIDA:** Cajas de exportación de banano y contenedores refrigerados (*reefers*) agroindustriales.
+   - **MINSA:** Inspecciones fito y zoosanitarias en muelles y tiempo promedio de despacho de naves.
+   - **MITRADEL:** Convenciones colectivas portuarias activas y días de paralización por conflictos laborales.
+   - **MIVIOT:** Hectáreas aprobadas para parques logísticos y zonificación adyacente a terminales.
+   - **MINGOB & MINSEG:** Porcentaje de contenedores inspeccionados mediante escáneres no intrusivos y salvaguarda civil.
+   - **MIRE, MEDUCA, MIDES, MICULTURA & SENAN/AMP:** Acuerdos marítimos bilaterales, formación técnica náutica, salvamento marítimo y prevención de derrames de búnker.
+2. **Tráfico Detallado del Canal de Panamá (ACP):**
+   - Tránsitos mensuales clasificados por clase de buque: Neopanamax Container, Panamax Container, Graneleros (*Bulk Carriers*), Quimiqueros/Tanqueros, Gaseros (LNG/LPG) y Portavehículos (*Ro-Ro*).
+   - Matriz de origen y destino de carga por país: Estados Unidos (72.4%), China (21.8%), Japón (14.1%), Chile (10.9%) y Corea del Sur (9.8%).
+   - Restricciones históricas de calado y reducción de cupos diarios de tránsito (de 36 a 24 slots por sequía extrema en 2023–2024).
+3. **Clima IMHPA, Frentes Fríos, Huracanes y Bloqueos Políticos:**
+   - Anomalía de temperatura superficial del mar y fenómeno ENSO (El Niño / La Niña) mediante el índice ONI de IMHPA.
+   - Frentes fríos de invierno en el Caribe (noviembre a febrero) con vientos superiores a 35 nudos que obligan a detener las grúas pórtico STS en Colón.
+   - Shocks indirectos por huracanes (Otto en 2016, Eta e Iota en 2020).
+   - Calendario festivo oficial y recargo salarial de estiba del 150% durante las Fiestas Patrias de noviembre.
+   - Cronología de disrupciones sociopolíticas de fuerza mayor: Paro Nacional de julio de 2022 (21 días) y bloqueos viales por contrato minero en octubre-noviembre de 2023 (38 días).
+
+### 8.4 Matriz de Cumplimiento Normativo ISO para Entidades Públicas
+Para satisfacer los requisitos de adquisición de tecnología por parte de la Autoridad Marítima de Panamá (AMP), Autoridad del Canal de Panamá (ACP), MICI, MEF y Contraloría General de la República, el sistema cuenta con controles formales basados en cuatro normas ISO fundamentales:
+- **ISO/IEC 27001:2022 (Seguridad de la Información):**
+  - Cifrado en tránsito obligatorio TLS 1.3 con calificación A+.
+  - Cifrado en reposo para Lakehouse y Feature Store con algoritmo AES-256.
+  - Principio de menor privilegio (*Least Privilege*) y gestión centralizada de secretos con rotación de 90 días (`SecretManager`).
+  - Bitácoras de auditoría inmutables en formato JSONL sin exposición de datos de identificación personal (PII).
+- **ISO/IEC 42001:2023 (Gestión de Inteligencia Artificial):**
+  - Trazabilidad bitemporal estricta (*Zero Lookahead Bias*) entre datasets de origen y modelos entrenados.
+  - Explicabilidad algorítmica obligatoria: cuantiles P10-P50-P90 y descomposición de importancia de variables (*split gains*).
+  - Mitigación rigurosa de sesgos de estimación y variables confusoras mediante el cálculo causal (*do-calculus* de Pearl).
+  - Monitoreo continuo de *Data Drift* y degradación de WAPE (umbral de retiro < 15%).
+  - Reproducibilidad matemática total fijando la semilla aleatoria en 42.
+- **ISO/IEC 27701:2019 (Privacidad de la Información y Ley 81 de 2019):**
+  - Cumplimiento formal de la **Ley 81 de 26 de marzo de 2019 sobre Protección de Datos Personales** de la República de Panamá.
+  - Agregación atómica de microdatos a nivel macro-terminal mensual para impedir cualquier reidentificación de cargas.
+  - Anonimización criptográfica irreversible de consignatarios, agentes navieros y buques mediante algoritmos HMAC-SHA256 con sal.
+  - Prohibición estricta de persistir pasaportes o datos personales de tripulaciones marítimas.
+- **ISO 22301:2019 (Continuidad del Negocio y Resiliencia Operacional):**
+  - Desacoplamiento de microservicios con orquestación en clústeres Kubernetes (`k8s/`).
+  - Sondas de salud *Liveness* y *Readiness* con auto-reparación (*self-healing*) ante fallas imprevistas.
+  - Autoescalado horizontal de pods (HPA) configurado de 2 a 8 réplicas.
+  - Capa de caché en memoria Redis con latencia inferior a 2ms para garantizar servicio ininterrumpido.
+
+### 8.5 Consola de Integración API y Gestión de Secretos
+La consola web interactiva permite seleccionar el modo de autenticación:
+- **Bearer Token (`AMP_API_SECRET_KEY`):** Encabezado estándar `Authorization: Bearer sk-amp-...`.
+- **HashiCorp Vault / Secret Manager:** Inyección de secretos en memoria de contenedor mediante variables seguras.
+- **Modo Desarrollo:** Acceso directo para pruebas locales pedagógicas.
+Todo el código generado se actualiza de manera reactiva en cURL, Python y JavaScript al mover los controles deslizantes de sensibilidad *What-If* y los selectores de terminal y horizonte.
+
+### 8.6 Infraestructura Empresarial y Escalabilidad Modular:
 1. **Adaptadores Universales de Persistencia (`src/infrastructure/db/`):**
    - `DuckDBAdapter`: Motor columnar in-process para análisis vectorial ultrarrápido (< 0.5 ms) sobre los Parquets de Gold.
    - `PostgresTimescaleAdapter`: Soporte nativo para PostgreSQL 16 con TimescaleDB para almacenamiento de telemetría continua y series temporales particionadas.

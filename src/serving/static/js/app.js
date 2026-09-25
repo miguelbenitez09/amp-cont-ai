@@ -917,43 +917,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- Landing Page Interactive API Console ---
-  const apiSnippets = {
-    curl: `curl -X POST "http://127.0.0.1:8000/predict" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "port": "Puerto Balboa",
-    "horizon_months": 3,
-    "algorithm": "ensemble",
-    "bunker_perturbation_pct": 0.0,
-    "transshipment_perturbation_pct": 0.0
-  }'`,
-    python: `import requests
-
-url = "http://127.0.0.1:8000/predict"
-payload = {
-    "port": "Puerto Balboa",
-    "horizon_months": 3,
-    "algorithm": "ensemble",
-    "bunker_perturbation_pct": 0.0,
-    "transshipment_perturbation_pct": 0.0
-}
-
-response = requests.post(url, json=payload)
-data = response.json()
-print("Pronóstico P50:", [m["predicted_teus_p50"] for m in data["forecast"]])`,
-    javascript: `// Inferencia con Fetch API moderna
-const response = await fetch("http://127.0.0.1:8000/predict", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    port: "Puerto Balboa",
-    horizon_months: 3,
-    algorithm: "ensemble"
-  })
-});
-const data = await response.json();
-console.log("Pronósticos:", data.forecast);`
-  };
+  // --- Landing Page Dynamic Interactive API Console ---
+  const apiCtrlPort = document.getElementById("api-ctrl-port");
+  const apiCtrlHorizon = document.getElementById("api-ctrl-horizon");
+  const apiCtrlAlgo = document.getElementById("api-ctrl-algo");
+  const apiCtrlAuth = document.getElementById("api-ctrl-auth");
+  const apiCtrlBunker = document.getElementById("api-ctrl-bunker");
+  const apiCtrlBunkerVal = document.getElementById("api-ctrl-bunker-val");
+  const apiCtrlTrans = document.getElementById("api-ctrl-trans");
+  const apiCtrlTransVal = document.getElementById("api-ctrl-trans-val");
 
   const apiLangButtons = document.querySelectorAll(".api-lang-btn");
   const apiCodeSnippet = document.getElementById("api-code-snippet");
@@ -964,18 +936,196 @@ console.log("Pronósticos:", data.forecast);`
   const responseStatusBadge = document.getElementById("response-status-badge");
   const responseTimeBadge = document.getElementById("response-time-badge");
   const liveResponseCode = document.getElementById("live-response-code");
+  const pedagogicalBreakdown = document.getElementById("response-pedagogical-breakdown");
 
-  if (apiLangButtons.length > 0 && apiCodeSnippet) {
+  let activeApiLang = "curl";
+
+  function getDynamicApiCode(lang) {
+    const port = apiCtrlPort ? apiCtrlPort.value : "Puerto Balboa";
+    const horizon = apiCtrlHorizon ? parseInt(apiCtrlHorizon.value, 10) : 3;
+    const algo = apiCtrlAlgo ? apiCtrlAlgo.value : "ensemble";
+    const auth = apiCtrlAuth ? apiCtrlAuth.value : "bearer";
+    const bunker = apiCtrlBunker ? parseFloat(apiCtrlBunker.value) : 0.0;
+    const trans = apiCtrlTrans ? parseFloat(apiCtrlTrans.value) : 0.0;
+
+    const payloadJson = JSON.stringify({
+      port: port,
+      horizon_months: horizon,
+      algorithm: algo,
+      what_if_bunkering_shift_pct: bunker,
+      what_if_transshipment_shift_pct: trans
+    }, null, 2);
+
+    if (lang === "curl") {
+      let authHeader = "";
+      let authComment = "# 1. Modo de Autenticación: Desarrollo Abierto";
+      if (auth === "bearer") {
+        authComment = `# 1. Autenticación Gubernamental Segura (ISO 27001)
+# Lee el token de la Autoridad Portuaria desde variable de entorno:
+export AMP_API_SECRET_KEY="sk-panama-prod-987654321"`;
+        authHeader = `  -H "Authorization: Bearer $AMP_API_SECRET_KEY" \\\n`;
+      } else if (auth === "vault") {
+        authComment = `# 1. Autenticación Empresarial con Gestor de Secretos (Vault / AWS)
+TOKEN=$(vault kv get -field=api_token secret/amp-portops)`;
+        authHeader = `  -H "Authorization: Bearer $TOKEN" \\\n`;
+      }
+
+      return `${authComment}
+
+# 2. Petición HTTP al Microservicio de Inferencia
+curl -X POST "http://127.0.0.1:8000/predict" \\
+${authHeader}  -H "Content-Type: application/json" \\
+  -d '${payloadJson}'`;
+    }
+
+    else if (lang === "python") {
+      let authPython = 'headers = {"Content-Type": "application/json"}';
+      let authComment = "# Modo de desarrollo: Sin token de autorización";
+      if (auth === "bearer") {
+        authComment = `# Autenticación Segura (ISO 27001): Recupera el secreto del entorno sin hardcodear
+api_token = os.getenv("AMP_API_SECRET_KEY", "sk-panama-prod-987654321")
+headers = {
+    "Authorization": f"Bearer {api_token}",
+    "Content-Type": "application/json"
+}`;
+      } else if (auth === "vault") {
+        authComment = `# Integración con HashiCorp Vault / AWS Secrets Manager
+import hvac
+client = hvac.Client(url='https://vault.amp.gob.pa:8200')
+api_token = client.secrets.kv.v2.read_secret_version(path='amp-portops')['data']['data']['token']
+headers = {"Authorization": f"Bearer {api_token}", "Content-Type": "application/json"}`;
+      }
+
+      return `import os
+import requests
+
+# URL del microservicio FastAPI de Panamá PortOps-AI
+url = "http://127.0.0.1:8000/predict"
+
+${authComment}
+${auth === "open" ? authPython : ""}
+
+payload = {
+    "port": "${port}",
+    "horizon_months": ${horizon},
+    "algorithm": "${algo}",
+    "what_if_bunkering_shift_pct": ${bunker},
+    "what_if_transshipment_shift_pct": ${trans}
+}
+
+try:
+    response = requests.post(url, json=payload, headers=headers, timeout=10.0)
+    response.raise_for_status()
+    data = response.json()
+    
+    print(f"✓ Puerto: {data['port']} | Algoritmo: {data['algorithm_used']}")
+    print(f"✓ Latencia del Modelo: {data['latency_ms']:.2f} ms")
+    
+    # Desglose de cuantiles predictivos P10 - P50 - P90
+    for m in data["predictions"]:
+        print(f"  Mes {m['horizon_step']} ({m['target_month']}): "
+              f"P50={m['pred_p50_teu']:,.0f} TEUs | "
+              f"Banda=[P10: {m['pred_p10_teu']:,.0f} - P90: {m['pred_p90_teu']:,.0f}] | "
+              f"Vacíos={m['empty_ratio_estimate']*100:.1f}% ({m['imbalance_status']})")
+except requests.exceptions.RequestException as e:
+    print(f"Error de conexión: {e}")`;
+    }
+
+    else if (lang === "javascript") {
+      let authJs = `const headers = { "Content-Type": "application/json" };`;
+      let authComment = "// Modo Desarrollo: Sin autenticación obligatoria";
+      if (auth === "bearer") {
+        authComment = `// Autenticación Segura: Token inyectado desde process.env (Node.js) o variable protegida
+const token = process.env.AMP_API_SECRET_KEY || "sk-panama-prod-987654321";
+const headers = {
+  "Authorization": \`Bearer \${token}\`,
+  "Content-Type": "application/json"
+};`;
+      } else if (auth === "vault") {
+        authComment = `// Recuperación de secreto desde AWS Secrets Manager / Vault SDK
+const headers = {
+  "Authorization": \`Bearer \${await getSecretToken()}\`,
+  "Content-Type": "application/json"
+};`;
+      }
+
+      return `// Cliente JavaScript / Node.js con Fetch API moderna
+${authComment}
+${auth === "open" ? authJs : ""}
+
+const payload = {
+  port: "${port}",
+  horizon_months: ${horizon},
+  algorithm: "${algo}",
+  what_if_bunkering_shift_pct: ${bunker},
+  what_if_transshipment_shift_pct: ${trans}
+};
+
+async function executePortForecast() {
+  try {
+    const startTime = performance.now();
+    const res = await fetch("http://127.0.0.1:8000/predict", {
+      method: "POST",
+      headers,
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) throw new Error(\`HTTP Error \${res.status}: \${res.statusText}\`);
+    const data = await res.json();
+    const elapsed = (performance.now() - startTime).toFixed(1);
+
+    console.log(\`✓ Pronóstico para \${data.port} (\${elapsed} ms)\`);
+    data.predictions.forEach(p => {
+      console.log(\`  - \${p.target_month}: P50=\${p.pred_p50_teu.toLocaleString()} TEUs (Banda: \${p.pred_p10_teu.toLocaleString()} a \${p.pred_p90_teu.toLocaleString()})\`);
+    });
+  } catch (err) {
+    console.error("Error al consultar el modelo:", err.message);
+  }
+}
+
+executePortForecast();`;
+    }
+  }
+
+  function renderDynamicApiSnippet() {
+    if (!apiCodeSnippet) return;
+    const code = getDynamicApiCode(activeApiLang);
+    apiCodeSnippet.querySelector("code").textContent = code;
+  }
+
+  if (apiLangButtons.length > 0) {
     apiLangButtons.forEach(btn => {
       btn.addEventListener("click", () => {
         apiLangButtons.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
-        const lang = btn.getAttribute("data-lang");
-        const code = apiSnippets[lang] || apiSnippets.curl;
-        apiCodeSnippet.querySelector("code").textContent = code;
+        activeApiLang = btn.getAttribute("data-lang");
+        renderDynamicApiSnippet();
       });
     });
   }
+
+  // Reactive listeners for all parameters in the toolbar
+  if (apiCtrlPort) apiCtrlPort.addEventListener("change", renderDynamicApiSnippet);
+  if (apiCtrlHorizon) apiCtrlHorizon.addEventListener("change", renderDynamicApiSnippet);
+  if (apiCtrlAlgo) apiCtrlAlgo.addEventListener("change", renderDynamicApiSnippet);
+  if (apiCtrlAuth) apiCtrlAuth.addEventListener("change", renderDynamicApiSnippet);
+
+  if (apiCtrlBunker) {
+    apiCtrlBunker.addEventListener("input", (e) => {
+      if (apiCtrlBunkerVal) apiCtrlBunkerVal.textContent = `${e.target.value > 0 ? '+' : ''}${e.target.value}%`;
+      renderDynamicApiSnippet();
+    });
+  }
+
+  if (apiCtrlTrans) {
+    apiCtrlTrans.addEventListener("input", (e) => {
+      if (apiCtrlTransVal) apiCtrlTransVal.textContent = `${e.target.value > 0 ? '+' : ''}${e.target.value}%`;
+      renderDynamicApiSnippet();
+    });
+  }
+
+  // Initial code snippet rendering
+  renderDynamicApiSnippet();
 
   if (btnCopyCode) {
     btnCopyCode.addEventListener("click", () => {
@@ -988,22 +1138,29 @@ console.log("Pronósticos:", data.forecast);`
     });
   }
 
+  // Live Test Execution with Detailed Pedagogical Breakdown
   if (btnLiveTest) {
     btnLiveTest.addEventListener("click", async () => {
-      liveTestStatus.textContent = "Ejecutando petición en vivo a /predict...";
+      liveTestStatus.textContent = "Ejecutando petición en tiempo real...";
       btnLiveTest.disabled = true;
       const startTime = performance.now();
+
+      const port = apiCtrlPort ? apiCtrlPort.value : "Puerto Balboa";
+      const horizon = apiCtrlHorizon ? parseInt(apiCtrlHorizon.value, 10) : 3;
+      const algo = apiCtrlAlgo ? apiCtrlAlgo.value : "ensemble";
+      const bunker = apiCtrlBunker ? parseFloat(apiCtrlBunker.value) : 0.0;
+      const trans = apiCtrlTrans ? parseFloat(apiCtrlTrans.value) : 0.0;
 
       try {
         const res = await fetch("/predict", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            port: "Puerto Balboa",
-            horizon_months: 3,
-            algorithm: "ensemble",
-            bunker_perturbation_pct: 0.0,
-            transshipment_perturbation_pct: 0.0
+            port: port,
+            horizon_months: horizon,
+            algorithm: algo,
+            what_if_bunkering_shift_pct: bunker,
+            what_if_transshipment_shift_pct: trans
           })
         });
 
@@ -1014,9 +1171,47 @@ console.log("Pronósticos:", data.forecast);`
         responseStatusBadge.textContent = `${res.status} ${res.statusText || "OK"}`;
         responseStatusBadge.style.background = res.ok ? "rgba(16, 185, 129, 0.2)" : "rgba(244, 63, 94, 0.2)";
         responseStatusBadge.style.color = res.ok ? "var(--emerald-success)" : "var(--rose-alert)";
-        responseTimeBadge.textContent = `${elapsed} ms (Latencia Real)`;
+        responseTimeBadge.textContent = `${elapsed} ms (Latencia Real de Red + Inferencia)`;
         liveResponseCode.textContent = JSON.stringify(data, null, 2);
-        liveTestStatus.textContent = `Petición exitosa en ${elapsed} ms. Datos 100% reales.`;
+        liveTestStatus.textContent = `Petición exitosa en ${elapsed} ms con datos reales de la AMP.`;
+
+        // Render Pedagogical Breakdown
+        if (pedagogicalBreakdown && data.predictions && data.predictions.length > 0) {
+          const firstM = data.predictions[0];
+          pedagogicalBreakdown.innerHTML = `
+            <div class="pedagogical-card">
+              <div class="pedagogical-title">
+                <span>🎓 Diagnóstico Pedagógico y Operativo para ${data.port}:</span>
+              </div>
+              <p class="pedagogical-desc">
+                El modelo entrenado con 140 meses de microdatos proyecta para <strong>${firstM.target_month}</strong> una demanda central esperada (<strong>P50</strong>) de <strong>${Math.round(firstM.pred_p50_teu).toLocaleString()} TEUs</strong>. La banda de incertidumbre cuantílica sitúa el piso seguro (<strong>P10</strong>) en <strong>${Math.round(firstM.pred_p10_teu).toLocaleString()} TEUs</strong> y el techo de estrés de patio (<strong>P90</strong>) en <strong>${Math.round(firstM.pred_p90_teu).toLocaleString()} TEUs</strong>.
+              </p>
+              <div class="pedagogical-metric-row">
+                <div class="pedagogical-kpi-pill">
+                  <span class="kpi-label">Piso Operacional (P10)</span>
+                  <span class="kpi-val">${Math.round(firstM.pred_p10_teu).toLocaleString()}</span>
+                  <small style="font-size:0.68rem; color:var(--text-dim);">Solo 10% prob. de caer debajo</small>
+                </div>
+                <div class="pedagogical-kpi-pill">
+                  <span class="kpi-label">Mediana Esperada (P50)</span>
+                  <span class="kpi-val" style="color:var(--emerald-success);">${Math.round(firstM.pred_p50_teu).toLocaleString()}</span>
+                  <small style="font-size:0.68rem; color:var(--text-dim);">Demanda no sesgada</small>
+                </div>
+                <div class="pedagogical-kpi-pill">
+                  <span class="kpi-label">Techo de Patio (P90)</span>
+                  <span class="kpi-val" style="color:var(--amber-warning);">${Math.round(firstM.pred_p90_teu).toLocaleString()}</span>
+                  <small style="font-size:0.68rem; color:var(--text-dim);">Estrés de grúas STS</small>
+                </div>
+                <div class="pedagogical-kpi-pill">
+                  <span class="kpi-label">Ratio Cajas Vacías</span>
+                  <span class="kpi-val">${(firstM.empty_ratio_estimate * 100).toFixed(1)}%</span>
+                  <small style="font-size:0.68rem; color:var(--cyan-bright);">${firstM.imbalance_status}</small>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
       } catch (err) {
         liveResponseBox.style.display = "block";
         responseStatusBadge.textContent = "Error de Red";

@@ -25,9 +25,12 @@
 5. [Motor de Simulación Estocástica de Monte Carlo y Stress Testing](#5-motor-de-simulación-estocástica-de-monte-carlo-y-stress-testing)
 6. [Hoja de Ruta para Integración de Datos No Publicados (AIS, El Niño)](#6-hoja-de-ruta-para-integración-de-datos-no-publicados-ais-el-niño)
 7. [Guía de Inicio Rápido: Descarga, Entrenamiento y Ejecución](#7-guía-de-inicio-rápido-descarga-entrenamiento-y-ejecución)
-8. [Uso de la Interfaz Web Responsive y Microservicio REST](#8-uso-de-la-interfaz-web-responsive-y-microservicio-rest)
-9. [Guía de Despliegue en GitHub, Seguridad y CI/CD](#9-guía-de-despliegue-en-github-seguridad-y-cicd)
-10. [Licencia, Atribución Obligatoria y Citación Académica](#10-licencia-atribución-obligatoria-y-citación-académica)
+8. [Consola Interactiva de Integración API y Manejo de Secretos](#8-consola-interactiva-de-integración-api-y-manejo-de-secretos)
+9. [Infraestructura Empresarial: Adaptadores DB, Servidor MCP, RAG y Kubernetes](#9-infraestructura-empresarial-adaptadores-db-servidor-mcp-rag-y-kubernetes)
+10. [Lakehouse Nacional de Panamá: Scraper de los 17 Ministerios, Tráfico ACP y Clima IMHPA](#10-lakehouse-nacional-de-panamá-scraper-de-los-17-ministerios-tráfico-acp-y-clima-imhpa)
+11. [Gobernanza Gubernamental: Matriz de Cumplimiento Normativo ISO (27001, 42001, 27701, 22301)](#11-gobernanza-gubernamental-matriz-de-cumplimiento-normativo-iso-27001-42001-27701-22301)
+12. [Guía de Despliegue en GitHub, Seguridad y CI/CD](#12-guía-de-despliegue-en-github-seguridad-y-cicd)
+13. [Licencia, Atribución Obligatoria y Citación Académica](#13-licencia-atribución-obligatoria-y-citación-académica)
 
 ---
 
@@ -257,42 +260,88 @@ python -m uvicorn src.serving.api:app --host 127.0.0.1 --port 8000
 - **Comparativa Visual de Algoritmos:** [http://127.0.0.1:8000/api/models/compare](http://127.0.0.1:8000/api/models/compare)
 - **Diagnósticos Estadísticos y Residuos:** [http://127.0.0.1:8000/api/models/diagnostics](http://127.0.0.1:8000/api/models/diagnostics)
 - **Tratado Metodológico Visual:** [http://127.0.0.1:8000/api/methodology](http://127.0.0.1:8000/api/methodology)
+- **Catálogo del Lakehouse de los 17 Ministerios:** [http://127.0.0.1:8000/api/lakehouse/catalog](http://127.0.0.1:8000/api/lakehouse/catalog)
+- **Declaración Formal de Cumplimiento ISO:** [http://127.0.0.1:8000/api/governance/iso-compliance](http://127.0.0.1:8000/api/governance/iso-compliance)
 
-### Ejemplos Prácticos de Inferencia con la API:
+---
+
+## 8. Consola Interactiva de Integración API y Manejo de Secretos
+
+La plataforma web incluye una consola de integración en tiempo real (`.landing-api-console`) que sincroniza instantáneamente el código generado en **cURL**, **Python** (`requests` o `httpx`) y **JavaScript** (`fetch`) con los selectores de puerto, horizonte temporal, algoritmo y perturbaciones *What-If*.
+
+### 8.1 Gestión Segura de Credenciales y Secretos Empresariales
+Aunque el proyecto sea de código abierto (Open Source), la seguridad en entornos gubernamentales y bancarios es estricta:
+- **Modos de Autenticación:**
+  - `Bearer Token (sk-amp-...)`: Esquema de autorización estándar mediante encabezado HTTP `Authorization: Bearer <API_KEY>`.
+  - `HashiCorp Vault / AWS Secrets`: Inyección dinâmica de credenciales en tiempo de ejecución sin persistencia en disco.
+  - `Desarrollo Local (Sin Secretos)`: Modo abierto para pruebas internas en localhost sin tokens.
+- **Variables de Entorno (`.env`):**
+  - Nunca almacenes tokens en duro dentro del código. Carga las credenciales mediante `os.getenv("AMP_API_SECRET_KEY")` o librerías como `python-dotenv`.
+  - El motor `SecretManager` (`src/infrastructure/secrets/manager.py`) enmascara automáticamente todas las claves en logs e interfaces visuales (`sk-****`).
+
+### 8.2 Ejemplos Prácticos de Inferencia con la API:
+
+#### En Python con Carga Segura de Entorno:
+```python
+import os
+import requests
+
+api_key = os.getenv("AMP_API_SECRET_KEY", "sk-amp-demo-secret-key-2026")
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {api_key}"
+}
+url = "http://127.0.0.1:8000/predict"
+payload = {
+    "port": "Puerto Balboa",
+    "horizon_months": 3,
+    "algorithm": "ensemble",
+    "what_if_bunkering_shift_pct": 5.0,
+    "what_if_transshipment_shift_pct": -10.0
+}
+response = requests.post(url, json=payload, headers=headers)
+data = response.json()
+
+print(f"Puerto: {data['port']}")
+for pred in data['predictions']:
+    print(f"Mes {pred['horizon_step']} ({pred['target_date']}): "
+          f"P50={pred['pred_p50_teu']:,} TEUs | "
+          f"Banda=[{pred['pred_p10_teu']:,} - {pred['pred_p90_teu']:,}]")
+```
 
 #### En cURL:
 ```bash
 curl -X POST "http://127.0.0.1:8000/predict" \
      -H "Content-Type: application/json" \
+     -H "Authorization: Bearer $AMP_API_SECRET_KEY" \
      -d '{
        "port": "Puerto Balboa",
        "horizon_months": 3,
        "algorithm": "ensemble",
-       "bunker_perturbation_pct": 0.0,
-       "transshipment_perturbation_pct": 0.0
+       "what_if_bunkering_shift_pct": 5.0,
+       "what_if_transshipment_shift_pct": -10.0
      }'
 ```
 
-#### En Python:
-```python
-import requests
-
-url = "http://127.0.0.1:8000/predict"
-payload = {
-    "port": "Puerto Balboa",
-    "horizon_months": 3,
-    "algorithm": "lightgbm",
-    "bunker_perturbation_pct": 10.0,
-    "transshipment_perturbation_pct": -5.0
-}
-response = requests.post(url, json=payload)
-data = response.json()
-
-print(f"Puerto: {data['port']}")
-for pred in data['forecast']:
-    print(f"Mes {pred['month_offset']} ({pred['date']}): "
-          f"P50={pred['predicted_teus_p50']:,} TEUs | "
-          f"Banda=[{pred['uncertainty_lower_p10']:,} - {pred['uncertainty_upper_p90']:,}]")
+#### En JavaScript (Fetch con Async/Await):
+```javascript
+const apiKey = process.env.AMP_API_SECRET_KEY || 'sk-amp-demo-secret-key-2026';
+const response = await fetch('http://127.0.0.1:8000/predict', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${apiKey}`
+  },
+  body: JSON.stringify({
+    port: 'Puerto Balboa',
+    horizon_months: 3,
+    algorithm: 'ensemble',
+    what_if_bunkering_shift_pct: 5.0,
+    what_if_transshipment_shift_pct: -10.0
+  })
+});
+const data = await response.json();
+console.log('Pronósticos recibidos:', data.predictions);
 ```
 
 ---
@@ -347,7 +396,64 @@ kubectl apply -f k8s/hpa.yaml
 
 ---
 
-## 10. Guía de Despliegue en GitHub, Seguridad y CI/CD
+## 10. Lakehouse Nacional de Panamá: Scraper de los 17 Ministerios, Tráfico ACP y Clima IMHPA
+
+Para superar las limitaciones de modelos aislados, Panamá PortOps-AI incorpora un motor de ingestión masiva y Lakehouse nacional (`src/data/lakehouse/panama_national_lakehouse.py`) que compila 140 meses de microdatos empíricos estructurados en `data/lakehouse/`:
+
+### 10.1 Scraper Taxonómico de los 17 Ministerios de Panamá (`src/data/scrapers/panama_ministries_scraper.py`)
+Mapea sistemáticamente los portales de datos abiertos de los 17 ministerios e instituciones estatales:
+1. **MICI:** Exportaciones industriales y régimen SEM/EMMA.
+2. **MEF:** Crecimiento del PIB trimestral, inflación IPC y presupuesto de inversión.
+3. **MOP:** Estado de la red vial logística y puentes interoceánicos Centenario y de las Américas.
+4. **MIAMBIENTE:** Calidad de cuencas hidrográficas, estrés hídrico y huella de carbono marítima.
+5. **MIDA:** Exportaciones agroindustriales en contenedores refrigerados (reefers) de banano, sandía y café.
+6. **MINSA:** Inspecciones fitosanitarias y despachos de tripulaciones en muelle.
+7. **MITRADEL:** Convenciones colectivas portuarias, índices salariales y días de paro de estibadores.
+8. **MIVIOT:** Zonificación y ordenamiento territorial adyacente a recintos portuarios.
+9. **MINGOB:** Salvaguarda civil y gobernanza territorial en provincias de Panamá y Colón.
+10. **MINSEG:** Porcentaje de contenedores inspeccionados por escáneres no intrusivos.
+11. **MIRE:** Acuerdos bilaterales de transporte marítimo y relaciones diplomáticas de comercio exterior.
+12. **MEDUCA:** Capacitación técnica en logística y programas de formación náutica.
+13. **MIDES:** Índice de vulnerabilidad social en comunidades logísticas de Colón y Panamá Oeste.
+14. **MICULTURA:** Zonas de amortiguamiento patrimonial histórico (Portobelo, San Lorenzo, Casco Antiguo).
+15. **DGI (MEF):** Recaudación tributaria del sector marítimo y cánones de concesiones de muelles.
+16. **ZLC (MICI):** Movimiento de reexportación e importación en la Zona Libre de Colón.
+17. **SENAN / AMP:** Operaciones de salvamento marítimo y prevención de contingencias de bunkering en bahía.
+
+### 10.2 Tráfico Detallado del Canal de Panamá (ACP)
+Compila la distribución de tránsitos marítimos por tipo de nave y origen de carga:
+- **Segmentos de Buques:** Neopanamax Container, Panamax Container, Graneleros (*Bulk Carriers*), Quimiqueros/Tanqueros, Buques de Gas Licuado (LNG/LPG) y Portavehículos (*Ro-Ro*).
+- **Participación por País de Origen/Destino:**
+  - Estados Unidos: 72.4% de la carga del Canal.
+  - China: 21.8%.
+  - Japón: 14.1%.
+  - Chile: 10.9%.
+  - Corea del Sur: 9.8%.
+- **Restricciones de Calado y Cupos:** Registro de la reducción de cupos diarios por sequía (de 36 normales a 24 slots en 2023–2024).
+
+### 10.3 Clima IMHPA, Frentes Fríos, Huracanes y Bloqueos Viales
+- **Hidrometeorología IMHPA:** Índice Oceánico de El Niño (ONI SST) para parametrizar sequías severas (2015-2016 y 2023-2024).
+- **Frentes Fríos en el Caribe:** Horas de paralización de grúas pórtico STS en los puertos de Colón (MIT, Cristóbal, CCT) por vientos superiores a 35 nudos durante noviembre-febrero.
+- **Shocks de Huracanes Indirectos:** Impacto de los huracanes Otto (2016), Eta e Iota (2020).
+- **Calendario Festivo y Recargos de Estiba:** Fiestas Patrias en noviembre (días 3, 4, 5, 10 y 28) con aplicación del 150% de recargo salarial por jornada extraordinaria.
+- **Disrupciones Políticas y Cierre de Vías:** Histórico del Paro Nacional de julio de 2022 (21 días) y los bloqueos viales por contrato minero de octubre-noviembre de 2023 (38 días de aislamiento de terminales).
+
+---
+
+## 11. Gobernanza Gubernamental: Matriz de Cumplimiento Normativo ISO (27001, 42001, 27701, 22301)
+
+El microservicio expone en `/api/governance/iso-compliance` la declaración formal de auditoría y preparación para compras públicas del Estado Panameño:
+
+| Estándar ISO | Denominación Oficial | Implementación en Panamá PortOps-AI | Marco Legal en Panamá |
+|---|---|---|---|
+| **ISO/IEC 27001:2022** | Seguridad de la Información (SGSI) | Cifrado obligatorio TLS 1.3 en tránsito, AES-256 en reposo, enmascaramiento con `SecretManager` y registros de auditoría JSONL inmutables. | Estándares de la Autoridad de Innovación Gubernamental (AIG). |
+| **ISO/IEC 42001:2023** | Gestión de Inteligencia Artificial (AIMS) | Trazabilidad bitemporal estricta (cero lookahead bias), cuantiles P10-P50-P90, control de confusores con do-calculus y reproducibilidad con semilla fija 42. | Guías de Adopción Ética de IA y Contraloría General. |
+| **ISO/IEC 27701:2019** | Privacidad de la Información (PIMS) | Agregación canónica a nivel terminal mensual y anonimización de operadores mediante hashing criptográfico HMAC-SHA256. | **Ley 81 de 2019 de Protección de Datos Personales** (ANTAI). |
+| **ISO 22301:2019** | Continuidad del Negocio y Resiliencia | Microservicios en Kubernetes con sondas Liveness/Readiness, HPA autoescalable y caché Redis (< 2ms) con tolerancia a caídas. | Plan Nacional de Continuidad de Infraestructuras Críticas. |
+
+---
+
+## 12. Guía de Despliegue en GitHub, Seguridad y CI/CD
 
 ### Seguridad de Credenciales
 > [!CAUTION]
