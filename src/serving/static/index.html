@@ -307,28 +307,32 @@
             </div>
 
             <div class="iso-grid">
-              <div class="iso-item">
+              <div class="iso-item" onclick="openIsoModal('iso_27001')" title="Clic para auditar evidencia de cumplimiento SGSI">
                 <span class="iso-badge">ISO/IEC 27001:2022</span>
                 <strong>Seguridad de la Información (SGSI)</strong>
                 <p>Cifrado TLS 1.3 en tránsito, AES-256 en reposo, tokens de servicio aislados y rotación de claves cada 90 días con <code>SecretManager</code>.</p>
+                <span class="iso-action-hint">🔎 Auditar Controles y Evidencia →</span>
               </div>
 
-              <div class="iso-item">
+              <div class="iso-item" onclick="openIsoModal('iso_42001')" title="Clic para auditar explicabilidad y gobernanza de IA">
                 <span class="iso-badge">ISO/IEC 42001:2023</span>
                 <strong>Gestión de Inteligencia Artificial (AIMS)</strong>
                 <p>Explicabilidad algorítmica obligatoria ($P_{10}, P_{50}, P_{90}$), mitigación de sesgos causales (do-calculus) y cero fuga de datos (Zero Lookahead).</p>
+                <span class="iso-action-hint">🔎 Auditar Controles y Evidencia →</span>
               </div>
 
-              <div class="iso-item">
+              <div class="iso-item" onclick="openIsoModal('iso_27701')" title="Clic para auditar anonimización bajo Ley 81 de 2019">
                 <span class="iso-badge">ISO/IEC 27701:2019</span>
                 <strong>Privacidad de Datos (Ley 81 de 2019)</strong>
                 <p>Anonimización criptográfica irreversible de consignatarios y buques. Agregación macro-terminal mensual para impedir reidentificación.</p>
+                <span class="iso-action-hint">🔎 Auditar Controles y Evidencia →</span>
               </div>
 
-              <div class="iso-item">
+              <div class="iso-item" onclick="openIsoModal('iso_22301')" title="Clic para auditar plan de continuidad de negocio y tolerancia a fallos">
                 <span class="iso-badge">ISO 22301:2019</span>
                 <strong>Continuidad del Negocio (BCMS)</strong>
                 <p>Orquestación en Kubernetes con sondas Liveness/Readiness, autoescalado horizontal (HPA) y caché Redis en memoria (&lt; 2ms).</p>
+                <span class="iso-action-hint">🔎 Auditar Controles y Evidencia →</span>
               </div>
             </div>
           </div>
@@ -864,19 +868,23 @@
   <!-- MODAL DE CONFIGURACIÓN & EXTENSIBILIDAD    -->
   <!-- ========================================== -->
   <div id="settings-modal" class="modal-backdrop">
-    <div class="modal-card settings-card">
+    <div class="modal-dialog settings-card">
       <div class="modal-header">
         <div class="modal-header-left">
           <span class="modal-badge-cat">SISTEMA MLOPS • GOBERNANZA & EXTENSIBILIDAD</span>
-          <h2 id="settings-modal-title">⚙️ Configuración del Modelo & Nuevas Variables</h2>
-          <p class="settings-subtitle">Ajuste de hiperparámetros de inferencia, umbrales de vacíos y simulador para agregar nuevas fuentes de datos (AIS, Canal de Panamá, Fletes Internacionales).</p>
+          <h2 id="settings-modal-title">⚙️ Panel de Gobernanza, Modelos & Replicabilidad</h2>
+          <p class="settings-subtitle">Presets de entrenamiento, replicabilidad determinista con Seed 42, anonimización bajo Ley 81 de 2019, control RBAC estatal y servidor MCP de herramientas de IA.</p>
         </div>
         <button id="settings-close-btn" class="modal-close" aria-label="Cerrar">&times;</button>
       </div>
 
       <div class="settings-tabs-nav">
-        <button class="settings-tab-btn active" data-settings-tab="stab-config">⚙️ Parámetros de Inferencia</button>
-        <button class="settings-tab-btn" data-settings-tab="stab-extensibility">🔌 Ingesta de Nuevas APIs (AIS / Clima)</button>
+        <button class="settings-tab-btn active" data-settings-tab="stab-config">🎯 Presets & Hiperparámetros</button>
+        <button class="settings-tab-btn" data-settings-tab="stab-reproducibility">🔬 Replicación Determinista (Seed 42)</button>
+        <button class="settings-tab-btn" data-settings-tab="stab-privacy">🛡️ Anonimización Ley 81 de 2019</button>
+        <button class="settings-tab-btn" data-settings-tab="stab-gov-admin">🏛️ Gobernanza Estatal & RBAC</button>
+        <button class="settings-tab-btn" data-settings-tab="stab-mcp-souls">🤖 MCP Runner & Almas IA</button>
+        <button class="settings-tab-btn" data-settings-tab="stab-extensibility">🔌 Ingesta Nuevas APIs</button>
         <button class="settings-tab-btn" data-settings-tab="stab-glossary">📖 Glosario Pedagógico ML</button>
         <button class="settings-tab-btn" data-settings-tab="stab-export">📥 Exportar Datos Reales</button>
         <button class="settings-tab-btn" data-settings-tab="stab-enterprise">🎛️ Consola Enterprise & RAG</button>
@@ -884,9 +892,68 @@
       
       <div class="modal-body settings-body">
         
-        <!-- Tab 1: Parámetros de Inferencia -->
+        <!-- Tab 1: Presets & Hiperparámetros -->
         <div id="stab-config" class="settings-tab-content active">
-          <div class="settings-form-grid">
+          <div class="modal-section-header">
+            <span class="step-num">1</span>
+            <h3>Perfiles de Ritmo de Aprendizaje & Presets de Entrenamiento</h3>
+          </div>
+          <p class="field-hint" style="margin-bottom: 0.75rem;">Selecciona una receta estructurada de hiperparámetros según el objetivo operativo de la terminal marítima:</p>
+
+          <div class="preset-grid" id="preset-cards-container">
+            <div class="preset-card active" data-preset-id="balanced_champion" onclick="selectTrainingPreset('balanced_champion')">
+              <div class="preset-header">
+                <span class="preset-title">Equilibrado Champion</span>
+                <span class="preset-badge champion">WAPE 9.11%</span>
+              </div>
+              <p class="preset-desc">LightGBM optimizado para minimizar WAPE y MAE sin sobreajuste. Ideal para producción general.</p>
+              <div class="preset-specs">LR: 0.05 • Est: 120 • Prof: 6 • L1: 0.1 • L2: 0.2</div>
+            </div>
+
+            <div class="preset-card" data-preset-id="conservative_anti_overfitting" onclick="selectTrainingPreset('conservative_anti_overfitting')">
+              <div class="preset-header">
+                <span class="preset-title">Conservador Anti-Ruido</span>
+                <span class="preset-badge conservative">Anti-Overfitting</span>
+              </div>
+              <p class="preset-desc">Regularización estricta para puertos con alta volatilidad o registros atípicos (huelgas, desvíos).</p>
+              <div class="preset-specs">LR: 0.02 • Est: 90 • Prof: 4 • L1: 1.0 • L2: 2.0</div>
+            </div>
+
+            <div class="preset-card" data-preset-id="aggressive_shock_reaction" onclick="selectTrainingPreset('aggressive_shock_reaction')">
+              <div class="preset-header">
+                <span class="preset-title">Agresivo ante Shocks</span>
+                <span class="preset-badge aggressive">Alta Sensibilidad</span>
+              </div>
+              <p class="preset-desc">Árboles profundos y tasa acelerada para asimilar de inmediato cambios abruptos en fletes y calados.</p>
+              <div class="preset-specs">LR: 0.10 • Est: 160 • Prof: 8 • L1: 0.01 • L2: 0.05</div>
+            </div>
+
+            <div class="preset-card" data-preset-id="resilient_quantile_stress" onclick="selectTrainingPreset('resilient_quantile_stress')">
+              <div class="preset-header">
+                <span class="preset-title">Resiliente a Colas</span>
+                <span class="preset-badge quantile">P10/P90 Robust</span>
+              </div>
+              <p class="preset-desc">Pérdida Huber/Pinball calibrada para colas pesadas y cuantiles de máxima incertidumbre logística.</p>
+              <div class="preset-specs">LR: 0.03 • Est: 140 • Prof: 5 • L1: 0.5 • L2: 1.0</div>
+            </div>
+          </div>
+
+          <div class="settings-actions" style="margin-top: 1rem;">
+            <button id="btn-apply-preset" class="btn btn-secondary" onclick="applySelectedPreset()">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              Aplicar Preset Seleccionado
+            </button>
+            <span id="preset-apply-status" class="save-status-msg"></span>
+          </div>
+
+          <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.25rem 0;">
+
+          <div class="modal-section-header">
+            <span class="step-num">2</span>
+            <h3>Parámetros de Inferencia Cuantílica & Semáforos Operativos</h3>
+          </div>
+
+          <div class="settings-form-grid" style="margin-top: 0.75rem;">
             <div class="form-group">
               <label for="cfg-quantile-band">Banda de Incertidumbre Cuantílica:</label>
               <select id="cfg-quantile-band">
@@ -933,6 +1000,282 @@
             <span id="config-save-status" class="save-status-msg"></span>
           </div>
         </div>
+
+        <!-- Tab: Replicabilidad Determinista & URLs Ministeriales -->
+        <div id="stab-reproducibility" class="settings-tab-content">
+          <div class="modal-section-header">
+            <span class="step-num">🔬</span>
+            <h3>Procedencia Oficial de Datasets & Protocolo de Replicación Determinista (Seed 42)</h3>
+          </div>
+          <p class="field-hint">Cualquier usuario, auditor o investigador puede reproducir de manera idéntica los pesos del modelo y predicciones en cualquier computador sin descargar archivos pesados de GitHub.</p>
+
+          <div class="prov-ministry-grid">
+            <div class="ministry-link-card">
+              <div class="m-head">
+                <span class="m-title">Autoridad Marítima de Panamá (AMP)</span>
+                <span class="badge badge-success">Fuente Primaria</span>
+              </div>
+              <p class="preset-desc">Movimiento de Contenedores en TEUs (140 meses continuos: 2015-01 a 2026-05) y Despacho de Combustible Bunkering.</p>
+              <a href="https://datosabiertos.gob.pa/dataset/movimiento-de-carga-en-contenedores" target="_blank" class="m-url">🌐 datosabiertos.gob.pa/dataset/movimiento-de-carga-en-contenedores</a>
+            </div>
+
+            <div class="ministry-link-card">
+              <div class="m-head">
+                <span class="m-title">Autoridad del Canal de Panamá (ACP)</span>
+                <span class="badge badge-info">Operativa</span>
+              </div>
+              <p class="preset-desc">Tránsitos Neopanamax/Panamax diarios, calado dinámico operativo y nivel hidrológico del Lago Gatún.</p>
+              <a href="https://pancanal.com/es/informacion-operativa/" target="_blank" class="m-url">🌐 pancanal.com/es/informacion-operativa</a>
+            </div>
+
+            <div class="ministry-link-card">
+              <div class="m-head">
+                <span class="m-title">Ministerio de Comercio e Industrias (MICI)</span>
+                <span class="badge badge-info">Comercio Exterior</span>
+              </div>
+              <p class="preset-desc">Balanza comercial de exportaciones no tradicionales y regímenes especiales (Panamá Pacífico, ZLC).</p>
+              <a href="https://mici.gob.pa/comercio-exterior/" target="_blank" class="m-url">🌐 mici.gob.pa/comercio-exterior</a>
+            </div>
+
+            <div class="ministry-link-card">
+              <div class="m-head">
+                <span class="m-title">Ministerio de Economía y Finanzas (MEF / INEC)</span>
+                <span class="badge badge-info">Macroeconómico</span>
+              </div>
+              <p class="preset-desc">Índice Mensual de Actividad Económica (IMAE del sector transporte marítimo) e inflación de fletes.</p>
+              <a href="https://mef.gob.pa/estadisticas-economicas/" target="_blank" class="m-url">🌐 mef.gob.pa/estadisticas-economicas</a>
+            </div>
+
+            <div class="ministry-link-card">
+              <div class="m-head">
+                <span class="m-title">Instituto de Meteorología e Hidrología (IMHPA)</span>
+                <span class="badge badge-info">Climático</span>
+              </div>
+              <p class="preset-desc">Precipitación acumulada en cuenca hidrográfica del Canal y monitoreo ENSO (El Niño / La Niña 3.4).</p>
+              <a href="https://imhpa.gob.pa/climatologia/" target="_blank" class="m-url">🌐 imhpa.gob.pa/climatologia</a>
+            </div>
+          </div>
+
+          <div class="repro-recipe-box">
+            <h4 style="color: var(--cyan-bright); font-size: 0.9rem; margin-bottom: 0.4rem;">Receta de Reentrenamiento Determinista Cruzado</h4>
+            <p style="font-size: 0.78rem; color: var(--text-muted);">
+              <strong>Fecha/Hora de Extracción:</strong> <code>2026-09-25T14:30:00-05:00</code> • 
+              <strong>Lugar Físico:</strong> Edificio 553, Diablo Heights, Balboa, Ancón, Ciudad de Panamá • 
+              <strong>Seguridad:</strong> TLS 1.3 / Checksum SHA-256
+            </p>
+            <pre><code># Comando para replicar el modelo idéntico en cualquier máquina:
+python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code></pre>
+            <div style="margin-top: 0.75rem; display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap;">
+              <button id="btn-trigger-repro-train" class="btn btn-primary" onclick="triggerReproducibleTrain()">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                ⚡ Ejecutar Reentrenamiento Determinista Live (Seed 42)
+              </button>
+              <span id="repro-train-status" class="save-status-msg"></span>
+            </div>
+            <div id="repro-train-result" style="display: none; margin-top: 0.75rem;" class="crypto-cert-box"></div>
+          </div>
+        </div>
+
+        <!-- Tab: Anonimización de Datos Sensibles (Ley 81 de 2019) -->
+        <div id="stab-privacy" class="settings-tab-content">
+          <div class="modal-section-header">
+            <span class="step-num">🛡️</span>
+            <h3>Motor de Anonimización Criptográfica bajo Ley 81 de 2019 de Panamá</h3>
+          </div>
+          <p class="field-hint">Garantiza la protección estricta de la privacidad de personas naturales, contribuyentes y empresas exportadoras. Identifica mediante el nombre del dataset los campos que deben ser anonimizados, redactados o generalizados.</p>
+
+          <div class="privacy-step-list">
+            <div class="privacy-step-item">
+              <div class="privacy-step-num">Paso 1: Clasificación</div>
+              <span>Detección de patrones en nombre de archivo (aduanas, dgi, tripulacion, manifiestos).</span>
+            </div>
+            <div class="privacy-step-item">
+              <div class="privacy-step-num">Paso 2: Tokenización</div>
+              <span>Seudonimización irreversible HMAC-SHA256 con salt secreta para CIP, RUC y Consignatarios.</span>
+            </div>
+            <div class="privacy-step-item">
+              <div class="privacy-step-num">Paso 3: Supresión</div>
+              <span>Redacción total <code>[REDACTADO_LEY81]</code> de pasaportes, correos y teléfonos.</span>
+            </div>
+            <div class="privacy-step-item">
+              <div class="privacy-step-num">Paso 4: Generalización</div>
+              <span>Agrupación en cubos de montos FOB/CIF para preservar utilidad analítica sin revelar facturación.</span>
+            </div>
+            <div class="privacy-step-item">
+              <div class="privacy-step-num">Paso 5: Certificado</div>
+              <span>Emisión de certificado criptográfico inmutable para ANTAI y Contraloría General.</span>
+            </div>
+          </div>
+
+          <div class="card" style="background: rgba(16, 26, 48, 0.5); padding: 1rem; margin-top: 1rem;">
+            <h4 style="font-size: 0.88rem; color: var(--cyan-bright); margin-bottom: 0.6rem;">Simulador Interactivo de Descontaminación de Datos</h4>
+            <div class="settings-form-grid">
+              <div class="form-group">
+                <label for="privacy-dataset-select">Dataset Gubernamental a Evaluar:</label>
+                <select id="privacy-dataset-select">
+                  <option value="aduanas_manifiestos_embarque_2026.csv">aduanas_manifiestos_embarque_2026.csv (Manifiestos y Consignatarios)</option>
+                  <option value="dgi_facturacion_fiscal_portuaria_2026.csv">dgi_facturacion_fiscal_portuaria_2026.csv (RUC y Montos FOB/CIF)</option>
+                  <option value="tripulacion_maritima_pasaportes_2026.csv">tripulacion_maritima_pasaportes_2026.csv (Pasaportes y Datos Personales)</option>
+                  <option value="amp_movimiento_contenedores_publico.csv">amp_movimiento_contenedores_publico.csv (Datos Macroeconómicos Públicos)</option>
+                </select>
+              </div>
+            </div>
+
+            <button id="btn-run-anonymization" class="btn btn-primary" style="margin-top: 0.85rem;" onclick="runAnonymizationSimulation()">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              Ejecutar Pipeline de Descontaminación & Anonimización
+            </button>
+
+            <div id="privacy-simulation-output" style="display: none; margin-top: 1rem;">
+              <h5 style="color: var(--emerald-success); font-size: 0.84rem;">Tabla Comparativa de Anonimización (Antes vs Después):</h5>
+              <div class="table-responsive" style="max-height: 260px; overflow-y: auto;">
+                <table class="privacy-diff-table" id="privacy-diff-table">
+                  <!-- Injected via JS -->
+                </table>
+              </div>
+              <div id="privacy-cert-container" class="crypto-cert-box" style="margin-top: 0.75rem;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Gobernanza Estatal & RBAC -->
+        <div id="stab-gov-admin" class="settings-tab-content">
+          <div class="modal-section-header">
+            <span class="step-num">🏛️</span>
+            <h3>Consola de Gobernanza Gubernamental & Control RBAC (Role-Based Access Control)</h3>
+          </div>
+          <p class="field-hint">Infraestructura de seguridad adaptada a ministerios, puertos y órganos fiscalizadores de Panamá. Cumplimiento de estándares de la AIG y Ley 6 de Transparencia.</p>
+
+          <table class="rbac-table">
+            <thead>
+              <tr>
+                <th>Rol Estatal</th>
+                <th>Pronósticos & What-If</th>
+                <th>Benchmarking ML</th>
+                <th>Simulación Monte Carlo</th>
+                <th>Reentrenamiento</th>
+                <th>Administración</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="role-badge superadmin">SuperAdmin Ministerial</span></td>
+                <td>✓ Sí</td>
+                <td>✓ Sí</td>
+                <td>✓ Sí</td>
+                <td>✓ Sí (Seed 42)</td>
+                <td>✓ Total</td>
+              </tr>
+              <tr>
+                <td><span class="role-badge auditor">Auditor Contraloría</span></td>
+                <td>✓ Sí</td>
+                <td>✓ Sí</td>
+                <td>✓ Sí</td>
+                <td>✗ Solo Lectura</td>
+                <td>✗ No</td>
+              </tr>
+              <tr>
+                <td><span class="role-badge operator">Operador Portuario</span></td>
+                <td>✓ Sí</td>
+                <td>✓ Sí</td>
+                <td>✓ Sí</td>
+                <td>✗ No</td>
+                <td>✗ No</td>
+              </tr>
+              <tr>
+                <td><span class="role-badge researcher">Investigador UTP/UMIP</span></td>
+                <td>✓ Sí</td>
+                <td>✓ Sí</td>
+                <td>✗ Limitado</td>
+                <td>✗ No</td>
+                <td>✗ No</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="card" style="background: rgba(16, 26, 48, 0.5); padding: 1rem; margin-top: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+              <h4 style="font-size: 0.88rem; color: var(--cyan-bright); margin: 0;">Usuarios Activos del Sistema</h4>
+              <button class="revocation-btn" onclick="revokeAllSessions()">🚨 Revocar Todas las Sesiones Activas</button>
+            </div>
+            <div class="table-responsive" style="max-height: 180px; overflow-y: auto;">
+              <table class="rbac-table" id="gov-users-table">
+                <!-- Injected via JS -->
+              </table>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1rem 0;">
+
+            <h5 style="font-size: 0.82rem; color: var(--text-main); margin-bottom: 0.4rem;">Registrar Nuevo Funcionario o Investigador:</h5>
+            <div class="settings-form-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
+              <input type="text" id="new-user-name" placeholder="Nombre completo" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.78rem;">
+              <input type="email" id="new-user-email" placeholder="correo@gob.pa" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.78rem;">
+              <select id="new-user-role" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.78rem;">
+                <option value="operador_portuario">Operador Portuario</option>
+                <option value="auditor_contraloria">Auditor Contraloría</option>
+                <option value="investigador_academico">Investigador UTP/UMIP</option>
+                <option value="superadmin_ministerial">SuperAdmin Ministerial</option>
+              </select>
+              <input type="text" id="new-user-entidad" placeholder="Entidad (ej: AMP, ACP)" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.78rem;">
+            </div>
+            <button class="btn btn-secondary btn-sm" style="margin-top: 0.6rem;" onclick="createNewGovUser()">+ Añadir Usuario</button>
+            <span id="new-user-status" class="save-status-msg" style="margin-left: 0.5rem;"></span>
+          </div>
+
+          <div class="crypto-cert-box" style="margin-top: 1rem;">
+            <div style="font-weight: 700; color: var(--emerald-success); margin-bottom: 0.25rem;">🔒 Auditoría de Controles Criptográficos & Anti-Ransomware:</div>
+            <p style="margin: 0; font-size: 0.76rem; color: var(--text-muted); line-height: 1.4;">
+              • <strong>Cifrado en Tránsito:</strong> TLS 1.3 con curvas elípticas ECDHE-ECDSA-AES256-GCM-SHA384.<br>
+              • <strong>Cookies Seguras:</strong> <code>HttpOnly=True; Secure=True; SameSite=Strict</code>.<br>
+              • <strong>Protección Anti-Ransomware:</strong> Snapshots inmutables WORM (Write Once Read Many) con RPO &lt; 1 hora y RTO &lt; 15 minutos en almacenamiento S3 compatible con bloqueo de objetos.
+            </p>
+          </div>
+        </div>
+
+        <!-- Tab: Servidor MCP & Almas/Personalidades IA -->
+        <div id="stab-mcp-souls" class="settings-tab-content">
+          <div class="modal-section-header">
+            <span class="step-num">🤖</span>
+            <h3>Servidor MCP Tool Runner & Gestor de Almas / Personalidades IA</h3>
+          </div>
+          <p class="field-hint">Conecta agentes inteligentes (Claude, Cursor, Antigravity) mediante el protocolo estándar MCP (Model Context Protocol). Cambia en caliente el "alma" (system prompt) o ejecuta herramientas visualmente con formato JSON-RPC 2.0.</p>
+
+          <div class="soul-cards-grid" id="soul-cards-container">
+            <!-- Injected via JS -->
+          </div>
+
+          <div class="card" style="background: rgba(16, 26, 48, 0.5); padding: 1rem; margin-top: 1rem;">
+            <h4 style="font-size: 0.88rem; color: var(--cyan-bright); margin-bottom: 0.5rem;">Ejecutor Visual de Herramientas MCP (JSON-RPC 2.0)</h4>
+            <div class="settings-form-grid">
+              <div class="form-group">
+                <label for="mcp-tool-select">Herramienta MCP:</label>
+                <select id="mcp-tool-select" onchange="updateMcpToolDefaultParams()">
+                  <option value="get_port_forecast">get_port_forecast (Inferencia de TEUs)</option>
+                  <option value="run_monte_carlo_risk_simulation">run_monte_carlo_risk_simulation (Simulación de Riesgo)</option>
+                  <option value="compare_model_benchmarks">compare_model_benchmarks (Torneo de Modelos)</option>
+                  <option value="simulate_external_feature">simulate_external_feature (Normalización de Nuevas APIs)</option>
+                  <option value="query_maritime_knowledge">query_maritime_knowledge (RAG Leyes Marítimas de Panamá)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="mcp-params-json">Argumentos de la Herramienta (JSON):</label>
+                <textarea id="mcp-params-json" rows="3" style="width: 100%; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--cyan-bright); font-family: var(--font-mono); font-size: 0.76rem; padding: 0.5rem;">{"port_name": "Puerto Balboa", "horizon_months": 3, "algorithm": "ensemble"}</textarea>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: 0.65rem;" onclick="executeMcpToolLive()">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 21"></polygon></svg>
+              Ejecutar Herramienta MCP (Protocolo JSON-RPC 2.0)
+            </button>
+
+            <div id="mcp-output-box" style="display: none; margin-top: 0.75rem;">
+              <h5 style="font-size: 0.78rem; color: var(--emerald-success); margin-bottom: 0.3rem;">Respuesta Estructurada JSON-RPC 2.0:</h5>
+              <pre class="json-rpc-viewer" id="mcp-json-rpc-result"></pre>
+            </div>
+          </div>
+        </div>
+
 
         <!-- Tab 2: Extensibilidad y Nuevas APIs -->
         <div id="stab-extensibility" class="settings-tab-content">

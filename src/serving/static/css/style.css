@@ -2170,4 +2170,507 @@ footer {
   margin: 0;
 }
 
+.iso-item {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+}
+
+.iso-item:hover {
+  border-color: var(--emerald-success);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.2);
+}
+
+.iso-item .iso-action-hint {
+  font-size: 0.72rem;
+  color: var(--emerald-success);
+  margin-top: 0.35rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* ==========================================================================
+   SETTINGS MODAL & ENTERPRISE GOVERNANCE WORKSTATION
+   ========================================================================== */
+.modal-dialog.settings-card {
+  max-width: 1040px;
+  width: 95vw;
+  max-height: 92vh;
+  background: #090e1a;
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(6, 182, 212, 0.15);
+}
+
+.settings-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+  line-height: 1.4;
+}
+
+.settings-tabs-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  background: rgba(13, 21, 39, 0.95);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 75px;
+  z-index: 5;
+}
+
+.settings-tab-btn {
+  background: rgba(16, 26, 48, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.settings-tab-btn:hover {
+  color: var(--text-main);
+  border-color: rgba(6, 182, 212, 0.5);
+  background: rgba(23, 37, 68, 0.8);
+}
+
+.settings-tab-btn.active {
+  color: var(--cyan-bright);
+  border-color: var(--cyan-primary);
+  background: rgba(6, 182, 212, 0.16);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+}
+
+.settings-tab-content {
+  display: none;
+  padding: 1.25rem 1.5rem;
+  animation: fadeInTab 0.2s ease-out;
+}
+
+.settings-tab-content.active {
+  display: block;
+}
+
+@keyframes fadeInTab {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Preset Cards Grid */
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.preset-card {
+  background: rgba(16, 26, 48, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.preset-card:hover {
+  border-color: var(--cyan-primary);
+  background: rgba(23, 37, 68, 0.85);
+  transform: translateY(-2px);
+}
+
+.preset-card.active {
+  border-color: var(--cyan-bright);
+  background: rgba(6, 182, 212, 0.12);
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.2);
+}
+
+.preset-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.4rem;
+}
+
+.preset-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.preset-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+.preset-badge.champion {
+  background: rgba(6, 182, 212, 0.2);
+  color: var(--cyan-bright);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+}
+
+.preset-badge.conservative {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--emerald-success);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.preset-badge.aggressive {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--amber-warn);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.preset-badge.quantile {
+  background: rgba(139, 92, 246, 0.2);
+  color: var(--purple-ai);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+}
+
+.preset-desc {
+  font-size: 0.77rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin-bottom: 0.75rem;
+}
+
+.preset-specs {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  background: rgba(6, 9, 19, 0.6);
+  padding: 0.45rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* Reproducibility & Provenance */
+.prov-ministry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.85rem;
+  margin: 1rem 0;
+}
+
+.ministry-link-card {
+  background: rgba(16, 26, 48, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: all 0.2s ease;
+}
+
+.ministry-link-card:hover {
+  border-color: var(--blue-vivid);
+  background: rgba(23, 37, 68, 0.8);
+}
+
+.ministry-link-card .m-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ministry-link-card .m-title {
+  font-weight: 700;
+  font-size: 0.84rem;
+  color: var(--text-main);
+}
+
+.ministry-link-card .m-url {
+  font-size: 0.74rem;
+  color: var(--cyan-bright);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.ministry-link-card .m-url:hover {
+  text-decoration: underline;
+}
+
+.repro-recipe-box {
+  background: rgba(6, 9, 19, 0.75);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.repro-recipe-box pre {
+  background: #030712;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--cyan-bright);
+  overflow-x: auto;
+  margin-top: 0.4rem;
+}
+
+/* Privacy Ley 81 Panel */
+.privacy-step-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.65rem;
+  margin: 1rem 0;
+}
+
+.privacy-step-item {
+  background: rgba(16, 26, 48, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 0.65rem 0.8rem;
+  font-size: 0.76rem;
+}
+
+.privacy-step-num {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--emerald-success);
+  margin-bottom: 0.2rem;
+}
+
+.privacy-diff-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.76rem;
+  margin-top: 0.75rem;
+}
+
+.privacy-diff-table th {
+  background: rgba(13, 21, 39, 0.9);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-muted);
+}
+
+.privacy-diff-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.privacy-diff-table tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.tag-redacted {
+  color: var(--rose-danger);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  background: rgba(244, 63, 94, 0.12);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
+.tag-hashed {
+  color: var(--purple-ai);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  background: rgba(139, 92, 246, 0.12);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
+.tag-bucketed {
+  color: var(--amber-warn);
+  font-family: var(--font-mono);
+  background: rgba(245, 158, 11, 0.12);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
+.crypto-cert-box {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  margin-top: 1rem;
+  font-size: 0.78rem;
+}
+
+/* RBAC Governance Panel */
+.rbac-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  margin: 1rem 0;
+}
+
+.rbac-table th {
+  background: rgba(13, 21, 39, 0.9);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-muted);
+}
+
+.rbac-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.role-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.role-badge.superadmin {
+  background: rgba(244, 63, 94, 0.15);
+  color: var(--rose-danger);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+}
+
+.role-badge.auditor {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--emerald-success);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.role-badge.operator {
+  background: rgba(6, 182, 212, 0.15);
+  color: var(--cyan-bright);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
+.role-badge.researcher {
+  background: rgba(139, 92, 246, 0.15);
+  color: var(--purple-ai);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.revocation-btn {
+  background: rgba(244, 63, 94, 0.15);
+  color: var(--rose-danger);
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  padding: 0.45rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+}
+
+.revocation-btn:hover {
+  background: var(--rose-danger);
+  color: #fff;
+}
+
+/* MCP Tool Runner & Souls */
+.soul-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.85rem;
+  margin: 1rem 0;
+}
+
+.soul-card {
+  background: rgba(16, 26, 48, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.soul-card:hover {
+  border-color: var(--purple-ai);
+  background: rgba(23, 37, 68, 0.85);
+}
+
+.soul-card.active {
+  border-color: var(--purple-ai);
+  background: rgba(139, 92, 246, 0.15);
+  box-shadow: 0 0 14px rgba(139, 92, 246, 0.2);
+}
+
+.soul-card .s-name {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--text-main);
+}
+
+.soul-card .s-desc {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.json-rpc-viewer {
+  background: #030712;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--emerald-success);
+  max-height: 240px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Responsive Webview Adaptations */
+@media (max-width: 768px) {
+  .nav-container {
+    padding: 0.6rem 1rem;
+  }
+
+  .modal-dialog.settings-card {
+    width: 98vw;
+    max-height: 96vh;
+    padding: 0.5rem;
+  }
+
+  .settings-tabs-nav {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.5rem;
+  }
+
+  .settings-tab-btn {
+    font-size: 0.74rem;
+    padding: 0.35rem 0.6rem;
+  }
+
+  .preset-grid,
+  .prov-ministry-grid,
+  .soul-cards-grid,
+  .iso-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
 

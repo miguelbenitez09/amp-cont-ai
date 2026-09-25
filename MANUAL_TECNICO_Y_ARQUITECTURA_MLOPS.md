@@ -330,6 +330,41 @@ Todo el código generado se actualiza de manera reactiva en cURL, Python y JavaS
    - LightGBM optimizado para CPU multinúcleo con OpenMP y compatible con GPUs NVIDIA mediante el parámetro `device=cuda`.
    - Compatibilidad arquitectónica para desplegar modelos de lenguaje en RAG utilizando el motor de alto rendimiento **vLLM** con PagedAttention en clústeres Kubernetes con nodos GPU.
 
+### 8.7 Gobernanza Estatal, Anonimización Ley 81 de 2019 y Replicación Determinista:
+
+#### 1. Procedencia de Datos de Entidades Gubernamentales de Panamá:
+- **Autoridad Marítima de Panamá (AMP):** Dataset oficial `https://datosabiertos.gob.pa/dataset/movimiento-de-carga-en-contenedores`. 140 meses continuos (2015-01 a 2026-05) de movimiento de contenedores y bunker.
+- **Autoridad del Canal de Panamá (ACP):** `https://pancanal.com/es/informacion-operativa/`. Tránsitos y calado dinámico.
+- **Ministerio de Comercio e Industrias (MICI):** `https://mici.gob.pa/comercio-exterior/`. Balanza comercial exterior.
+- **Ministerio de Economía y Finanzas (MEF / INEC):** `https://mef.gob.pa/estadisticas-economicas/`. IMAE de transporte marítimo.
+- **Instituto de Meteorología e Hidrología (IMHPA):** `https://imhpa.gob.pa/climatologia/`. Datos climáticos y anomalías ENSO Niño 3.4.
+- **Coordenadas de Extracción:** Edificio 553, Diablo Heights, Balboa, Corregimiento de Ancón, Ciudad de Panamá.
+- **Timestamp de Extracción:** `2026-09-25T14:30:00-05:00` bajo TLS 1.3 con digest SHA-256.
+
+#### 2. Replicación Determinista Cross-Machine (Semilla 42):
+Permite replicar el modelo Champion con pesos idénticos en cualquier equipo sin descargar binarios de GitHub:
+```bash
+python scripts/train_reproducible.py --seed 42 --preset balanced_champion
+```
+El script genera un hash SHA-256 del modelo y valida empíricamente las métricas (WAPE 9.11%, R² 0.9594).
+
+#### 3. Motor de Anonimización de Datos Sensibles (Ley 81 de 2019):
+El módulo `src/data/privacy/anonymizer.py` implementa el pipeline de 5 fases para proteger la privacidad de usuarios y contribuyentes:
+- **Clasificación Automática:** Identifica por nombre del archivo (aduanas, dgi, tripulacion, manifiestos) las entidades a proteger.
+- **Tokenización HMAC-SHA256 con Salt:** Seudonimiza irreversiblemente Cédulas CIP, RUC y Consignatarios comerciales.
+- **Supresión Total:** Reemplaza pasaportes y datos de tripulación por `[REDACTADO_LEY_81]`.
+- **Generalización Diferencial:** Agrupa importes monetarios individuales en cubos deciles (`$100K - $500K USD`).
+- **Certificado Criptográfico:** Emite un certificado digital con firma inmutable para auditorías de la ANTAI.
+
+#### 4. Consola de Gobernanza RBAC y Protección Anti-Ransomware:
+- **Matriz de 4 Roles Estatales:** SuperAdmin Ministerial, Auditor Contraloría, Operador Portuario, Investigador UTP/UMIP.
+- **Endurecimiento de Sesiones:** Cookies `HttpOnly=True; Secure=True; SameSite=Strict` y revocación masiva de sesiones en caliente.
+- **Protección Anti-Ransomware WORM:** Almacenamiento inmutable Write-Once-Read-Many con RPO < 1 hora y RTO < 15 minutos.
+
+#### 5. Servidor MCP y Gestor de Almas/Personalidades IA:
+- **Almas:** `auditor_maritimo` (Auditoría legal y WAPE), `operador_muelle` (Operación de patios y grúas), `cientifico_causal` (Inferencia causal y do-calculus).
+- **Ejecución MCP Visual:** Runner interactivo para ejecutar herramientas bajo el protocolo estándar JSON-RPC 2.0.
+
 ---
 
 ## 9. Términos Legales y Atribución Obligatoria

@@ -451,6 +451,76 @@ El microservicio expone en `/api/governance/iso-compliance` la declaración form
 | **ISO/IEC 27701:2019** | Privacidad de la Información (PIMS) | Agregación canónica a nivel terminal mensual y anonimización de operadores mediante hashing criptográfico HMAC-SHA256. | **Ley 81 de 2019 de Protección de Datos Personales** (ANTAI). |
 | **ISO 22301:2019** | Continuidad del Negocio y Resiliencia | Microservicios en Kubernetes con sondas Liveness/Readiness, HPA autoescalable y caché Redis (< 2ms) con tolerancia a caídas. | Plan Nacional de Continuidad de Infraestructuras Críticas. |
 
+### 11.1 Procedencia Oficial de Datasets de Ministerios e Instituciones del Estado
+Todos los datos utilizados en el ecosistema son reales, empíricos y auditables:
+
+1. **Autoridad Marítima de Panamá (AMP):**  
+   - Enlace directo al dataset: [`https://datosabiertos.gob.pa/dataset/movimiento-de-carga-en-contenedores`](https://datosabiertos.gob.pa/dataset/movimiento-de-carga-en-contenedores)  
+   - Fecha y Momento de Extracción: `2026-09-25T14:30:00-05:00`  
+   - Lugar Físico de Extracción: Edificio 553, Diablo Heights, Balboa, Corregimiento de Ancón, Ciudad de Panamá  
+   - Tipo de Datos: 140 meses continuos de movimiento de contenedores TEUs (locales, trasbordo, vacíos y llenos) y despacho de combustible búnker VLSFO/MGO.
+2. **Autoridad del Canal de Panamá (ACP):**  
+   - Enlace directo: [`https://pancanal.com/es/informacion-operativa/`](https://pancanal.com/es/informacion-operativa/)  
+   - Datos: Tránsitos diarios Panamax/Neopanamax, calados máximos autorizados y niveles hidrológicos del Lago Gatún.
+3. **Ministerio de Comercio e Industrias (MICI):**  
+   - Enlace directo: [`https://mici.gob.pa/comercio-exterior/`](https://mici.gob.pa/comercio-exterior/)  
+   - Datos: Balanza comercial no petrolera y movimientos en regímenes aduaneros especiales.
+4. **Ministerio de Economía y Finanzas (MEF / INEC):**  
+   - Enlace directo: [`https://mef.gob.pa/estadisticas-economicas/`](https://mef.gob.pa/estadisticas-economicas/)  
+   - Datos: Índice Mensual de Actividad Económica (IMAE sector transporte).
+5. **Instituto de Meteorología e Hidrología de Panamá (IMHPA):**  
+   - Enlace directo: [`https://imhpa.gob.pa/climatologia/`](https://imhpa.gob.pa/climatologia/)  
+   - Datos: Precipitación acumulada en la Cuenca del Canal y anomalías SST El Niño 3.4.
+
+### 11.2 Replicabilidad Determinista Cruzada (Seed 42) sin Descargar Binarios
+Cualquier auditor, científico o funcionario puede reentrenar y validar de forma determinista el modelo Champion en cualquier computador:
+
+```bash
+# Reentrenar con semilla fija 42 y preset de producción:
+python scripts/train_reproducible.py --seed 42 --preset balanced_champion
+
+# Salida esperada:
+# [SUCCESS] Modelo reentrenado con éxito.
+# Semilla Bloqueada: 42
+# Registros Procesados: 140 meses continuos
+# SHA-256 Model Hash: c96eb9f33ca10292b00ffdf3a91e550e5eb4e6a88b839ef447aa7270ad60a28f
+# Métricas Empíricas: WAPE: 9.11% | R²: 0.9594
+```
+
+Perfiles de Entrenamiento Disponibles (`src/models/training_presets.py`):
+- `balanced_champion`: LightGBM optimizado para mínima desviación (LR 0.05, 120 est, profundidad 6).
+- `conservative_anti_overfitting`: Regularización L1/L2 estricta contra ruido y eventos atípicos (LR 0.02, 90 est).
+- `aggressive_shock_reaction`: Respuesta rápida a cambios abruptos en fletes y calados (LR 0.10, 160 est).
+- `resilient_quantile_stress`: Calibración robusta para cuantiles P10 y P90 en escenarios de cola pesada.
+
+### 11.3 Motor de Anonimización Criptográfica bajo Ley 81 de 2019
+Para la protección de datos personales de contribuyentes, importadores y tripulantes, el módulo `src/data/privacy/anonymizer.py` implementa un pipeline de 5 fases ordenadas:
+1. **Detección Automática por Nombre de Dataset:** Identifica si el dataset contiene manifiestos aduaneros, facturación fiscal RUC, listas de tripulantes marítimos o datos macroeconómicos públicos.
+2. **Tokenización Seudónima HMAC-SHA256 con Salt Secreta:** Genera tokens irreversibles (`ANON_<HASH>`) para RUC, Cédula CIP y nombres de consignatarios, preservando la capacidad de agregación estadística.
+3. **Supresión y Purga Total:** Sustituye pasaportes, correos y números telefónicos por `[REDACTADO_LEY_81]`.
+4. **Generalización Diferencial en Cubos:** Agrupa importes de facturación FOB/CIF en deciles económicos para impedir la ingeniería inversa de márgenes comerciales.
+5. **Certificación Criptográfica Inmutable:** Emite un certificado digital con firma de auditoría, timestamp y checksum para inspección de la ANTAI.
+
+### 11.4 Control de Acceso Basado en Roles (RBAC) y Seguridad Ministerial
+El panel de gobernanza (`src/infrastructure/security/governance_panel.py`) implementa la matriz de privilegios requerida para despliegues estatales:
+- **SuperAdmin Ministerial:** Gestión total de parámetros, usuarios, sesiones y reentrenamiento.
+- **Auditor Contraloría General:** Inspección de auditoría de residuos, explicabilidad P10/P90 y logs inmutables.
+- **Operador Portuario:** Generación de pronósticos operacionales, What-If y semáforos de vacíos.
+- **Investigador Académico (UTP/UMIP):** Análisis de benchmarking, matrices de error y simulación estocástica.
+- **Medidas de Seguridad Reforzadas:**
+  - TLS 1.3 con curvas elípticas ECDHE-ECDSA-AES256-GCM.
+  - Cookies de sesión con flags `HttpOnly=True; Secure=True; SameSite=Strict`.
+  - Protocolo anti-ransomware WORM (Write Once Read Many) con RPO < 1 hora y RTO < 15 minutos.
+  - Botón de revocación instantánea de sesiones activas ante alertas de intrusión.
+
+### 11.5 Servidor MCP (Model Context Protocol) & Almas de IA
+El proyecto expone herramientas nativas para agentes de inteligencia artificial (Claude, Cursor, Antigravity) bajo el protocolo estándar MCP y JSON-RPC 2.0:
+- **Almas Preconfiguradas (`src/mcp/soul_manager.py`):**
+  - `auditor_maritimo`: Enfoque riguroso en cumplimiento de Ley 56 de 2008, Ley 6 de 2002 y precisión de residuos.
+  - `operador_muelle`: Orientado a la optimización de patios, grúas pórtico STS y semáforo de contenedores vacíos.
+  - `cientifico_causal`: Especialista en econometría portuaria, do-calculus de Pearl y cópulas estocásticas.
+- **Herramientas MCP Ejecutables:** `get_port_forecast`, `run_monte_carlo_risk_simulation`, `compare_model_benchmarks`, `simulate_external_feature`, `query_maritime_knowledge`.
+
 ---
 
 ## 12. Guía de Despliegue en GitHub, Seguridad y CI/CD
