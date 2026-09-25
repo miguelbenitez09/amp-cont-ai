@@ -4,7 +4,7 @@
 > **Autor:** Desarrollado v1.0 Miguel Benítez  
 > **Licencia:** GNU General Public License v3.0 (GPL-3.0) con Atribución Obligatoria  
 > **Ecosistema:** Autoridad Marítima de Panamá (AMP) — Período Histórico 2015–2026 (140 meses)  
-> **Repositorio Oficial:** [Panamá PortOps-AI](https://github.com/mbeni/amp-cont-ai)  
+> **Repositorio Oficial:** [Panamá PortOps-AI](https://github.com/miguelbenitez09/amp-cont-ai)  
 
 ---
 

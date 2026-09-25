@@ -89,7 +89,7 @@ git branch -M main
 #### 5. Vincular tu Repositorio Remoto de GitHub
 *(Reemplaza `<tu-usuario>` por tu usuario real de GitHub, por ejemplo `mbeni`)*:
 ```powershell
-git remote add origin https://github.com/mbeni/amp-cont-ai.git
+git remote add origin https://github.com/miguelbenitez09/amp-cont-ai.git
 ```
 *¿Qué hace?* Crea un alias llamado `origin` en tu configuración local (`.git/config`) que apunta a la URL remota de GitHub.
 

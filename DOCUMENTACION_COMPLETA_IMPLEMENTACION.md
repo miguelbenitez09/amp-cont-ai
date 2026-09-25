@@ -1,10 +1,10 @@
 # Manual Maestro de Arquitectura, Implementación y Gobernanza MLOps
 ## Proyecto: Panamá PortOps-AI — Plataforma de Inteligencia Portuaria y Simulación Estocástica
 
-> **Autor:** `mbeni`  
+> **Autor:** Miguel Benítez (`miguelbenitez09`) | **Firma Oficial:** `Desarrollado v1.0 Miguel Benítez`  
 > **Licencia:** GNU General Public License v3.0 (GPL-3.0) con Atribución Obligatoria (Sección 7)  
 > **Datos Fuente:** Autoridad Marítima de Panamá (AMP) — Período Histórico Oficial 2015–2026  
-> **Repositorio:** [Panamá PortOps-AI](https://github.com/mbeni/amp-cont-ai)  
+> **Repositorio:** [Panamá PortOps-AI](https://github.com/miguelbenitez09/amp-cont-ai)  
 
 ---
 
@@ -321,22 +321,23 @@ El proyecto está formalmente protegido bajo la **GNU General Public License v3.
 Cualquier modificación, trabajo derivado, bifurcación (*fork*), microservicio o producto comercial que utilice este código, modelos o metodologías **debe publicarse obligatoriamente bajo la misma licencia GPL-3.0 y con su código fuente accesible de manera pública y gratuita**.
 
 ### 2. Reconocimiento y Atribución Obligatoria al Autor
-En cualquier publicación, informe técnico, artículo científico, charla, repositorio público o despliegue productivo que utilice este trabajo, **se debe dar crédito explícito, claro y visible al autor original (`mbeni`)**:
+En cualquier publicación, informe técnico, artículo científico, charla, repositorio público o despliegue productivo que utilice este trabajo, **se debe dar crédito explícito, claro y visible al autor original (Miguel Benítez)**:
 
 ```text
-Basado en Panamá PortOps-AI por mbeni (https://github.com/mbeni/amp-cont-ai)
+Desarrollado v1.0 Miguel Benítez
+Basado en Panamá PortOps-AI por Miguel Benítez (https://github.com/miguelbenitez09/amp-cont-ai)
 ```
 
 ### 3. Formato Canónico de Citación Técnica (BibTeX):
 ```bibtex
-@software{mbeni2026portops,
-  author       = {mbeni},
+@software{benitez2026portops,
+  author       = {Benítez, Miguel},
   title        = {{Panamá PortOps-AI: Ecosistema MLOps y Motor de Simulación Estocástica para Logística Portuaria}},
   year         = {2026},
   publisher    = {GitHub},
   journal      = {GitHub repository},
-  howpublished = {\url{https://github.com/mbeni/amp-cont-ai}},
-  note         = {Licensed under GNU GPL v3.0 with mandatory attribution}
+  howpublished = {\url{https://github.com/miguelbenitez09/amp-cont-ai}},
+  note         = {Desarrollado v1.0 Miguel Benítez. Licensed under GNU GPL v3.0 with mandatory attribution}
 }
 ```
 

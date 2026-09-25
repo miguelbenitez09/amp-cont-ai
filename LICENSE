@@ -1,7 +1,7 @@
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
- Copyright (C) 2026 Miguel Benítez (mbeni) <https://github.com/mbeni/amp-cont-ai>
+ Copyright (C) 2026 Miguel Benítez (miguelbenitez09) <https://github.com/miguelbenitez09/amp-cont-ai>
  Everyone is permitted to copy and distribute verbatim copies
  of this license document, but changing it is not allowed.
 
@@ -272,8 +272,8 @@ ATTRIBUTION NOTICE (Section 7(b)):
 Any redistribution, public demonstration, derivative work, or deployment
 of this software, its machine learning models, or its simulation engine
 must retain prominent and visible attribution to the original author:
-Author: Miguel Benítez (mbeni)
+Author: Miguel Benítez (miguelbenitez09)
 Notice: Desarrollado v1.0 Miguel Benítez
-Repository: Panama PortOps-AI (https://github.com/mbeni/amp-cont-ai)
+Repository: Panama PortOps-AI (https://github.com/miguelbenitez09/amp-cont-ai)
 Original Work: End-to-End MLOps Platform & Stochastic Simulation Engine
 for Panamanian Port Logistics (AMP 2015-2026).

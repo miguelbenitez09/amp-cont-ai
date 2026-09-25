@@ -60,7 +60,7 @@ Write-Host "[5/5] Configurando repositorio remoto en GitHub..." -ForegroundColor
 $remotes = git remote -v
 if (-not $remotes) {
     Write-Host "No se ha configurado el repositorio remoto 'origin'." -ForegroundColor Yellow
-    $defaultRepo = "https://github.com/mbeni/amp-cont-ai.git"
+    $defaultRepo = "https://github.com/miguelbenitez09/amp-cont-ai.git"
     $userRepo = Read-Host "Ingresa la URL de tu repositorio GitHub (Presiona ENTER para '$defaultRepo')"
     if (-not $userRepo) {
         $userRepo = $defaultRepo

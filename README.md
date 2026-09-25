@@ -163,7 +163,7 @@ Cualquier uso educativo, investigación académica, bifurcación (*fork*) o demo
 
 ```text
 Desarrollado v1.0 Miguel Benítez
-Basado en Panamá PortOps-AI por Miguel Benítez (https://github.com/mbeni/amp-cont-ai)
+Basado en Panamá PortOps-AI por Miguel Benítez (https://github.com/miguelbenitez09/amp-cont-ai)
 ```
 
 Para citar este trabajo formalmente en investigaciones o artículos:
@@ -174,7 +174,7 @@ Para citar este trabajo formalmente en investigaciones o artículos:
   year         = {2026},
   publisher    = {GitHub},
   journal      = {GitHub repository},
-  howpublished = {\url{https://github.com/mbeni/amp-cont-ai}},
+  howpublished = {\url{https://github.com/miguelbenitez09/amp-cont-ai}},
   note         = {Desarrollado v1.0 Miguel Benítez. Fines Educativos. Licensed under GNU GPL v3.0 with mandatory attribution}
 }
 ```

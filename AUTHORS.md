@@ -1,7 +1,7 @@
 # Reconocimiento y Atribución / Authors & Attribution
 
 ## Autor Principal y Creador Original
-- **Autor:** **Miguel Benítez** (`mbeni`) (<https://github.com/mbeni>)
+- **Autor:** **Miguel Benítez** (`miguelbenitez09`) (<https://github.com/miguelbenitez09>)
 - **Firma Oficial:** **`Desarrollado v1.0 Miguel Benítez`**
 - **Proyecto:** Panamá PortOps-AI v1.0
 - **Descripción:** Plataforma industrial de MLOps, Benchmarking Multi-Algoritmo y Motor de Simulación Estocástica (Monte Carlo & Reverse Stress Testing) sobre el Sistema Portuario de la República de Panamá (2015–2026).
@@ -17,7 +17,7 @@ Este proyecto es de código abierto bajo los términos de la **GNU General Publi
 2. **Reconocimiento y Atribución Obligatoria:** Si este proyecto se utiliza con fines educativos, de investigación académica, demostraciones públicas, conferencias o aplicaciones comerciales, **se debe dar crédito explícito y visible al autor original (Miguel Benítez)** y enlazar a este repositorio:
    ```text
    Desarrollado v1.0 Miguel Benítez
-   Basado en Panamá PortOps-AI por Miguel Benítez (https://github.com/mbeni/amp-cont-ai)
+   Basado en Panamá PortOps-AI por Miguel Benítez (https://github.com/miguelbenitez09/amp-cont-ai)
    ```
 3. **Preservación de Derechos:** Queda prohibido eliminar los avisos de autoría o modificar las cabeceras de licencia de los archivos fuente.
 
@@ -32,7 +32,7 @@ Este proyecto es de código abierto bajo los términos de la **GNU General Publi
   year         = {2026},
   publisher    = {GitHub},
   journal      = {GitHub repository},
-  howpublished = {\url{https://github.com/mbeni/amp-cont-ai}},
+  howpublished = {\url{https://github.com/miguelbenitez09/amp-cont-ai}},
   note         = {Desarrollado v1.0 Miguel Benítez. Licensed under GNU GPL v3.0 with mandatory attribution}
 }
 ```
