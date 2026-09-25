@@ -58,6 +58,7 @@ features_df = load_gold_features()
 # --- Sidebar Controls ---
 st.sidebar.image("https://img.icons8.com/color/96/cargo-ship.png", width=70)
 st.sidebar.title("🚢 Panama PortOps-AI")
+st.sidebar.caption("Desarrollado v1.0 Miguel Benítez")
 st.sidebar.markdown("**Sistema MLOps de Inteligencia Portuaria**")
 st.sidebar.markdown("---")
 
@@ -69,16 +70,19 @@ what_if_bunker = st.sidebar.slider("Perturbación Ventas Bunkering (%):", min_va
 what_if_trans = st.sidebar.slider("Perturbación Ratio Trasbordo (%):", min_value=-30, max_value=30, value=0, step=5)
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("**Estado del Sistema MLOps:**")
-st.sidebar.success("🟢 Modelo: Champion v1 (LightGBM)")
+st.sidebar.markdown("**Estado del Ecosistema MLOps:**")
+st.sidebar.success("🟢 Modelo: Champion v1 (LightGBM Cuantiles)")
 st.sidebar.info("📦 Feature Store: 85 Features (Gold)")
 st.sidebar.caption("Datos: Autoridad Marítima de Panamá (2015-2026)")
+st.sidebar.caption("Marco Legal: Ley 6 de 2002 de Transparencia (Panamá)")
 
 # --- Main Layout ---
-st.title("🇵🇦 Panama PortOps-AI: Control Operativo y Pronóstico de Demanda")
+st.title("🇵🇦 Panamá PortOps-AI: Control Operativo y Pronóstico de Demanda")
+st.caption("Firma Oficial: Desarrollado v1.0 Miguel Benítez | Fines Cívicos y Educativos (Ley 6 de 2002)")
 st.markdown(
     "Plataforma integral de **Machine Learning en Producción (MLOps)** para la predicción de tráfico de contenedores (TEUs), "
-    "dimensionamiento de capacidad de muelle y detección de desbalances de equipo en el hub interoceánico de Panamá."
+    "dimensionamiento de capacidad de muelle y simulación de resiliencia en el hub interoceánico de Panamá. "
+    "**100% Datos Reales (Zero Mocks)** basados en 140 meses de microdatos oficiales de la AMP."
 )
 
 if bundle is None or features_df is None:

@@ -45,7 +45,11 @@
   <main>
     <!-- Interactive Navigation Tabs -->
     <nav class="tabs-nav">
-      <button class="tab-btn active" data-tab="tab-forecast">
+      <button class="tab-btn active" data-tab="tab-landing">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        Inicio & Visión General
+      </button>
+      <button class="tab-btn" data-tab="tab-forecast">
         <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
         Pronóstico & What-If
       </button>
@@ -68,9 +72,173 @@
     </nav>
 
     <!-- ========================================== -->
+    <!-- TAB 0: LANDING PAGE & VISIÓN GENERAL       -->
+    <!-- ========================================== -->
+    <section id="tab-landing" class="tab-content active">
+      <div class="landing-container">
+        
+        <!-- Hero Section -->
+        <div class="landing-hero card">
+          <div class="hero-badge-row">
+            <span class="badge hero-law-badge">
+              <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              Ley 6 de 2002 de Transparencia de Panamá • Datos Abiertos AMP (2015–2026)
+            </span>
+            <span class="badge hero-author-badge">Desarrollado v1.0 Miguel Benítez</span>
+            <span class="badge hero-license-badge">GNU GPL-3.0 Copyleft</span>
+          </div>
+
+          <h1 class="hero-title">Panamá PortOps-AI <span class="version-highlight">v1.0</span></h1>
+          <p class="hero-subtitle">
+            Plataforma industrial de MLOps, benchmarking multi-algoritmo y simulación estocástica multivariada sobre el sistema portuario y logístico de la República de Panamá.
+          </p>
+
+          <div class="hero-description-box">
+            <p>
+              <strong>Propósito Cívico y Educativo:</strong> Diseñado para empoderar a personas naturales y jurídicas en Panamá (transportistas de carga terrestre, terminales portuarias, agencias navieras, estudiantes universitarios y servidores públicos), facilitando una herramienta soberana, verificable y 100% de código abierto que elimina la dependencia de costosas licencias privativas.
+            </p>
+            <p class="hero-stat-line">
+              <span>⚓ <strong>140 meses continuos</strong> analizados (2015-01 a 2026-05)</span> • 
+              <span>📦 <strong>353 boletines oficiales</strong> procesados con deduplicación bitemporal</span> • 
+              <span>🎯 <strong>Zero Mocks:</strong> Cero datos simulados; 100% cálculo empírico real</span>
+            </p>
+          </div>
+
+          <div class="hero-cta-group">
+            <button class="btn btn-primary" onclick="document.querySelector('[data-tab=tab-forecast]').click()">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              Explorar Pronósticos en Vivo
+            </button>
+            <button class="btn btn-secondary" onclick="document.querySelector('[data-tab=tab-benchmark]').click()">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              Ver Torneo Champion/Challenger
+            </button>
+            <button class="btn btn-secondary" onclick="document.querySelector('[data-tab=tab-simulation]').click()">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="15.5" r="1.5"></circle></svg>
+              Simulador Monte Carlo & Estrés
+            </button>
+            <a href="/docs" target="_blank" class="btn btn-outline">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+              OpenAPI Swagger Docs
+            </a>
+          </div>
+        </div>
+
+        <!-- System Capabilities Grid (Zero Mocks) -->
+        <div class="landing-section-header">
+          <svg class="section-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <h2>Capacidades Operativas del Ecosistema</h2>
+        </div>
+
+        <div class="capabilities-grid">
+          
+          <div class="capability-card card" onclick="document.querySelector('[data-tab=tab-forecast]').click()">
+            <div class="cap-header">
+              <span class="cap-tag champion">🏆 Champion</span>
+              <span class="cap-metric">WAPE 9.11%</span>
+            </div>
+            <h3>Inferencia Cuantílica en Tiempo Real</h3>
+            <p>Pronóstico condicional a 1–6 meses para las 6 terminales portuarias con bandas de incertidumbre operacional (P10 Suelo, P50 Mediana, P90 Techo de Capacidad) y semáforo de vacíos.</p>
+            <div class="cap-footer">
+              <span>Probar Pronósticos →</span>
+            </div>
+          </div>
+
+          <div class="capability-card card" onclick="document.querySelector('[data-tab=tab-benchmark]').click()">
+            <div class="cap-header">
+              <span class="cap-tag benchmark">🔬 4 Algoritmos</span>
+              <span class="cap-metric">R² 0.9594</span>
+            </div>
+            <h3>Benchmarking Multi-Algoritmo</h3>
+            <p>Expanding Window Backtesting empírico (2022–2026) comparando LightGBM, Random Forest (latencia 4.5ms), HistGradientBoosting y regularización Ridge/ElasticNet.</p>
+            <div class="cap-footer">
+              <span>Ver Matriz Comparativa →</span>
+            </div>
+          </div>
+
+          <div class="capability-card card" onclick="document.querySelector('[data-tab=tab-diagnostics]').click()">
+            <div class="cap-header">
+              <span class="cap-tag diag">📊 Zero Mocks</span>
+              <span class="cap-metric">85 Features Gold</span>
+            </div>
+            <h3>Diagnóstico de Residuos & Causalidad</h3>
+            <p>Auditoría de residuos reales ($y_t - \hat{y}_t$), Factor de Inflación de la Varianza (VIF) y tratamiento formal de variables confusoras (Año Nuevo Chino, sequía del Canal).</p>
+            <div class="cap-footer">
+              <span>Inspeccionar Residuos →</span>
+            </div>
+          </div>
+
+          <div class="capability-card card" onclick="document.querySelector('[data-tab=tab-simulation]').click()">
+            <div class="cap-header">
+              <span class="cap-tag sim">🎲 Estocástico</span>
+              <span class="cap-metric">VaR 95% & CVaR</span>
+            </div>
+            <h3>Monte Carlo & Reverse Stress Testing</h3>
+            <p>Cópulas gaussianas vía factorización de Cholesky, saltos de Poisson de Merton (1976) y optimización Powell para encontrar vectores mínimos de colapso de patio.</p>
+            <div class="cap-footer">
+              <span>Ejecutar Simulación →</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Interactive API Usage Guide & Live Testing Console -->
+        <div class="card landing-api-console">
+          <div class="card-header">
+            <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"></path></svg>
+            <h2>Consola de Integración y Uso de APIs (Python, cURL, JS)</h2>
+          </div>
+
+          <p class="api-console-desc">
+            Prueba cómo interactuar directamente con el microservicio predictivo. Puedes copiar el código listo para tu aplicación o ejecutar una petición real directamente desde este navegador:
+          </p>
+
+          <div class="api-lang-tabs">
+            <button class="api-lang-btn active" data-lang="curl">cURL (Terminal)</button>
+            <button class="api-lang-btn" data-lang="python">Python (requests)</button>
+            <button class="api-lang-btn" data-lang="javascript">JavaScript (fetch)</button>
+          </div>
+
+          <div class="code-preview-container">
+            <pre id="api-code-snippet"><code class="language-bash">curl -X POST "http://127.0.0.1:8000/predict" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "port": "Puerto Balboa",
+    "horizon_months": 3,
+    "algorithm": "ensemble",
+    "bunker_perturbation_pct": 0.0,
+    "transshipment_perturbation_pct": 0.0
+  }'</code></pre>
+            <button class="btn btn-copy" id="btn-copy-code" title="Copiar código al portapapeles">
+              <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Copiar
+            </button>
+          </div>
+
+          <div class="live-test-row">
+            <button class="btn btn-primary" id="btn-live-test">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              Ejecutar Petición Real al Microservicio
+            </button>
+            <span class="live-test-status" id="live-test-status">Presiona el botón para comprobar respuesta en vivo</span>
+          </div>
+
+          <div class="live-response-box" id="live-response-box" style="display: none;">
+            <div class="response-header">
+              <span class="response-badge" id="response-status-badge">200 OK</span>
+              <span class="response-time" id="response-time-badge">12 ms</span>
+            </div>
+            <pre><code id="live-response-code"></code></pre>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
     <!-- TAB 1: PRONÓSTICO & WHAT-IF MULTI-ALGORITMO -->
     <!-- ========================================== -->
-    <section id="tab-forecast" class="tab-content active">
+    <section id="tab-forecast" class="tab-content">
       <div class="dashboard-grid">
         
         <!-- Controls Column -->

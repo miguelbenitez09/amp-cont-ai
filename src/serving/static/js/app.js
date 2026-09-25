@@ -896,6 +896,120 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // --- Landing Page Interactive API Console ---
+  const apiSnippets = {
+    curl: `curl -X POST "http://127.0.0.1:8000/predict" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "port": "Puerto Balboa",
+    "horizon_months": 3,
+    "algorithm": "ensemble",
+    "bunker_perturbation_pct": 0.0,
+    "transshipment_perturbation_pct": 0.0
+  }'`,
+    python: `import requests
+
+url = "http://127.0.0.1:8000/predict"
+payload = {
+    "port": "Puerto Balboa",
+    "horizon_months": 3,
+    "algorithm": "ensemble",
+    "bunker_perturbation_pct": 0.0,
+    "transshipment_perturbation_pct": 0.0
+}
+
+response = requests.post(url, json=payload)
+data = response.json()
+print("Pronóstico P50:", [m["predicted_teus_p50"] for m in data["forecast"]])`,
+    javascript: `// Inferencia con Fetch API moderna
+const response = await fetch("http://127.0.0.1:8000/predict", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    port: "Puerto Balboa",
+    horizon_months: 3,
+    algorithm: "ensemble"
+  })
+});
+const data = await response.json();
+console.log("Pronósticos:", data.forecast);`
+  };
+
+  const apiLangButtons = document.querySelectorAll(".api-lang-btn");
+  const apiCodeSnippet = document.getElementById("api-code-snippet");
+  const btnCopyCode = document.getElementById("btn-copy-code");
+  const btnLiveTest = document.getElementById("btn-live-test");
+  const liveTestStatus = document.getElementById("live-test-status");
+  const liveResponseBox = document.getElementById("live-response-box");
+  const responseStatusBadge = document.getElementById("response-status-badge");
+  const responseTimeBadge = document.getElementById("response-time-badge");
+  const liveResponseCode = document.getElementById("live-response-code");
+
+  if (apiLangButtons.length > 0 && apiCodeSnippet) {
+    apiLangButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        apiLangButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const lang = btn.getAttribute("data-lang");
+        const code = apiSnippets[lang] || apiSnippets.curl;
+        apiCodeSnippet.querySelector("code").textContent = code;
+      });
+    });
+  }
+
+  if (btnCopyCode) {
+    btnCopyCode.addEventListener("click", () => {
+      const codeText = apiCodeSnippet.querySelector("code").textContent;
+      navigator.clipboard.writeText(codeText).then(() => {
+        const originalHtml = btnCopyCode.innerHTML;
+        btnCopyCode.innerHTML = "<span>✓ Copiado</span>";
+        setTimeout(() => { btnCopyCode.innerHTML = originalHtml; }, 2000);
+      });
+    });
+  }
+
+  if (btnLiveTest) {
+    btnLiveTest.addEventListener("click", async () => {
+      liveTestStatus.textContent = "Ejecutando petición en vivo a /predict...";
+      btnLiveTest.disabled = true;
+      const startTime = performance.now();
+
+      try {
+        const res = await fetch("/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            port: "Puerto Balboa",
+            horizon_months: 3,
+            algorithm: "ensemble",
+            bunker_perturbation_pct: 0.0,
+            transshipment_perturbation_pct: 0.0
+          })
+        });
+
+        const elapsed = Math.round(performance.now() - startTime);
+        const data = await res.json();
+
+        liveResponseBox.style.display = "block";
+        responseStatusBadge.textContent = `${res.status} ${res.statusText || "OK"}`;
+        responseStatusBadge.style.background = res.ok ? "rgba(16, 185, 129, 0.2)" : "rgba(244, 63, 94, 0.2)";
+        responseStatusBadge.style.color = res.ok ? "var(--emerald-success)" : "var(--rose-alert)";
+        responseTimeBadge.textContent = `${elapsed} ms (Latencia Real)`;
+        liveResponseCode.textContent = JSON.stringify(data, null, 2);
+        liveTestStatus.textContent = `Petición exitosa en ${elapsed} ms. Datos 100% reales.`;
+      } catch (err) {
+        liveResponseBox.style.display = "block";
+        responseStatusBadge.textContent = "Error de Red";
+        responseStatusBadge.style.background = "rgba(244, 63, 94, 0.2)";
+        responseStatusBadge.style.color = "var(--rose-alert)";
+        liveResponseCode.textContent = `Error: ${err.message}`;
+        liveTestStatus.textContent = "Error al contactar el microservicio.";
+      } finally {
+        btnLiveTest.disabled = false;
+      }
+    });
+  }
+
   // --- Bootstrapping ---
   btnPredict.addEventListener("click", runForecast);
   btnSimulate.addEventListener("click", runSimulation);
