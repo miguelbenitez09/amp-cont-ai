@@ -1252,9 +1252,6 @@ executePortForecast();`;
   const extFormulaBadge = document.getElementById("ext-formula-badge");
   const extResultDetails = document.getElementById("ext-result-details");
 
-  const btnExportForecastJson = document.getElementById("btn-export-forecast-json");
-  const btnExportForecastCsv = document.getElementById("btn-export-forecast-csv");
-  const btnExportBenchmarkJson = document.getElementById("btn-export-benchmark-json");
   const exportStatus = document.getElementById("export-status");
 
   let latestForecastCache = null;
@@ -1373,7 +1370,7 @@ executePortForecast();`;
   const exportPreviewTable = document.getElementById("export-preview-table");
   const previewBadge = document.getElementById("preview-badge");
   const previewFilenameLabel = document.getElementById("preview-filename-label");
-  const exportStatus = document.getElementById("export-status");
+  // exportStatus is declared above at line 1258
 
   function getSuggestedFilename() {
     const scope = exportScopeSelect ? exportScopeSelect.value : "forecasts";
