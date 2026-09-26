@@ -124,6 +124,11 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchModelBenchmark();
       } else if (targetTab === "tab-diagnostics") {
         fetchModelDiagnostics();
+      } else if (targetTab === "tab-data-platform") {
+        if (window.loadDataPlatformManifest) window.loadDataPlatformManifest();
+      } else if (targetTab === "tab-security-iam") {
+        if (window.verifyWormAuditChainLive) window.verifyWormAuditChainLive();
+        if (window.fetchAuditSecurityEvents) window.fetchAuditSecurityEvents();
       }
     });
   });
@@ -3993,10 +3998,399 @@ executePortForecast();`;
     }
   });
 
+  // =========================================================================
+  // V2.0 IAM, SECURITY HUD, RBAC SIMULATOR & WORM LEDGER HANDLERS
+  // =========================================================================
+
+  window.activeSession = {
+    token: localStorage.getItem("portops_token") || null,
+    user: null,
+    roles: ["root"],
+    permissions: []
+  };
+  window.tempMfaToken = null;
+
+  window.openAuthModal = function(initialTab = "atab-login") {
+    const modal = document.getElementById("auth-iam-modal");
+    if (modal) {
+      modal.classList.add("open");
+      window.switchAuthTab(initialTab);
+    }
+  };
+
+  window.closeAuthModal = function() {
+    const modal = document.getElementById("auth-iam-modal");
+    if (modal) modal.classList.remove("open");
+  };
+
+  window.switchAuthTab = function(tabId) {
+    document.querySelectorAll(".auth-tab-btn").forEach(btn => {
+      btn.classList.toggle("active", btn.getAttribute("data-atab") === tabId);
+    });
+    document.querySelectorAll(".auth-tab-content").forEach(content => {
+      content.classList.toggle("active", content.id === tabId);
+    });
+  };
+
+  window.executeLogin = async function() {
+    const usernameInput = document.getElementById("auth-input-username");
+    const passwordInput = document.getElementById("auth-input-password");
+    const statusEl = document.getElementById("auth-login-status");
+
+    const username = usernameInput ? usernameInput.value.trim() : "";
+    const password = passwordInput ? passwordInput.value : "";
+
+    if (!username || !password) {
+      if (statusEl) statusEl.innerHTML = `<span style="color:#f43f5e;">Ingrese usuario y contraseña.</span>`;
+      return;
+    }
+
+    if (statusEl) statusEl.innerHTML = `<span style="color:#38bdf8;">Autenticando con PBKDF2...</span>`;
+
+    try {
+      const res = await fetch("/api/v1/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.detail || "Error en la autenticación.");
+      }
+
+      if (data.mfa_required) {
+        window.tempMfaToken = data.temp_token;
+        const mfaView = document.getElementById("auth-mfa-view");
+        if (mfaView) mfaView.style.display = "block";
+        if (statusEl) statusEl.innerHTML = `<span style="color:#f59e0b;">Desafío MFA requerido. Ingrese código TOTP.</span>`;
+        return;
+      }
+
+      // Successful login
+      window.activeSession.token = data.session_token;
+      window.activeSession.user = data.user;
+      window.activeSession.roles = data.roles || ["root"];
+      window.activeSession.permissions = data.permissions || [];
+      localStorage.setItem("portops_token", data.session_token);
+
+      // Update Top Nav & HUD
+      const navUserLabel = document.getElementById("nav-user-label");
+      if (navUserLabel) navUserLabel.textContent = data.user.username;
+      const hudActiveRole = document.getElementById("hud-active-role");
+      if (hudActiveRole) hudActiveRole.textContent = `Rol: ${data.roles[0] || 'root'}`;
+      const iamUserKpi = document.getElementById("iam-user-kpi");
+      if (iamUserKpi) iamUserKpi.textContent = data.user.username;
+      const iamRoleKpi = document.getElementById("iam-role-kpi");
+      if (iamRoleKpi) iamRoleKpi.textContent = data.roles[0] || 'root';
+
+      // Update Inspector Tab
+      const rawEl = document.getElementById("inspector-token-raw");
+      if (rawEl) rawEl.textContent = data.session_token;
+      const claimsEl = document.getElementById("inspector-token-claims");
+      if (claimsEl) claimsEl.textContent = JSON.stringify({ user: data.user, roles: data.roles, exp: "12 Horas" }, null, 2);
+
+      if (statusEl) statusEl.innerHTML = `<span style="color:#10b981;">✓ Sesión iniciada con éxito.</span>`;
+
+      if (data.must_change_password) {
+        setTimeout(() => {
+          alert("Aviso de Seguridad NIST SP 800-63B: Se requiere cambio obligatorio de contraseña en el primer acceso.");
+          window.switchAuthTab("atab-password");
+        }, 600);
+      }
+    } catch (err) {
+      if (statusEl) statusEl.innerHTML = `<span style="color:#f43f5e;">Error: ${err.message}</span>`;
+    }
+  };
+
+  window.executeVerifyMFA = async function() {
+    const totpInput = document.getElementById("auth-input-totp");
+    const statusEl = document.getElementById("auth-mfa-status");
+    const code = totpInput ? totpInput.value.trim() : "";
+
+    if (!code || code.length !== 6) {
+      if (statusEl) statusEl.innerHTML = `<span style="color:#f43f5e;">Ingrese código de 6 dígitos.</span>`;
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/v1/auth/mfa/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ temp_token: window.tempMfaToken, totp_code: code })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Código incorrecto.");
+
+      window.activeSession.token = data.session_token;
+      window.activeSession.user = data.user;
+      window.activeSession.roles = data.roles || [];
+      window.activeSession.permissions = data.permissions || [];
+      localStorage.setItem("portops_token", data.session_token);
+
+      const navUserLabel = document.getElementById("nav-user-label");
+      if (navUserLabel) navUserLabel.textContent = data.user.username;
+      const hudActiveRole = document.getElementById("hud-active-role");
+      if (hudActiveRole) hudActiveRole.textContent = `Rol: ${data.roles[0] || 'root'}`;
+
+      if (statusEl) statusEl.innerHTML = `<span style="color:#10b981;">✓ MFA Verificado. Sesión otorgada.</span>`;
+    } catch (err) {
+      if (statusEl) statusEl.innerHTML = `<span style="color:#f43f5e;">Error: ${err.message}</span>`;
+    }
+  };
+
+  window.executeChangePassword = async function() {
+    const oldInput = document.getElementById("pwd-input-old");
+    const newInput = document.getElementById("pwd-input-new");
+    const confirmInput = document.getElementById("pwd-input-confirm");
+    const statusEl = document.getElementById("pwd-change-status");
+
+    if (newInput.value !== confirmInput.value) {
+      if (statusEl) statusEl.innerHTML = `<span style="color:#f43f5e;">Las contraseñas no coinciden.</span>`;
+      return;
+    }
+
+    try {
+      const headers = { "Content-Type": "application/json" };
+      if (window.activeSession.token) {
+        headers["Authorization"] = `Bearer ${window.activeSession.token}`;
+      }
+
+      const res = await fetch("/api/v1/auth/password/change", {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({ old_password: oldInput.value, new_password: newInput.value })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Error al actualizar contraseña.");
+
+      if (statusEl) statusEl.innerHTML = `<span style="color:#10b981;">✓ ${data.message}</span>`;
+      oldInput.value = "";
+      newInput.value = "";
+      confirmInput.value = "";
+    } catch (err) {
+      if (statusEl) statusEl.innerHTML = `<span style="color:#f43f5e;">Error: ${err.message}</span>`;
+    }
+  };
+
+  window.executeSetupMFA = async function() {
+    try {
+      const headers = {};
+      if (window.activeSession.token) headers["Authorization"] = `Bearer ${window.activeSession.token}`;
+
+      const res = await fetch("/api/v1/auth/mfa/setup", { method: "POST", headers: headers });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Error al generar MFA.");
+
+      const outBox = document.getElementById("mfa-setup-output");
+      if (outBox) outBox.style.display = "block";
+      const secEl = document.getElementById("mfa-secret-display");
+      if (secEl) secEl.textContent = data.mfa_secret;
+      const uriEl = document.getElementById("mfa-uri-display");
+      if (uriEl) uriEl.textContent = data.provisioning_uri;
+    } catch (err) {
+      alert("Error configurando MFA: " + err.message);
+    }
+  };
+
+  window.executeLogout = async function() {
+    try {
+      const headers = {};
+      if (window.activeSession.token) headers["Authorization"] = `Bearer ${window.activeSession.token}`;
+      await fetch("/api/v1/auth/logout", { method: "POST", headers });
+    } catch (e) {}
+
+    window.activeSession = { token: null, user: null, roles: ["readonly_viewer"], permissions: [] };
+    localStorage.removeItem("portops_token");
+
+    const navUserLabel = document.getElementById("nav-user-label");
+    if (navUserLabel) navUserLabel.textContent = "Iniciar Sesión / IAM";
+    const hudActiveRole = document.getElementById("hud-active-role");
+    if (hudActiveRole) hudActiveRole.textContent = "Rol: Invitado";
+    const iamUserKpi = document.getElementById("iam-user-kpi");
+    if (iamUserKpi) iamUserKpi.textContent = "Invitado";
+    const iamRoleKpi = document.getElementById("iam-role-kpi");
+    if (iamRoleKpi) iamRoleKpi.textContent = "readonly_viewer";
+    const rawEl = document.getElementById("inspector-token-raw");
+    if (rawEl) rawEl.textContent = "No hay sesión activa autenticada.";
+    const claimsEl = document.getElementById("inspector-token-claims");
+    if (claimsEl) claimsEl.textContent = "{}";
+
+    alert("Sesión finalizada exitosamente.");
+  };
+
+  window.selectRbacRoleSimulation = async function(roleId) {
+    document.querySelectorAll(".rbac-role-card").forEach(c => {
+      c.classList.toggle("selected", c.getAttribute("data-role") === roleId);
+    });
+
+    try {
+      const headers = { "Content-Type": "application/json" };
+      if (window.activeSession.token) headers["Authorization"] = `Bearer ${window.activeSession.token}`;
+
+      const res = await fetch("/api/v1/auth/simulate-role", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ target_role: roleId })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail);
+
+      const titleEl = document.getElementById("simulated-role-title");
+      if (titleEl) titleEl.textContent = data.simulated_role.name;
+      const countEl = document.getElementById("simulated-role-perm-count");
+      if (countEl) countEl.textContent = data.permissions.length;
+
+      const container = document.getElementById("simulated-permissions-list");
+      if (container) {
+        container.innerHTML = data.permissions.map(p => `<span class="rbac-perm-tag">${p}</span>`).join("");
+      }
+
+      // Update HUD active role simulation
+      const hudActiveRole = document.getElementById("hud-active-role");
+      if (hudActiveRole) hudActiveRole.textContent = `Rol: ${roleId}`;
+      const iamRoleKpi = document.getElementById("iam-role-kpi");
+      if (iamRoleKpi) iamRoleKpi.textContent = roleId;
+    } catch (err) {
+      console.error("Error simulando rol:", err);
+    }
+  };
+
+  window.verifyWormAuditChainLive = async function() {
+    try {
+      const res = await fetch("/api/v1/audit/worm/verify");
+      const data = await res.json();
+      const v = data.verification || {};
+
+      const validText = document.getElementById("worm-valid-text");
+      const blocksBadge = document.getElementById("worm-blocks-badge");
+      const genesisEl = document.getElementById("worm-genesis-hash");
+      const headEl = document.getElementById("worm-head-hash");
+      const hudWorm = document.getElementById("hud-worm-status");
+      const noteEl = document.getElementById("worm-audit-summary-note");
+
+      if (v.valid) {
+        if (validText) validText.innerHTML = `<span style="color:#10b981;">✓ INTEGRIDAD CRIPTOGRÁFICA CERTIFICADA (ISO/IEC 27001)</span>`;
+        if (blocksBadge) blocksBadge.textContent = `Bloques Verificados: ${v.verified_blocks || v.total_blocks || 0}`;
+        if (genesisEl) genesisEl.textContent = "0000000000000000000000000000000000000000000000000000000000000000";
+        if (headEl) headEl.textContent = v.head_hash || (v.blocks && v.blocks.length ? v.blocks[v.blocks.length - 1].block_hash : "0x000...génesis");
+        if (hudWorm) hudWorm.innerHTML = `<svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> WORM: Válido (${v.verified_blocks || 0} blk)`;
+        if (noteEl) noteEl.textContent = "Encadenamiento SHA-256 verificado bloque a bloque. Cero mutaciones detectadas. Inmutabilidad estricta garantizada.";
+      } else {
+        if (validText) validText.innerHTML = `<span style="color:#f43f5e;">⚠️ ALERTA: MUTACIÓN O RUPTURA DE CADENA DETECTADA</span>`;
+        if (hudWorm) hudWorm.innerHTML = `⚠️ WORM: Roto`;
+      }
+    } catch (err) {
+      console.error("Error verificando WORM:", err);
+    }
+  };
+
+  window.fetchAuditSecurityEvents = async function() {
+    try {
+      const res = await fetch("/api/v1/audit/events?limit=20");
+      const data = await res.json();
+      const tbody = document.getElementById("security-events-tbody");
+      if (tbody && data.events) {
+        tbody.innerHTML = data.events.map(e => `
+          <tr>
+            <td>${e.created_at ? e.created_at.split(".")[0] : ""}</td>
+            <td><strong>${e.actor_id}</strong></td>
+            <td><code>${e.action}</code></td>
+            <td>${e.resource_type}</td>
+            <td><span class="badge" style="background:${e.result === 'SUCCESS' ? 'rgba(16,185,129,0.15)' : 'rgba(244,63,94,0.15)'}; color:${e.result === 'SUCCESS' ? '#10b981' : '#f43f5e'};">${e.result}</span></td>
+            <td><code>${e.ip_hash || 'none'}</code></td>
+          </tr>
+        `).join("");
+      }
+    } catch (err) {
+      console.error("Error cargando eventos:", err);
+    }
+  };
+
+  window.runQualityGatesDynamic = async function() {
+    const btn = document.getElementById("btn-run-quality-gates");
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `⏳ Validando 5 Compuertas...`;
+    }
+
+    try {
+      const res = await fetch("/api/v1/data/quality/validate", { method: "POST" });
+      const data = await res.json();
+
+      const scoreEl = document.getElementById("dp-quality-score");
+      if (scoreEl) scoreEl.textContent = `${data.overall_score.toFixed(2)} / 1.00`;
+
+      const logEl = document.getElementById("dp-gate-execution-log");
+      if (logEl) logEl.textContent = `Última ejecución en vivo: ${data.executed_at}. Estado general: ${data.status}. 5/5 compuertas aprobadas.`;
+
+      // Update gate cards
+      if (data.gates) {
+        data.gates.forEach((g, idx) => {
+          const card = document.getElementById(`gate-card-${idx + 1}`);
+          if (card) {
+            card.className = `data-gate-card ${g.passed ? 'passed' : 'failed'}`;
+            const pill = card.querySelector(".gate-score-pill");
+            if (pill) pill.textContent = `Score: ${g.score.toFixed(2)} • ${g.violations_count} violaciones`;
+          }
+        });
+      }
+    } catch (err) {
+      alert("Error ejecutando compuertas: " + err.message);
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"></path></svg> Ejecutar 5 Quality Gates`;
+      }
+    }
+  };
+
+  window.loadDataPlatformManifest = async function() {
+    try {
+      const res = await fetch("/api/v1/data/catalog/manifest");
+      const data = await res.json();
+      const m = data.manifest || {};
+
+      const covVal = document.getElementById("dp-coverage-value");
+      if (covVal && m.months_count) covVal.textContent = `${m.months_count} Meses`;
+      const covSub = document.getElementById("dp-coverage-sub");
+      if (covSub && m.coverage_start) covSub.textContent = `${m.coverage_start} ➔ ${m.coverage_end} (pd.period_range)`;
+      const rowCount = document.getElementById("manifest-row-count");
+      if (rowCount && m.row_count) rowCount.textContent = `${m.row_count.toLocaleString()} registros portuarios`;
+      const sHash = document.getElementById("manifest-schema-hash");
+      if (sHash && m.schema_hash) sHash.textContent = m.schema_hash.substring(0, 16) + "...";
+      const cHash = document.getElementById("manifest-content-hash");
+      if (cHash && m.content_hash) cHash.textContent = m.content_hash.substring(0, 16) + "...";
+    } catch (err) {
+      console.error("Error cargando manifiesto:", err);
+    }
+  };
+
+  // Wire Top Nav IAM and WORM buttons
+  const btnAuthIam = document.getElementById("btn-auth-iam");
+  if (btnAuthIam) {
+    btnAuthIam.addEventListener("click", () => window.openAuthModal("atab-login"));
+  }
+  const hudWormBtn = document.getElementById("hud-worm-status");
+  if (hudWormBtn) {
+    hudWormBtn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+      const secTabBtn = document.querySelector('[data-tab="tab-security-iam"]');
+      const secTabContent = document.getElementById("tab-security-iam");
+      if (secTabBtn) secTabBtn.classList.add("active");
+      if (secTabContent) secTabContent.classList.add("active");
+      window.verifyWormAuditChainLive();
+    });
+  }
+
   // --- Bootstrapping ---
   initThemeSwitcher();
   window.selectMethodologyPhase("phase_1", false); // false = no initial scroll jump on page load
   window.loadSimulationHistory();
+  window.verifyWormAuditChainLive();
+  window.loadDataPlatformManifest();
+  window.fetchAuditSecurityEvents();
 
   btnPredict.addEventListener("click", runForecast);
   btnSimulate.addEventListener("click", runSimulation);

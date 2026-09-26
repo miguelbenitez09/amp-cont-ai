@@ -1,11 +1,7 @@
 """
-Data Quality Validation Engine (Quality Gates).
-Adheres to MLOps Masterclass Section 16:
-- Schema validation
-- Null checks
-- Range & boundary verification
-- Primary key uniqueness
-- Domain-specific relational & additive checks
+Data Quality Validation Engine (Quality Gates) for Panama PortOps-AI v2.0
+Adheres to MLOps Masterclass Section 16 & v2.0 Master Plan.
+Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import sys
@@ -14,13 +10,16 @@ from typing import Dict, List, Tuple, Any
 import pandas as pd
 import numpy as np
 from src.utils.logger import logger
+from src.data.quality.quality_gates import DataQualityPipeline, QualityGateResult
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 SILVER_DIR = PROJECT_ROOT / "data" / "silver"
+
 
 class DataQualityError(Exception):
     """Raised when data quality validation fails."""
     pass
+
 
 class MaritimeDataQualityGate:
     """
@@ -83,7 +82,6 @@ class MaritimeDataQualityGate:
             raise DataQualityError(f"Found {dup_count} duplicate primary key records!")
 
         # 6. Additive consistency check: Llenos + Vacíos vs Total
-        # Filter where both are available for the same date and port in TEU
         df_teu = df[df["metric_unit"] == "TEU"]
         piv = df_teu.pivot_table(
             index=["date", "port"],
@@ -97,7 +95,6 @@ class MaritimeDataQualityGate:
         if ("TIPO", "LLENOS") in piv.columns and ("TIPO", "VACIOS") in piv.columns and ("TOTAL", "TOTAL") in piv.columns:
             sum_tipo = piv[("TIPO", "LLENOS")] + piv[("TIPO", "VACIOS")]
             tot = piv[("TOTAL", "TOTAL")]
-            # Allow up to 1% rounding or preliminary tolerance
             diff = (sum_tipo - tot).abs()
             rel_diff = diff / (tot + 1)
             discrepancies = int((rel_diff > 0.05).sum())
@@ -120,20 +117,16 @@ class MaritimeDataQualityGate:
         logger.info("Running Data Quality Gate on Bunkering...")
         results = {}
         
-        # 1. Null check
         null_counts = df.isna().sum().to_dict()
         results["null_check"] = {"passed": sum(null_counts.values()) == 0, "nulls": null_counts}
         
-        # 2. Date check
         valid_dates = (df["date"].min() >= pd.Timestamp("2015-01-01")) and (df["date"].max() <= pd.Timestamp("2026-12-31"))
         results["date_bounds"] = {"passed": valid_dates}
         
-        # 3. Litoral check
         valid_litorals = {"Pacífico", "Atlántico", "Nacional"}
         found_litorals = set(df["littoral"].unique())
         results["litorals"] = {"passed": found_litorals.issubset(valid_litorals)}
         
-        # 4. Values >= 0
         results["non_negative"] = {"passed": (df["value"] >= 0).all()}
         
         logger.info(f"Bunkering Quality Gate passed with results: {results}")
@@ -154,8 +147,10 @@ class MaritimeDataQualityGate:
             
         return report
 
-if __name__ == "__main__":
-    gate = MaritimeDataQualityGate()
-    summary = gate.run_all()
-    print("Quality Gates Summary:")
-    print(summary)
+
+__all__ = [
+    "DataQualityError",
+    "MaritimeDataQualityGate",
+    "DataQualityPipeline",
+    "QualityGateResult"
+]

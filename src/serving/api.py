@@ -212,10 +212,15 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Panamá PortOps-AI Platform",
     description=API_DESCRIPTION,
-    version="1.0.0",
+    version="2.0.0",
     openapi_tags=tags_metadata,
     lifespan=lifespan
 )
+
+# Mount core v1 and health routers
+from src.serving.v1_router import health_router, v1_router
+app.include_router(health_router)
+app.include_router(v1_router)
 
 # Mount static files directory if it exists
 if STATIC_DIR.exists():

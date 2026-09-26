@@ -62,6 +62,8 @@ coverage.xml
 *.crt
 id_rsa*
 github_token*
+.bootstrap/
+data/quarantine/
 
 # MLflow and Experiment Tracking
 mlruns/

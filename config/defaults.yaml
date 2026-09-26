@@ -1,0 +1,43 @@
+# Panama PortOps-AI v2.0 - Global Default Configuration
+# Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+system:
+  name: "Panamá PortOps-AI"
+  version: "2.0.0"
+  environment: "development"
+  organization: "Autoridad Marítima de Panamá (AMP) / Ecosistema Cívico"
+  license: "GNU GPL-3.0 with Section 7 Mandatory Attribution"
+  author: "Desarrollado v1.0 Miguel Benítez"
+
+server:
+  host: "127.0.0.1"
+  port: 8000
+  workers: 1
+  reload: false
+  cors_allowed_origins:
+    - "http://localhost:8000"
+    - "http://127.0.0.1:8000"
+
+security:
+  token_algorithm: "HS256"
+  access_token_expire_minutes: 60
+  refresh_token_expire_days: 7
+  session_idle_timeout_minutes: 30
+  cookie_secure: false  # true in production
+  cookie_httponly: true
+  cookie_samesite: "lax"
+  password_min_length: 12
+  password_require_uppercase: true
+  password_require_lowercase: true
+  password_require_digits: true
+  password_require_symbols: true
+  max_login_attempts: 5
+  lockout_duration_minutes: 15
+
+paths:
+  data_raw: "data/raw"
+  data_bronze: "data/bronze"
+  data_silver: "data/silver"
+  data_gold: "data/gold"
+  data_quarantine: "data/quarantine"
+  models_registry: "models"
+  bootstrap_dir: ".bootstrap"

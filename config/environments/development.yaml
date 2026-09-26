@@ -1,0 +1,12 @@
+# Development Environment Overrides
+system:
+  environment: "development"
+  debug: true
+
+security:
+  cookie_secure: false
+  access_token_expire_minutes: 120
+
+database:
+  driver: "sqlite"
+  database_url: "sqlite:///data/enterprise_db/portops_platform.db"

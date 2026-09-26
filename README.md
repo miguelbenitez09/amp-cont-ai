@@ -1,4 +1,4 @@
-# Panamá PortOps-AI v1.0 — Plataforma Industrial MLOps Portuaria y Simulación Estocástica
+# Panamá PortOps-AI v2.0 — Plataforma Industrial MLOps Portuaria y Simulación Estocástica
 ## Tratado Maestro de Arquitectura, Inferencia Causal, Benchmarking y Despliegue
 
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
@@ -30,7 +30,8 @@
 10. [Lakehouse Nacional de Panamá: Scraper de los 17 Ministerios, Tráfico ACP y Clima IMHPA](#10-lakehouse-nacional-de-panamá-scraper-de-los-17-ministerios-tráfico-acp-y-clima-imhpa)
 11. [Gobernanza Gubernamental: Matriz de Cumplimiento Normativo ISO (27001, 42001, 27701, 22301)](#11-gobernanza-gubernamental-matriz-de-cumplimiento-normativo-iso-27001-42001-27701-22301)
 12. [Guía de Despliegue en GitHub, Seguridad y CI/CD](#12-guía-de-despliegue-en-github-seguridad-y-cicd)
-13. [Licencia, Atribución Obligatoria y Citación Académica](#13-licencia-atribución-obligatoria-y-citación-académica)
+13. [Arquitectura v2.0 Enterprise: IAM, Plataforma de Datos, Model Registry y WORM Ledger](#13-arquitectura-v20-enterprise-iam-plataforma-de-datos-model-registry-y-worm-ledger)
+14. [Licencia, Atribución Obligatoria y Citación Académica](#14-licencia-atribución-obligatoria-y-citación-académica)
 
 ---
 
@@ -569,7 +570,36 @@ Siguiendo los lineamientos de la **OpenSSF**:
 
 ---
 
-## 10. Licencia, Atribución Obligatoria y Citación Académica
+## 13. Arquitectura v2.0 Enterprise: IAM, Plataforma de Datos, Model Registry y WORM Ledger
+
+La versión 2.0 consolida a **Panamá PortOps-AI** como una plataforma de grado industrial basada en la base de datos empresarial `portops_platform.db` (17 tablas normalizadas), con blindaje de seguridad IAM y observabilidad en tiempo real:
+
+### 13.1 Resumen de Capacidades v2.0
+- **Seguridad Operativa e IAM:**
+  - Inicialización con generador criptográfico CSPRNG sin credenciales por defecto (`.bootstrap/root-credentials.txt`).
+  - Doble factor de autenticación TOTP RFC 6238 compatible con Google Authenticator (`/api/v1/auth/mfa/*`).
+  - Cumplimiento de política de contraseñas NIST SP 800-63B y control de historial de 5 contraseñas previas.
+  - Tokens de sesión JWT firmados con identificador único anti-colisión `jti` y revocación instantánea.
+  - Matriz RBAC/ABAC completa con 12 roles y 31 permisos gestionados con sandbox interactivo (`/api/v1/auth/simulate-role`).
+- **Data Platform & 5 Quality Gates Bitemporales:**
+  - Automatización de 5 puertas de calidad: Validación de Esquema, Completitud ($\le 5\%$ nulos), Validez de Rangos, Consistencia de Totales e Integridad Temporal (`event_date <= published_at`).
+  - Aislamiento automático de anomalías en cuarentena (`data/quarantine/`).
+- **Gobernanza de Modelos y Torneo de 8 Algoritmos:**
+  - Registro formal de modelos (`model_registry`) con ciclo de vida: `DRAFT ➔ TRAINED ➔ VALIDATED ➔ REVIEW ➔ APPROVED ➔ STAGED ➔ PRODUCTION`.
+  - Promoción estricta con firma de usuario autorizado (`ml_reviewer` o `root`).
+  - Torneo multi-algoritmo con evaluación empírica de 8 modelos sobre 140 meses de la AMP, liderado por el ensamble cuantílico LightGBM Champion.
+- **Libro Mayor Criptográfico WORM (Write Once, Read Many):**
+  - Encadenamiento inmutable SHA-256 (`audit_ledger_worm`) que sella criptográficamente cada simulación Monte Carlo y cada promoción de modelo.
+  - Verificación formal de integridad y detección de mutaciones en vivo (`/api/v1/audit/worm/verify`).
+- **Frontend Operacional Integrado:**
+  - HUD de seguridad y estado de sesión en la barra de navegación superior.
+  - Inspector dinámico de tokens JWT y decodificación de claims en tiempo real.
+  - Selector interactivo de roles RBAC para auditar interfaces.
+  - Monitor live de los 5 Quality Gates y visualizador del estado de cadena WORM.
+
+---
+
+## 14. Licencia, Atribución Obligatoria y Citación Académica
 
 Este proyecto es software libre y de código abierto bajo la licencia **GNU General Public License v3.0 (GPL-3.0)** con cláusula adicional de atribución según la Sección 7(b) y 7(c) de la licencia.
 

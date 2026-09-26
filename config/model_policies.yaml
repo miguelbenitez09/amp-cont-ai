@@ -1,0 +1,42 @@
+# Panama PortOps-AI v2.0 - Model Registry, Governance & Promotion Policies
+# Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+promotion_policy:
+  primary_metric: "wape"
+  secondary_metric: "pinball_loss"
+  max_degradation_allowed_pct: 0.05
+  min_test_periods_required: 4
+  require_reproducibility_proof: true
+  require_quality_gate_passed: true
+  require_reviewer_approval: true
+  authorized_approver_roles:
+    - "ml_reviewer"
+    - "root"
+
+evaluation_metrics:
+  - name: "WAPE"
+    description: "Weighted Absolute Percentage Error"
+    threshold_champion: 0.10  # Must be < 10%
+  - name: "MAE"
+    description: "Mean Absolute Error in TEUs"
+  - name: "RMSE"
+    description: "Root Mean Squared Error in TEUs"
+  - name: "R2"
+    description: "Coefficient of Determination"
+    threshold_champion: 0.95
+  - name: "Pinball_Loss"
+    description: "Asymmetric Quantile Check Loss (P10, P50, P90)"
+  - name: "Coverage_P10_P90"
+    description: "Empirical confidence interval coverage"
+    target_coverage: 0.80  # 80% theoretical expectation
+  - name: "Interval_Width"
+    description: "Average spread between P90 and P10"
+  - name: "Quantile_Crossing_Rate"
+    description: "Percentage of monotonic violations (must be 0.0%)"
+    max_tolerated: 0.00
+
+reproducibility:
+  reference_seed: 42
+  record_environment_hash: true
+  record_git_commit: true
+  record_dataset_hash: true
+  record_feature_set_version: true

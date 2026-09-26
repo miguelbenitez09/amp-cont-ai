@@ -1,0 +1,12 @@
+# Test Environment Overrides
+system:
+  environment: "test"
+  debug: true
+
+security:
+  cookie_secure: false
+  access_token_expire_minutes: 30
+
+database:
+  driver: "sqlite"
+  database_url: "sqlite:///:memory:"

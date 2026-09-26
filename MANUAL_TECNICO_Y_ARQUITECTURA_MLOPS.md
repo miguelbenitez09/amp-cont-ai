@@ -17,7 +17,8 @@
 6. [Motor de Simulación Estocástica de Monte Carlo y Pruebas de Estrés](#6-motor-de-simulación-estocástica-de-monte-carlo-y-pruebas-de-estrés)
 7. [Guía Maestra de Extensibilidad: Ingesta de Nuevas APIs y Datos Internacionales](#7-guía-maestra-de-extensibilidad-ingesta-de-nuevas-apis-y-datos-internacionales)
 8. [Despliegue, Microservicio y Configuración en Caliente](#8-despliegue-microservicio-y-configuración-en-caliente)
-9. [Términos Legales y Atribución Obligatoria](#9-términos-legales-y-atribución-obligatoria)
+9. [Arquitectura v2.0 Enterprise: IAM, Plataforma de Datos (5 Gates), Model Registry y WORM Ledger](#9-arquitectura-v20-enterprise-iam-plataforma-de-datos-5-gates-model-registry-y-worm-ledger)
+10. [Términos Legales y Atribución Obligatoria](#10-términos-legales-y-atribución-obligatoria)
 
 ---
 
@@ -447,7 +448,66 @@ python scripts/quickstart_pipeline.py
 
 ---
 
-## 9. Términos Legales y Atribución Obligatoria
+## 9. Arquitectura v2.0 Enterprise: IAM, Plataforma de Datos (5 Gates), Model Registry y WORM Ledger
+
+La versión 2.0 de **Panamá PortOps-AI** eleva el proyecto de un pipeline de entrenamiento a una **plataforma empresarial integral de MLOps y gobernanza portuaria**, incorporando un núcleo relacional de seguridad y trazabilidad sobre `data/enterprise_db/portops_platform.db` (17 tablas normalizadas) y exponiendo una API unificada bajo `/api/v1/*` y `/health/*`.
+
+### 9.1 Bootstrap Criptográfico y Gestión de Identidades (IAM)
+- **CSPRNG Zero-Default Bootstrap:** El sistema rechaza cualquier par de credenciales fijas o inseguras como `root/root` o `admin/admin`. Durante el arranque (`scripts/bootstrap_root.py`), genera un usuario root determinista pero seguro con entropía de grado criptográfico (`root_<hex>`) y contraseña aleatoria de 24 caracteres en `.bootstrap/root-credentials.txt`.
+- **Doble Factor de Autenticación (MFA TOTP RFC 6238):** Obligatorio para roles privilegiados y disponible para todos los usuarios. Soporta códigos de verificación temporales de 6 dígitos compatibles con Google Authenticator y FreeOTP (`/api/v1/auth/mfa/setup` y `/api/v1/auth/mfa/verify`).
+- **Política de Complejidad NIST SP 800-63B:** Validación estricta de contraseñas (mínimo 12 caracteres, mayúsculas, minúsculas, dígitos, caracteres especiales, prohibición de diccionarios comunes y control de historial de las últimas 5 contraseñas en `password_history`).
+- **Sesiones Firmadas con JTI Único:** Tokens de sesión firmados con identificador único `jti`, revocalización instantánea en base de datos (`sessions`) y persistencia en cookies seguras `HttpOnly` y `SameSite=Lax`.
+- **Matriz de Privilegios RBAC/ABAC de 12 Roles y 31 Permisos:** 12 roles institucionales modelados en `config/roles.yaml` (`root_owner`, `platform_admin`, `security_officer`, `data_engineer`, `mlops_engineer`, `model_validator`, `ml_reviewer`, `port_operator`, `risk_analyst`, `compliance_auditor`, `external_analyst`, `readonly_viewer`) evaluados autoritativamente en backend por `AuthorizationEngine`.
+
+### 9.2 Plataforma de Datos y 5 Quality Gates Bitemporales
+El flujo de datos implementa 5 puertas de calidad automatizadas en `src/data/quality/quality_gates.py` antes de permitir la entrada de cualquier lote al catálogo Silver o Gold:
+1. **Gate 1 — Schema Validation:** Conformidad estricta de columnas, tipos de datos y nombres estandarizados.
+2. **Gate 2 — Completeness:** Tolerancia máxima de valores nulos o faltantes $\le 5\%$ en campos críticos de volumen.
+3. **Gate 3 — Value Validity:** Validación de rangos físicos admisibles (TEUs $\ge 0$, ratios de vacíos en $[0, 1]$, calados y tonelajes positivos).
+4. **Gate 4 — Consistency:** Conciliación cruzada de balances (Suma de contenedores locales + trasbordo = Total).
+5. **Gate 5 — Temporal Integrity:** Regla bitemporal estricta anti-fuga: `event_date <= published_at`. Cualquier registro fechado en el futuro respecto a su publicación oficial es rechazado.
+- **Cuarentena Automática:** Los lotes que violen cualquier puerta son aislados en `data/quarantine/` junto con su reporte JSON de infracciones para auditoría forense.
+
+### 9.3 Catálogo de Features y Registro de Modelos (Model Registry)
+- **Feature Store Libre de Fuga:** Catálogo formal de variables (`src/features/definitions.py` y `/api/v1/features/catalog`) con especificación de transformaciones, periodicidad mensual y rezagos calculados con `shift(1)`.
+- **Ciclo de Vida MLOps:** Transición formal de estados: `DRAFT ➔ TRAINED ➔ VALIDATED ➔ REVIEW ➔ APPROVED ➔ STAGED ➔ PRODUCTION`.
+- **Aprobación de Modelos:** Solo usuarios autenticados con rol `ml_reviewer` o `root` pueden autorizar la promoción de un modelo a `PRODUCTION` (`/api/v1/models/promote`), archivando automáticamente al modelo previo en `RETIRED`.
+- **Torneo Multi-Algoritmo (8 Modelos):** Comparación empírica en `/api/v1/models/benchmark` evaluando LightGBM Quantile Ensemble (Champion: WAPE 9.11%, $R^2 = 0.983$), Random Forest, Gradient Boosting, Ridge, HistGradientBoosting, Huber Regressor, ElasticNet y Dummy Baseline.
+
+### 9.4 Libro Mayor Inmutable WORM (Write Once, Read Many)
+- **Encadenamiento Criptográfico SHA-256:** Cada simulación estocástica Monte Carlo y cada promoción de modelo genera un bloque inmutable en la tabla `audit_ledger_worm`.
+- **Fórmula de Hashing de Bloque:**
+  $$\text{Block\_Hash}_n = \text{SHA256}\left(\text{Block\_Hash}_{n-1} \parallel \text{Actor} \parallel \text{Payload\_JSON} \parallel \text{Timestamp}\right)$$
+- **Auditoría Forense en Tiempo Real:** El endpoint `/api/v1/audit/worm/verify` audita el 100% de la cadena desde el Bloque Génesis hasta la cabeza actual, certificando la ausencia total de mutaciones o manipulaciones externas según los estándares ISO/IEC 27001.
+
+### 9.5 Catálogo Oficial de Endpoints Autorizados (v2.0)
+| Endpoint | Método | Función Principal |
+| :--- | :---: | :--- |
+| `/health/live` | `GET` | Probe de liveness para orquestadores y balanceadores. |
+| `/health/ready` | `GET` | Probe de readiness verificando DB, Feature Store y Champion Model. |
+| `/health/dependencies` | `GET` | Estado de dependencias críticas (SQLite, Parquet, Modelos, Config). |
+| `/health/version` | `GET` | Versión v2.0, commit, timestamp y firma de autoría. |
+| `/api/v1/auth/login` | `POST` | Autenticación con usuario/contraseña y emisión de sesión/cookie. |
+| `/api/v1/auth/mfa/verify` | `POST` | Desafío de segundo factor TOTP (RFC 6238). |
+| `/api/v1/auth/simulate-role` | `POST` | Sandbox RBAC para simular y auditar permisos de los 12 roles. |
+| `/api/v1/auth/logout` | `POST` | Revocación instantánea de sesión y purga de cookie. |
+| `/api/v1/roles` | `GET` | Catálogo de los 12 roles base de la plataforma. |
+| `/api/v1/permissions` | `GET` | Catálogo de los 31 permisos de grano fino. |
+| `/api/v1/data/quality/summary` | `GET` | Estado operacional de los 5 Quality Gates y cuarentena. |
+| `/api/v1/data/catalog/manifest` | `GET` | Manifiesto de datasets, integridad SHA-256 y linaje. |
+| `/api/v1/features/catalog` | `GET` | Catálogo formal de características del Feature Store. |
+| `/api/v1/models/benchmark` | `GET` | Torneo de 8 algoritmos de Machine Learning y Champion. |
+| `/api/v1/models/registry` | `GET` | Consulta del registro de modelos y su estado de ciclo de vida. |
+| `/api/v1/models/promote` | `POST` | Promoción formal de modelo a producción con validación RBAC. |
+| `/api/v1/simulations/run` | `POST` | Simulación Monte Carlo, VaR 95%, CVaR y certificación WORM. |
+| `/api/v1/simulations/history` | `GET` | Historial de simulaciones certificadas en bloque WORM. |
+| `/api/v1/simulations/quotas` | `GET` | Cuotas computacionales y consumo de CPU por operador. |
+| `/api/v1/audit/worm/verify` | `GET` | Verificación criptográfica del libro mayor inmutable WORM. |
+| `/api/v1/audit/events` | `GET` | Registro de eventos de seguridad y accesos del sistema. |
+
+---
+
+## 10. Términos Legales y Atribución Obligatoria
 
 Este software es libre bajo la licencia **GNU General Public License v3.0 (GPL-3.0)** con cláusula adicional de atribución obligatoria según la Sección 7(b) y 7(c) de la licencia.
 

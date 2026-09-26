@@ -1,0 +1,78 @@
+# Panama PortOps-AI v2.0 - Data Quality Gates & Validation Rules
+# Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+quality_gates:
+  gate_1_schema:
+    name: "Schema Contract & Structural Conformance"
+    required_columns:
+      container:
+        - "event_date"
+        - "published_at"
+        - "port"
+        - "teu_total"
+        - "teu_import"
+        - "teu_export"
+        - "teu_transshipment"
+        - "empty_teu"
+      bunkering:
+        - "event_date"
+        - "published_at"
+        - "litoral"
+        - "metric_tons"
+        - "bbl_volume"
+    type_checks:
+      event_date: "datetime64[ns]"
+      published_at: "datetime64[ns]"
+      port: "string"
+      teu_total: "float64"
+    action_on_failure: "reject_to_quarantine"
+
+  gate_2_completeness:
+    name: "Completeness & Missing Periods Coverage"
+    max_null_rate_tolerated: 0.00  # 0.0% nulls in core targets
+    max_missing_consecutive_months: 0
+    min_coverage_pct: 99.5
+    action_on_failure: "reject_to_quarantine"
+
+  gate_3_validity:
+    name: "Physical Maritime Bounds & Range Sanity"
+    physical_bounds:
+      teu_total:
+        min: 0.0
+        max: 500000.0  # Max capacity of any single Panama port per month
+      empty_ratio:
+        min: 0.0
+        max: 1.0
+      bbl_volume:
+        min: 0.0
+        max: 5000000.0
+    known_ports:
+      - "Puerto Balboa"
+      - "PSA Panama International Terminal"
+      - "Manzanillo International Terminal (MIT)"
+      - "Puerto Cristóbal"
+      - "Colon Container Terminal (CCT)"
+      - "Bocas Fruit Co."
+    action_on_failure: "reject_to_quarantine"
+
+  gate_4_consistency:
+    name: "Internal Accounting & Relational Balance"
+    balance_tolerances:
+      # teu_total must equal teu_local (import + export) + teu_transshipment within 0.1%
+      container_balance_tolerance_pct: 0.10
+    duplicate_record_check: "zero_tolerance"
+    action_on_failure: "reject_to_quarantine"
+
+  gate_5_temporal_integrity:
+    name: "Zero Temporal Leakage & Cutoff Availability"
+    # Strict bitemporal rule: observed data cannot be used if published_at > cutoff_timestamp
+    enforce_publication_delay: true
+    min_publication_delay_days: 15
+    allow_future_timestamps: false
+    action_on_failure: "reject_to_quarantine"
+
+quarantine_policy:
+  quarantine_dir: "data/quarantine"
+  manifest_record_required: true
+  auto_notify_roles:
+    - "data_engineer"
+    - "data_steward"

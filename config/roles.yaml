@@ -1,0 +1,86 @@
+# Panama PortOps-AI v2.0 - RBAC Roles Matrix (12 Base Roles)
+# Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+roles:
+  - id: "root"
+    name: "Root Emergency Operator"
+    description: "Acceso total de recuperación y emergencia. No asignable por usuarios ordinarios. Usado exclusivamente para bootstrap e intervenciones de recuperación."
+    tier: "emergency"
+    is_assignable: false
+    requires_mfa: true
+
+  - id: "platform_admin"
+    name: "Platform Administrator"
+    description: "Administra usuarios, roles, configuraciones lógicas, integraciones y políticas del sistema. No puede alterar evidencia inmutable WORM."
+    tier: "admin"
+    is_assignable: true
+    requires_mfa: true
+
+  - id: "security_admin"
+    name: "Security & IAM Administrator"
+    description: "Administra políticas de autenticación, MFA, ciclo de vida de sesiones, inventario de secretos, permisos y eventos de seguridad."
+    tier: "admin"
+    is_assignable: true
+    requires_mfa: true
+
+  - id: "data_engineer"
+    name: "Data Platform Engineer"
+    description: "Administra conectores de ingesta, pipelines Medallion, esquemas, quality gates y transformación Bronze/Silver. No promueve modelos."
+    tier: "engineering"
+    is_assignable: true
+    requires_mfa: false
+
+  - id: "data_steward"
+    name: "Data Steward & Catalog Custodian"
+    description: "Supervisa la calidad semántica, catálogo de fuentes, clasificación de datos (FACT, MEASURED, etc.) y validación de procedencia."
+    tier: "governance"
+    is_assignable: true
+    requires_mfa: false
+
+  - id: "mlops_engineer"
+    name: "MLOps Engineer"
+    description: "Ejecuta entrenamientos, experimentos, backtesting temporal, registro de modelos y generación de artefactos. Requiere aprobación para producción."
+    tier: "engineering"
+    is_assignable: true
+    requires_mfa: false
+
+  - id: "ml_reviewer"
+    name: "Machine Learning Quality Reviewer"
+    description: "Revisa experimentos, métricas de calibración/drift, verifica reproducibilidad y aprueba o veta formalmente promociones a producción."
+    tier: "governance"
+    is_assignable: true
+    requires_mfa: true
+
+  - id: "port_operator"
+    name: "Port Operations Terminal Officer"
+    description: "Acceso operacional a paneles de control, predicciones de carga, monitoreo de desbalance de vacíos y escenarios autorizados."
+    tier: "operations"
+    is_assignable: true
+    requires_mfa: false
+
+  - id: "simulation_analyst"
+    name: "Risk & Monte Carlo Simulation Analyst"
+    description: "Ejecuta simulaciones estocásticas multivariadas y stress testing dentro de las cuotas asignadas de cómputo vCPU/GPU."
+    tier: "analysis"
+    is_assignable: true
+    requires_mfa: false
+
+  - id: "compliance_auditor"
+    name: "Compliance & Legal Auditor"
+    description: "Acceso de solo lectura al libro inmutable WORM, linaje de datos, contratos, políticas y cumplimiento ISO/Ley 6 de 2002."
+    tier: "audit"
+    is_assignable: true
+    requires_mfa: true
+
+  - id: "api_consumer"
+    name: "External API Integration Client"
+    description: "Acceso automatizado máquina a máquina para consulta de pronósticos mediante API Keys y OAuth Scopes restringidos."
+    tier: "api"
+    is_assignable: true
+    requires_mfa: false
+
+  - id: "readonly_viewer"
+    name: "Public & Educational Readonly Viewer"
+    description: "Acceso de lectura a paneles informativos, metodología científica y glosario educativo sin permisos de modificación."
+    tier: "viewer"
+    is_assignable: true
+    requires_mfa: false

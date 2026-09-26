@@ -1,0 +1,14 @@
+# Production Environment Overrides
+system:
+  environment: "production"
+  debug: false
+
+security:
+  cookie_secure: true
+  access_token_expire_minutes: 30
+  refresh_token_expire_days: 1
+  session_idle_timeout_minutes: 15
+
+database:
+  driver: "postgresql"
+  database_url: "${DATABASE_URL}"

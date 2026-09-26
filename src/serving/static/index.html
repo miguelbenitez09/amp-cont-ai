@@ -44,6 +44,13 @@
             <option value="theme-tactical-mono">Titanio Táctico (Mono)</option>
           </select>
         </div>
+        <button class="badge btn-security-hud" id="btn-auth-iam" title="Centro de Autenticación, MFA RFC 6238 y Seguridad Operativa">
+          <span class="status-dot green"></span> <span id="nav-user-label">Iniciar Sesión / IAM</span>
+        </button>
+        <span class="badge role-pill" id="hud-active-role" title="Rol RBAC activo en el sistema">Rol: root</span>
+        <button class="badge worm-badge" id="hud-worm-status" title="Auditoría WORM Criptográfica SHA-256">
+          <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> WORM: Válido
+        </button>
         <span class="badge healthy" id="health-badge"><span class="status-dot"></span> Verificando...</span>
         <button class="badge btn-gear" id="btn-settings-gear" title="Abrir panel de configuración del modelo y simulación de nuevas variables">
           <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -85,6 +92,14 @@
       <button class="tab-btn" data-tab="tab-methodology">
         <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
         Metodología & Arquitectura
+      </button>
+      <button class="tab-btn" data-tab="tab-data-platform">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+        Data Platform & 5 Calidad
+      </button>
+      <button class="tab-btn" data-tab="tab-security-iam">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        Seguridad, IAM & WORM
       </button>
     </nav>
 
@@ -1147,6 +1162,448 @@
             <!-- Dynamic content injected by app.js based on selected phase and dimension -->
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 6: DATA PLATFORM, 5 QUALITY GATES & FEATURE STORE                      -->
+    <!-- ========================================================================= -->
+    <section id="tab-data-platform" class="tab-content">
+      <div class="landing-container">
+        
+        <!-- Header Banner -->
+        <div class="card" style="border-left: 4px solid var(--cyan-bright); margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <span class="badge" style="background: rgba(6,182,212,0.15); color: var(--cyan-bright); margin-bottom: 0.35rem; display: inline-block;">PLATAFORMA DE DATOS v2.0 • ARQUITECTURA MEDALLION</span>
+              <h2 style="font-size: 1.45rem; color: #f8fafc; margin: 0.2rem 0;">Data Platform, 5 Quality Gates & Feature Store</h2>
+              <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Ingesta trazable desde fuentes oficiales: RAW ➔ BRONZE ➔ 5 QUALITY GATES ➔ SILVER ➔ FEATURE STORE GOLD.</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <button id="btn-run-quality-gates" class="btn btn-primary" onclick="window.runQualityGatesDynamic()">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"></path></svg>
+                Ejecutar 5 Quality Gates
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 KPI Metrics -->
+        <div class="kpi-grid" style="margin-bottom: 1.5rem;">
+          <div class="kpi-card">
+            <div class="kpi-title">Cobertura Temporal Dinámica</div>
+            <div class="kpi-value" id="dp-coverage-value">140 Meses</div>
+            <div class="kpi-sub" id="dp-coverage-sub">2015-01 ➔ 2026-08 (pd.period_range)</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Score de Calidad General</div>
+            <div class="kpi-value" id="dp-quality-score" style="color: var(--emerald-success);">1.00 / 1.00</div>
+            <div class="kpi-sub">5/5 Compuertas Aprobadas (100%)</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Terminales Validadas</div>
+            <div class="kpi-value">6 Puertos</div>
+            <div class="kpi-sub">Balboa, MIT, PSA, CCT, Cristóbal, Bocas</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Datos en Cuarentena</div>
+            <div class="kpi-value" id="dp-quarantine-count" style="color: var(--cyan-bright);">0 Lotes</div>
+            <div class="kpi-sub">data/quarantine/ (Aislados)</div>
+          </div>
+        </div>
+
+        <!-- The 5 Quality Gates Interactive Dashboard -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <div>
+              <h3 style="font-size: 1.05rem; color: var(--cyan-bright); margin: 0;">🛡️ Pipeline de 5 Compuertas de Calidad Industrial (Quality Gates)</h3>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Evaluación exhaustiva de cada lote de datos antes de permitir su promoción a la capa Silver/Gold.</p>
+            </div>
+            <span class="badge" id="dp-gates-status-badge" style="background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3);">
+              ✓ Todos los Gates Activos
+            </span>
+          </div>
+
+          <div class="data-gate-grid" id="data-gates-container">
+            <!-- Gate 1 -->
+            <div class="data-gate-card passed" id="gate-card-1">
+              <span class="gate-badge-status pass">Gate 1: Aprobado</span>
+              <div class="gate-title">Contrato de Esquema</div>
+              <div class="gate-desc">Verifica la presencia y tipos estrictos de columnas obligatorias: event_date, port, teu_total, teu_full, teu_empty, published_at.</div>
+              <span class="gate-score-pill">Score: 1.00 • 0 violaciones</span>
+            </div>
+            <!-- Gate 2 -->
+            <div class="data-gate-card passed" id="gate-card-2">
+              <span class="gate-badge-status pass">Gate 2: Aprobado</span>
+              <div class="gate-title">Completitud & Nulos</div>
+              <div class="gate-desc">Tasa de valores nulos o vacíos en columnas críticas (teu_total, teu_full, teu_empty) &le; 0.00%. Cero tolerancia a faltantes no documentados.</div>
+              <span class="gate-score-pill">Score: 1.00 • 0 nulos</span>
+            </div>
+            <!-- Gate 3 -->
+            <div class="data-gate-card passed" id="gate-card-3">
+              <span class="gate-badge-status pass">Gate 3: Aprobado</span>
+              <div class="gate-title">Validez & Límites Físicos</div>
+              <div class="gate-desc">Validación de nombres canónicos de las 6 terminales portuarias panameñas y límites físicos de patio (TEUs &ge; 0 y &le; 600,000/mes).</div>
+              <span class="gate-score-pill">Score: 1.00 • 6/6 puertos válidos</span>
+            </div>
+            <!-- Gate 4 -->
+            <div class="data-gate-card passed" id="gate-card-4">
+              <span class="gate-badge-status pass">Gate 4: Aprobado</span>
+              <div class="gate-title">Consistencia & Balance</div>
+              <div class="gate-desc">Balance contable estricto: |teu_total - (teu_full + teu_empty)| &le; 1.0. Garantiza que la suma de llenos y vacíos cuadre exactamente con el total.</div>
+              <span class="gate-score-pill">Score: 1.00 • Balance exacto</span>
+            </div>
+            <!-- Gate 5 -->
+            <div class="data-gate-card passed" id="gate-card-5">
+              <span class="gate-badge-status pass">Gate 5: Aprobado</span>
+              <div class="gate-title">Integridad Bitemporal</div>
+              <div class="gate-desc">Prevención matemática de Data Leakage: event_date &le; published_at. Protege la frontera de información contra fugas del futuro.</div>
+              <span class="gate-score-pill">Score: 1.00 • Cero lookahead bias</span>
+            </div>
+          </div>
+
+          <div id="dp-gate-execution-log" style="margin-top: 1rem; font-family: var(--font-mono); font-size: 0.75rem; color: #94a3b8; background: rgba(5,8,16,0.6); padding: 0.6rem 0.8rem; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);">
+            Última verificación: Ejecutada exitosamente sobre silver/container_movements_silver.parquet. Cero registros en cuarentena.
+          </div>
+        </div>
+
+        <!-- Manifest & Lineage Cryptographic Card -->
+        <div class="grid-2-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+          <div class="card">
+            <h3 style="font-size: 0.95rem; color: var(--cyan-bright); margin-bottom: 0.5rem;">📜 DatasetManifest Criptográfico (Silver Lakehouse)</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.75rem;">Cada dataset en la plataforma cuenta con un manifiesto inmutable emitido con SHA-256 sobre esquema y contenido:</p>
+            <table class="data-table" style="font-size: 0.76rem;">
+              <tbody>
+                <tr><td><strong>Dataset ID:</strong></td><td><code>amp_containers_silver_v1</code></td></tr>
+                <tr><td><strong>Capa (Layer):</strong></td><td><span class="badge" style="background: rgba(148,163,184,0.15); color: #cbd5e1;">Silver (Normalizado)</span></td></tr>
+                <tr><td><strong>Clasificación:</strong></td><td><span class="badge" style="background: rgba(16,185,129,0.15); color: #10b981;">FACT (Oficial Estatal)</span></td></tr>
+                <tr><td><strong>Filas Registradas:</strong></td><td><span id="manifest-row-count">840 registros portuarios</span></td></tr>
+                <tr><td><strong>Hash de Esquema:</strong></td><td><code id="manifest-schema-hash" style="font-size:0.7rem; color:#38bdf8;">e4b2...8f1a</code></td></tr>
+                <tr><td><strong>Hash de Contenido:</strong></td><td><code id="manifest-content-hash" style="font-size:0.7rem; color:#38bdf8;">a7c9...2d4e</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size: 0.95rem; color: var(--cyan-bright); margin-bottom: 0.5rem;">🏛️ Catálogo de Fuentes Autoritativas Oficiales</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.75rem;">Fuentes exclusivamente trazables e institucionales de la República de Panamá:</p>
+            <table class="data-table" style="font-size: 0.76rem;">
+              <thead>
+                <tr>
+                  <th>Fuente</th>
+                  <th>Institución</th>
+                  <th>Nivel de Confianza</th>
+                  <th>Frecuencia</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>AMP</strong></td>
+                  <td>Autoridad Marítima de Panamá</td>
+                  <td><span class="badge" style="background: rgba(16,185,129,0.15); color: #10b981;">Oficial Estatal (1.0)</span></td>
+                  <td>Mensual</td>
+                </tr>
+                <tr>
+                  <td><strong>ACP</strong></td>
+                  <td>Autoridad del Canal de Panamá</td>
+                  <td><span class="badge" style="background: rgba(16,185,129,0.15); color: #10b981;">Oficial Estatal (1.0)</span></td>
+                  <td>Mensual</td>
+                </tr>
+                <tr>
+                  <td><strong>IMHPA</strong></td>
+                  <td>Inst. Meteorología e Hidrología</td>
+                  <td><span class="badge" style="background: rgba(56,189,248,0.15); color: #38bdf8;">Validada Científica (0.95)</span></td>
+                  <td>Diaria/Mensual</td>
+                </tr>
+                <tr>
+                  <td><strong>INEC</strong></td>
+                  <td>Inst. Nacional de Estadística y Censo</td>
+                  <td><span class="badge" style="background: rgba(16,185,129,0.15); color: #10b981;">Oficial Estatal (1.0)</span></td>
+                  <td>Trimestral</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Feature Store Definitions Table -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <div>
+              <h3 style="font-size: 0.95rem; color: var(--cyan-bright); margin: 0;">🧬 Catálogo Formal del Feature Store (Gold Layer)</h3>
+              <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">Definición matemática de covariables con declaración explícita de seguridad anti-leakage:</p>
+            </div>
+            <a href="/api/v1/features/catalog" target="_blank" class="badge link-badge">Ver JSON /api/v1/features/catalog</a>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table" style="font-size: 0.78rem;">
+              <thead>
+                <tr>
+                  <th>Nombre Feature</th>
+                  <th>Entidad</th>
+                  <th>Transformación</th>
+                  <th>Parámetros</th>
+                  <th>Anti-Leakage</th>
+                  <th>Descripción Operacional</th>
+                </tr>
+              </thead>
+              <tbody id="features-table-body">
+                <tr>
+                  <td><code>teu_lag_1</code></td>
+                  <td>port</td>
+                  <td>shift</td>
+                  <td>periods: 1</td>
+                  <td><span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981;">✓ Seguro</span></td>
+                  <td>Volumen observado en el mes inmediatamente anterior (t-1).</td>
+                </tr>
+                <tr>
+                  <td><code>teu_lag_12</code></td>
+                  <td>port</td>
+                  <td>shift</td>
+                  <td>periods: 12</td>
+                  <td><span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981;">✓ Seguro</span></td>
+                  <td>Memoria estacional interanual del mismo mes del año previo (t-12).</td>
+                </tr>
+                <tr>
+                  <td><code>rolling_mean_3</code></td>
+                  <td>port</td>
+                  <td>shift_rolling_mean</td>
+                  <td>window: 3, shift: 1</td>
+                  <td><span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981;">✓ Seguro</span></td>
+                  <td>Media móvil trimestral rezagada un período para evitar lookahead bias.</td>
+                </tr>
+                <tr>
+                  <td><code>rolling_std_6</code></td>
+                  <td>port</td>
+                  <td>shift_rolling_std</td>
+                  <td>window: 6, shift: 1</td>
+                  <td><span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981;">✓ Seguro</span></td>
+                  <td>Desviación estándar semestral indicadora de régimen de volatilidad.</td>
+                </tr>
+                <tr>
+                  <td><code>yoy_change_pct</code></td>
+                  <td>port</td>
+                  <td>pct_change_12</td>
+                  <td>periods: 12</td>
+                  <td><span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981;">✓ Seguro</span></td>
+                  <td>Tasa de variación interanual respecto al volumen de hace 12 meses.</td>
+                </tr>
+                <tr>
+                  <td><code>month_sin / cos</code></td>
+                  <td>calendar</td>
+                  <td>fourier_harmonic</td>
+                  <td>period: 12</td>
+                  <td><span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981;">✓ Seguro</span></td>
+                  <td>Armónicos trigonométricos para codificación cíclica sin discontinuidad.</td>
+                </tr>
+                <tr>
+                  <td><code>empty_ratio_lag_1</code></td>
+                  <td>port</td>
+                  <td>ratio_shift</td>
+                  <td>shift: 1</td>
+                  <td><span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981;">✓ Seguro</span></td>
+                  <td>Proporción de vacíos sobre el total en t-1 para detección de congestión.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 7: SEGURIDAD, IAM, RBAC/ABAC & AUDITORÍA WORM CRIPTOGRÁFICA           -->
+    <!-- ========================================================================= -->
+    <section id="tab-security-iam" class="tab-content">
+      <div class="landing-container">
+
+        <!-- Security Posture Banner -->
+        <div class="card" style="border-left: 4px solid #8b5cf6; margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <span class="badge" style="background: rgba(139,92,246,0.15); color: #c084fc; margin-bottom: 0.35rem; display: inline-block;">SEGURIDAD OPERATIVA • NIST SP 800-63B • ISO/IEC 27001</span>
+              <h2 style="font-size: 1.45rem; color: #f8fafc; margin: 0.2rem 0;">IAM, Control RBAC/ABAC & Auditoría WORM</h2>
+              <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Plataforma blindada con hashing PBKDF2-HMAC-SHA256, MFA TOTP RFC 6238, tokens firmados HS256 y libro inmutable WORM.</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <button class="btn btn-primary" onclick="window.openAuthModal('tab-login')">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                Gestión de Sesión & IAM
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Security HUD KPI Cards -->
+        <div class="kpi-grid" style="margin-bottom: 1.5rem;">
+          <div class="kpi-card">
+            <div class="kpi-title">Identidad Activa</div>
+            <div class="kpi-value" id="iam-user-kpi" style="font-size: 1.25rem;">root</div>
+            <div class="kpi-sub" id="iam-auth-type-sub">CSPRNG Bootstrap Autenticado</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Rol Activo Simulado</div>
+            <div class="kpi-value" id="iam-role-kpi" style="color: #c084fc; font-size: 1.25rem;">root</div>
+            <div class="kpi-sub">31/31 Permisos Otorgados</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Libro Inmutable WORM</div>
+            <div class="kpi-value" id="iam-worm-kpi" style="color: var(--emerald-success);">Cadena Válida</div>
+            <div class="kpi-sub" id="iam-worm-blocks-sub">Encadenamiento SHA-256 Verificado</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">MFA Segundo Factor</div>
+            <div class="kpi-value" style="color: var(--cyan-bright);">RFC 6238</div>
+            <div class="kpi-sub">TOTP 6 Dígitos Soportado</div>
+          </div>
+        </div>
+
+        <!-- RBAC 12 Roles Interactive Sandbox Switcher -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <h3 style="font-size: 1.05rem; color: var(--cyan-bright); margin: 0;">👥 Simulador Interactivo de los 12 Roles Base (RBAC Matrix)</h3>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Haz clic sobre cualquier rol oficial para inspeccionar en vivo los permisos que el backend autoriza:</p>
+            </div>
+            <span class="badge" style="background: rgba(56,189,248,0.1); color: #38bdf8;">Backend es Autoridad Final</span>
+          </div>
+
+          <div class="rbac-roles-grid" id="rbac-roles-selector-grid">
+            <!-- 12 roles will be rendered via JS or standard list -->
+            <div class="rbac-role-card selected" data-role="root" onclick="window.selectRbacRoleSimulation('root')">
+              <div class="rbac-role-name">root <span class="rbac-role-badge">Nivel 100</span></div>
+              <small style="color:#94a3b8; font-size:0.7rem;">Superusuario de emergencia.</small>
+            </div>
+            <div class="rbac-role-card" data-role="platform_admin" onclick="window.selectRbacRoleSimulation('platform_admin')">
+              <div class="rbac-role-name">platform_admin <span class="rbac-role-badge">Nivel 90</span></div>
+              <small style="color:#94a3b8; font-size:0.7rem;">Administrador de plataforma.</small>
+            </div>
+            <div class="rbac-role-card" data-role="security_admin" onclick="window.selectRbacRoleSimulation('security_admin')">
+              <div class="rbac-role-name">security_admin <span class="rbac-role-badge">Nivel 85</span></div>
+              <small style="color:#94a3b8; font-size:0.7rem;">Administrador de seguridad & IAM.</small>
+            </div>
+            <div class="rbac-role-card" data-role="data_engineer" onclick="window.selectRbacRoleSimulation('data_engineer')">
+              <div class="rbac-role-name">data_engineer <span class="rbac-role-badge">Nivel 70</span></div>
+              <small style="color:#94a3b8; font-size:0.7rem;">Ingeniero de datos e ingesta.</small>
+            </div>
+            <div class="rbac-role-card" data-role="data_steward" onclick="window.selectRbacRoleSimulation('data_steward')">
+              <div class="rbac-role-name">data_steward <span class="rbac-role-badge">Nivel 65</span></div>
+              <small style="color:#94a3b8; font-size:0.7rem;">Custodio de calidad y fuentes.</small>
+            </div>
+            <div class="rbac-role-card" data-role="mlops_engineer" onclick="window.selectRbacRoleSimulation('mlops_engineer')">
+              <div class="rbac-role-name">mlops_engineer <span class="rbac-role-badge">Nivel 70</span></div>
+              <small style="color:#94a3b8; font-size:0.7rem;">Ingeniero MLOps y pipelines.</small>
+            </div>
+            <div class="rbac-role-card" data-role="ml_reviewer" onclick="window.selectRbacRoleSimulation('ml_reviewer')">
+              <div class="rbac-role-name">ml_reviewer <span class="rbac-role-badge">Nivel 75</span></div>
+              <small style="color:#94a3b8; font-size:0.7rem;">Revisor de producción de modelos.</small>
+            </div>
+            <div class="rbac-role-card" data-role="port_operator" onclick="window.selectRbacRoleSimulation('port_operator')">
+              <div class="rbac-role-name">port_operator <span class="rbac-role-badge">Nivel 50</span></div>
+              <small style="color:#94a3b8; font-size:0.7rem;">Operador de muelle y pronósticos.</small>
+            </div>
+            <div class="rbac-role-card" data-role="simulation_analyst" onclick="window.selectRbacRoleSimulation('simulation_analyst')">
+              <div class="rbac-role-name">simulation_analyst <span class="rbac-role-badge">Nivel 50</span></div>
+              <small style="color:#94a3b8; font-size:0.7rem;">Analista de riesgos Monte Carlo.</small>
+            </div>
+            <div class="rbac-role-card" data-role="compliance_auditor" onclick="window.selectRbacRoleSimulation('compliance_auditor')">
+              <div class="rbac-role-name">compliance_auditor <span class="rbac-role-badge">Nivel 60</span></div>
+              <small style="color:#94a3b8; font-size:0.7rem;">Auditor de cumplimiento y WORM.</small>
+            </div>
+            <div class="rbac-role-card" data-role="api_consumer" onclick="window.selectRbacRoleSimulation('api_consumer')">
+              <div class="rbac-role-name">api_consumer <span class="rbac-role-badge">Nivel 40</span></div>
+              <small style="color:#94a3b8; font-size:0.7rem;">Consumidor de endpoints M2M.</small>
+            </div>
+            <div class="rbac-role-card" data-role="readonly_viewer" onclick="window.selectRbacRoleSimulation('readonly_viewer')">
+              <div class="rbac-role-name">readonly_viewer <span class="rbac-role-badge">Nivel 10</span></div>
+              <small style="color:#94a3b8; font-size:0.7rem;">Visualizador sin permisos de mutación.</small>
+            </div>
+          </div>
+
+          <div style="margin-top: 1rem;">
+            <div style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 0.4rem;">
+              Permisos Concedidos para el rol <strong id="simulated-role-title" style="color:var(--cyan-bright);">root</strong> (<span id="simulated-role-perm-count">31</span> permisos):
+            </div>
+            <div class="rbac-perms-container" id="simulated-permissions-list">
+              <!-- Dynamically populated tags -->
+              <span class="rbac-perm-tag">user.*</span>
+              <span class="rbac-perm-tag">role.*</span>
+              <span class="rbac-perm-tag">data.*</span>
+              <span class="rbac-perm-tag">feature.*</span>
+              <span class="rbac-perm-tag">model.*</span>
+              <span class="rbac-perm-tag">simulation.*</span>
+              <span class="rbac-perm-tag">audit.*</span>
+              <span class="rbac-perm-tag">system.*</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cryptographic WORM Audit Ledger Inspector -->
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <h3 style="font-size: 1.05rem; color: var(--emerald-success); margin: 0;">🛡️ Verificación Criptográfica del Libro Mayor WORM (SHA-256)</h3>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Write Once, Read Many: Cada corrida de simulación y cambio de modelo se sella como un bloque criptográficamente encadenado.</p>
+            </div>
+            <button class="btn btn-primary" onclick="window.verifyWormAuditChainLive()">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              Verificar Cadena WORM en Vivo
+            </button>
+          </div>
+
+          <div class="worm-result-card" id="worm-audit-display">
+            <div class="worm-result-header">
+              <span style="font-weight:700; color:#10b981; font-size:0.85rem;" id="worm-valid-text">✓ INTEGRIDAD CRIPTOGRÁFICA CERTIFICADA (ISO/IEC 27001)</span>
+              <span class="badge" id="worm-blocks-badge" style="background:rgba(16,185,129,0.2); color:#10b981;">Bloques Verificados: 0</span>
+            </div>
+            <div style="font-size:0.75rem; color:#94a3b8;">Hash Génesis (Bloque 0):</div>
+            <div class="worm-hash-line" id="worm-genesis-hash">0000000000000000000000000000000000000000000000000000000000000000</div>
+            <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.4rem;">Hash Cabeza (Último Bloque):</div>
+            <div class="worm-hash-line" id="worm-head-hash">Consultando servidor...</div>
+            <div style="font-size:0.75rem; color:#cbd5e1; margin-top:0.6rem;" id="worm-audit-summary-note">
+              No se detectaron saltos de hash, mutaciones en frío ni colisiones. La tabla audit_ledger_worm mantiene inmutabilidad matemática absoluta.
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Audit Security Events Table -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <div>
+              <h3 style="font-size: 0.95rem; color: var(--cyan-bright); margin: 0;">📝 Registro de Eventos de Seguridad & Acceso (Security Events)</h3>
+              <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">Telemetría de intentos de autenticación, inicios de sesión y mutaciones de plataforma con IPs anonimizadas:</p>
+            </div>
+            <button class="badge link-badge" onclick="window.fetchAuditSecurityEvents()">🔄 Actualizar Eventos</button>
+          </div>
+
+          <div class="table-responsive" style="max-height: 240px; overflow-y: auto;">
+            <table class="data-table" style="font-size: 0.76rem;">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Actor</th>
+                  <th>Acción</th>
+                  <th>Recurso</th>
+                  <th>Resultado</th>
+                  <th>IP Hash</th>
+                </tr>
+              </thead>
+              <tbody id="security-events-tbody">
+                <tr>
+                  <td>2026-09-25T22:30:00Z</td>
+                  <td>system_bootstrap</td>
+                  <td>SYSTEM_BOOTSTRAP_COMPLETE</td>
+                  <td>platform</td>
+                  <td><span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981;">SUCCESS</span></td>
+                  <td><code>none</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -2412,6 +2869,151 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
       <div class="modal-footer">
         <span class="modal-author">Panamá PortOps-AI v1.0 • Desarrollado v1.0 Miguel Benítez • Fines Educativos</span>
         <button id="settings-action-btn" class="btn-primary" style="width: auto; padding: 0.45rem 1.2rem; font-size: 0.85rem;">Cerrar Panel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL DE AUTENTICACIÓN, IAM & AUDITORÍA WORM (V2.0 MASTERPLAN)            -->
+  <!-- ========================================================================= -->
+  <div id="auth-iam-modal" class="modal-backdrop">
+    <div class="modal-dialog auth-iam-dialog">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-badge" style="background: rgba(14, 165, 233, 0.2); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4);">
+            SEGURIDAD OPERATIVA • NIST SP 800-63B • ISO/IEC 27001
+          </span>
+          <h2 style="font-size: 1.25rem; color: #f8fafc; margin: 0.35rem 0 0.15rem 0;">🔐 Centro de Identidad, Autenticación IAM & WORM</h2>
+          <p class="settings-subtitle">Autenticación criptográfica, MFA TOTP RFC 6238, cambio obligatorio de clave e inspección de tokens firmados.</p>
+        </div>
+        <button class="modal-close" onclick="window.closeAuthModal()" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <div class="auth-tabs-nav">
+        <button class="auth-tab-btn active" data-atab="atab-login" onclick="window.switchAuthTab('atab-login')">🔑 Iniciar Sesión / MFA</button>
+        <button class="auth-tab-btn" data-atab="atab-password" onclick="window.switchAuthTab('atab-password')">🛡️ Cambio Clave (NIST)</button>
+        <button class="auth-tab-btn" data-atab="atab-mfa" onclick="window.switchAuthTab('atab-mfa')">📱 Configurar MFA</button>
+        <button class="auth-tab-btn" data-atab="atab-inspector" onclick="window.switchAuthTab('atab-inspector')">🔍 Inspector de Tokens & Sesión</button>
+      </div>
+
+      <div class="modal-body" style="padding: 0;">
+        <!-- Tab 1: Login & MFA -->
+        <div id="atab-login" class="auth-tab-content active">
+          <div class="auth-notice-box">
+            <strong>CSPRNG Root Security Notice:</strong> La plataforma no utiliza contraseñas por defecto (como <code>root/root</code>). Para el primer acceso, consulte las credenciales temporales generadas en <code>.bootstrap/root-credentials.txt</code>.
+          </div>
+
+          <div id="auth-login-view">
+            <div class="auth-input-group">
+              <label for="auth-input-username">Usuario:</label>
+              <input type="text" id="auth-input-username" placeholder="ej: root_xxxxxx o su usuario asignado">
+            </div>
+
+            <div class="auth-input-group">
+              <label for="auth-input-password">Contraseña:</label>
+              <input type="password" id="auth-input-password" placeholder="••••••••••••••••">
+            </div>
+
+            <div style="display: flex; gap: 0.75rem; align-items: center; margin-top: 1.25rem;">
+              <button class="btn btn-primary" id="btn-submit-login" onclick="window.executeLogin()" style="width: auto; padding: 0.55rem 1.5rem;">
+                Iniciar Sesión
+              </button>
+              <span id="auth-login-status" style="font-size: 0.8rem; color: #94a3b8;"></span>
+            </div>
+          </div>
+
+          <!-- MFA Challenge Subview (Hidden until triggered) -->
+          <div id="auth-mfa-view" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08);">
+            <div class="auth-notice-box warning">
+              <strong>Segundo Factor Requerido:</strong> Ingrese el código numérico de 6 dígitos generado por su aplicación autenticadora (TOTP RFC 6238).
+            </div>
+            <div class="auth-input-group">
+              <label for="auth-input-totp">Código de Verificación TOTP (6 Dígitos):</label>
+              <input type="text" id="auth-input-totp" maxlength="6" placeholder="ej: 123456" style="letter-spacing: 4px; font-size: 1.1rem; text-align: center; font-family: var(--font-mono);">
+            </div>
+            <div style="display: flex; gap: 0.75rem; align-items: center;">
+              <button class="btn btn-primary" onclick="window.executeVerifyMFA()" style="width: auto; padding: 0.55rem 1.5rem;">
+                Verificar MFA
+              </button>
+              <span id="auth-mfa-status" style="font-size: 0.8rem; color: #94a3b8;"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Password Change (NIST SP 800-63B) -->
+        <div id="atab-password" class="auth-tab-content">
+          <div class="auth-notice-box">
+            <strong>Política NIST SP 800-63B:</strong> La nueva contraseña debe tener un mínimo de 12 caracteres, incluir mezcla de mayúsculas, minúsculas, números o símbolos, y no coincidir con ninguna de las últimas 5 contraseñas históricas.
+          </div>
+
+          <div class="auth-input-group">
+            <label for="pwd-input-old">Contraseña Actual:</label>
+            <input type="password" id="pwd-input-old" placeholder="Contraseña temporal o actual">
+          </div>
+
+          <div class="auth-input-group">
+            <label for="pwd-input-new">Nueva Contraseña Segura:</label>
+            <input type="password" id="pwd-input-new" placeholder="Mínimo 12 caracteres con entropía">
+          </div>
+
+          <div class="auth-input-group">
+            <label for="pwd-input-confirm">Confirmar Nueva Contraseña:</label>
+            <input type="password" id="pwd-input-confirm" placeholder="Repita la nueva contraseña">
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; align-items: center; margin-top: 1.25rem;">
+            <button class="btn btn-primary" onclick="window.executeChangePassword()" style="width: auto; padding: 0.55rem 1.5rem;">
+              Actualizar Contraseña
+            </button>
+            <span id="pwd-change-status" style="font-size: 0.8rem; color: #94a3b8;"></span>
+          </div>
+        </div>
+
+        <!-- Tab 3: MFA Setup -->
+        <div id="atab-mfa" class="auth-tab-content">
+          <div class="auth-notice-box">
+            <strong>MFA RFC 6238:</strong> Habilita autenticación de dos factores con aplicaciones móviles como Google Authenticator, Aegis o 1Password.
+          </div>
+
+          <button class="btn btn-secondary" onclick="window.executeSetupMFA()" style="margin-bottom: 1rem;">
+            🔑 Generar Nueva Clave Secreta TOTP
+          </button>
+
+          <div id="mfa-setup-output" style="display: none; background: rgba(5,8,16,0.6); padding: 1rem; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);">
+            <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.25rem;">Secreto Base32:</div>
+            <div id="mfa-secret-display" style="font-family: var(--font-mono); font-size: 1rem; color: #38bdf8; font-weight: bold; margin-bottom: 0.75rem;"></div>
+            <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 0.25rem;">URI de Aprovisionamiento OTP:</div>
+            <div id="mfa-uri-display" style="font-family: var(--font-mono); font-size: 0.72rem; color: #a5f3fc; word-break: break-all; margin-bottom: 0.5rem;"></div>
+            <p style="font-size: 0.75rem; color: var(--emerald-success); margin: 0;">Ingrese esta clave en su aplicación autenticadora para vincular su cuenta.</p>
+          </div>
+        </div>
+
+        <!-- Tab 4: Token & Cookie Inspector -->
+        <div id="atab-inspector" class="auth-tab-content">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-size: 0.82rem; color: #cbd5e1; font-weight: 600;">Token JWT Firmado (HS256) Activo:</span>
+            <button class="btn btn-secondary" onclick="window.executeLogout()" style="padding: 0.3rem 0.8rem; font-size: 0.75rem; color: #f43f5e;">
+              Cerrar Sesión Activa
+            </button>
+          </div>
+          <pre class="token-viewer-pre" id="inspector-token-raw">No hay sesión activa autenticada.</pre>
+
+          <div style="margin-top: 1rem;">
+            <span style="font-size: 0.82rem; color: #cbd5e1; font-weight: 600; display: block; margin-bottom: 0.35rem;">Payload Decodificado & Reclamaciones (Claims):</span>
+            <pre class="token-viewer-pre" id="inspector-token-claims" style="max-height: 120px;">{}</pre>
+          </div>
+
+          <div style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <span class="badge" style="background: rgba(16,185,129,0.15); color: #10b981;">Cookie: HttpOnly (Protegida XSS)</span>
+            <span class="badge" style="background: rgba(16,185,129,0.15); color: #10b981;">SameSite: Lax (Protegida CSRF)</span>
+            <span class="badge" style="background: rgba(56,189,248,0.15); color: #38bdf8;">TTL: 12 Horas</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="justify-content: space-between;">
+        <span class="modal-author">Panamá PortOps-AI v2.0 • Desarrollado v1.0 Miguel Benítez</span>
+        <button onclick="window.closeAuthModal()" class="btn-primary" style="width: auto; padding: 0.45rem 1.2rem; font-size: 0.85rem;">Cerrar Centro IAM</button>
       </div>
     </div>
   </div>
