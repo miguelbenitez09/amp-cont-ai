@@ -398,14 +398,19 @@ class HealthResponse(BaseModel):
 # --- Web UI Route ---
 @app.get("/", include_in_schema=False)
 def serve_web_ui(request: Request, view: Optional[str] = None):
-    """Serves the modern, minimalist static web user interface or Flutter Web."""
+    """Serves the modern, minimalist static web user interface or Flutter Web with zero-cache guarantees."""
+    no_cache_headers = {
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
+    }
     if view == "flutter":
         flutter_index = FLUTTER_WEB_DIR / "index.html"
         if flutter_index.exists():
-            return FileResponse(flutter_index)
+            return FileResponse(flutter_index, headers=no_cache_headers)
     index_file = STATIC_DIR / "index.html"
     if index_file.exists():
-        return FileResponse(index_file)
+        return FileResponse(index_file, headers=no_cache_headers)
     return {"message": "Panamá PortOps-AI API is running. Visit /docs for OpenAPI specs."}
 
 

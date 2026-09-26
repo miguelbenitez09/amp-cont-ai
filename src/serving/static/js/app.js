@@ -129,6 +129,8 @@ document.addEventListener("DOMContentLoaded", () => {
       } else if (targetTab === "tab-security-iam") {
         if (window.verifyWormAuditChainLive) window.verifyWormAuditChainLive();
         if (window.fetchAuditSecurityEvents) window.fetchAuditSecurityEvents();
+      } else if (targetTab === "tab-customs-lakehouse") {
+        if (window.searchCustomsTariff) window.searchCustomsTariff();
       }
     });
   });
@@ -173,7 +175,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
       if (data.status === "healthy") {
         healthBadge.className = "badge healthy";
-        healthBadge.innerHTML = `<span class="status-dot"></span> Sistema Operacional`;
+        const healthyText = window.t ? window.t("nav.healthy", "100% Operativo") : "100% Operativo";
+        healthBadge.innerHTML = `<span class="status-dot"></span> ${healthyText}`;
       } else {
         healthBadge.className = "badge";
         healthBadge.innerHTML = `<span class="status-dot" style="background:#f43f5e;"></span> No Inicializado`;
@@ -4798,6 +4801,12 @@ executePortForecast();`;
   window.fetchAuditSecurityEvents();
   window.loadTelemetryExplorer();
   if (window.updateSoulBadgeView) window.updateSoulBadgeView();
+
+  window.addEventListener("portopsLanguageChanged", () => {
+    checkHealth();
+    if (window.updateSoulBadgeView) window.updateSoulBadgeView();
+    if (window.loadTelemetryExplorer) window.loadTelemetryExplorer();
+  });
 
   btnPredict.addEventListener("click", runForecast);
   btnSimulate.addEventListener("click", runSimulation);

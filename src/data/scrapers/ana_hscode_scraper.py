@@ -394,14 +394,49 @@ class PanamaTariffDatabase:
 
     @classmethod
     def search_by_text(cls, term: str) -> List[Dict[str, Any]]:
-        """Searches tariffs by description, regulatory entity, or commodity type."""
-        term_lower = term.lower()
+        """Searches tariffs by description, regulatory entity, commodity type, HS code or procedures."""
+        import unicodedata
+        def _norm(s: str) -> str:
+            if not s:
+                return ""
+            n = unicodedata.normalize('NFD', s)
+            return "".join(c for c in n if unicodedata.category(c) != 'Mn').lower()
+
+        term_norm = _norm(term).strip()
+        if not term_norm:
+            return cls.OFFICIAL_TARIFF_ITEMS
+
+        # Map common synonyms in maritime / customs queries
+        synonyms = {
+            "banano": "banana",
+            "platano": "banana",
+            "auto": "automovil",
+            "carro": "automovil",
+            "vehiculo": "automovil",
+            "cafe": "cafe",
+            "computadora": "maquina automatica",
+            "laptop": "maquina",
+            "combustible": "fueloleo",
+            "bunker": "fueloleo",
+            "arma": "revolver",
+            "pistola": "revolver"
+        }
+        synonym_term = synonyms.get(term_norm, "")
+
         results = []
         for item in cls.OFFICIAL_TARIFF_ITEMS:
-            if (term_lower in item["descripcion"].lower() or 
-                term_lower in item["tipo_mercancia"].lower() or
-                term_lower in item.get("base_legal", "").lower() or
-                any(term_lower in e.lower() for e in item["entidades_reguladoras"])):
+            haystack = " ".join([
+                _norm(item.get("descripcion", "")),
+                _norm(item.get("tipo_mercancia", "")),
+                _norm(item.get("hs_code_panama", "")),
+                _norm(item.get("hs_code_6", "")),
+                _norm(item.get("permiso_requerido", "")),
+                _norm(item.get("procedimiento_importacion", "")),
+                _norm(item.get("procedimiento_exportacion", "")),
+                _norm(item.get("base_legal", "")),
+                " ".join(_norm(e) for e in item.get("entidades_reguladoras", []))
+            ])
+            if term_norm in haystack or (synonym_term and synonym_term in haystack):
                 results.append(item)
         return results
 
