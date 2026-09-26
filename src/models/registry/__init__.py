@@ -1,6 +1,6 @@
 """
-Model Registry and Governance Engine for Panama PortOps-AI v2.0
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Model Registry and Governance Engine for Panama PortOps-AI v1.0.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 from pathlib import Path

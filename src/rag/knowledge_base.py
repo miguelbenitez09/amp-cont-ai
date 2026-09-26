@@ -2,7 +2,7 @@
 Maritime & Legal Knowledge Base for Panamanian Port Operations.
 Contains structured articles, regulatory decrees, and technical MLOps references.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 

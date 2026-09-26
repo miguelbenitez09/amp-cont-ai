@@ -1,4 +1,4 @@
-# Panamá PortOps-AI v2.0 — Plataforma Abierta de Inteligencia Portuaria, MLOps e Inferencia Causal
+# Panamá PortOps-AI v1.0.0 — Plataforma Abierta de Inteligencia Portuaria, MLOps e Inferencia Causal
 ## Tratado Maestro de Arquitectura Soberana, Inferencia Causal, Benchmarking y Despliegue
 
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
@@ -8,7 +8,7 @@
 [![Datos Abiertos Panamá](https://img.shields.io/badge/Datos_Abiertos-AMP_2015--2026-blueviolet.svg)](https://www.datosabiertos.gob.pa)
 [![Autor](https://img.shields.io/badge/Autor-Ing._Miguel_Benítez_(UTP)-informational.svg)](https://github.com/miguelbenitez09)
 
-> **Firma Oficial del Proyecto:** **`Panamá PortOps-AI v2.0 • Ing. Miguel Benítez • UTP`**  
+> **Firma Oficial del Proyecto:** **`Panamá PortOps-AI v1.0.0 • Ing. Miguel Benítez • UTP`**  
 > **Autor Principal:** **Ing. Miguel Benítez** (`miguelbenitez09`) — Universidad Tecnológica de Panamá (UTP) (<https://github.com/miguelbenitez09>)  
 > **Licencia:** GNU General Public License v3.0 (GPL-3.0) con Atribución Obligatoria (Sección 7)  
 > **Arquitectura:** **100% Código Abierto Soberano (Zero Closed-Source / Zero Microsoft Fabric)**  
@@ -627,11 +627,11 @@ Siguiendo los lineamientos de la **OpenSSF**:
 
 ---
 
-## 13. Arquitectura v2.0 Enterprise: IAM, Plataforma de Datos, Model Registry y WORM Ledger
+## 13. Arquitectura v1.0.0 Enterprise: IAM, Plataforma de Datos, Model Registry y WORM Ledger
 
 La versión 2.0 consolida a **Panamá PortOps-AI** como una plataforma de grado industrial 100% de código abierto soberano basada en la base de datos empresarial `portops_platform.db` (17 tablas normalizadas), con blindaje de seguridad IAM y observabilidad en tiempo real:
 
-### 13.1 Resumen de Capacidades v2.0
+### 13.1 Resumen de Capacidades v1.0.0
 - **Seguridad Operativa e IAM:**
   - Inicialización con generador criptográfico CSPRNG sin credenciales por defecto (`.bootstrap/root-credentials.txt`).
   - Asistente de primer inicio obligatorio (First-Run Wizard) con cambio de contraseña de superadministrador `root` y creación de 3 cuentas administrativas con responsabilidades segregadas (`SysAdmin`, `SecOpsAdmin`, `MlopsAdmin`).
@@ -728,7 +728,7 @@ Este proyecto es software libre y de código abierto bajo la licencia **GNU Gene
 2. **Atribución Obligatoria al Autor Original:** Cualquier uso educativo, académico, institucional o comercial debe mantener de forma clara, visible e inalterada la siguiente mención y enlace:
 
 ```text
-Panamá PortOps-AI v2.0 • Ing. Miguel Benítez • Universidad Tecnológica de Panamá (UTP)
+Panamá PortOps-AI v1.0.0 • Ing. Miguel Benítez • Universidad Tecnológica de Panamá (UTP)
 Basado en Panamá PortOps-AI por Ing. Miguel Benítez (https://github.com/miguelbenitez09/amp-cont-ai)
 ```
 
@@ -736,7 +736,7 @@ Basado en Panamá PortOps-AI por Ing. Miguel Benítez (https://github.com/miguel
 ```bibtex
 @software{benitez2026portops_v2,
   author       = {Benítez, Miguel},
-  title        = {{Panamá PortOps-AI v2.0: Ecosistema Abierto MLOps, Benchmarking de 8 Algoritmos y Motor de Inferencia Causal para Logística Portuaria}},
+  title        = {{Panamá PortOps-AI v1.0.0: Ecosistema Abierto MLOps, Benchmarking de 8 Algoritmos y Motor de Inferencia Causal para Logística Portuaria}},
   year         = {2026},
   publisher    = {GitHub},
   journal      = {GitHub repository},
@@ -747,6 +747,6 @@ Basado en Panamá PortOps-AI por Ing. Miguel Benítez (https://github.com/miguel
 
 ---
 **Firma Oficial del Proyecto:**  
-`Panamá PortOps-AI v2.0 • Ing. Miguel Benítez • UTP`  
+`Panamá PortOps-AI v1.0.0 • Ing. Miguel Benítez • UTP`  
 República de Panamá, 2026.
 

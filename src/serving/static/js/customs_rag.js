@@ -1,6 +1,6 @@
 /**
  * Panamá PortOps-AI v1.0 - Módulo RAG Aduanas, Aranceles y Validación ISO 6346
- * Desarrollado v1.0 Miguel Benítez | GNU GPL v3.0
+ * Desarrollado v1.0.0 Miguel Benítez | GNU GPL v3.0
  */
 
 (function() {

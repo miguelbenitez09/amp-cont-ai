@@ -1,6 +1,6 @@
 -- ==============================================================================
 -- Panama PortOps-AI v1.0 - Migration 002: Inference Telemetry, Feedback & Policies
--- Author: Desarrollado v1.0 Miguel Benítez
+-- Author: Desarrollado v1.0.0 Miguel Benítez
 -- License: GNU General Public License v3.0 (GPL-3.0) with Section 7 Mandatory Attribution
 -- Target: SQLite & PostgreSQL Dual-Engine Compatibility
 -- ==============================================================================

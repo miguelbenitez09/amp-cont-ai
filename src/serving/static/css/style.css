@@ -1,6 +1,6 @@
 /*
   Panamá PortOps-AI v1.0 — Minimalist Vanguard Maritime Tech Design System
-  Author: Desarrollado v1.0 Miguel Benítez
+  Author: Desarrollado v1.0.0 Miguel Benítez
   License: GNU General Public License v3.0 (GPL-3.0)
 */
 
@@ -4151,7 +4151,7 @@ footer {
 }
 
 /* ========================================================================= */
-/* V2.0 SECURITY HUD, IAM MODAL & DATA PLATFORM ENHANCEMENTS                 */
+/* V1.0.0 SECURITY HUD, IAM MODAL & DATA PLATFORM ENHANCEMENTS                 */
 /* ========================================================================= */
 
 .btn-security-hud {
@@ -4529,7 +4529,7 @@ footer {
 }
 
 /* =========================================================================
-   PORTOPS-AI v2.0 RESIDUALS, KPI GRIDS, FIRST-RUN MODAL & ANALYSIS BOX
+   PORTOPS-AI v1.0.0 RESIDUALS, KPI GRIDS, FIRST-RUN MODAL & ANALYSIS BOX
    ========================================================================= */
 
 /* Diagnostics Dashboard Layout: Equal spacious 2-column layout */

@@ -1,9 +1,9 @@
 """
-User-Configurable Dynamic Guardrail & Policy Engine for Panama PortOps-AI v2.0.
+User-Configurable Dynamic Guardrail & Policy Engine for Panama PortOps-AI v1.0.0.
 Provides role-based quotas, token metering, module access restrictions, and MCP tool permissions.
 Separates Immutable System Guardrails (sealed by HMAC-SHA256) from Administrator-Configurable Guardrails.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 

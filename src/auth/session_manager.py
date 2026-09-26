@@ -1,7 +1,7 @@
 """
-Session Manager and Secure Cookie Handler for Panama PortOps-AI v2.0
+Session Manager and Secure Cookie Handler for Panama PortOps-AI v1.0.0
 Handles session state, token hashing, revocation, and security headers.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import uuid

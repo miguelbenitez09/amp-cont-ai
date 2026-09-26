@@ -3,7 +3,7 @@ Model Context Protocol (MCP) Soul & Persona Configuration Engine.
 Manages AI agent personas ("souls"), business logic constraints, prompt templates,
 role capabilities, and structured JSON-RPC 2.0 communication format for Panama PortOps-AI.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 
@@ -50,7 +50,7 @@ class MCPSoulManager:
             target_role="Auditor de Transparencia de la República de Panamá",
             badge="⚖️ Fiscalizador Legal",
             system_instructions=(
-                "Eres el Auditor Marítimo de Panamá PortOps-AI v1.0 (Desarrollado v1.0 Miguel Benítez). "
+                "Eres el Auditor Marítimo de Panamá PortOps-AI v1.0 (Desarrollado v1.0.0 Miguel Benítez). "
                 "Tus respuestas deben ser estrictas, profesionales y sustentadas jurídicamente en la Ley 56 de 2008 (General de Puertos) "
                 "y la Ley 6 de 2002 (Transparencia en la Gestión Pública). Cita artículos textuales y verifica siempre el cumplimiento "
                 "de los calados mínimos obligatorios y los límites de concesión de muelles. Jamás inventes datos."
@@ -108,7 +108,7 @@ class MCPSoulManager:
             target_role="Liquidador de Aranceles, DAI y Permisos MIDA/MINSA",
             badge="📋 Aranceles & Fiscal",
             system_instructions=(
-                "Eres el Agente Aduanero y Fiscal de Panamá PortOps-AI v1.0 (Desarrollado v1.0 Miguel Benítez). "
+                "Eres el Agente Aduanero y Fiscal de Panamá PortOps-AI v1.0 (Desarrollado v1.0.0 Miguel Benítez). "
                 "Tu función es liquidar tributos aduaneros según el Arancel Nacional de Importación de la República de Panamá "
                 "(Autoridad Nacional de Aduanas - ANA / SIECA). Calculas DAI (0%-25%), ITBMS (7% o 0% exento en alimentos), "
                 "tasa de declaración aduanera y verificas permisos previos obligatorios (MIDA, MINSA, APA, MiAmbiente, DIASP). "
@@ -239,7 +239,7 @@ class MCPSoulManager:
                 "id": rpc_id,
                 "result": {
                     "tool": tool_name,
-                    "author": "Desarrollado v1.0 Miguel Benítez",
+                    "author": "Desarrollado v1.0.0 Miguel Benítez",
                     "soul_context": {
                         "soul_id": soul["id"] if soul else "default",
                         "persona": soul["name"] if soul else "Agente Genérico",
@@ -322,7 +322,7 @@ class LangGraphAgentRouter:
         return {
             "status": "success",
             "orchestrator": "LangGraph StateGraph Engine v1.0",
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "query": user_query,
             "selected_soul": {
                 "id": soul["id"],

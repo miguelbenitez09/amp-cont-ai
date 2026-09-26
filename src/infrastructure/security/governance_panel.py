@@ -13,7 +13,7 @@ Implements:
 - First-Run Initialization Workflow for Initial System Deployment
 - Anti-Ransomware & Disaster Recovery Protocols (WORM, RPO < 1h, RTO < 15m)
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 
@@ -249,7 +249,7 @@ class PanamaSecurityGovernancePanel:
         """Provides full enterprise security status and active permissions."""
         return {
             "status": "operational",
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "architecture": "Enterprise RBAC (6 Tiers) & WORM Disaster Recovery",
             "tls_certificate": {
                 "protocol": "TLS 1.3 (RFC 8446)",
@@ -380,7 +380,7 @@ class PanamaSecurityGovernancePanel:
             "timestamp": timestamp,
             "reason": reason,
             "sessions_invalidated": len(cls.ACTIVE_USERS),
-            "signature": "Desarrollado v1.0 Miguel Benítez"
+            "signature": "Desarrollado v1.0.0 Miguel Benítez"
         }
         cls.SESSION_REVOCATION_LOG.append(event)
         return {

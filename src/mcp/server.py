@@ -3,7 +3,7 @@ Model Context Protocol (MCP) Server for Panama Maritime PortOps AI.
 Implements the JSON-RPC 2.0 protocol over stdio for Claude Desktop, Cursor, Antigravity,
 and other agentic AI orchestrators.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 
@@ -45,7 +45,7 @@ class MCPServer:
                     "serverInfo": {
                         "name": self.SERVER_NAME,
                         "version": self.SERVER_VERSION,
-                        "author": "Desarrollado v1.0 Miguel Benítez"
+                        "author": "Desarrollado v1.0.0 Miguel Benítez"
                     },
                     "capabilities": {
                         "tools": {"listChanged": False}
@@ -109,7 +109,7 @@ class MCPServer:
 
     def run_stdio(self) -> None:
         """Runs the server reading JSON-RPC lines from standard input."""
-        logger.info(f"Starting {self.SERVER_NAME} v{self.SERVER_VERSION} (Desarrollado v1.0 Miguel Benítez) on stdio...")
+        logger.info(f"Starting {self.SERVER_NAME} v{self.SERVER_VERSION} (Desarrollado v1.0.0 Miguel Benítez) on stdio...")
         for line in sys.stdin:
             line = line.strip()
             if not line:

@@ -8,7 +8,7 @@ Comprehensive Enterprise Infrastructure & MLOps Tests:
 - Secret Manager with Masking
 - New Serving API Endpoints
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 
@@ -98,7 +98,7 @@ class TestMCPServer:
     def test_mcp_execute_tools(self):
         res = execute_tool("get_port_forecast", {"port_name": "Balboa", "horizon_months": 3})
         assert "projected_median_monthly_teu" in res
-        assert res["author"] == "Desarrollado v1.0 Miguel Benítez"
+        assert res["author"] == "Desarrollado v1.0.0 Miguel Benítez"
 
     def test_mcp_server_initialize(self):
         server = MCPServer()

@@ -1,6 +1,6 @@
 # MANUAL TÉCNICO Y ARQUITECTURA MLOPS: GUÍA INTEGRAL DEL PIPELINE Y EXTENSIBILIDAD
 ## Ecosistema Industrial Panamá PortOps-AI v1.0
-**Firma Oficial del Proyecto:** `Desarrollado v1.0 Miguel Benítez`  
+**Firma Oficial del Proyecto:** `Desarrollado v1.0.0 Miguel Benítez`  
 **Autor Principal:** Miguel Benítez (`miguelbenitez09`) (<https://github.com/miguelbenitez09>)  
 **Licencia:** GNU General Public License v3.0 (GPL-3.0) con Atribución Obligatoria (Sección 7)  
 **Marco Legal:** **Ley 6 de 22 de enero de 2002 de la República de Panamá** (Transparencia en la Gestión Pública y Datos Abiertos)  
@@ -584,7 +584,7 @@ Este software es libre bajo la licencia **GNU General Public License v3.0 (GPL-3
 Cualquier uso educativo, investigación académica, publicación técnica, derivado o despliegue comercial debe conservar de forma visible y clara la mención de autoría:
 
 ```text
-Desarrollado v1.0 Miguel Benítez
+Desarrollado v1.0.0 Miguel Benítez
 Basado en Panamá PortOps-AI por Miguel Benítez (https://github.com/miguelbenitez09/amp-cont-ai)
 ```
 
@@ -597,11 +597,11 @@ Basado en Panamá PortOps-AI por Miguel Benítez (https://github.com/miguelbenit
   publisher    = {GitHub},
   journal      = {GitHub repository},
   howpublished = {\url{https://github.com/miguelbenitez09/amp-cont-ai}},
-  note         = {Desarrollado v1.0 Miguel Benítez. Fines Cívicos y Educativos (Ley 6 de 2002). Licensed under GNU GPL v3.0 with mandatory attribution}
+  note         = {Desarrollado v1.0.0 Miguel Benítez. Fines Cívicos y Educativos (Ley 6 de 2002). Licensed under GNU GPL v3.0 with mandatory attribution}
 }
 ```
 
 ---
 **Firma Oficial del Proyecto:**  
-`Desarrollado v1.0 Miguel Benítez`  
+`Desarrollado v1.0.0 Miguel Benítez`  
 República de Panamá, 2026.

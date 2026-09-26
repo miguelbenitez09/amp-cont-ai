@@ -4,7 +4,7 @@ Connectors for authentic external maritime datasets:
 2. AIS Satellite Telemetry (Vessel traffic density, anchorage wait hours, dynamic draft)
 3. Baltic & Freight Indices (FBX, SCFI, Bunker Fuel spot prices)
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 

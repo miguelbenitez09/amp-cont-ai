@@ -4,7 +4,7 @@ Adheres to MLOps Masterclass Sections 19 & 50:
 - Multi-algorithm serving: LightGBM Quantile Ensemble, Random Forest, HistGradientBoosting, Ridge/ElasticNet
 - Content-negotiated responses: Beautiful visual HTML for browsers, structured JSON for API clients
 - In-depth interactive OpenAPI Swagger documentation with executable Python, cURL, and JS code examples
-- Strict Pydantic v2 data validation without deprecation warnings
+- Strict Pydantic 2.x data validation without deprecation warnings
 - Multi-quantile uncertainty output: P10 (Floor), P50 (Median), P90 (Ceiling)
 - Multi-algorithm comparative benchmarking endpoint (/api/models/compare)
 - Statistical diagnostics, VIF and confounders endpoint (/api/models/diagnostics)
@@ -12,7 +12,7 @@ Adheres to MLOps Masterclass Sections 19 & 50:
 - Live Monte Carlo simulation & stress testing endpoint (/simulate)
 - Historical data retrieval endpoint for interactive charting (/api/history/{port})
 - Built-in vanguard static web UI serving at GET /
-- Author: Desarrollado v1.0 Miguel Benítez
+- Author: Desarrollado v1.0.0 Miguel Benítez
 - Purpose: Proyecto desarrollado con fines estrictamente educativos, científicos y de investigación MLOps.
 """
 
@@ -100,7 +100,7 @@ tags_metadata = [
 
 API_DESCRIPTION = """
 # Panamá PortOps-AI v1.0 — Documentación Técnica de la API
-**Autor:** **Desarrollado v1.0 Miguel Benítez**  
+**Autor:** **Desarrollado v1.0.0 Miguel Benítez**  
 **Finalidad:** *Proyecto desarrollado con fines estrictamente educativos, académicos y de demostración técnica MLOps.*  
 **Licencia:** GNU General Public License v3.0 (GPL-3.0) con Atribución Obligatoria  
 **Datos Fuente:** Autoridad Marítima de Panamá (AMP) — Período Histórico Oficial 2015–2026 (140 meses continuos).  
@@ -181,7 +181,7 @@ async def lifespan(app: FastAPI):
     """
     Loads machine learning bundle, stress tester, feature store, and benchmark metrics into memory on startup.
     """
-    logger.info("Initializing FastAPI Serving Application (Desarrollado v1.0 Miguel Benítez)...")
+    logger.info("Initializing FastAPI Serving Application (Desarrollado v1.0.0 Miguel Benítez)...")
     bundle_path = MODELS_DIR / "champion_models.joblib"
     if not bundle_path.exists():
         logger.error(f"Model bundle not found at {bundle_path}")
@@ -267,7 +267,7 @@ def render_html_page(title: str, subtitle: str, content_html: str) -> str:
           </div>
           <div class="logo-text">
             <h1>Panamá PortOps-AI <span class="version-badge">v1.0</span></h1>
-            <p class="author-signature">Desarrollado v1.0 Miguel Benítez — Fines Educativos</p>
+            <p class="author-signature">Desarrollado v1.0.0 Miguel Benítez — Fines Educativos</p>
           </div>
         </a>
       </div>
@@ -284,7 +284,7 @@ def render_html_page(title: str, subtitle: str, content_html: str) -> str:
       <h1>{title}</h1>
       <p>{subtitle}</p>
       <div class="endpoint-badge-bar">
-        <span class="badge">Autor: Desarrollado v1.0 Miguel Benítez</span>
+        <span class="badge">Autor: Desarrollado v1.0.0 Miguel Benítez</span>
         <span class="badge">Finalidad: Fines Educativos</span>
         <a href="?format=json" class="badge link-badge">Ver en formato JSON crudo</a>
       </div>
@@ -297,7 +297,7 @@ def render_html_page(title: str, subtitle: str, content_html: str) -> str:
     <div class="footer-container">
       <div class="footer-left">
         <div class="footer-brand">Panamá PortOps-AI v1.0</div>
-        <p class="footer-author">Desarrollado v1.0 Miguel Benítez — Proyecto con Fines Educativos</p>
+        <p class="footer-author">Desarrollado v1.0.0 Miguel Benítez — Proyecto con Fines Educativos</p>
       </div>
       <div class="footer-right">
         <div class="footer-links">
@@ -314,7 +314,7 @@ def render_html_page(title: str, subtitle: str, content_html: str) -> str:
 </html>"""
 
 
-# --- Pydantic Schemas (Pydantic v2 compliant) ---
+# --- Pydantic Schemas (Pydantic 2.x compliant) ---
 class PredictionRequest(BaseModel):
     port: str = Field(
         ...,
@@ -410,7 +410,7 @@ def health_check():
     is_ready = "bundle" in ml_artifacts and "models" in ml_artifacts["bundle"]
     return {
         "status": "healthy" if is_ready else "unhealthy",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "educational_note": "Proyecto desarrollado con fines estrictamente educativos y de investigación MLOps.",
         "model_loaded": is_ready,
         "service_timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
@@ -421,7 +421,7 @@ def health_check():
 def get_available_ports():
     """Retorna la lista de terminales portuarias panameñas admitidas por el modelo."""
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "ports": VALID_PORTS
     }
 
@@ -446,7 +446,7 @@ def get_port_history(port_name: str, limit_months: int = Query(24, ge=1, le=140)
             "transshipment_ratio": float(r.get("transshipment_ratio", 0.0))
         })
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "port": port_name,
         "history": records
     }
@@ -474,7 +474,7 @@ def compare_models(request: Request):
     splits = suite_splits if suite_splits else benchmark_data.get("splits_summary", [])
     
     payload = {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "benchmark_comparison": comp_8,
         "splits_summary": splits
     }
@@ -631,7 +631,7 @@ def get_methodology_overview(request: Request):
     *Nota: Si se visita desde el navegador, se presenta una vista visual pedagógica.*
     """
     payload = {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "educational_objective": "Demostración de pipeline industrial MLOps reproducible desde cero con datos reales de Panamá.",
         "version": "1.0",
         "documentation_file": "METODOLOGIA_Y_ARQUITECTURA_MLOPS.md",
@@ -826,7 +826,7 @@ def predict_container_throughput(req: PredictionRequest):
 
     return PredictionResponse(
         status="success",
-        author="Desarrollado v1.0 Miguel Benítez",
+        author="Desarrollado v1.0.0 Miguel Benítez",
         algorithm_used=selected_algo,
         port=req.port,
         total_horizon_months=req.horizon_months,
@@ -845,7 +845,7 @@ def predict_batch_all_ports(horizon_months: int = Query(default=3, ge=1, le=6)):
         results[p] = [p_item.model_dump() for p_item in res.predictions]
     return {
         "status": "success",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "total_ports": len(VALID_PORTS),
         "horizon_months": horizon_months,
         "batch_forecasts": results
@@ -913,7 +913,7 @@ def run_monte_carlo_simulation(req: SimulationRequest):
 
         return {
             "status": "success",
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "port": req.port,
             "scenario": sc_name,
             "horizon_months": req.horizon_months,
@@ -942,7 +942,7 @@ def get_simulation_run_history(limit: int = Query(25, ge=1, le=100)):
     history = audit_manager.get_simulation_history(limit=limit)
     return {
         "status": "success",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "count": len(history),
         "history": history
     }
@@ -954,7 +954,7 @@ def get_simulation_user_quotas():
     quotas = audit_manager.get_resource_quotas()
     return {
         "status": "success",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "quotas": quotas
     }
 
@@ -1020,7 +1020,7 @@ def get_residual_metric_detail(metric_key: str):
         raise HTTPException(status_code=404, detail=f"Métrica residual '{metric_key}' no encontrada. Opciones: {list(catalog.keys())}")
     return {
         "status": "success",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "metric_key": metric_clean,
         "detail": catalog[metric_clean]
     }
@@ -1128,7 +1128,7 @@ def get_feature_importance_detail(feature_name: str):
     if feat_clean not in catalog:
         return {
             "status": "success",
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "feature_name": feat_clean,
             "detail": {
                 "name": feat_clean.replace("_", " ").title(),
@@ -1142,7 +1142,7 @@ def get_feature_importance_detail(feature_name: str):
         }
     return {
         "status": "success",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "feature_name": feat_clean,
         "detail": catalog[feat_clean]
     }
@@ -1167,7 +1167,7 @@ def get_bivariate_correlation_detail(feature1: str, feature2: str):
     }
     return {
         "status": "success",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "feature1": feature1,
         "feature2": feature2,
         "feature_1": feature1,
@@ -1279,7 +1279,7 @@ def get_system_configuration():
     """Retorna la configuración operativa activa y los conectores de extensibilidad disponibles."""
     return {
         "status": "success",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "active_configuration": runtime_config,
         "supported_external_connectors": {
             "ais_telemetry": {
@@ -1324,7 +1324,7 @@ def update_system_configuration(req: SystemConfigRequest):
 
     return {
         "status": "success",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "message": "Configuración actualizada en tiempo de ejecución sin reiniciar el microservicio.",
         "updated_configuration": runtime_config
     }
@@ -1374,7 +1374,7 @@ def simulate_external_feature_concatenation(req: ExternalFeatureRequest):
 
     return {
         "status": "success",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "feature_submitted": {
             "name": req.feature_name,
             "raw_value": req.feature_value,
@@ -1429,7 +1429,7 @@ def get_enterprise_infrastructure_status():
 
     return {
         "status": "operational",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
         "database_adapters": db_health,
         "mcp_protocol": {
@@ -1495,7 +1495,7 @@ def query_maritime_legal_rag(req: RAGQueryRequest):
     result = rag_engine.query(clean_query, top_k=req.top_k)
     return {
         "status": "success",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "rag_response": result
     }
 
@@ -1514,7 +1514,7 @@ def validate_guardrails_inspection(req: GuardrailValidationRequest):
 
     return {
         "status": "evaluated",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "is_safe_for_execution": is_overall_safe,
         "input_guardrail": {
             "is_valid": input_audit.is_valid,
@@ -1548,7 +1548,7 @@ def get_export_dataset_provenance():
         file_size_kb = round(gold_file.stat().st_size / 1024, 1)
 
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "dataset_name": "Microdatos Oficiales del Movimiento Portuario Nacional de Panamá",
         "institutional_source": "Autoridad Marítima de Panamá (AMP) & Instituto Nacional de Estadística y Censo (INEC)",
         "legal_framework": "Ley 6 de 22 de enero de 2002 de Transparencia de la República de Panamá",
@@ -1619,7 +1619,7 @@ def generate_and_export_dataset(req: ExportDatasetRequest):
                 "wape_modelo": 0.0911,
                 "r2_score": 0.9594,
                 "fuente_oficial": "Autoridad Marítima de Panamá (AMP)",
-                "autor": "Desarrollado v1.0 Miguel Benítez"
+                "autor": "Desarrollado v1.0.0 Miguel Benítez"
             })
 
     elif req.scope == "benchmarks":
@@ -1638,7 +1638,7 @@ def generate_and_export_dataset(req: ExportDatasetRequest):
                 "splits_evaluados": 5,
                 "periodo_cv": "2021-2025 Blocked Time Series",
                 "fuente": "Microdatos AMP 140 Meses",
-                "autor": "Desarrollado v1.0 Miguel Benítez"
+                "autor": "Desarrollado v1.0.0 Miguel Benítez"
             })
 
     elif req.scope == "external_signals":
@@ -1655,7 +1655,7 @@ def generate_and_export_dataset(req: ExportDatasetRequest):
         csv_content = df_out.to_csv(index=False)
         return {
             "status": "success",
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "filename": filename,
             "format": "csv",
             "total_records": len(records),
@@ -1665,7 +1665,7 @@ def generate_and_export_dataset(req: ExportDatasetRequest):
     else:
         return {
             "status": "success",
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "filename": filename,
             "format": "json",
             "total_records": len(records),
@@ -1690,7 +1690,7 @@ def get_panama_national_lakehouse_catalog():
 
     return {
         "status": "success",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "lakehouse_scope": "República de Panamá - Inteligencia Logística y Portuaria",
         "legal_foundation": "Ley 6 de 22 de enero de 2002 de Transparencia",
         "total_ministries_integrated": len(catalog),
@@ -1761,7 +1761,7 @@ def query_lakehouse_time_series(req: LakehouseQueryRequest):
     recent = df.tail(req.limit)
     return {
         "status": "ok",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "table": req.table_name,
         "row_count": len(recent),
         "total_records_in_lakehouse": len(df),
@@ -1778,8 +1778,8 @@ def get_iso_governance_compliance_declaration():
     """
     return {
         "status": "compliant",
-        "author": "Desarrollado v1.0 Miguel Benítez",
-        "signature": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
+        "signature": "Desarrollado v1.0.0 Miguel Benítez",
         "organization_applicability": "Entidades Gubernamentales y Autoridades Portuarias de Panamá",
         "security_classification": "Nivel Gubernamental Abierto con Protección de Infraestructuras Críticas",
         "iso_standards": [
@@ -1858,7 +1858,7 @@ def get_model_training_parameters():
     """
     return {
         "status": "success",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "project": "Panamá PortOps-AI v1.0",
         "license": "GNU GPL-3.0 con Atribución Obligatoria (Sección 7)",
         "champion_model_architecture": {
@@ -1952,7 +1952,7 @@ def list_training_presets():
     from src.models.training_presets import TrainingPresetManager
     return {
         "status": "success",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "total_presets": len(TrainingPresetManager.list_presets()),
         "presets": TrainingPresetManager.list_presets()
     }
@@ -2029,7 +2029,7 @@ def get_privacy_anonymization_rules():
     from src.data.privacy.anonymizer import PanamaDataAnonymizerEngine
     return {
         "status": "success",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "legal_framework": "Ley 81 de 26 de marzo de 2019 de la República de Panamá",
         "sensitive_dataset_triggers": PanamaDataAnonymizerEngine.get_trigger_catalog(),
         "field_rules": PanamaDataAnonymizerEngine.get_rules_catalog()
@@ -2158,7 +2158,7 @@ def list_mcp_agent_souls():
     from src.mcp.soul_manager import MCPSoulManager
     return {
         "status": "success",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "souls": MCPSoulManager.list_souls()
     }
 

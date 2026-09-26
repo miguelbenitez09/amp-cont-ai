@@ -1,8 +1,8 @@
 """
-Authentication Engine for Panama PortOps-AI v2.0
+Authentication Engine for Panama PortOps-AI v1.0.0
 Handles cryptographic password hashing (PBKDF2-HMAC-SHA256), RFC 6238 TOTP MFA,
 and secure tamper-proof signed session tokens.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import os

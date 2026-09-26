@@ -1,6 +1,6 @@
 """
 Data Connectors Package for External Signal Streams.
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 """
 
 from src.data.connectors.external_sources import (

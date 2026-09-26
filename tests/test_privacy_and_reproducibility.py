@@ -2,7 +2,7 @@
 Unit Tests for Privacy & Anonymization Engine (Ley 81 de 2019),
 Deterministic Reproducibility, Government RBAC Security, and MCP Souls.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 

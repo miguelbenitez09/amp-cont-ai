@@ -1,6 +1,6 @@
 """
-Authentication, Authorization and Identity Module for Panama PortOps-AI v2.0
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Authentication, Authorization and Identity Module for Panama PortOps-AI v1.0.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 from src.auth.authentication import AuthenticationEngine

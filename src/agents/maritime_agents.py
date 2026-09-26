@@ -1,12 +1,12 @@
 """
-Specialized Maritime AI Agents for Panama PortOps-AI v2.0
+Specialized Maritime AI Agents for Panama PortOps-AI v1.0.0
 Implements:
 1. AuditorMaritimoAgent (Legal compliance, Ley 6/2002, Ley 56/2008, ISO standards, WORM ledger).
 2. OperadorMuelleAgent (Container yard management, STS cranes, berth allocation, empty ratio).
 3. CausalRiskAgent (Monte Carlo simulations, Merton jumps, VaR/CVaR, geopolitical shocks).
 4. AgenteAduaneroTariffAgent (Panama customs tariff HS codes, DAI/ITBMS liquidation, MIDA/MINSA permits).
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU General Public License v3.0 (GPL-3.0) with Section 7 Mandatory Attribution
 """
 
@@ -52,7 +52,7 @@ class AuditorMaritimoAgent(BaseMaritimeAgent):
         )
         llm_res = self.llm.generate_chat_response(sys_prompt, query)
         return {
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "agent_id": self.agent_id,
             "agent_name": self.name,
             "response": llm_res["content"],
@@ -86,7 +86,7 @@ class OperadorMuelleAgent(BaseMaritimeAgent):
         llm_res = self.llm.generate_chat_response(sys_prompt, f"{query}\nContexto Operativo: {context_str}")
 
         return {
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "agent_id": self.agent_id,
             "agent_name": self.name,
             "response": llm_res["content"],
@@ -115,7 +115,7 @@ class CausalRiskAgent(BaseMaritimeAgent):
         )
         llm_res = self.llm.generate_chat_response(sys_prompt, query)
         return {
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "agent_id": self.agent_id,
             "agent_name": self.name,
             "response": llm_res["content"],
@@ -157,7 +157,7 @@ class AgenteAduaneroTariffAgent(BaseMaritimeAgent):
         llm_res = self.llm.generate_chat_response(sys_prompt, f"{query}{extra_ctx}")
 
         return {
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "agent_id": self.agent_id,
             "agent_name": self.name,
             "response": llm_res["content"],

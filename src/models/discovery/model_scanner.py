@@ -1,9 +1,9 @@
 """
-Local Model Scanner & Catalog Engine for Panama PortOps-AI v2.0
+Local Model Scanner & Catalog Engine for Panama PortOps-AI v1.0.0
 Scans designated model directories, Ollama local cache, and local paths
 to produce a live catalog of available AI models, quantizations, and weights.
 
-Author: Desarrollado v1.0 Miguel Benítez (UTP)
+Author: Desarrollado v1.0.0 Miguel Benítez (UTP)
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 
@@ -115,7 +115,7 @@ class ModelDirectoryScanner:
         has_llm = any(m["format"] in ["GGUF", "SAFETENSORS", "BIN"] for m in models_found)
 
         return {
-            "author": "Desarrollado v1.0 Miguel Benítez (UTP)",
+            "author": "Desarrollado v1.0.0 Miguel Benítez (UTP)",
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "paths_scanned": paths_scanned,
             "total_models_detected": len(models_found),

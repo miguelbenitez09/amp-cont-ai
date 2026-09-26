@@ -1,10 +1,10 @@
 # scripts/deploy_github.ps1
 # Script interactivo de despliegue y auditoría de higiene para GitHub
-# Autor: Desarrollado v1.0 Miguel Benítez
+# Autor: Desarrollado v1.0.0 Miguel Benítez
 
 Write-Host "======================================================================" -ForegroundColor Cyan
 Write-Host "   PANAMÁ PORTOPS-AI v1.0: DESPLIEGUE SEGURO EN GITHUB                " -ForegroundColor Green
-Write-Host "   Autor: Miguel Benítez (mbeni) | Desarrollado v1.0 Miguel Benítez   " -ForegroundColor Yellow
+Write-Host "   Autor: Miguel Benítez (mbeni) | Desarrollado v1.0.0 Miguel Benítez   " -ForegroundColor Yellow
 Write-Host "======================================================================" -ForegroundColor Cyan
 
 # 1. Verificar si git está instalado

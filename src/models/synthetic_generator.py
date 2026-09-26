@@ -8,7 +8,7 @@ Combines:
 - Poisson Merton Jump Diffusion for Black Swan Shocks (Canal Droughts, Strikes)
 - Seasonal Fourier Harmonics
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 
@@ -144,7 +144,7 @@ class SyntheticPortDataGenerator:
             "shocks_generated": int(sum(1 for s in monthly_stats if s["shock_occurred"])),
             "spatial_correlation_preserved": True,
             "mathematical_engine": "Cholesky Factorization + Merton Jump Diffusion (1976)",
-            "signature": "Desarrollado v1.0 Miguel Benítez"
+            "signature": "Desarrollado v1.0.0 Miguel Benítez"
         }
 
         return {

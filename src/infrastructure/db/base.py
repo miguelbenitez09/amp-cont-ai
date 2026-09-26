@@ -3,7 +3,7 @@ Base Universal Database Adapter Interface.
 Defines contracts for connection lifecycle, transactions, query execution,
 and schema migration management across relational, time-series, and NoSQL engines.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 

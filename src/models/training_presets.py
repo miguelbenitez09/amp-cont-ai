@@ -4,7 +4,7 @@ Provides structured templates that alter the training pace, regularization,
 and learning behavior of LightGBM, Random Forest, and Quantile Regressors.
 Now includes mathematical foundations, Python implementations, and custom preset creation.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 

@@ -1,8 +1,8 @@
 """
-Automated Integration and Functional Test Suite for Panama PortOps-AI v2.0
+Automated Integration and Functional Test Suite for Panama PortOps-AI v1.0.0
 Validates all endpoints of the Master Implementation Plan:
 Health probes, Auth/IAM, RBAC/ABAC, Data Quality Gates, Feature Store, Models, Simulations, WORM Ledger.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import sys

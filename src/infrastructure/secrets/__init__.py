@@ -1,6 +1,6 @@
 """
 Secrets Infrastructure Package.
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 """
 
 from src.infrastructure.secrets.manager import SecretManager

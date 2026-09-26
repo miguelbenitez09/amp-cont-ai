@@ -1,7 +1,7 @@
 """
-Authorization Engine (RBAC + ABAC) for Panama PortOps-AI v2.0
+Authorization Engine (RBAC + ABAC) for Panama PortOps-AI v1.0.0
 Backend is the final authority for all authorization decisions.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import sqlite3

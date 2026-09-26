@@ -1,7 +1,7 @@
 """
-Feature Registry and Formal Definitions for Panama PortOps-AI v2.0
+Feature Registry and Formal Definitions for Panama PortOps-AI v1.0.0
 Defines feature schemas, leakage safety declarations, and mathematical transformations.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 from typing import Dict, Any, List

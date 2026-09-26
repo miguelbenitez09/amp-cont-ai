@@ -11,7 +11,7 @@ Exposes authoritative endpoints for:
 - WORM Audit Ledger & Cryptographic Verification (/api/v1/audit/*)
 - Telemetry & Model Feedback Loop (/api/v1/telemetry/*)
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU General Public License v3.0 (GPL-3.0) with Section 7 Mandatory Attribution
 """
 
@@ -84,7 +84,7 @@ def liveness_probe():
         "status": "alive",
         "service": "Panamá PortOps-AI v1.0",
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "author": "Desarrollado v1.0 Miguel Benítez"
+        "author": "Desarrollado v1.0.0 Miguel Benítez"
     }
 
 
@@ -145,7 +145,7 @@ def dependencies_probe():
     mem_info = process.memory_info()
 
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "platform_db": {
             "type": "SQLite3 / WAL Mode",
             "path": str(DB_PATH),
@@ -173,7 +173,7 @@ def version_probe():
     return {
         "version": "1.0.0",
         "release_name": "Panamá PortOps-AI Enterprise MLOps",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "license": "GNU General Public License v3.0 (GPL-3.0)",
         "attribution_requirement": "Mandatory Section 7 Attribution",
         "environment": os.getenv("PORTOPS_ENV", "development"),
@@ -386,7 +386,7 @@ def login(req: LoginRequest, request: Request, response: Response):
             },
             "roles": roles,
             "permissions": permissions,
-            "author": "Desarrollado v1.0 Miguel Benítez"
+            "author": "Desarrollado v1.0.0 Miguel Benítez"
         }
 
 
@@ -455,7 +455,7 @@ def verify_mfa(req: MFAVerifyRequest, request: Request, response: Response):
             },
             "roles": roles,
             "permissions": permissions,
-            "author": "Desarrollado v1.0 Miguel Benítez"
+            "author": "Desarrollado v1.0.0 Miguel Benítez"
         }
 
 
@@ -602,7 +602,7 @@ def first_run_create_mandatory_admins(req: CreateMandatoryAdminsRequest):
 def get_me(current_user: Dict[str, Any] = Depends(get_current_user_and_session)):
     """Retorna información del perfil autenticado, roles activos y catálogo de permisos concedidos."""
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         **current_user
     }
 
@@ -634,7 +634,7 @@ def simulate_role(req: SimulateRoleRequest, current_user: Dict[str, Any] = Depen
         )
 
         return {
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "simulated_role": {
                 "role_id": role["role_id"],
                 "name": role["role_name"],
@@ -686,7 +686,7 @@ def list_roles():
             })
 
         return {
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "total_roles": len(result),
             "roles": result
         }
@@ -713,7 +713,7 @@ def list_permissions():
             })
 
         return {
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "total_permissions": len(perms),
             "domains": domains
         }
@@ -734,7 +734,7 @@ def list_data_sources():
             yaml_sources = data.get("sources", [])
 
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "official_sources_count": len(yaml_sources),
         "sources": yaml_sources
     }
@@ -767,7 +767,7 @@ def get_data_quality_summary():
     quarantined_files = list(quarantine_dir.glob("*.parquet")) if quarantine_dir.exists() else []
 
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "dataset": silver_path.name,
         "total_rows": len(df),
         "ports_covered": sorted(df["port"].unique().tolist()) if "port" in df.columns else [],
@@ -828,7 +828,7 @@ def get_dataset_manifest():
     )
 
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "manifest": manifest.model_dump()
     }
 
@@ -842,7 +842,7 @@ def list_feature_catalog():
     """Catálogo formal de características con especificación de transformaciones y seguridad anti-leakage."""
     features = get_feature_catalog()
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "total_features": len(features),
         "features": features
     }
@@ -872,7 +872,7 @@ def get_models_benchmark():
             splits = data.get("splits_summary", [])
 
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "champion_algorithm": "LightGBM Quantile Ensemble",
         "evaluation_metrics": ["WAPE", "MAE", "RMSE", "R2", "Pinball Loss (P10, P50, P90)", "Latency"],
         "benchmark_comparison": comp,
@@ -894,7 +894,7 @@ def list_model_registry():
         """)
         rows = cursor.fetchall()
         return {
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "models_count": len(rows),
             "models": [dict(r) for r in rows]
         }
@@ -1105,7 +1105,7 @@ def run_simulation(
     }
 
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "port": req.port,
         "scenario": req.shock_scenario,
         "horizon_months": req.horizon_months,
@@ -1142,7 +1142,7 @@ def get_simulation_history(limit: int = 15):
         """, (limit,))
         rows = [dict(r) for r in cursor.fetchall()]
         return {
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "count": len(rows),
             "history": rows
         }
@@ -1166,7 +1166,7 @@ def get_simulation_quotas():
             {"username": "admin_amp", "role_name": "platform_admin", "compute_tier": "high_performance", "max_paths_per_run": 25000, "allowed_gpu": 1, "total_runs_executed": usage.get("admin_amp", {}).get("total_runs", 0), "total_cpu_seconds_consumed": round(usage.get("admin_amp", {}).get("total_cpu_seconds", 0.0) or 0.0, 3)}
         ]
         return {
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "quotas": quotas
         }
 
@@ -1188,7 +1188,7 @@ def verify_worm_audit_chain():
 
         if not blocks:
             return {
-                "author": "Desarrollado v1.0 Miguel Benítez",
+                "author": "Desarrollado v1.0.0 Miguel Benítez",
                 "audit_standard": "WORM Cryptographic Hash Chain (SHA-256) ISO/IEC 27001",
                 "verification": {
                     "valid": True,
@@ -1209,7 +1209,7 @@ def verify_worm_audit_chain():
             expected_prev = b["block_hash"]
 
         return {
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "audit_standard": "WORM Cryptographic Hash Chain (SHA-256) ISO/IEC 27001",
             "verification": {
                 "valid": valid,
@@ -1240,7 +1240,7 @@ def list_audit_events(limit: int = 25):
         events = [dict(r) for r in cursor.fetchall()]
 
         return {
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "total_events": len(events),
             "events": events
         }
@@ -1262,7 +1262,7 @@ def list_available_agents():
     from src.agents.swarm import get_agent_swarm
     swarm = get_agent_swarm()
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "agents": swarm.list_available_agents()
     }
 
@@ -1365,7 +1365,7 @@ def chat_with_reasoning_cot(
             pass
 
         return {
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "request_id": request_id,
             "query": req.query,
             "status": "GUARDRAIL_BLOCKED",
@@ -1554,7 +1554,7 @@ def chat_with_reasoning_cot(
         pass
 
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "request_id": request_id,
         "query": req.query,
         "status": "SUCCESS",
@@ -1601,7 +1601,7 @@ def list_mcp_tools():
     """Retorna los esquemas JSON de las herramientas MCP marítimas estándar."""
     from src.mcp.tools import get_available_tools_schema
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "protocol": "Model Context Protocol (JSON-RPC 2.0)",
         "tools": get_available_tools_schema()
     }
@@ -1621,7 +1621,7 @@ def execute_mcp_tool(
             "tool_name": req.tool_name,
             "executed_by": current_user.get("username", "anonymous"),
             "result": payload,
-            "author": "Desarrollado v1.0 Miguel Benítez"
+            "author": "Desarrollado v1.0.0 Miguel Benítez"
         }
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -1650,7 +1650,7 @@ def search_customs_tariff(query: Optional[str] = None):
     else:
         items = PanamaTariffDatabase.get_tariff_catalog()
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "total_matches": len(items),
         "items": items
     }
@@ -1662,7 +1662,7 @@ def calculate_landed_customs_cost(req: CustomsCalculateRequest):
     from src.data.scrapers.ana_hscode_scraper import PanamaTariffDatabase
     calc = PanamaTariffDatabase.calculate_landed_customs_cost(hs_code=req.hs_code, cif_value_usd=req.cif_value_usd)
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "result": calc,
         "liquidation": calc,
         "calculation": calc
@@ -1676,7 +1676,7 @@ def validate_shipping_container(req: ContainerValidateRequest):
     from src.data.parsers.container_iso6346 import ISO6346ContainerValidator
     record = ISO6346ContainerValidator.parse_full_manifest_entry(container_id=req.container_id, size_type=req.size_type)
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "result": record
     }
 
@@ -1741,7 +1741,7 @@ def submit_model_feedback(
             pass
 
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "status": "FEEDBACK_RECORDED",
         "request_id": req.request_id,
         "message": "Retroalimentación registrada exitosamente para el ciclo de reentrenamiento continuo MLOps."
@@ -1787,7 +1787,7 @@ def get_telemetry_logs(
         total_count = cursor.fetchone()[0]
 
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "total_records": total_count,
         "limit": limit,
         "offset": offset,
@@ -1842,7 +1842,7 @@ def get_telemetry_summary(
     fb_pos_pct = round((fb["positive_count"] / fb_total) * 100.0, 1) if fb_total > 0 else 100.0
 
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "active_compute_device": device_str,
         "total_inferences": total_inf,
         "avg_latency_ms": round(row["avg_latency_ms"], 2),
@@ -1898,7 +1898,7 @@ def get_secrets_inventory():
     """
     masked_inv = SecretManager.get_masked_inventory()
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "secrets": [
             {
                 "key": item["Clave / Variable"],
@@ -1944,7 +1944,7 @@ def get_guardrail_policies():
     Returns user-configurable guardrails, token quotas, and module access matrix.
     """
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "policies": UserGuardrailManager.load_policies(),
         "immutable_system_seal": "HMAC-SHA256-PANAMA-PORTOPS-INVARIANTS-ACTIVE"
     }
@@ -1974,7 +1974,7 @@ def get_benchmark_8_models():
     """
     suite = get_champion_suite()
     return {
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "champion_algorithm": "LightGBM Quantile (Pinball Loss)",
         "models_evaluated_count": 8,
         "benchmark_comparison": suite.get_benchmark_summary(),

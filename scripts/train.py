@@ -1,9 +1,9 @@
 """
-Production Model Training Script for Panama PortOps-AI v2.0
+Production Model Training Script for Panama PortOps-AI v1.0.0
 Usage:
     python scripts/train.py --config config/model_policies.yaml --seed 42
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU General Public License v3.0 (GPL-3.0) with Section 7 Attribution
 """
 
@@ -25,15 +25,15 @@ from src.utils.logger import logger
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Panamá PortOps-AI v2.0 Model Training CLI")
+    parser = argparse.ArgumentParser(description="Panamá PortOps-AI v1.0.0 Model Training CLI")
     parser.add_argument("--config", type=str, default="config/model_policies.yaml", help="Path to model policies YAML")
     parser.add_argument("--seed", type=int, default=42, help="Deterministic random seed")
     parser.add_argument("--preset", type=str, default="balanced_production", help="Training preset name")
     args = parser.parse_args()
 
     print("=" * 75)
-    print("Panamá PortOps-AI v2.0 — Pipeline de Entrenamiento MLOps")
-    print("Firma Oficial: Desarrollado v1.0 Miguel Benítez")
+    print("Panamá PortOps-AI v1.0.0 — Pipeline de Entrenamiento MLOps")
+    print("Firma Oficial: Desarrollado v1.0.0 Miguel Benítez")
     print(f"Config: {args.config} | Semilla: {args.seed} | Preset: {args.preset}")
     print("=" * 75)
 

@@ -4,7 +4,7 @@ Implements automated identification of sensitive datasets (customs, shipping man
 field-level taxonomic categorization, and an ordered 5-step task pipeline under
 Ley 81 de 26 de marzo de 2019 sobre Protección de Datos Personales de la República de Panamá.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 
@@ -285,7 +285,7 @@ class PanamaDataAnonymizerEngine:
             "certificate_id": f"CERT-LEY81-{int(time.time())}-{hashlib.md5(dataset_name.encode()).hexdigest()[:6].upper()}",
             "dataset_name": dataset_name,
             "legal_compliance": "Ley 81 de 26 de marzo de 2019 de la República de Panamá",
-            "auditor_signature": "Desarrollado v1.0 Miguel Benítez",
+            "auditor_signature": "Desarrollado v1.0.0 Miguel Benítez",
             "execution_timestamp": time.strftime("%Y-%m-%d %H:%M:%S UTC"),
             "total_records_processed": len(transformed_df),
             "fields_anonymized_count": len(fields_anonymized),
@@ -297,7 +297,7 @@ class PanamaDataAnonymizerEngine:
 
         return {
             "status": "success",
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "elapsed_ms": elapsed_ms,
             "sensitivity_analysis": sensitivity_report,
             "audit_certificate": audit_certificate,

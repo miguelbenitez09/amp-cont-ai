@@ -3,7 +3,7 @@ DuckDB & SQLite Embedded Analytics Adapter.
 High-performance in-process columnar database adapter for OLAP queries,
 fast parquet scanning, and offline edge analytics.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 

@@ -1,5 +1,5 @@
-# Panama PortOps-AI v2.0 - Official Data Sources Catalog
-# Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+# Panama PortOps-AI v1.0.0 - Official Data Sources Catalog
+# Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 sources:
   - id: "amp_port_traffic"
     name: "Movimiento Portuario Nacional de Contenedores (TEUs)"

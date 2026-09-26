@@ -1,7 +1,7 @@
 """
-Smoke Test Verification Suite for Panama PortOps-AI v2.0
+Smoke Test Verification Suite for Panama PortOps-AI v1.0.0
 Validates end-to-end operational readiness across all 14 core subsystems.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import sys
@@ -30,8 +30,8 @@ DB_PATH = ROOT_DIR / "data" / "enterprise_db" / "portops_platform.db"
 def run_smoke_test() -> bool:
     """Executes 14 comprehensive health checks."""
     print("=" * 80)
-    print("PANAMA PORTOPS-AI v2.0 — SMOKE TEST VERIFICATION SUITE")
-    print("Author: Desarrollado v1.0 Miguel Benítez | GNU GPL-3.0")
+    print("PANAMA PORTOPS-AI v1.0.0 — SMOKE TEST VERIFICATION SUITE")
+    print("Author: Desarrollado v1.0.0 Miguel Benítez | GNU GPL-3.0")
     print("=" * 80)
 
     checks = []

@@ -1,7 +1,7 @@
 -- ============================================================================
 -- PANAMA PORTOPS-AI MLOPS ADVANCED ENTERPRISE DATABASE SCHEMA
 -- PostgreSQL / TimescaleDB Enterprise Edition
--- Autor: Desarrollado v1.0 Miguel Benítez
+-- Autor: Desarrollado v1.0.0 Miguel Benítez
 -- Licencia: GNU General Public License v3.0 (GPL-3.0)
 -- Características: Tablas Normalizadas, Inmutabilidad WORM, Triggers de Auditoría
 -- ============================================================================

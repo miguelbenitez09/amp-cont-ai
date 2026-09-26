@@ -1,5 +1,5 @@
 """
-Champion Model Suite & Benchmark Summary Provider for Panama PortOps-AI v2.0.
+Champion Model Suite & Benchmark Summary Provider for Panama PortOps-AI v1.0.0.
 Extracts empirical metrics from trained model bundle and MLflow artifacts.
 Full 8 competitive benchmarked algorithms evaluated across 140 months (2015-2026):
 1. LightGBM Quantile (Champion)
@@ -11,7 +11,7 @@ Full 8 competitive benchmarked algorithms evaluated across 140 months (2015-2026
 7. Bayesian Ridge Regression
 8. Ridge / ElasticNet Regularizado (Baseline)
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 

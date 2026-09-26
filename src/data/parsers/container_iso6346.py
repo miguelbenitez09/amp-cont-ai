@@ -1,12 +1,12 @@
 """
-ISO 6346 Container Standard & Maritime EDIFACT Parser for Panama PortOps-AI v2.0
+ISO 6346 Container Standard & Maritime EDIFACT Parser for Panama PortOps-AI v1.0.0
 Implements:
 - BIC Code Validation & Modulo-11 Check-Digit Algorithm.
 - Equipment Category Identifier (U: freight container, J: detachable equipment, Z: trailers).
 - Size and Type Code decoding (e.g., 22G1, 45G1, 42R1).
 - EDIFACT message simulation & parsing (BAPLIE bay plans, COARRI discharge/load, CODECO gate in/out).
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU General Public License v3.0 (GPL-3.0) with Section 7 Mandatory Attribution
 """
 

@@ -1,6 +1,6 @@
 /**
  * Panamá PortOps-AI v1.0 — Client Application & Educational Visualization Engine
- * Author: Desarrollado v1.0 Miguel Benítez
+ * Author: Desarrollado v1.0.0 Miguel Benítez
  * Purpose: Proyecto desarrollado con fines estrictamente educativos, científicos y de demostración técnica MLOps.
  * License: GNU General Public License v3.0 (GPL-3.0) con Atribución Obligatoria
  */
@@ -2154,7 +2154,7 @@ executePortForecast();`;
           • <strong>Marco Jurídico:</strong> ${cert.legal_compliance || 'Ley 81 de 2019 de la República de Panamá'}<br>
           • <strong>Campos Anonimizados:</strong> ${cert.fields_anonymized_count || 0} columnas protegidas (${(cert.fields_anonymized_detail || []).map(f => f.column).join(', ')})<br>
           • <strong>Resolución Legal:</strong> <span class="badge badge-success">${cert.security_clearance || 'APTO PARA LAKEHOUSE NACIONAL Y MODELOS ML'}</span><br>
-          • <strong>Firma de Auditoría:</strong> <em>${cert.auditor_signature || 'Desarrollado v1.0 Miguel Benítez'}</em> (${cert.execution_timestamp || '2026-09-25 UTC'})
+          • <strong>Firma de Auditoría:</strong> <em>${cert.auditor_signature || 'Desarrollado v1.0.0 Miguel Benítez'}</em> (${cert.execution_timestamp || '2026-09-25 UTC'})
         `;
       }
     } catch (err) {
@@ -2813,7 +2813,7 @@ executePortForecast();`;
         "provenance": "Motor de Limpieza Silver MLOps (src/data/cleaner.py)",
         "url": "https://www.datosabiertos.gob.pa/dataset/?organization=autoridad-maritima-de-panama-amp",
         "coverage": "140 periodos mensuales validados (2014-01 a 2026-02)",
-        "format": "Dataframe Silver validado contra esquema Pydantic v2",
+        "format": "Dataframe Silver validado contra esquema Pydantic 2.x",
         "hash": "Auditoría de integridad con cero duplicados bitemporales"
       }
     },
@@ -4162,7 +4162,7 @@ executePortForecast();`;
   });
 
   // =========================================================================
-  // V2.0 IAM, SECURITY HUD, RBAC SIMULATOR & WORM LEDGER HANDLERS
+  // V1.0.0 IAM, SECURITY HUD, RBAC SIMULATOR & WORM LEDGER HANDLERS
   // =========================================================================
 
   window.activeSession = {

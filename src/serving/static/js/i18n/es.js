@@ -1,12 +1,12 @@
 /**
  * Panamá PortOps-AI v1.0 - Diccionario de Traducción en Español (es)
- * Desarrollado v1.0 Miguel Benítez | GNU GPL v3.0
+ * Desarrollado v1.0.0 Miguel Benítez | GNU GPL v3.0
  */
 window.I18N_ES = {
   nav: {
     app_title: "Panamá PortOps-AI",
     version: "v1.0",
-    author: "Desarrollado v1.0 Miguel Benítez",
+    author: "Desarrollado v1.0.0 Miguel Benítez",
     theme_atlantic: "Atlántico Night (Cian)",
     theme_amber: "Radar Balboa (Ámbar)",
     theme_emerald: "Cuenca Canal (Esmeralda)",

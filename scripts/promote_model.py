@@ -1,7 +1,7 @@
 """
-Model Promotion CLI for Panama PortOps-AI v2.0
+Model Promotion CLI for Panama PortOps-AI v1.0.0
 Enforces governance approval workflow: only 'ml_reviewer' or 'root' may promote to Champion.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import sys

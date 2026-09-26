@@ -1,12 +1,12 @@
 """
-Data Quality Gates Engine for Panama PortOps-AI v2.0
+Data Quality Gates Engine for Panama PortOps-AI v1.0.0
 Implements 5 industrial gates:
 - Gate 1: Schema Contract
 - Gate 2: Completeness
 - Gate 3: Validity & Physical Bounds
 - Gate 4: Consistency & Balance Check
 - Gate 5: Temporal Integrity & Bitemporal Separation
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import os

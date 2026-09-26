@@ -1,6 +1,6 @@
 /**
  * Panamá PortOps-AI v1.0 - Modular i18n Translation Engine
- * Desarrollado v1.0 Miguel Benítez | GNU GPL v3.0
+ * Desarrollado v1.0.0 Miguel Benítez | GNU GPL v3.0
  */
 
 (function() {

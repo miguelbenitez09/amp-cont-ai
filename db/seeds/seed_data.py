@@ -1,7 +1,7 @@
 """
-Database Seeder for Panama PortOps-AI v2.0
+Database Seeder for Panama PortOps-AI v1.0.0
 Populates roles, permissions, role_permissions, and authoritative data sources idempotently.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import sys
@@ -137,7 +137,7 @@ def seed_database(conn: sqlite3.Connection) -> None:
         import hashlib
         import json
         genesis_prev = "0" * 64
-        genesis_payload = json.dumps({"event": "GENESIS_INITIALIZATION", "author": "Desarrollado v1.0 Miguel Benitez", "timestamp": now_str}, sort_keys=True)
+        genesis_payload = json.dumps({"event": "GENESIS_INITIALIZATION", "author": "Desarrollado v1.0.0 Miguel Benitez", "timestamp": now_str}, sort_keys=True)
         genesis_hash = hashlib.sha256(f"{genesis_prev}|root|{genesis_payload}|{now_str}".encode()).hexdigest()
         cursor.execute("""
         INSERT INTO audit_ledger_worm (

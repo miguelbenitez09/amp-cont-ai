@@ -1,7 +1,7 @@
 """
-Microservice Health and Readiness Probe for Panama PortOps-AI v2.0
+Microservice Health and Readiness Probe for Panama PortOps-AI v1.0.0
 Validates liveness, readiness, dependencies, and version status.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import sys

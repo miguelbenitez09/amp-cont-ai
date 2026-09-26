@@ -10,7 +10,7 @@ different machines (Linux, macOS, Windows) by locking:
 
 Generates a cryptographic verification certificate (SHA-256) matching the trained weights.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 
@@ -82,7 +82,7 @@ class DeterministicModelReplicator:
 
         return {
             "status": "verified_deterministic",
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "seed_configured": seed,
             "training_preset": preset_id,
             "feature_store_sha256": feat_hash,

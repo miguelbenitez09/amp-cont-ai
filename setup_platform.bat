@@ -1,10 +1,10 @@
 @echo off
 chcp 65001 >nul
-title Panamá PortOps-AI v2.0 — Setup MLOps Open-Source Soberano
+title Panamá PortOps-AI v1.0.0 — Setup MLOps Open-Source Soberano
 
 echo ================================================================================
-echo    🚢 PANAMÁ PORTOPS-AI v2.0 — INSTALADOR Y ORQUESTADOR MLOPS SOBERANO
-echo    Autor: Desarrollado v1.0 Miguel Benítez ^| Licencia: GNU GPL-3.0
+echo    🚢 PANAMÁ PORTOPS-AI v1.0.0 — INSTALADOR Y ORQUESTADOR MLOPS SOBERANO
+echo    Autor: Desarrollado v1.0.0 Miguel Benítez ^| Licencia: GNU GPL-3.0
 echo ================================================================================
 echo.
 

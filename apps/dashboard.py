@@ -1,6 +1,6 @@
 """
 Panamá PortOps-AI v1.0 — Enterprise Streamlit Production Control Station.
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU General Public License v3.0 (GPL-3.0) with Section 7 Mandatory Attribution
 Legal Basis: Ley 6 de 22 de enero de 2002 (Transparencia) y Ley 56 de 2008 (Ley General de Puertos de Panamá)
 
@@ -137,7 +137,7 @@ st.sidebar.markdown("""
   <span style="font-size: 2rem;">⚓</span>
   <div>
     <h2 style="margin: 0; color: #00E5FF; font-size: 1.25rem;">PortOps-AI <span style="font-size: 0.75rem; background: rgba(0,229,255,0.2); padding: 2px 6px; border-radius: 4px;">v1.0</span></h2>
-    <p style="margin: 0; color: #94A3B8; font-size: 0.72rem;">Desarrollado v1.0 Miguel Benítez</p>
+    <p style="margin: 0; color: #94A3B8; font-size: 0.72rem;">Desarrollado v1.0.0 Miguel Benítez</p>
   </div>
 </div>
 """, unsafe_allow_html=True)
@@ -851,7 +851,7 @@ with tab_telemetry:
 st.markdown("---")
 st.markdown("""
 <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: #64748B;">
-  <div>Panamá PortOps-AI v1.0 | <strong>Desarrollado v1.0 Miguel Benítez</strong></div>
+  <div>Panamá PortOps-AI v1.0 | <strong>Desarrollado v1.0.0 Miguel Benítez</strong></div>
   <div>Licencia: GNU General Public License v3.0 (GPL-3.0) con Atribución Obligatoria (Sección 7)</div>
   <div>Fuente de Datos: Autoridad Marítima de Panamá (2015–2026)</div>
 </div>

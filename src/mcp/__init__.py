@@ -1,6 +1,6 @@
 """
 Model Context Protocol (MCP) Package.
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 """
 
 from src.mcp.server import MCPServer

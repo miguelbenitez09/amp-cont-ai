@@ -1,7 +1,7 @@
 """
-Enterprise Model Registry and Promotion Lifecycle Manager for Panama PortOps-AI v2.0
+Enterprise Model Registry and Promotion Lifecycle Manager for Panama PortOps-AI v1.0.0
 Governs model states: DRAFT -> TRAINED -> VALIDATED -> REVIEW -> APPROVED -> STAGED -> PRODUCTION -> RETIRED
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import uuid

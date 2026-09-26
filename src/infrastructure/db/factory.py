@@ -2,7 +2,7 @@
 Universal Database Adapter Factory.
 Instantiates database adapters dynamically based on configuration or environment.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 

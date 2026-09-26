@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Panamá PortOps-AI v2.0 — Plataforma MLOps Open-Source Master Bootstrap & Hardware Orchestrator.
-Author: Desarrollado v1.0 Miguel Benítez
+Panamá PortOps-AI v1.0.0 — Plataforma MLOps Open-Source Master Bootstrap & Hardware Orchestrator.
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU General Public License v3.0 (GPL-3.0) with Mandatory Section 7 Attribution
 
 Automated 16-step Enterprise Pipeline:
@@ -60,9 +60,9 @@ CONFIG_DIR = PROJECT_ROOT / "config"
 def print_platform_banner():
     banner = """
 ================================================================================
-   🚢 PANAMÁ PORTOPS-AI v2.0 — PLATAFORMA SOBERANA DE CÓDIGO ABIERTO
+   🚢 PANAMÁ PORTOPS-AI v1.0.0 — PLATAFORMA SOBERANA DE CÓDIGO ABIERTO
    Orquestador Automático de Despliegue, Hardware GPU & Gobernanza MLOps
-   Autor: Desarrollado v1.0 Miguel Benítez | Licencia: GNU GPL-3.0
+   Autor: Desarrollado v1.0.0 Miguel Benítez | Licencia: GNU GPL-3.0
 ================================================================================
 """
     print(banner)
@@ -285,7 +285,7 @@ def run_platform_bootstrap(user_mode: bool = False, elevate: bool = False, dry_r
     t_elapsed = time.perf_counter() - t_start
     print()
     print("=" * 80)
-    print(f"🎉 PLATAFORMA PANAMÁ PORTOPS-AI v2.0 LISTA EN {t_elapsed:.2f} SEGUNDOS.")
+    print(f"🎉 PLATAFORMA PANAMÁ PORTOPS-AI v1.0.0 LISTA EN {t_elapsed:.2f} SEGUNDOS.")
     print("=" * 80)
     print("🚀 COMANDOS PARA INICIAR LOS SERVICIOS DE PRODUCCIÓN:")
     print("   1. Servidor API REST / MCP (FastAPI):")

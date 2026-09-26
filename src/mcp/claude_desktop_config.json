@@ -8,7 +8,7 @@
       ],
       "env": {
         "PYTHONPATH": ".",
-        "APP_AUTHOR": "Desarrollado v1.0 Miguel Benítez",
+        "APP_AUTHOR": "Desarrollado v1.0.0 Miguel Benítez",
         "PORT_OPS_ENVIRONMENT": "production"
       }
     }

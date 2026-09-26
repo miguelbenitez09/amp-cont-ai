@@ -1,7 +1,7 @@
 """
-Database Migration Runner for Panama PortOps-AI v2.0
+Database Migration Runner for Panama PortOps-AI v1.0.0
 Executes versioned SQL migrations idempotently.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import sys

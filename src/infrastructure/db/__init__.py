@@ -1,6 +1,6 @@
 """
 Infrastructure Database Adapters Package.
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 """
 
 from src.infrastructure.db.base import BaseDatabaseAdapter

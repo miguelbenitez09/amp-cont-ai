@@ -1,9 +1,9 @@
 """
-Model Evaluation and Benchmark Verification Script for Panama PortOps-AI v2.0
+Model Evaluation and Benchmark Verification Script for Panama PortOps-AI v1.0.0
 Usage:
     python scripts/evaluate.py
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU General Public License v3.0 (GPL-3.0) with Section 7 Attribution
 """
 
@@ -23,13 +23,13 @@ from src.utils.logger import logger
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Panamá PortOps-AI v2.0 Model Evaluation CLI")
+    parser = argparse.ArgumentParser(description="Panamá PortOps-AI v1.0.0 Model Evaluation CLI")
     parser.add_argument("--model-id", type=str, default="lightgbm_quantile_champion_v1", help="Target model ID")
     args = parser.parse_args()
 
     print("=" * 80)
-    print("Panamá PortOps-AI v2.0 — Evaluación de Modelos y Torneo de 8 Algoritmos")
-    print("Firma Oficial: Desarrollado v1.0 Miguel Benítez")
+    print("Panamá PortOps-AI v1.0.0 — Evaluación de Modelos y Torneo de 8 Algoritmos")
+    print("Firma Oficial: Desarrollado v1.0.0 Miguel Benítez")
     print(f"Modelo Objetivo: {args.model_id}")
     print("=" * 80)
 

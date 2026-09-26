@@ -2,7 +2,7 @@
 Inspection Script for Local LLM Runtimes (Ollama & vLLM)
 Detects available models, quantizations, and inference endpoints.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU General Public License v3.0 (GPL-3.0) with Section 7 Attribution
 """
 
@@ -52,8 +52,8 @@ def check_vllm_models(base_url="http://localhost:8000"):
 
 if __name__ == "__main__":
     print("=" * 75)
-    print("Panamá PortOps-AI v2.0 — Verificador de Motores LLM Locales")
-    print("Firma Oficial: Desarrollado v1.0 Miguel Benítez")
+    print("Panamá PortOps-AI v1.0.0 — Verificador de Motores LLM Locales")
+    print("Firma Oficial: Desarrollado v1.0.0 Miguel Benítez")
     print("=" * 75)
     ollama_list = check_ollama_models()
     vllm_list = check_vllm_models()

@@ -1,12 +1,12 @@
 <#
 .SYNOPSIS
-    Panamá PortOps-AI v2.0 — Setup MLOps Open-Source Soberano & Orchestrator
+    Panamá PortOps-AI v1.0.0 — Setup MLOps Open-Source Soberano & Orchestrator
 .DESCRIPTION
     Profiles host hardware (CPU, RAM, NVIDIA GPU RTX 3050), checks Administrator privileges,
     prompts for UAC elevation if desired, establishes Lakehouse medallion layers, Gobernanza RBAC,
     and validates the 8-algorithm ML tournament.
 .AUTHOR
-    Desarrollado v1.0 Miguel Benítez
+    Desarrollado v1.0.0 Miguel Benítez
 .LICENSE
     GNU General Public License v3.0 (GPL-3.0)
 #>
@@ -14,8 +14,8 @@
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 Write-Host "================================================================================" -ForegroundColor Cyan
-Write-Host "   🚢 PANAMÁ PORTOPS-AI v2.0 — INSTALADOR Y ORQUESTADOR MLOPS SOBERANO" -ForegroundColor Cyan
-Write-Host "   Autor: Desarrollado v1.0 Miguel Benítez | Licencia: GNU GPL-3.0" -ForegroundColor Cyan
+Write-Host "   🚢 PANAMÁ PORTOPS-AI v1.0.0 — INSTALADOR Y ORQUESTADOR MLOPS SOBERANO" -ForegroundColor Cyan
+Write-Host "   Autor: Desarrollado v1.0.0 Miguel Benítez | Licencia: GNU GPL-3.0" -ForegroundColor Cyan
 Write-Host "================================================================================" -ForegroundColor Cyan
 Write-Host ""
 

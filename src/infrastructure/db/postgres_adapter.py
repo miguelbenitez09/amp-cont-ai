@@ -2,7 +2,7 @@
 PostgreSQL & TimescaleDB Enterprise Time-Series Adapter.
 Supports connection pooling via psycopg2 / asyncpg and Timescale hyper-tables.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 

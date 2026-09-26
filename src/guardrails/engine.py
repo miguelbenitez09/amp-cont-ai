@@ -5,7 +5,7 @@ Enforces multi-layer safety policies:
 2. Output Guardrails: Monotonicity of quantiles (P10 <= P50 <= P90), outlier detection.
 3. Semantic Guardrails: Sanitization of prompt injection and off-topic queries in RAG.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 

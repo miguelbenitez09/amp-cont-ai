@@ -1,5 +1,5 @@
 # Docker Compose for Panama PortOps-AI Enterprise MLOps Stack v1.0
-# Author: Desarrollado v1.0 Miguel Benítez
+# Author: Desarrollado v1.0.0 Miguel Benítez
 # License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 # Profiles supported: core, ml, rag, mcp, security, observability, full
 
@@ -23,7 +23,7 @@ services:
       - DATABASE_URL=postgresql://postgres:panama_portops_pass@timescaledb:5432/amp_portops
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - AUTHOR=Desarrollado v1.0 Miguel Benítez
+      - AUTHOR=Desarrollado v1.0.0 Miguel Benítez
     volumes:
       - ./logs:/app/logs
       - ./models:/app/models:ro
@@ -134,7 +134,7 @@ services:
       - "8002:8002"
     environment:
       - ENVIRONMENT=production
-      - AUTHOR=Desarrollado v1.0 Miguel Benítez
+      - AUTHOR=Desarrollado v1.0.0 Miguel Benítez
     command: ["python", "-m", "src.mcp.server"]
 
   # ============================================================================

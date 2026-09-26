@@ -1,6 +1,6 @@
 """
 Maritime RAG Package.
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 """
 
 from src.rag.engine import MaritimeRAGEngine

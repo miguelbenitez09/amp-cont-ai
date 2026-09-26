@@ -1,7 +1,7 @@
 """
 Test Suite for Agentic Swarm, MCP Tools, Inference Engine, Customs & ISO 6346 Modules
-Panama PortOps-AI v2.0
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Panama PortOps-AI v1.0.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import pytest

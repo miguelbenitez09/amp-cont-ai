@@ -1,5 +1,5 @@
 """
-Hardware & Infrastructure Profiling Engine for Panama PortOps-AI v2.0
+Hardware & Infrastructure Profiling Engine for Panama PortOps-AI v1.0.0
 (Plataforma MLOps Open-Source Soberana).
 
 Performs real-time, non-mocked inspection of the host system:
@@ -17,7 +17,7 @@ Performs real-time, non-mocked inspection of the host system:
     - Automated UAC elevation request capability
     - Network port readiness (FastAPI 8000, Streamlit 8501, vLLM 8080)
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU General Public License v3.0 (GPL-3.0) with Mandatory Attribution
 """
 
@@ -297,7 +297,7 @@ class HardwareProfiler:
         profile: Dict[str, Any] = {
             "platform_architecture": "Plataforma MLOps Open-Source PortOps Soberana",
             "version": "2.0.0",
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "os_environment": {
                 "system": platform.system(),

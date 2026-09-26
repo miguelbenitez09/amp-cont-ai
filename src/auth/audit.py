@@ -1,7 +1,7 @@
 """
-Security and Administrative Audit Logger for Panama PortOps-AI v2.0
+Security and Administrative Audit Logger for Panama PortOps-AI v1.0.0
 Records structured event telemetry for IAM, auth attempts, and administrative actions.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import uuid

@@ -11,4 +11,4 @@ data:
   DEFAULT_QUANTILE_BAND: "P10_P90"
   REDIS_HOST: "amp-redis-service"
   REDIS_PORT: "6379"
-  AUTHOR: "Desarrollado v1.0 Miguel Benítez"
+  AUTHOR: "Desarrollado v1.0.0 Miguel Benítez"

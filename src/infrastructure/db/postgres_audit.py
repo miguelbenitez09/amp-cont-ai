@@ -1,6 +1,6 @@
 """
 Panama PortOps-AI: Enterprise PostgreSQL / Relational Audit & Telemetry Manager.
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU General Public License v3.0 (GPL-3.0)
 
 Implements:

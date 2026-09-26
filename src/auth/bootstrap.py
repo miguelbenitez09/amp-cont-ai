@@ -1,9 +1,9 @@
 """
-Cryptographic Root Bootstrap & Deploy Readiness Verification Engine for Panama PortOps-AI v2.0
+Cryptographic Root Bootstrap & Deploy Readiness Verification Engine for Panama PortOps-AI v1.0.0
 Establishes the default verified root administrator, initializes the multi-tier role matrix,
 and provides first-run deployment verification checks.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 
@@ -141,7 +141,7 @@ class BootstrapManager:
         cred_file = BOOTSTRAP_DIR / "root-credentials.txt"
         with open(cred_file, "w", encoding="utf-8") as f:
             f.write(f"""================================================================================
-PANAMA PORTOPS-AI v2.0 - ROOT BOOTSTRAP CREDENTIALS
+PANAMA PORTOPS-AI v1.0.0 - ROOT BOOTSTRAP CREDENTIALS
 Generated: {now_str}
 ================================================================================
 Username:      {root_username}
@@ -443,7 +443,7 @@ Recovery Code: {recovery_code}
             ],
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "checks": checks,
-            "system_version": "v2.0 Panama PortOps-AI",
+            "system_version": "v1.0.0 Panama PortOps-AI",
             "legal_basis": "Ley 6 de 2002 y Ley 56 de 2008 de la República de Panamá"
         }
 

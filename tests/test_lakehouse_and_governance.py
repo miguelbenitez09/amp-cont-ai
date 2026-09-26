@@ -7,7 +7,7 @@ Validates:
 - Climate (IMHPA, ENSO, Cold Fronts, Hurricanes), Festive Overtime Calendar, and Sociopolitical Blockades
 - FastApi Serving Endpoints: /api/lakehouse/catalog, /api/lakehouse/query, and /api/governance/iso-compliance
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 
@@ -156,4 +156,4 @@ class TestLakehouseAndGovernanceApiEndpoints:
         iso_names = {s["iso"] for s in data["iso_standards"]}
         assert {"ISO/IEC 27001:2022", "ISO/IEC 42001:2023", "ISO/IEC 27701:2019", "ISO 22301:2019"}.issubset(iso_names)
         assert data["panama_government_readiness"]["panama_legal_framework"]["data_protection"] == "Ley 81 de 2019"
-        assert "Desarrollado v1.0 Miguel Benítez" in data["signature"]
+        assert "Desarrollado v1.0.0 Miguel Benítez" in data["signature"]

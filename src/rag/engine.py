@@ -3,7 +3,7 @@ Retrieval-Augmented Generation (RAG) Engine for Panamanian Maritime Knowledge.
 Performs semantic vector search across Panamanian maritime regulations, port concessions,
 and MLOps architectural references.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 
@@ -79,7 +79,7 @@ class MaritimeRAGEngine:
                 "query": query_text,
                 "matches": [],
                 "synthesized_response": "Consulta vacía o sin términos clave significativos.",
-                "author": "Desarrollado v1.0 Miguel Benítez"
+                "author": "Desarrollado v1.0.0 Miguel Benítez"
             }
 
         q_tf: Dict[str, float] = {}
@@ -128,5 +128,5 @@ class MaritimeRAGEngine:
             "matches_retrieved": len(results),
             "top_matches": results,
             "synthesized_response": answer,
-            "author": "Desarrollado v1.0 Miguel Benítez"
+            "author": "Desarrollado v1.0.0 Miguel Benítez"
         }

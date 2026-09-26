@@ -1,5 +1,5 @@
 """
-Unified LLM Runtime Client & Autonomous Maritime Reasoning Engine for Panama PortOps-AI v2.0
+Unified LLM Runtime Client & Autonomous Maritime Reasoning Engine for Panama PortOps-AI v1.0.0
 Supports:
 - vLLM Engine (OpenAI-compatible REST API with PagedAttention, mounted weights volume, AWQ/GPTQ)
 - Ollama Runtime (Local quantized models: Llama 3.3, Qwen 2.5, Gemma 2, DeepSeek-R1)
@@ -9,7 +9,7 @@ Supports:
 - Autonomous Panama Maritime Domain Expert Engine: context-grounded reasoning with dynamic synthesis
   of ANA/SIECA tariffs, AMP port TEUs quantiles, and Panamanian legal citations.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU General Public License v3.0 (GPL-3.0) with Section 7 Mandatory Attribution
 """
 
@@ -107,7 +107,7 @@ class UnifiedLLMClient:
             },
             "active_backend": active_backend,
             "weights_volume_path": SecretManager.get_secret("MODEL_WEIGHTS_PATH"),
-            "author": "Desarrollado v1.0 Miguel Benítez"
+            "author": "Desarrollado v1.0.0 Miguel Benítez"
         }
         self._last_health_ts = now
         return self._last_health
@@ -235,7 +235,7 @@ class UnifiedLLMClient:
         return {
             "content": grounded_content,
             "backend_used": "Maritime Domain Expert Engine (Deterministic Fallback)",
-            "model": "maritime_domain_expert_v2.0_panama",
+            "model": "maritime_domain_expert_v1.0.0_panama",
             "latency_ms": round(lat_ms + 18.5, 2),
             "tokens_used": tokens_est
         }

@@ -1,5 +1,5 @@
-# Panama PortOps-AI v2.0 - Model Registry, Governance & Promotion Policies
-# Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+# Panama PortOps-AI v1.0.0 - Model Registry, Governance & Promotion Policies
+# Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 promotion_policy:
   primary_metric: "wape"
   secondary_metric: "pinball_loss"

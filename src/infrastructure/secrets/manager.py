@@ -1,9 +1,9 @@
 """
-Enterprise Secrets and Security Configuration Manager for Panama PortOps-AI v2.0.
+Enterprise Secrets and Security Configuration Manager for Panama PortOps-AI v1.0.0.
 Safely loads, stores, encrypts, masks, and manages API keys, DB credentials, model provider
 tokens, and storage volume paths from environment variables, secure local vault, or Docker secrets.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 

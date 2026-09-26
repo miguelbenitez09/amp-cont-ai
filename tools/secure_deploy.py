@@ -1,6 +1,6 @@
 """
 Panamá PortOps-AI v1.0 - Production Security, Secret Sanitization & Secure Deployment Tool.
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU General Public License v3.0 (GPL-3.0) with Section 7 Mandatory Attribution
 Legal Basis: Ley 6 de 22 de enero de 2002 (Transparencia) y Ley 56 de 2008 (General de Puertos)
 
@@ -164,7 +164,7 @@ def verify_packaging_constraints() -> bool:
         return False
 
     print("  ✓ Exactamente 2 archivos Markdown en raíz confirmados.")
-    print("  ✓ Atribución obligatoria (Desarrollado v1.0 Miguel Benítez) y versión v1.0 confirmadas.")
+    print("  ✓ Atribución obligatoria (Desarrollado v1.0.0 Miguel Benítez) y versión v1.0 confirmadas.")
     return True
 
 
@@ -172,7 +172,7 @@ def run_deployment_security_suite() -> int:
     """Orchestrates all security and deployment validation checks."""
     print("=" * 70)
     print("Panamá PortOps-AI v1.0 — Suite de Seguridad de Despliegue en Producción")
-    print("Autor: Desarrollado v1.0 Miguel Benítez | GNU GPL v3.0")
+    print("Autor: Desarrollado v1.0.0 Miguel Benítez | GNU GPL v3.0")
     print("=" * 70)
     
     c1, _ = audit_secrets_and_sanitization()

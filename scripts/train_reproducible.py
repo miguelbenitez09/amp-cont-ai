@@ -5,7 +5,7 @@ Usage:
 
 Guarantees 100% consistent model weights and metrics across different OS platforms.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 
@@ -31,7 +31,7 @@ def main():
 
     print("=" * 70)
     print("Panamá PortOps-AI v1.0 — Replicación Determinista de Modelos")
-    print("Firma Oficial: Desarrollado v1.0 Miguel Benítez")
+    print("Firma Oficial: Desarrollado v1.0.0 Miguel Benítez")
     print(f"Semilla: {args.seed} | Plantilla: {args.preset}")
     print("=" * 70)
 

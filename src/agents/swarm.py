@@ -1,9 +1,9 @@
 """
-Maritime Agent Swarm Orchestrator for Panama PortOps-AI v2.0
+Maritime Agent Swarm Orchestrator for Panama PortOps-AI v1.0.0
 Intelligently classifies user queries, routes to specialist agents,
 and orchestrates multi-agent collaborative workflows with RBAC enforcement.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU General Public License v3.0 (GPL-3.0) with Section 7 Mandatory Attribution
 """
 

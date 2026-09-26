@@ -1,6 +1,6 @@
 -- ==============================================================================
--- Panama PortOps-AI v2.0 - Complete Enterprise Schema Migration
--- Author: Desarrollado v1.0 Miguel Benítez
+-- Panama PortOps-AI v1.0.0 - Complete Enterprise Schema Migration
+-- Author: Desarrollado v1.0.0 Miguel Benítez
 -- License: GNU General Public License v3.0 (GPL-3.0)
 -- Target: SQLite & PostgreSQL Dual-Engine Compatibility
 -- ==============================================================================

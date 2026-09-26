@@ -1,8 +1,8 @@
 """
-Master Bootstrap Orchestrator for Panama PortOps-AI v2.0
+Master Bootstrap Orchestrator for Panama PortOps-AI v1.0.0
 Executes single-command complete platform initialization from scratch.
 Idempotent, cryptographically secure, and production ready.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import os
@@ -28,8 +28,8 @@ CONFIG_DIR = ROOT_DIR / "config"
 def run_bootstrap() -> bool:
     """Executes the 14-step idempotent platform bootstrap."""
     print("=" * 80)
-    print("PANAMA PORTOPS-AI v2.0 — MASTER PLATFORM BOOTSTRAP")
-    print("Author: Desarrollado v1.0 Miguel Benítez | GNU GPL-3.0")
+    print("PANAMA PORTOPS-AI v1.0.0 — MASTER PLATFORM BOOTSTRAP")
+    print("Author: Desarrollado v1.0.0 Miguel Benítez | GNU GPL-3.0")
     print("=" * 80)
 
     # 1. Validar configuración
@@ -135,7 +135,7 @@ def run_bootstrap() -> bool:
     report = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "platform_version": "2.0.0",
-        "author": "Desarrollado v1.0 Miguel Benítez",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
         "database": str(DB_PATH.relative_to(ROOT_DIR)),
         "root_username": root_result.get("root_username"),
         "status": "OPERATIONAL",
@@ -146,7 +146,7 @@ def run_bootstrap() -> bool:
 
     print()
     print("=" * 80)
-    print("PLATAFORMA PANAMÁ PORTOPS-AI v2.0 LISTA PARA PRODUCCIÓN.")
+    print("PLATAFORMA PANAMÁ PORTOPS-AI v1.0.0 LISTA PARA PRODUCCIÓN.")
     print("Inicie el servicio API con: python -m uvicorn src.serving.api:app --host 127.0.0.1 --port 8000")
     print("=" * 80)
     return True

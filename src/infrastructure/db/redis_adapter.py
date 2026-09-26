@@ -3,7 +3,7 @@ Redis High-Speed In-Memory Caching Adapter.
 Provides sub-2ms caching for quantile predictions, Monte Carlo simulations,
 and real-time session tokens.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 

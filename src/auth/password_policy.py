@@ -1,7 +1,7 @@
 """
-Password Policy Enforcement Module for Panama PortOps-AI v2.0
+Password Policy Enforcement Module for Panama PortOps-AI v1.0.0
 Implements NIST SP 800-63B guidelines and strict enterprise complexity.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import re

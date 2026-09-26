@@ -1,12 +1,12 @@
 /**
- * Panamá PortOps-AI v2.0 - Dicionário de Tradução em Português (pt)
+ * Panamá PortOps-AI v1.0.0 - Dicionário de Tradução em Português (pt)
  * Desenvolvido por Miguel Benítez | GNU GPL v3.0
  */
 window.I18N_PT = {
   nav: {
     app_title: "Panamá PortOps-AI",
-    version: "v2.0",
-    author: "Desenvolvido v2.0 Miguel Benítez",
+    version: "v1.0.0",
+    author: "Desenvolvido v1.0.0 Miguel Benítez",
     theme_atlantic: "Atlântico Night (Ciano)",
     theme_amber: "Radar Balboa (Âmbar)",
     theme_emerald: "Bacia Canal (Esmeralda)",
@@ -52,7 +52,7 @@ window.I18N_PT = {
   cot: {
     title: "Cadeia de Raciocínio CoT, Guardrails e Almas Criptográficas",
     subtitle: "Inspeção em tempo real dos 5 marcos operacionais: Guardrails de Contexto, Selo Anti-Tamper, RAG Jurídico (Lei 6/56), Inferência Quantílica e Síntese Executiva.",
-    native_tag: "v2.0 NATIVO",
+    native_tag: "v1.0.0 NATIVO",
     souls_tag: "🔐 4 SOULS SELADOS SHA-256",
     guardrails_tag: "🛡️ GUARDRAILS ATIVOS",
     model_interaction: "Interação com o Modelo",

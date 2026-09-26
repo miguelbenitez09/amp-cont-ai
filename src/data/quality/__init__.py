@@ -1,7 +1,7 @@
 """
-Data Quality Validation Engine (Quality Gates) for Panama PortOps-AI v2.0
-Adheres to MLOps Masterclass Section 16 & v2.0 Master Plan.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Data Quality Validation Engine (Quality Gates) for Panama PortOps-AI v1.0.0
+Adheres to MLOps Masterclass Section 16 & v1.0.0 Master Plan.
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import sys

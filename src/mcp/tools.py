@@ -2,7 +2,7 @@
 MCP Tool Registry for Panama Maritime PortOps AI.
 Defines standard JSON-RPC tools exposed via Model Context Protocol.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 
@@ -171,7 +171,7 @@ def execute_tool(name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
             "p90_peak_capacity_teu": 248900,
             "projected_empty_ratio": 0.285,
             "champion_model": "LightGBM Quantile Regressor (WAPE 9.11%, R² 0.9594)",
-            "author": "Desarrollado v1.0 Miguel Benítez"
+            "author": "Desarrollado v1.0.0 Miguel Benítez"
         }
 
     elif name == "run_monte_carlo_risk_simulation":
@@ -184,13 +184,13 @@ def execute_tool(name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
             "horizon_months": horizon,
             "var_95_teu": res.var_95,
             "cvar_95_expected_shortfall_teu": res.cvar_95,
-            "author": "Desarrollado v1.0 Miguel Benítez"
+            "author": "Desarrollado v1.0.0 Miguel Benítez"
         }
 
     elif name == "compare_model_benchmarks":
         suite = get_champion_suite()
         return {
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "models": suite.get_benchmark_summary()
         }
 
@@ -204,7 +204,7 @@ def execute_tool(name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
             "normalization_applied": method,
             "quality_gate": "PASSED (0 nulls, schema validated Float64)",
             "projected_throughput_delta": "+35.50%",
-            "author": "Desarrollado v1.0 Miguel Benítez"
+            "author": "Desarrollado v1.0.0 Miguel Benítez"
         }
 
     elif name == "query_maritime_knowledge":

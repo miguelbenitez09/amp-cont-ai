@@ -1,5 +1,5 @@
-# Panama PortOps-AI v2.0 - Data Quality Gates & Validation Rules
-# Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+# Panama PortOps-AI v1.0.0 - Data Quality Gates & Validation Rules
+# Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 quality_gates:
   gate_1_schema:
     name: "Schema Contract & Structural Conformance"

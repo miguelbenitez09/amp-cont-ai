@@ -1,6 +1,6 @@
 """
-Configuration and Authorization Seeder CLI for Panama PortOps-AI v2.0
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Configuration and Authorization Seeder CLI for Panama PortOps-AI v1.0.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import sys

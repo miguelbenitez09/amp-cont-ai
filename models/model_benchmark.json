@@ -1,5 +1,5 @@
 {
-  "author": "Desarrollado v1.0 Miguel Ben\u00edtez",
+  "author": "Desarrollado v1.0.0 Miguel Ben\u00edtez",
   "benchmark_comparison": {
     "lightgbm": {
       "avg_wape": 0.0911,
@@ -446,6 +446,6 @@
         "why": "Terminales como Balboa o MIT poseen infraestructura para mover >250k TEUs/mes, mientras terminales agr\u00edcolas mueven vol\u00famenes de nicho. Mezclar sus din\u00e1micas sin efectos fijos crear\u00eda un sesgo de agregaci\u00f3n severo en los nodos de decisi\u00f3n."
       }
     ],
-    "author": "Desarrollado v1.0 Miguel Ben\u00edtez"
+    "author": "Desarrollado v1.0.0 Miguel Ben\u00edtez"
   }
 }

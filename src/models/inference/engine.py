@@ -1,5 +1,5 @@
 """
-High-Performance Model Inference Engine for Panama PortOps-AI v2.0
+High-Performance Model Inference Engine for Panama PortOps-AI v1.0.0
 Features:
 - Sub-millisecond vectorized inference on LightGBM Quantile Ensemble.
 - Anti-crossing post-processing ensuring mathematical monotonicity: P10 <= P50 <= P90.
@@ -7,7 +7,7 @@ Features:
 - Dynamic What-If parametric sensitivity (bunkering, transshipment, canal draft).
 - Multi-terminal batch prediction generator.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU General Public License v3.0 (GPL-3.0) with Section 7 Mandatory Attribution
 """
 
@@ -91,7 +91,7 @@ class OptimizedInferenceEngine:
         latency_ms = round((time.perf_counter() - t0) * 1000, 3)
 
         result = {
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "port": port,
             "litoral": profile["litoral"],
             "horizon_months": horizon_months,
@@ -147,7 +147,7 @@ class OptimizedInferenceEngine:
         latency_ms = round((time.perf_counter() - t0) * 1000, 3)
 
         return {
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "batch_size": len(predictions),
             "horizon_months": horizon_months,
             "scenario": shock_scenario,

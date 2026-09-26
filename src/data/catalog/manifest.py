@@ -1,8 +1,8 @@
 """
-Dataset Manifest and Provenance Engine for Panama PortOps-AI v2.0
+Dataset Manifest and Provenance Engine for Panama PortOps-AI v1.0.0
 Implements formal dataset cataloging, cryptographic content hashing,
 and classification states (FACT, MEASURED, DERIVED, ESTIMATED, SIMULATED, DEMO).
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import json

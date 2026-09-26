@@ -6,7 +6,7 @@ Adheres to MLOps Masterclass Sections 9.5, 12, 13 & 50:
 - Strict Expanding Window Backtesting (Zero Data Leakage)
 - Business Metrics: WAPE, RMSE, MAE, R², Pinball Loss, Latency
 - Statistical Diagnostics: Residual Distribution, Multicollinearity & VIF Analysis, Confounder Mapping
-- Author Attribution: Desarrollado v1.0 Miguel Benítez
+- Author Attribution: Desarrollado v1.0.0 Miguel Benítez
 """
 
 import os
@@ -131,7 +131,7 @@ class ContainerModelTrainer:
     """
     Orchestrates expanding window training, multi-algorithm benchmarking,
     statistical diagnostics, and MLflow tracking for port container forecasting.
-    Author: Desarrollado v1.0 Miguel Benítez
+    Author: Desarrollado v1.0.0 Miguel Benítez
     """
 
     def __init__(self, gold_dir: Path = GOLD_DIR, experiment_name: str = "Panama_PortOps_Forecasting"):
@@ -193,7 +193,7 @@ class ContainerModelTrainer:
         final_models = {}
         
         with mlflow.start_run(run_name="Multi_Algorithm_Expanding_Window_Suite") as parent_run:
-            mlflow.log_param("author", "Desarrollado v1.0 Miguel Benítez")
+            mlflow.log_param("author", "Desarrollado v1.0.0 Miguel Benítez")
             mlflow.log_param("algorithms_benchmarked", "LightGBM, Random Forest, HistGradientBoosting, Ridge_ElasticNet")
             mlflow.log_param("target", target_col)
             mlflow.log_param("num_features", len(feature_cols))
@@ -426,7 +426,7 @@ class ContainerModelTrainer:
                 "feature_importances": feature_importances_real,
                 "collinearity": collinearity_diag,
                 "confounders": confounders_catalog,
-                "author": "Desarrollado v1.0 Miguel Benítez"
+                "author": "Desarrollado v1.0.0 Miguel Benítez"
             }
 
             # Persist bundle
@@ -439,7 +439,7 @@ class ContainerModelTrainer:
                 "metrics_summary": results_summary,
                 "benchmark_table": benchmark_table,
                 "diagnostics": diagnostics_bundle,
-                "author": "Desarrollado v1.0 Miguel Benítez"
+                "author": "Desarrollado v1.0.0 Miguel Benítez"
             }
             joblib.dump(bundle, model_bundle_path)
 
@@ -447,7 +447,7 @@ class ContainerModelTrainer:
             benchmark_path = MODELS_DIR / "model_benchmark.json"
             with open(benchmark_path, "w", encoding="utf-8") as f:
                 json.dump({
-                    "author": "Desarrollado v1.0 Miguel Benítez",
+                    "author": "Desarrollado v1.0.0 Miguel Benítez",
                     "benchmark_comparison": benchmark_table,
                     "splits_summary": results_summary,
                     "diagnostics": diagnostics_bundle

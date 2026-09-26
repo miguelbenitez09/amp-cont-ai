@@ -1,7 +1,7 @@
 """
-Data Validation CLI for Panama PortOps-AI v2.0
+Data Validation CLI for Panama PortOps-AI v1.0.0
 Validates datasets against the 5 Quality Gates and generates audit manifests.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import sys

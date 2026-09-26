@@ -1,7 +1,7 @@
 """
-Data Ingestion CLI for Panama PortOps-AI v2.0
+Data Ingestion CLI for Panama PortOps-AI v1.0.0
 Ingests raw datasets from authoritative sources (AMP, ACP, INEC, IMHPA) into the Medallion Data Platform.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import sys

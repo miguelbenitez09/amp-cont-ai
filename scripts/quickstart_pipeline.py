@@ -8,7 +8,7 @@ Automates the full zero-to-production lifecycle:
 4. Port availability and container network configuration check
 5. Automated smoke test verification of API endpoints (/health, /predict, /api/models/compare)
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU General Public License v3.0 (GPL-3.0) with Mandatory Attribution
 """
 
@@ -37,7 +37,7 @@ def print_banner():
     banner = """
 ================================================================================
    PANAMÁ PORTOPS-AI v1.0 — ORQUESTADOR DE ARRANQUE MLOPS (FIRST-RUN)
-   Autor: Desarrollado v1.0 Miguel Benítez | Licencia: GNU GPL-3.0
+   Autor: Desarrollado v1.0.0 Miguel Benítez | Licencia: GNU GPL-3.0
 ================================================================================
 """
     print(banner)

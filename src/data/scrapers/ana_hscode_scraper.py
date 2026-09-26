@@ -4,7 +4,7 @@ Extracts and normalizes the National Customs Tariff (Arancel de Importación de 
 Supports 6-digit WCO international HS codes up to 8, 10, and 12-digit national subheadings (ANA / SIECA).
 Provides bitemporal validity, regulatory procedures, and institutional permit mapping (MIDA, MINSA, APA, MiAmbiente, DIASP, AMP).
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU General Public License v3.0 (GPL-3.0) with Section 7 Mandatory Attribution
 """
 
@@ -527,7 +527,7 @@ class PanamaTariffDatabase:
             "legal_framework": base_legal,
             "effective_from": eff_from,
             "effective_to": eff_to,
-            "author": "Desarrollado v1.0 Miguel Benítez"
+            "author": "Desarrollado v1.0.0 Miguel Benítez"
         }
 
     @classmethod

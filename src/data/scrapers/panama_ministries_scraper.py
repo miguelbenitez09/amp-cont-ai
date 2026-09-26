@@ -4,7 +4,7 @@ Automates extraction, structuring, and taxonomic ingestion of public domain data
 from the 17 Ministries of the Republic of Panama, the Panama Canal Authority (ACP),
 IMHPA (climate and hydro-meteorology), and official government gazettes.
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 Legal Basis: Ley 6 de 22 de enero de 2002 de Transparencia de la República de Panamá
 """

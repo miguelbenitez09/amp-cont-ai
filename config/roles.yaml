@@ -1,5 +1,5 @@
-# Panama PortOps-AI v2.0 - RBAC Roles Matrix (12 Base Roles)
-# Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+# Panama PortOps-AI v1.0.0 - RBAC Roles Matrix (12 Base Roles)
+# Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 roles:
   - id: "root"
     name: "Root Emergency Operator"

@@ -1,8 +1,8 @@
 """
-Comprehensive Evaluation Metrics Module for Panama PortOps-AI v2.0
+Comprehensive Evaluation Metrics Module for Panama PortOps-AI v1.0.0
 Implements WAPE, MAE, RMSE, sMAPE, R², Pinball Loss, Empirical Coverage,
 Interval Width, Mean Bias, and MASE without flawed accuracy inversions.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 from typing import Dict, Any, Union

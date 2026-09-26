@@ -1,8 +1,8 @@
 """
-Temporal Window Validation and Dynamic Month Counter for Panama PortOps-AI v2.0
+Temporal Window Validation and Dynamic Month Counter for Panama PortOps-AI v1.0.0
 Calculates actual observed calendar periods using pd.period_range.
 Prevents hardcoded assumptions and verifies strict time continuity.
-Author: Desarrollado v1.0 Miguel Benítez - GNU GPL-3.0
+Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 from typing import Dict, Any, Tuple

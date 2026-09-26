@@ -7,7 +7,7 @@ Unifies and governs the multi-source data repository:
 4. Official Festive Calendar & Labor Overtime Impact
 5. Major Political and Social Force Majeure Disruption Events
 
-Author: Desarrollado v1.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 
@@ -175,7 +175,7 @@ class PanamaNationalLakehouse:
 
         return {
             "status": "Lakehouse compiled successfully",
-            "author": "Desarrollado v1.0 Miguel Benítez",
+            "author": "Desarrollado v1.0.0 Miguel Benítez",
             "tables": {
                 "panama_17_ministries_indicators": len(df_ministries),
                 "acp_transits_detailed": len(df_acp),
