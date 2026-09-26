@@ -9,6 +9,10 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚓</text></svg>">
   <!-- Chart.js 4.4 CDN for Responsive High-Performance Rendering -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- KaTeX 0.16.9 CDN for High-Fidelity Mathematical Typography -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 </head>
 <body>
 
@@ -853,7 +857,8 @@
             <h3>Ingesta Cruda & Extracción 353 Boletines AMP</h3>
             <p>Extracción automatizada de reportes mensuales heterogéneos (2014–2026), tabulación OCR/Excel y verificación de integridad criptográfica SHA-256.</p>
             <div class="phase-action-cta">
-              <span>Inspeccionar Fase ➔</span>
+              <span class="cta-inspect-text">Inspeccionar Fase ➔</span>
+              <button class="btn-card-modal-pill" onclick="event.stopPropagation(); window.openCenteredMethodologyModal('phase_1')" title="Abrir en ventana emergente centrada con navegador de fases">⛶ Vista Centrada</button>
             </div>
           </div>
 
@@ -865,7 +870,8 @@
             <h3>Deduplicación Bitemporal & Filtro Hampel MAD</h3>
             <p>Resolución determinista de versiones por timestamp de publicación, corrección de asientos negativos (-111 TEUs) y detección de outliers sin asumir normalidad.</p>
             <div class="phase-action-cta">
-              <span>Inspeccionar Fase ➔</span>
+              <span class="cta-inspect-text">Inspeccionar Fase ➔</span>
+              <button class="btn-card-modal-pill" onclick="event.stopPropagation(); window.openCenteredMethodologyModal('phase_2')" title="Abrir en ventana emergente centrada con navegador de fases">⛶ Vista Centrada</button>
             </div>
           </div>
 
@@ -877,7 +883,8 @@
             <h3>Feature Engineering & Zero Data Leakage</h3>
             <p>Generación de 85 variables laggeadas (t-1 a t-12), armónicos estacionales de Fourier (sin/cos) y ratios logísticos preservando la frontera causal temporal.</p>
             <div class="phase-action-cta">
-              <span>Inspeccionar Fase ➔</span>
+              <span class="cta-inspect-text">Inspeccionar Fase ➔</span>
+              <button class="btn-card-modal-pill" onclick="event.stopPropagation(); window.openCenteredMethodologyModal('phase_3')" title="Abrir en ventana emergente centrada con navegador de fases">⛶ Vista Centrada</button>
             </div>
           </div>
 
@@ -889,7 +896,8 @@
             <h3>Inferencia Causal & Desacoplamiento Confundidor</h3>
             <p>Mitigación de multicolinealidad (VIF &lt; 2.5) y control de variables confusoras: Año Nuevo Chino, sequía del Canal de Panamá y shocks de bunkering.</p>
             <div class="phase-action-cta">
-              <span>Inspeccionar Fase ➔</span>
+              <span class="cta-inspect-text">Inspeccionar Fase ➔</span>
+              <button class="btn-card-modal-pill" onclick="event.stopPropagation(); window.openCenteredMethodologyModal('phase_4')" title="Abrir en ventana emergente centrada con navegador de fases">⛶ Vista Centrada</button>
             </div>
           </div>
 
@@ -901,7 +909,8 @@
             <h3>Torneo Multi-Algoritmo & Inferencia Cuantílica</h3>
             <p>Expanding Window Backtesting (2022–2026) comparando LightGBM, Random Forest, HistGradientBoosting y Ridge/ElasticNet con Pinball Loss en P10, P50, P90.</p>
             <div class="phase-action-cta">
-              <span>Inspeccionar Fase ➔</span>
+              <span class="cta-inspect-text">Inspeccionar Fase ➔</span>
+              <button class="btn-card-modal-pill" onclick="event.stopPropagation(); window.openCenteredMethodologyModal('phase_5')" title="Abrir en ventana emergente centrada con navegador de fases">⛶ Vista Centrada</button>
             </div>
           </div>
 
@@ -913,7 +922,8 @@
             <h3>Simulación Estocástica & Reverse Stress Testing</h3>
             <p>Cópula multivariada con Cholesky, difusión con saltos de Poisson de Merton (1976) y optimizador Powell para identificar vectores de riesgo de patio.</p>
             <div class="phase-action-cta">
-              <span>Inspeccionar Fase ➔</span>
+              <span class="cta-inspect-text">Inspeccionar Fase ➔</span>
+              <button class="btn-card-modal-pill" onclick="event.stopPropagation(); window.openCenteredMethodologyModal('phase_6')" title="Abrir en ventana emergente centrada con navegador de fases">⛶ Vista Centrada</button>
             </div>
           </div>
 
@@ -925,7 +935,8 @@
             <h3>Privacidad Criptográfica & Anonimización</h3>
             <p>HMAC-SHA256 con sal por terminal para IMO de buques y operadores, agregación k-anónima y cumplimiento de la Ley 81 de 2019 de la República de Panamá.</p>
             <div class="phase-action-cta">
-              <span>Inspeccionar Fase ➔</span>
+              <span class="cta-inspect-text">Inspeccionar Fase ➔</span>
+              <button class="btn-card-modal-pill" onclick="event.stopPropagation(); window.openCenteredMethodologyModal('phase_7')" title="Abrir en ventana emergente centrada con navegador de fases">⛶ Vista Centrada</button>
             </div>
           </div>
 
@@ -937,7 +948,8 @@
             <h3>Gobernanza Estatal, Auditoría WORM & Servidor MCP</h3>
             <p>Integración de agentes con Model Context Protocol (MCP / JSON-RPC 2.0), RBAC estricto, rotación de credenciales y registros inmutables WORM.</p>
             <div class="phase-action-cta">
-              <span>Inspeccionar Fase ➔</span>
+              <span class="cta-inspect-text">Inspeccionar Fase ➔</span>
+              <button class="btn-card-modal-pill" onclick="event.stopPropagation(); window.openCenteredMethodologyModal('phase_8')" title="Abrir en ventana emergente centrada con navegador de fases">⛶ Vista Centrada</button>
             </div>
           </div>
 
@@ -1037,6 +1049,82 @@
       <div class="modal-footer">
         <span class="modal-author">Desarrollado v1.0 Miguel Benítez — Fines Educativos</span>
         <button id="modal-action-btn" class="btn-primary" style="width: auto; padding: 0.45rem 1.2rem; font-size: 0.85rem;">Cerrar Detalle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL CENTRADO DE METODOLOGÍA CON NAVBAR DE FASES Y DIMENSIONES          -->
+  <!-- ========================================================================= -->
+  <div id="methodology-centered-modal" class="modal-backdrop">
+    <div class="modal-dialog methodology-modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-badge-cat" id="mmodal-phase-badge">FASE 1: BRONZE LAKEHOUSE</span>
+          <h2 id="mmodal-phase-title">Ingesta Cruda & Extracción 353 Boletines AMP</h2>
+          <p id="mmodal-phase-sub" class="settings-subtitle">Trazabilidad completa desde datosabiertos.gob.pa hasta el Data Lakehouse Parquet</p>
+        </div>
+        <button id="mmodal-close-btn" class="modal-close" onclick="window.closeCenteredMethodologyModal()" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <!-- Top Phase Navigation Bar (8 Fases en Horizontal Scroll) -->
+      <div class="mmodal-phase-navbar" id="mmodal-phase-navbar">
+        <button class="mmodal-phase-tab active" data-phase="phase_1" onclick="window.switchModalPhase('phase_1')">
+          <span class="mmodal-phase-num">F1</span> Bronze Ingesta
+        </button>
+        <button class="mmodal-phase-tab" data-phase="phase_2" onclick="window.switchModalPhase('phase_2')">
+          <span class="mmodal-phase-num">F2</span> Silver MAD
+        </button>
+        <button class="mmodal-phase-tab" data-phase="phase_3" onclick="window.switchModalPhase('phase_3')">
+          <span class="mmodal-phase-num">F3</span> Gold Features
+        </button>
+        <button class="mmodal-phase-tab" data-phase="phase_4" onclick="window.switchModalPhase('phase_4')">
+          <span class="mmodal-phase-num">F4</span> Causalidad VIF
+        </button>
+        <button class="mmodal-phase-tab" data-phase="phase_5" onclick="window.switchModalPhase('phase_5')">
+          <span class="mmodal-phase-num">F5</span> Torneo ML
+        </button>
+        <button class="mmodal-phase-tab" data-phase="phase_6" onclick="window.switchModalPhase('phase_6')">
+          <span class="mmodal-phase-num">F6</span> Monte Carlo
+        </button>
+        <button class="mmodal-phase-tab" data-phase="phase_7" onclick="window.switchModalPhase('phase_7')">
+          <span class="mmodal-phase-num">F7</span> Privacidad Ley 81
+        </button>
+        <button class="mmodal-phase-tab" data-phase="phase_8" onclick="window.switchModalPhase('phase_8')">
+          <span class="mmodal-phase-num">F8</span> Gobernanza MCP
+        </button>
+      </div>
+
+      <!-- Dimension Sub-Navbar (6 Dimensiones) -->
+      <div class="dim-nav-tabs mmodal-dim-navbar">
+        <button class="dim-nav-btn active" data-mmodal-dim="dim-context" onclick="window.switchModalDimTab('dim-context')">
+          <span>📋</span> Contexto Real
+        </button>
+        <button class="dim-nav-btn" data-mmodal-dim="dim-why" onclick="window.switchModalDimTab('dim-why')">
+          <span>🎯</span> Por Qué se Hizo
+        </button>
+        <button class="dim-nav-btn" data-mmodal-dim="dim-obstacles" onclick="window.switchModalDimTab('dim-obstacles')">
+          <span>🚧</span> Obstáculos & Soluciones
+        </button>
+        <button class="dim-nav-btn" data-mmodal-dim="dim-math" onclick="window.switchModalDimTab('dim-math')">
+          <span>📐</span> Fundamentos Matemáticos
+        </button>
+        <button class="dim-nav-btn" data-mmodal-dim="dim-code" onclick="window.switchModalDimTab('dim-code')">
+          <span>💻</span> Código Python
+        </button>
+        <button class="dim-nav-btn" data-mmodal-dim="dim-source" onclick="window.switchModalDimTab('dim-source')">
+          <span>🔗</span> Procedencia & Trazabilidad
+        </button>
+      </div>
+
+      <!-- Modal Dynamic Dimension Body -->
+      <div class="modal-body mmodal-content-box" id="mmodal-content-box">
+        <!-- Dynamic Content rendered by app.js -->
+      </div>
+
+      <div class="modal-footer">
+        <span class="modal-author">Panamá PortOps-AI v1.0 • Desarrollado v1.0 Miguel Benítez • Fines Educativos</span>
+        <button onclick="window.closeCenteredMethodologyModal()" class="btn-primary" style="width: auto; padding: 0.45rem 1.2rem; font-size: 0.85rem;">Cerrar Vista Centrada</button>
       </div>
     </div>
   </div>
