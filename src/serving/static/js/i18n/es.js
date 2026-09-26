@@ -17,7 +17,6 @@ window.I18N_ES = {
     verifying: "Verificando...",
     healthy: "100% Operativo",
     settings: "Ajustes",
-    flutter_mode: "Modo Flutter Web",
     openapi_docs: "OpenAPI Docs",
     lang_label: "Idioma:"
   },

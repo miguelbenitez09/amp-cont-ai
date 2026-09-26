@@ -18,7 +18,7 @@
 7. [Guía Maestra de Extensibilidad: Ingesta de Nuevas APIs y Datos Internacionales](#7-guía-maestra-de-extensibilidad-ingesta-de-nuevas-apis-y-datos-internacionales)
 8. [Despliegue, Microservicio y Configuración en Caliente](#8-despliegue-microservicio-y-configuración-en-caliente)
 9. [Arquitectura v1.0 Enterprise: IAM, Plataforma de Datos (5 Gates), Model Registry y WORM Ledger](#9-arquitectura-v10-enterprise-iam-plataforma-de-datos-5-gates-model-registry-y-worm-ledger)
-10. [Ecosistema Agéntico Industrial, Flutter Multiplataforma, Inferencia y Aranceles Aduaneros](#10-ecosistema-agéntico-industrial-flutter-multiplataforma-inferencia-y-aranceles-aduaneros)
+10. [Ecosistema Agéntico Industrial, Streamlit Enterprise de Producción, Inferencia y Aranceles Aduaneros](#10-ecosistema-agéntico-industrial-streamlit-enterprise-de-producción-inferencia-y-aranceles-aduaneros)
 11. [Términos Legales y Atribución Obligatoria](#11-términos-legales-y-atribución-obligatoria)
 
 ---
@@ -517,23 +517,32 @@ El flujo de datos implementa 5 puertas de calidad automatizadas en `src/data/qua
 
 ---
 
-## 10. Ecosistema Agéntico Industrial, Flutter Multiplataforma, Inferencia y Aranceles Aduaneros
+## 10. Ecosistema Agéntico Industrial, Streamlit Enterprise de Producción, Inferencia y Aranceles Aduaneros
 
-### 10.1 Frontend Multiplataforma Flutter (`apps/portops_desktop`)
-Para proveer accesibilidad universal en salas de control portuario, terminales operativas de muelle y dispositivos móviles de campo, el frontend ha sido completamente implementado en **Flutter**:
-- **Compilación Única para Tres Destinos:**
-  - **Web Application:** Desplegada automáticamente en `/app/` servida directamente por FastAPI sin requerir servidores web auxiliares.
-  - **Windows Desktop Nativo:** Ejecutable Win32 de alto rendimiento para estaciones de monitoreo en terminales portuarias.
-  - **Android Móvil:** Paquete APK adaptable a tablets industriales y smartphones de inspectores de muelle.
-- **6 Vistas de Operación Crítica:**
-  1. *Inferencia Cuantílica & Garantías Matemáticas:* Curvas de demanda TEUs con monotonicidad $P_{10} \le P_{50} \le P_{90}$.
-  2. *Simulación de Monte Carlo & WORM Ledger:* Monitoreo de riesgos estocásticos y sellos inmutables SHA-256.
-  3. *Data Platform & 5 Quality Gates:* Estado del pipeline bitemporal y estadísticas de cuarentena.
-  4. *Aduanas de Panamá & ISO 6346:* Liquidación de impuestos de importación y verificación de dígitos verificadores de contenedores.
-  5. *Enjambre Agéntico & Chat RAG:* Interfaz de diálogo industrial con telemetría de latencia y trazabilidad de leyes panameñas.
-  6. *Consola de Seguridad IAM:* Inspección de tokens, gestión de credenciales y simulación de roles RBAC.
+### 10.1 Estación de Control Industrial Streamlit (`apps/dashboard.py`)
+Para proveer una plataforma de monitoreo y gobernanza de grado de producción sin dependencias frágiles ni motores de renderizado ajenos a Python, el frontend analítico e interactivo está completamente consolidado en **Streamlit Enterprise** (`apps/dashboard.py`):
+- **Arquitectura Híbrida de Alta Resiliencia:**
+  - Conexión primaria al backend REST FastAPI (`http://127.0.0.1:8000`), con **fallback nativo en memoria** a través de `OptimizedInferenceEngine` y `PanamaTariffDatabase` para garantizar alta disponibilidad operativa si la API se encuentra en mantenimiento o aislamiento de red.
+  - Estilizado industrial Deep Marine CSS con paleta de alto contraste, tipografía optimizada y soporte multi-idioma (i18n Español / Inglés).
+  - Ejecución nativa sin compilaciones intermedias: `streamlit run apps/dashboard.py`.
+- **8 Módulos de Operación y Gobernanza Crítica:**
+  1. *Misión Cívica & Ley 6 de 2002:* Respaldo de 140 meses de microdatos históricos de la AMP (2015-2026), sin mocks, amparados en la Ley de Transparencia y licenciados bajo GPL-3.0 con atribución obligatoria a Miguel Benítez.
+  2. *Razonamiento CoT & Agentes:* Inspección de los 4 agentes especializados con verificación de almas selladas (`guardrail_soul_checker`), latencias de cómputo, desglose de tokens y formulario de retroalimentación cualitativa (`model_interaction_feedback`).
+  3. *RAG Aduanas, Arancel Nacional & ISO 6346:* Explorador de las 17 subpartidas arancelarias clave de Panamá (ANA), calculadora fiscal de Landed Cost (DAI, ITBMS 7%, tasas) y validador de contenedores ISO 6346 con algoritmo Módulo-11.
+  4. *Pronóstico Cuantílico Multi-Algoritmo:* Visualización interactiva de bandas $P_{10}$, $P_{50}$ y $P_{90}$ con garantía de anti-cruce isotónico, semáforo de balance de vacíos e inyección de shocks What-If en tiempo real.
+  5. *Simulación Estocástica Monte Carlo:* Motor de difusión con saltos de Merton (sequía de Gatún, crisis de búnker, huelga de estibadores) con cálculo de VaR 95% y CVaR sobre 1,000 trayectorias.
+  6. *Lakehouse Medallion & Calidad 5D:* Monitor de las 5 compuertas bitemporales (Great Expectations), linaje de datos y cuarentena de registros anómalos.
+  7. *Seguridad, IAM & WORM Ledger:* Matriz de privilegios de los 12 roles RBAC y validador de integridad de la cadena inmutable SHA-256 en SQLite WORM.
+  8. *Telemetría de Cómputo e Inferencia:* Panel de observabilidad con desglose de latencias, conteo de tokens de entrada/salida y estado de aceleración por hardware (CPU SIMD AVX-512 / GPU).
 
-### 10.2 Enjambre Agéntico y MCP Tools
+### 10.2 Suite de Seguridad y Hardening para Despliegues de Producción (`tools/secure_deploy.py`)
+Para proteger el código fuente, evitar fugas de secretos y verificar la conformidad antes de la entrega o despliegue en contenedores/Kubernetes:
+- **Auditoría de Secretos y Llaves en Código:** Escaneo estricto mediante expresiones regulares de alta precisión que verifica la inexistencia de tokens JWT activos, llaves de API, conexiones de bases de datos con credenciales explícitas o contraseñas en texto claro en repositorios públicos.
+- **Precompilación Criptográfica de Bytecode (`pyc`):** Compilación anticipada con optimización de bytecode (`python -m compileall -b`), permitiendo distribuir paquetes binarios sin exponer archivos fuente directos en entornos de ejecución restringidos.
+- **Verificación de Integridad de la Cadena WORM:** Validación criptográfica bloque por bloque (`audit_ledger_worm`) garantizando que ningún evento de auditoría ha sido alterado, truncado o sobrescrito.
+- **Cumplimiento de Restricciones del Repositorio:** Comprobación estricta de que únicamente existen los dos documentos maestros de referencia en la raíz (`README.md` y `MANUAL_TECNICO_Y_ARQUITECTURA_MLOPS.md`).
+
+### 10.3 Enjambre Agéntico y MCP Tools
 El enjambre (`src/agents/`) opera bajo un modelo de federación de agentes especializados:
 - **`AuditorMaritimoAgent`:** Asegura que toda operación cumpla con la Ley 6 de 2002, Ley 56 de 2008 y normas de transparencia pública.
 - **`OperadorMuelleAgent`:** Gestiona patios de contenedores, ritmos de grúas STS y balances de vacíos.
@@ -542,18 +551,18 @@ El enjambre (`src/agents/`) opera bajo un modelo de federación de agentes espec
 
 Las herramientas se exponen mediante el estándar **Model Context Protocol (JSON-RPC 2.0)**, garantizando que asistentes de IA externos puedan ejecutar funciones de predicción y validación de forma interoperable.
 
-### 10.3 Motor de Inferencia Optimizado y Garantía Isotónica
+### 10.4 Motor de Inferencia Optimizado y Garantía Isotónica
 Implementado en `src/models/inference/engine.py`:
 - Inferencia ultra-rápida en memoria CPU con latencias inferiores a **0.07 ms**.
 - Regularización isotónica para asegurar matemáticamente que jamás ocurra un cruce cuantílico ($P_{10} \le P_{50} \le P_{90}$).
 - Capacidad de simulación paramétrica What-If para shocks operativos inmediatos.
 
-### 10.4 Observabilidad, Telemetría de Cómputo y Feedback Loops
+### 10.5 Observabilidad, Telemetría de Cómputo y Feedback Loops
 - **Registro de Telemetría Real (`inference_telemetry_logs`):** Cada inferencia registra su identificador correlacionado (`request_id`), usuario emisor, modelo/motor de ejecución, dispositivo de hardware activo (GPU CUDA / CPU SIMD AVX-512), latencia total en milisegundos, desglose de tokens de entrada (`prompt_tokens`), salida (`completion_tokens`) y total, junto con el veredicto emitido por los guardrails de seguridad.
 - **Ciclo de Retroalimentación de Usuarios (`model_interaction_feedback`):** Interfaz interactiva para recolectar valoraciones (1 a 5 estrellas, thumbs up/down, categoría y comentarios cualitativos) respaldadas criptográficamente en el ledger WORM. Esta información alimenta de forma continua las decisiones de reentrenamiento y curaduría de datasets.
 - **RAG Regulatorio con Fechas Bitemporales y Permisología:** Mapeo jerárquico desde el Sistema Armonizado de la OMA (6 dígitos) a la nomenclatura nacional ANA / SIECA (10 a 12 dígitos), con vigencia bitemporal (`effective_from`, `effective_to`), protocolos de inspección en muelle y asignación de entidades reguladoras (MIDA, MINSA, APA, MiAmbiente, DIASP, AMP).
 
-### 10.5 Despliegue Contenerizado e Infraestructura como Código (IaC)
+### 10.6 Despliegue Contenerizado e Infraestructura como Código (IaC)
 - **Perfiles Modulares de Docker Compose:**
   - `core`: API FastAPI, base de datos TimescaleDB/PostgreSQL y capa de caché Redis.
   - `ml`: Servidor de inferencia OpenAI-compatible vLLM con asignación de GPU NVIDIA.

@@ -31,7 +31,7 @@
 11. [Gobernanza Gubernamental: Matriz de Cumplimiento Normativo ISO (27001, 42001, 27701, 22301)](#11-gobernanza-gubernamental-matriz-de-cumplimiento-normativo-iso-27001-42001-27701-22301)
 12. [Guía de Despliegue en GitHub, Seguridad y CI/CD](#12-guía-de-despliegue-en-github-seguridad-y-cicd)
 13. [Arquitectura v1.0 Enterprise: IAM, Plataforma de Datos, Model Registry y WORM Ledger](#13-arquitectura-v10-enterprise-iam-plataforma-de-datos-model-registry-y-worm-ledger)
-14. [Ecosistema Agéntico Industrial, Flutter Multiplataforma, Inferencia y Aranceles Aduaneros](#14-ecosistema-agéntico-industrial-flutter-multiplataforma-inferencia-y-aranceles-aduaneros)
+14. [Ecosistema Agéntico Industrial, Estación de Control Streamlit, Inferencia y Aranceles Aduaneros](#14-ecosistema-agéntico-industrial-estación-de-control-streamlit-inferencia-y-aranceles-aduaneros)
 15. [Licencia, Atribución Obligatoria y Citación Académica](#15-licencia-atribución-obligatoria-y-citación-académica)
 
 ---
@@ -600,30 +600,31 @@ La versión 1.0 consolida a **Panamá PortOps-AI** como una plataforma de grado 
 
 ---
 
-## 14. Ecosistema Agéntico Industrial, Flutter Multiplataforma, Inferencia y Aranceles Aduaneros
+## 14. Ecosistema Agéntico Industrial, Estación de Control Streamlit, Inferencia y Aranceles Aduaneros
 
-La plataforma incorpora una suite completa de capacidades agénticas avanzadas, frontend nativo multiplataforma y normalización arancelaria panameña:
+La plataforma incorpora una suite completa de capacidades agénticas avanzadas, estación de control unificada en Streamlit y normalización arancelaria panameña:
 
-### 14.1 Frontend Multiplataforma Flutter (`apps/portops_desktop`)
-Desarrollado bajo Flutter 3.47+ y Dart 3.13+, diseñado para desplegarse desde un único código base para:
-- **Web App:** Compilado a JavaScript/WASM de alta velocidad y montado automáticamente en el servidor FastAPI en `/app/`.
-- **Windows Desktop:** Compilación nativa Win32 directa con soporte para aceleración por GPU.
-- **Android:** Paquete APK móvil con diseño responsivo y adaptador HTTP industrial con timeouts resilientes.
+### 14.1 Estación de Control Industrial Streamlit (`apps/dashboard.py`)
+Desarrollada para ofrecer una interfaz unificada y resiliente de monitoreo, simulación y gobernanza sin dependencias externas complejas:
+- **Resiliencia Híbrida:** Conexión directa a la API REST FastAPI (`http://127.0.0.1:8000`) con fallback transparente en memoria vía `OptimizedInferenceEngine` y `PanamaTariffDatabase` para garantizar alta disponibilidad operativa.
+- **Estética Deep Marine:** Diseño visual de alta legibilidad y contraste, tarjetas métricas y soporte multi-idioma (Español / Inglés).
 
-**Arquitectura Visual y 6 Módulos Operacionales:**
-1. **Pronósticos de Inferencia Cuantílica:** Visualización en tiempo real de bandas $P_{10}$, $P_{50}$ y $P_{90}$ con garantía de anti-cruce isotónico y latencia sub-milisegundo.
-2. **Simulaciones Monte Carlo y WORM Ledger:** Ejecución estocástica de trayectorias con saltos de Merton y verificación de sellado criptográfico inmutable.
-3. **Plataforma de Datos y 5 Quality Gates:** Monitor en vivo del paso de datos por las puertas bitemporales y detección de anomalías en cuarentena.
-4. **Catálogo Arancelario y Validador ISO 6346:** Búsqueda en vivo de subpartidas arancelarias de Panamá, liquidación de DAI/ITBMS y validación de contenedores con Módulo-11.
-5. **Chat con Enjambre Agéntico:** Interacción fluida con los 4 agentes especializados con citas legales, trazabilidad de tokens y telemetría de latencia.
-6. **Seguridad IAM y Sandbox de Roles:** Inspección dinámica de JWT, gestión de sesiones y simulación de los 12 roles RBAC.
+**Arquitectura Visual y 8 Módulos Operacionales:**
+1. **Misión Cívica & Ley 6 de 2002:** Declaración de soberanía de datos, 140 meses de microdatos AMP sin mocks y licencia GPL-3.0 con atribución obligatoria a Miguel Benítez.
+2. **Razonamiento CoT & Agentes:** Inspección de agentes especializados, telemetría de latencias y tokens, y formulario de retroalimentación cualitativa (`model_interaction_feedback`).
+3. **Catálogo Arancelario y Validador ISO 6346:** Búsqueda en vivo de subpartidas arancelarias de Panamá (ANA), calculadora fiscal de Landed Cost (DAI, ITBMS 7%, tasas) y validación de contenedores con Módulo-11.
+4. **Pronósticos de Inferencia Cuantílica:** Visualización en tiempo real de bandas $P_{10}$, $P_{50}$ y $P_{90}$ con garantía de anti-cruce isotónico, semáforo de balance de vacíos e inyección de shocks What-If.
+5. **Simulaciones Monte Carlo y WORM Ledger:** Ejecución estocástica de trayectorias con saltos de Merton (sequía de Gatún, crisis de búnker, huelgas) y cálculo de VaR 95% / CVaR.
+6. **Plataforma de Datos y 5 Quality Gates:** Monitor en vivo del paso de datos por compuertas bitemporales, linaje de datos y cuarentena de anomalías.
+7. **Seguridad IAM y Sandbox de Roles:** Inspección dinámica de JWT, matriz de privilegios de los 12 roles RBAC y validador de integridad de la cadena inmutable SHA-256 en SQLite WORM.
+8. **Telemetría de Cómputo e Inferencia:** Panel de observabilidad de latencias por llamada, desglose de tokens de entrada/salida y estado de aceleración por hardware (CPU / GPU).
 
 ```bash
-# Para compilar o ejecutar el cliente Flutter:
-cd apps/portops_desktop
-flutter pub get
-flutter build web --release      # Compila la versión web (servida en /app/)
-flutter run -d windows           # Ejecuta la aplicación de escritorio nativa en Windows
+# Para ejecutar la estación de control Streamlit:
+streamlit run apps/dashboard.py
+
+# Para verificar la seguridad y hardening del despliegue:
+python tools/secure_deploy.py
 ```
 
 ### 14.2 Enjambre Agéntico Especializado (`src/agents/`)
