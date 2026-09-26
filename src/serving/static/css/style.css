@@ -4418,5 +4418,53 @@ footer {
   margin-top: 0.25rem;
 }
 
+/* =========================================================================
+   PORTOPS-AI v1.0 MODERN OCEANIC ENHANCEMENTS (COT, PRESETS, ELEVATION)
+   ========================================================================= */
+.btn-flutter-switch:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.7) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
+.cot-step-card {
+  transition: all 0.25s ease-in-out;
+}
 
+.cot-step-card:hover {
+  background: rgba(0, 229, 255, 0.04) !important;
+  border-color: rgba(0, 229, 255, 0.35) !important;
+  transform: translateX(4px);
+}
+
+.btn-preset-pill {
+  background: rgba(15, 23, 42, 0.9);
+  color: #F8FAFC;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  border-radius: 20px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-preset-pill:hover {
+  background: rgba(0, 229, 255, 0.2);
+  border-color: #00E5FF;
+  color: #00E5FF;
+  transform: translateY(-1px);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: #00E5FF;
+  border-color: rgba(0, 229, 255, 0.3);
+  transition: all 0.2s ease;
+}

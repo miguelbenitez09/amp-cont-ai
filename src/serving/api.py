@@ -230,6 +230,12 @@ if STATIC_DIR.exists():
 FLUTTER_WEB_DIR = PROJECT_ROOT / "apps" / "portops_desktop" / "build" / "web"
 if FLUTTER_WEB_DIR.exists():
     app.mount("/app", StaticFiles(directory=str(FLUTTER_WEB_DIR), html=True), name="flutter_app")
+    if (FLUTTER_WEB_DIR / "assets").exists():
+        app.mount("/assets", StaticFiles(directory=str(FLUTTER_WEB_DIR / "assets")), name="flutter_assets")
+    if (FLUTTER_WEB_DIR / "canvaskit").exists():
+        app.mount("/canvaskit", StaticFiles(directory=str(FLUTTER_WEB_DIR / "canvaskit")), name="flutter_canvaskit")
+    if (FLUTTER_WEB_DIR / "icons").exists():
+        app.mount("/icons", StaticFiles(directory=str(FLUTTER_WEB_DIR / "icons")), name="flutter_icons")
 
 
 def wants_html(request: Request) -> bool:
@@ -391,12 +397,73 @@ class HealthResponse(BaseModel):
 
 # --- Web UI Route ---
 @app.get("/", include_in_schema=False)
-def serve_web_ui():
-    """Serves the modern, minimalist static web user interface."""
+def serve_web_ui(request: Request, view: Optional[str] = None):
+    """Serves the modern, minimalist static web user interface or Flutter Web."""
+    if view == "flutter":
+        flutter_index = FLUTTER_WEB_DIR / "index.html"
+        if flutter_index.exists():
+            return FileResponse(flutter_index)
     index_file = STATIC_DIR / "index.html"
     if index_file.exists():
         return FileResponse(index_file)
     return {"message": "Panamá PortOps-AI API is running. Visit /docs for OpenAPI specs."}
+
+
+@app.get("/flutter", include_in_schema=False)
+def serve_flutter_ui():
+    """Serves the multiplatform Flutter Web interface."""
+    flutter_index = FLUTTER_WEB_DIR / "index.html"
+    if flutter_index.exists():
+        return FileResponse(flutter_index)
+    raise HTTPException(status_code=404, detail="Flutter Web compilation not found.")
+
+
+@app.get("/flutter_bootstrap.js", include_in_schema=False)
+def serve_flutter_bootstrap():
+    f = FLUTTER_WEB_DIR / "flutter_bootstrap.js"
+    if f.exists():
+        return FileResponse(f, media_type="application/javascript")
+    raise HTTPException(status_code=404)
+
+
+@app.get("/main.dart.js", include_in_schema=False)
+def serve_main_dart_js():
+    f = FLUTTER_WEB_DIR / "main.dart.js"
+    if f.exists():
+        return FileResponse(f, media_type="application/javascript")
+    raise HTTPException(status_code=404)
+
+
+@app.get("/flutter.js", include_in_schema=False)
+def serve_flutter_js():
+    f = FLUTTER_WEB_DIR / "flutter.js"
+    if f.exists():
+        return FileResponse(f, media_type="application/javascript")
+    raise HTTPException(status_code=404)
+
+
+@app.get("/flutter_service_worker.js", include_in_schema=False)
+def serve_flutter_sw():
+    f = FLUTTER_WEB_DIR / "flutter_service_worker.js"
+    if f.exists():
+        return FileResponse(f, media_type="application/javascript")
+    raise HTTPException(status_code=404)
+
+
+@app.get("/manifest.json", include_in_schema=False)
+def serve_manifest():
+    f = FLUTTER_WEB_DIR / "manifest.json"
+    if f.exists():
+        return FileResponse(f, media_type="application/json")
+    raise HTTPException(status_code=404)
+
+
+@app.get("/version.json", include_in_schema=False)
+def serve_version_json():
+    f = FLUTTER_WEB_DIR / "version.json"
+    if f.exists():
+        return FileResponse(f, media_type="application/json")
+    raise HTTPException(status_code=404)
 
 
 # --- API Endpoints ---

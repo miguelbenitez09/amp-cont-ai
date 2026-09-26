@@ -4384,6 +4384,262 @@ executePortForecast();`;
     });
   }
 
+  // =========================================================================
+  // INTERACTIVE REASONING CoT ENGINE & CRYPTOGRAPHIC SOULS HANDLERS (v1.0)
+  // =========================================================================
+  const soulCatalog = {
+    "agente_aduanero": {
+      name: "Agente Aduanal y Clasificador Arancelario",
+      hash: "4f715339023c52a0...",
+      seal: "SOUL-ENC-6BF00926B66776CD..."
+    },
+    "auditor_maritimo": {
+      name: "Auditor Regulatorio Ley 6/2002 y Ley 56/2008",
+      hash: "033ba0892572a1f8...",
+      seal: "SOUL-ENC-50DBF77CA0E4B9E6..."
+    },
+    "operador_muelle": {
+      name: "Operador de Muelle y Patios TOS Balboa",
+      hash: "9e2ad024b3f5c719...",
+      seal: "SOUL-ENC-9812A069BF95C14C..."
+    },
+    "cientifico_causal": {
+      name: "Científico de Riesgo Causal y Monte Carlo",
+      hash: "3401b5699f56e0d4...",
+      seal: "SOUL-ENC-8B423ED60C6B3743..."
+    }
+  };
+
+  window.updateSoulBadgeView = function() {
+    const sel = document.getElementById("cot-soul-select");
+    if (!sel) return;
+    const soulId = sel.value;
+    const soul = soulCatalog[soulId] || soulCatalog["agente_aduanero"];
+    const nameEl = document.getElementById("cot-soul-name-display");
+    const hashEl = document.getElementById("cot-soul-hash-display");
+    const sealEl = document.getElementById("cot-soul-seal-display");
+    if (nameEl) nameEl.textContent = soul.name;
+    if (hashEl) hashEl.textContent = soul.hash;
+    if (sealEl) sealEl.textContent = soul.seal;
+  };
+
+  window.setCoTPreset = function(promptText, soulId) {
+    const input = document.getElementById("cot-prompt-input");
+    const sel = document.getElementById("cot-soul-select");
+    if (input) input.value = promptText;
+    if (sel && soulId) {
+      sel.value = soulId;
+      window.updateSoulBadgeView();
+    }
+  };
+
+  window.executeCoTReasoning = async function() {
+    const inputEl = document.getElementById("cot-prompt-input");
+    const query = inputEl ? inputEl.value.trim() : "";
+    if (!query) {
+      alert("Por favor ingrese una consulta operacional o seleccione una de las pruebas rápidas.");
+      return;
+    }
+
+    const soulSelect = document.getElementById("cot-soul-select");
+    const targetSoul = soulSelect ? soulSelect.value : "agente_aduanero";
+    const btnRun = document.getElementById("btn-run-cot");
+    const statusIcon = document.getElementById("cot-status-icon");
+    const verdictText = document.getElementById("cot-verdict-text");
+    const latencyEl = document.getElementById("cot-metric-latency");
+    const infEl = document.getElementById("cot-metric-inf");
+    const tokensEl = document.getElementById("cot-metric-tokens");
+    const sealBadge = document.getElementById("cot-metric-seal");
+    const responseBox = document.getElementById("cot-final-response-box");
+    const citationsRow = document.getElementById("cot-citations-row");
+    const citationsTags = document.getElementById("cot-citations-tags");
+
+    // UI Loading state
+    if (btnRun) {
+      btnRun.disabled = true;
+      btnRun.textContent = "⏳ Ejecutando Cadena de Razonamiento CoT...";
+    }
+    if (statusIcon) statusIcon.textContent = "⚙️";
+    if (verdictText) verdictText.textContent = "Analizando con Guardrails y Almas Criptográficas...";
+    if (responseBox) responseBox.textContent = "Evaluando consulta paso a paso...";
+
+    // Reset steps
+    for (let i = 1; i <= 5; i++) {
+      const card = document.getElementById(`cot-card-step-${i}`);
+      const st = document.getElementById(`cot-status-step-${i}`);
+      const num = document.getElementById(`cot-num-step-${i}`);
+      if (st) {
+        st.textContent = "Ejecutando...";
+        st.style.background = "rgba(0, 229, 255, 0.15)";
+        st.style.color = "#00E5FF";
+      }
+      if (card) {
+        card.style.borderColor = "rgba(0, 229, 255, 0.4)";
+      }
+      if (num) {
+        num.style.background = "#00E5FF";
+        num.style.color = "#070D1E";
+      }
+    }
+
+    const tStart = performance.now();
+
+    try {
+      const res = await fetch("/api/v1/agents/reasoning-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: query,
+          target_soul_id: targetSoul,
+          guardrail_level: "strict",
+          runtime_preference: "auto"
+        })
+      });
+
+      const data = await res.json();
+      const elapsedTotal = Math.round(performance.now() - tStart);
+
+      if (res.status === 200 && data.chain_of_thought) {
+        const steps = data.chain_of_thought;
+        steps.forEach((step, idx) => {
+          const stepNum = step.step_number || (idx + 1);
+          const stEl = document.getElementById(`cot-status-step-${stepNum}`);
+          const detEl = document.getElementById(`cot-details-step-${stepNum}`);
+          const cardEl = document.getElementById(`cot-card-step-${stepNum}`);
+          const numEl = document.getElementById(`cot-num-step-${stepNum}`);
+
+          if (stEl) {
+            stEl.textContent = `${step.status} (${step.duration_ms || step.latency_ms || 0} ms)`;
+            if (step.status === "PASSED" || step.status === "COMPLETED" || step.status === "VERIFIED") {
+              stEl.style.background = "rgba(0, 245, 212, 0.15)";
+              stEl.style.color = "#00F5D4";
+              stEl.style.border = "1px solid #00F5D4";
+              if (cardEl) cardEl.style.borderColor = "rgba(0, 245, 212, 0.4)";
+              if (numEl) { numEl.style.background = "#00F5D4"; numEl.style.color = "#070D1E"; }
+            } else if (step.status === "REJECTED" || step.status === "FAILED") {
+              stEl.style.background = "rgba(255, 90, 95, 0.2)";
+              stEl.style.color = "#FF5A5F";
+              stEl.style.border = "1px solid #FF5A5F";
+              if (cardEl) cardEl.style.borderColor = "#FF5A5F";
+              if (numEl) { numEl.style.background = "#FF5A5F"; numEl.style.color = "#FFF"; }
+            }
+          }
+          if (detEl && step.details) {
+            detEl.textContent = step.details;
+          }
+        });
+
+        // Metrics
+        const m = data.metrics || {};
+        if (latencyEl) latencyEl.textContent = `${m.total_latency_ms || elapsedTotal} ms`;
+        if (infEl) infEl.textContent = `${m.inference_step_latency_ms || 0.07} ms`;
+        if (tokensEl) tokensEl.textContent = `${m.tokens_generated || 120}`;
+        if (sealBadge) {
+          if (m.soul_seal_valid) {
+            sealBadge.textContent = "🔐 Sello SHA-256 Verificado";
+            sealBadge.style.background = "rgba(0, 245, 212, 0.2)";
+            sealBadge.style.color = "#00F5D4";
+          } else {
+            sealBadge.textContent = "⚠️ Sello No Verificado";
+            sealBadge.style.background = "rgba(255, 90, 95, 0.2)";
+            sealBadge.style.color = "#FF5A5F";
+          }
+        }
+
+        if (statusIcon) statusIcon.textContent = data.status === "GUARDRAIL_BLOCKED" ? "🚫" : "✅";
+        if (verdictText) {
+          verdictText.textContent = data.status === "GUARDRAIL_BLOCKED"
+            ? "⚠️ Consulta Bloqueada por Guardrail de Seguridad"
+            : "✓ Razonamiento CoT Completado Exitosamente";
+          verdictText.style.color = data.status === "GUARDRAIL_BLOCKED" ? "#FF5A5F" : "#00F5D4";
+        }
+
+        // Response
+        if (responseBox) {
+          responseBox.textContent = data.response || "Inferencia procesada.";
+        }
+
+        // Citations
+        if (citationsRow && citationsTags) {
+          const cites = data.legal_citations || [];
+          if (cites.length > 0) {
+            citationsRow.style.display = "block";
+            citationsTags.innerHTML = cites.map(c => `
+              <span class="badge" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4); font-size: 0.76rem;">
+                📜 ${c}
+              </span>
+            `).join("");
+          } else {
+            citationsRow.style.display = "none";
+          }
+        }
+      } else {
+        throw new Error(data.detail || "Error en inferencia");
+      }
+    } catch (err) {
+      if (statusIcon) statusIcon.textContent = "❌";
+      if (verdictText) verdictText.textContent = "Error al ejecutar inferencia";
+      if (responseBox) responseBox.textContent = `Error: ${err.message}`;
+    } finally {
+      if (btnRun) {
+        btnRun.disabled = false;
+        btnRun.textContent = "⚡ Ejecutar Inferencia CoT en Tiempo Real";
+      }
+    }
+  };
+
+  window.copyCoTResponse = function() {
+    const box = document.getElementById("cot-final-response-box");
+    const btn = document.getElementById("btn-copy-cot-res");
+    if (!box) return;
+    navigator.clipboard.writeText(box.textContent || "");
+    if (btn) {
+      const orig = btn.textContent;
+      btn.textContent = "✓ ¡Copiado!";
+      btn.style.color = "#00F5D4";
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.style.color = "";
+      }, 2000);
+    }
+  };
+
+  window.applyAuthPreset = function(role) {
+    const uInput = document.getElementById("auth-input-username");
+    const pInput = document.getElementById("auth-input-password");
+    const statusEl = document.getElementById("auth-login-status");
+
+    if (role === "root") {
+      if (uInput) uInput.value = "root_f2bbff";
+      if (pInput) pInput.value = "2jiXWfZAWoU_5-L_5VS0QJXi8oTHI2UM";
+      if (statusEl) {
+        statusEl.textContent = "Credenciales preparadas para Root Admin (CSPRNG). Haz clic en 'Iniciar Sesión'.";
+        statusEl.style.color = "#00F5D4";
+      }
+    } else if (role === "auditor") {
+      if (uInput) uInput.value = "auditor_maritimo";
+      if (pInput) pInput.value = "AuditorPass2026!";
+      if (statusEl) {
+        statusEl.textContent = "Credenciales preparadas para Auditor (Ley 6/56).";
+        statusEl.style.color = "#00E5FF";
+      }
+    } else if (role === "operador") {
+      if (uInput) uInput.value = "operador_muelle";
+      if (pInput) pInput.value = "MuellePass2026!";
+      if (statusEl) {
+        statusEl.textContent = "Credenciales preparadas para Operador Muelle Balboa.";
+        statusEl.style.color = "#FFD166";
+      }
+    } else if (role === "aduanas") {
+      if (uInput) uInput.value = "oficial_aduanas";
+      if (pInput) pInput.value = "AduanasPass2026!";
+      if (statusEl) {
+        statusEl.textContent = "Credenciales preparadas para Oficial Aduanas ANA.";
+        statusEl.style.color = "#00F5D4";
+      }
+    }
+  };
+
   // --- Bootstrapping ---
   initThemeSwitcher();
   window.selectMethodologyPhase("phase_1", false); // false = no initial scroll jump on page load
@@ -4391,6 +4647,7 @@ executePortForecast();`;
   window.verifyWormAuditChainLive();
   window.loadDataPlatformManifest();
   window.fetchAuditSecurityEvents();
+  if (window.updateSoulBadgeView) window.updateSoulBadgeView();
 
   btnPredict.addEventListener("click", runForecast);
   btnSimulate.addEventListener("click", runSimulation);
