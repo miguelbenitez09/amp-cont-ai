@@ -1,5 +1,5 @@
 """
-Panamá PortOps-AI v2.0 - Core V1 API and Health Probes Router.
+Panamá PortOps-AI v1.0 - Core V1 API and Health Probes Router.
 Exposes authoritative endpoints for:
 - Health Probes (/health/live, /health/ready, /health/dependencies, /health/version)
 - Identity & Access Management (/api/v1/auth/*)
@@ -9,6 +9,7 @@ Exposes authoritative endpoints for:
 - Model Registry & Governance (/api/v1/models/*)
 - Monte Carlo Simulations & Quotas (/api/v1/simulations/*)
 - WORM Audit Ledger & Cryptographic Verification (/api/v1/audit/*)
+- Telemetry & Model Feedback Loop (/api/v1/telemetry/*)
 
 Author: Desarrollado v1.0 Miguel Benítez
 License: GNU General Public License v3.0 (GPL-3.0) with Section 7 Mandatory Attribution
@@ -64,7 +65,7 @@ def get_db_conn() -> sqlite3.Connection:
 
 # --- Create Routers ---
 health_router = APIRouter(prefix="/health", tags=["System Health & Infrastructure"])
-v1_router = APIRouter(prefix="/api/v1", tags=["V2.0 Master Platform Services"])
+v1_router = APIRouter(prefix="/api/v1", tags=["V1.0 Master Platform Services"])
 
 
 # ==============================================================================
@@ -1237,9 +1238,19 @@ def chat_with_reasoning_cot(
     from src.infrastructure.llm_client import get_llm_client
     import time
 
+    request_id = f"req_{uuid.uuid4().hex[:12]}"
     t_start = time.perf_counter()
     cot_steps = []
     user_roles = current_user.get("roles", ["readonly_viewer"])
+    user_id = current_user.get("user_id", "anonymous")
+
+    try:
+        import torch
+        compute_device = "NVIDIA CUDA / PyTorch" if torch.cuda.is_available() else "CPU SIMD (AVX-512)"
+    except Exception:
+        compute_device = "CPU SIMD (AVX-512)"
+
+    prompt_tokens = max(len(req.query.split()) * 2, 8)
 
     # -------------------------------------------------------------
     # PASO 1: Validación de Contexto & Guardrails de Entrada
@@ -1256,14 +1267,39 @@ def chat_with_reasoning_cot(
             "details": f"Alerta de seguridad: {'; '.join(ctx_res.violations)}",
             "duration_ms": step1_ms
         })
+        
+        # Log blocked inference
+        try:
+            with get_db_conn() as conn:
+                conn.execute("""
+                    INSERT INTO inference_telemetry_logs (
+                        request_id, user_id, model_name, runtime_engine, prompt_tokens,
+                        completion_tokens, total_tokens, latency_ms, compute_device,
+                        query_context, guardrail_verdict, soul_id, ip_origin, created_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    request_id, user_id, "Gemma-4-Industrial-vLLM", "GuardrailsBlocker",
+                    prompt_tokens, 0, prompt_tokens, step1_ms, compute_device,
+                    "OUT_OF_DOMAIN", "BLOCKED", None, "127.0.0.1", datetime.now(timezone.utc).isoformat()
+                ))
+                conn.commit()
+        except Exception:
+            pass
+
         return {
             "author": "Desarrollado v1.0 Miguel Benítez",
+            "request_id": request_id,
             "query": req.query,
             "status": "GUARDRAIL_BLOCKED",
             "chain_of_thought": cot_steps,
             "response": f"⚠️ Consulta bloqueada por Guardrails: {ctx_res.violations[0]}",
             "metrics": {
+                "request_id": request_id,
                 "total_latency_ms": round((time.perf_counter() - t_start) * 1000, 2),
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": 0,
+                "total_tokens": prompt_tokens,
+                "compute_device": compute_device,
                 "guardrail_verdict": "BLOCKED",
                 "soul_seal_valid": False
             }
@@ -1371,9 +1407,30 @@ def chat_with_reasoning_cot(
     })
 
     total_duration = round((time.perf_counter() - t_start) * 1000, 2)
+    completion_tokens = llm_resp.get("tokens_used", 0)
+    total_tokens = prompt_tokens + completion_tokens
+
+    # Persist inference telemetry log
+    try:
+        with get_db_conn() as conn:
+            conn.execute("""
+                INSERT INTO inference_telemetry_logs (
+                    request_id, user_id, model_name, runtime_engine, prompt_tokens,
+                    completion_tokens, total_tokens, latency_ms, compute_device,
+                    query_context, guardrail_verdict, soul_id, ip_origin, created_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                request_id, user_id, "Gemma-4-Industrial-vLLM", llm_resp.get("backend_used", "HybridFallback"),
+                prompt_tokens, completion_tokens, total_tokens, total_duration, compute_device,
+                selected_soul_id, "PASS", selected_soul_id, "127.0.0.1", datetime.now(timezone.utc).isoformat()
+            ))
+            conn.commit()
+    except Exception:
+        pass
 
     return {
         "author": "Desarrollado v1.0 Miguel Benítez",
+        "request_id": request_id,
         "query": req.query,
         "status": "SUCCESS",
         "assigned_soul": soul_dict,
@@ -1381,9 +1438,14 @@ def chat_with_reasoning_cot(
         "response": llm_resp["content"],
         "legal_citations": citations,
         "metrics": {
+            "request_id": request_id,
             "total_latency_ms": total_duration,
             "inference_step_latency_ms": step4_ms,
-            "tokens_generated": llm_resp.get("tokens_used", 0),
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens,
+            "total_tokens": total_tokens,
+            "compute_device": compute_device,
+            "tokens_generated": completion_tokens,
             "backend_used": llm_resp.get("backend_used", "Local Heuristic Engine"),
             "guardrail_verdict": "VERIFIED_SAFE",
             "soul_seal_valid": seal_res.get("valid", False),
@@ -1489,3 +1551,179 @@ def validate_shipping_container(req: ContainerValidateRequest):
         "author": "Desarrollado v1.0 Miguel Benítez",
         "result": record
     }
+
+
+# ==============================================================================
+# 12. TELEMETRY, OBSERVABILITY & USER FEEDBACK LOOPS
+# ==============================================================================
+
+class ModelFeedbackRequest(BaseModel):
+    request_id: str = Field(..., description="ID de la inferencia asociada.")
+    rating_score: Optional[int] = Field(None, ge=1, le=5, description="Puntaje de 1 a 5 estrellas.")
+    is_positive: int = Field(1, description="1 para valoración positiva (thumbs up), 0 para negativa.")
+    feedback_category: Optional[str] = Field("GENERAL", description="Categoría del feedback (ACCURACY, LATENCY, REASONING_QUALITY, LEGAL_COMPLIANCE, HALLUCINATION).")
+    comments: Optional[str] = Field(None, description="Observaciones y comentarios técnicos del usuario.")
+
+
+@v1_router.post("/telemetry/feedback")
+def submit_model_feedback(
+    req: ModelFeedbackRequest,
+    current_user: Dict[str, Any] = Depends(get_current_user_and_session)
+):
+    """
+    Registra la retroalimentación del usuario (Thumbs Up/Down, Estrellas 1-5, Comentarios)
+    para el ciclo de mejora continua MLOps y evaluación de razonamiento CoT.
+    """
+    user_id = current_user.get("user_id", "anonymous")
+    now_str = datetime.now(timezone.utc).isoformat()
+
+    with get_db_conn() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO model_interaction_feedback (
+                request_id, user_id, rating_score, is_positive, feedback_category, comments, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?);
+        """, (
+            req.request_id,
+            user_id,
+            req.rating_score,
+            req.is_positive,
+            req.feedback_category,
+            req.comments,
+            now_str
+        ))
+        conn.commit()
+
+        # Record event in WORM ledger for audit compliance
+        try:
+            from src.auth.audit import SecurityAuditLogger
+            SecurityAuditLogger.append_worm_entry(
+                conn=conn,
+                event_type="MODEL_USER_FEEDBACK",
+                actor_username=current_user.get("username", "anonymous"),
+                actor_role=current_user.get("roles", ["readonly_viewer"])[0],
+                payload={
+                    "request_id": req.request_id,
+                    "rating": req.rating_score,
+                    "is_positive": req.is_positive,
+                    "category": req.feedback_category
+                }
+            )
+        except Exception:
+            pass
+
+    return {
+        "author": "Desarrollado v1.0 Miguel Benítez",
+        "status": "FEEDBACK_RECORDED",
+        "request_id": req.request_id,
+        "message": "Retroalimentación registrada exitosamente para el ciclo de reentrenamiento continuo MLOps."
+    }
+
+
+@v1_router.get("/telemetry/logs")
+def get_telemetry_logs(
+    limit: int = 50,
+    offset: int = 0,
+    user_filter: Optional[str] = None,
+    current_user: Dict[str, Any] = Depends(get_current_user_and_session)
+):
+    """
+    Retorna el historial de telemetría de cómputo, desglose de tokens y latencias.
+    Requiere rol administrativo, auditor o MLOps.
+    """
+    roles = current_user.get("roles", [])
+    allowed = any(r in roles for r in ["root", "admin", "maritime_auditor", "mlops_engineer", "ml_reviewer"])
+    if not allowed and not current_user.get("is_root"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Acceso restringido a administradores, auditores marítimos e ingenieros MLOps."
+        )
+
+    with get_db_conn() as conn:
+        cursor = conn.cursor()
+        if user_filter:
+            cursor.execute("""
+                SELECT * FROM inference_telemetry_logs
+                WHERE user_id = ?
+                ORDER BY id DESC LIMIT ? OFFSET ?;
+            """, (user_filter, limit, offset))
+        else:
+            cursor.execute("""
+                SELECT * FROM inference_telemetry_logs
+                ORDER BY id DESC LIMIT ? OFFSET ?;
+            """, (limit, offset))
+        
+        rows = [dict(r) for r in cursor.fetchall()]
+        
+        cursor.execute("SELECT COUNT(*) FROM inference_telemetry_logs;")
+        total_count = cursor.fetchone()[0]
+
+    return {
+        "author": "Desarrollado v1.0 Miguel Benítez",
+        "total_records": total_count,
+        "limit": limit,
+        "offset": offset,
+        "logs": rows
+    }
+
+
+@v1_router.get("/telemetry/summary")
+def get_telemetry_summary(
+    current_user: Dict[str, Any] = Depends(get_current_user_and_session)
+):
+    """
+    Métricas agregadas en tiempo real para el HUD de observabilidad y control de inferencia.
+    """
+    try:
+        import torch
+        device_str = "NVIDIA CUDA / PyTorch" if torch.cuda.is_available() else "CPU SIMD (AVX-512)"
+    except Exception:
+        device_str = "CPU SIMD (AVX-512)"
+
+    with get_db_conn() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            SELECT 
+                COUNT(*) as total_inferences,
+                COALESCE(AVG(latency_ms), 0.0) as avg_latency_ms,
+                COALESCE(SUM(total_tokens), 0) as total_tokens_used,
+                COALESCE(SUM(prompt_tokens), 0) as total_prompt_tokens,
+                COALESCE(SUM(completion_tokens), 0) as total_completion_tokens
+            FROM inference_telemetry_logs;
+        """)
+        row = dict(cursor.fetchone())
+
+        cursor.execute("""
+            SELECT 
+                COUNT(*) as total_feedback,
+                COALESCE(AVG(rating_score), 0.0) as avg_rating,
+                COALESCE(SUM(CASE WHEN is_positive = 1 THEN 1 ELSE 0 END), 0) as positive_count
+            FROM model_interaction_feedback;
+        """)
+        fb = dict(cursor.fetchone())
+
+        cursor.execute("""
+            SELECT COUNT(*) FROM inference_telemetry_logs WHERE guardrail_verdict = 'PASS';
+        """)
+        passed_inferences = cursor.fetchone()[0]
+
+    total_inf = row["total_inferences"]
+    pass_rate = round((passed_inferences / total_inf) * 100.0, 1) if total_inf > 0 else 100.0
+    fb_total = fb["total_feedback"]
+    fb_pos_pct = round((fb["positive_count"] / fb_total) * 100.0, 1) if fb_total > 0 else 100.0
+
+    return {
+        "author": "Desarrollado v1.0 Miguel Benítez",
+        "active_compute_device": device_str,
+        "total_inferences": total_inf,
+        "avg_latency_ms": round(row["avg_latency_ms"], 2),
+        "total_tokens_consumed": int(row["total_tokens_used"]),
+        "total_prompt_tokens": int(row["total_prompt_tokens"]),
+        "total_completion_tokens": int(row["total_completion_tokens"]),
+        "guardrails_pass_rate_pct": pass_rate,
+        "feedback_total": fb_total,
+        "feedback_avg_rating": round(fb["avg_rating"], 2),
+        "feedback_positive_rate_pct": fb_pos_pct,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+

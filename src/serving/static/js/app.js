@@ -4533,7 +4533,7 @@ executePortForecast();`;
         const m = data.metrics || {};
         if (latencyEl) latencyEl.textContent = `${m.total_latency_ms || elapsedTotal} ms`;
         if (infEl) infEl.textContent = `${m.inference_step_latency_ms || 0.07} ms`;
-        if (tokensEl) tokensEl.textContent = `${m.tokens_generated || 120}`;
+        if (tokensEl) tokensEl.textContent = `${m.total_tokens || m.tokens_generated || 100} (${m.prompt_tokens || 20} in / ${m.completion_tokens || m.tokens_generated || 80} out)`;
         if (sealBadge) {
           if (m.soul_seal_valid) {
             sealBadge.textContent = "🔐 Sello SHA-256 Verificado";
@@ -4544,6 +4544,20 @@ executePortForecast();`;
             sealBadge.style.background = "rgba(255, 90, 95, 0.2)";
             sealBadge.style.color = "#FF5A5F";
           }
+        }
+
+        // Store request_id for user feedback and continuous learning
+        if (data.request_id) {
+          window.currentRequestId = data.request_id;
+          const reqBadge = document.getElementById("feedback-req-badge");
+          if (reqBadge) {
+            reqBadge.textContent = `Req: ${data.request_id}`;
+            reqBadge.style.background = "rgba(0, 229, 255, 0.25)";
+          }
+          const fbCard = document.getElementById("cot-feedback-card");
+          if (fbCard) fbCard.style.display = "block";
+          const fbMsg = document.getElementById("feedback-status-msg");
+          if (fbMsg) fbMsg.style.display = "none";
         }
 
         if (statusIcon) statusIcon.textContent = data.status === "GUARDRAIL_BLOCKED" ? "🚫" : "✅";
@@ -4640,6 +4654,141 @@ executePortForecast();`;
     }
   };
 
+  // --- Continuous Evaluation & User Feedback Handlers ---
+  window.activeFeedbackSentiment = 1;
+  window.selectFeedbackSentiment = function(sentiment) {
+    window.activeFeedbackSentiment = sentiment;
+    const btnUp = document.getElementById("btn-feedback-thumb-up");
+    const btnDown = document.getElementById("btn-feedback-thumb-down");
+    if (btnUp && btnDown) {
+      if (sentiment === 1) {
+        btnUp.style.background = "#00F5D4";
+        btnUp.style.color = "#070D1E";
+        btnDown.style.background = "";
+        btnDown.style.color = "";
+      } else {
+        btnDown.style.background = "#FF5A5F";
+        btnDown.style.color = "#FFF";
+        btnUp.style.background = "";
+        btnUp.style.color = "";
+      }
+    }
+  };
+
+  window.submitModelFeedback = async function() {
+    const reqId = window.currentRequestId;
+    const statusEl = document.getElementById("feedback-status-msg");
+    const btnSubmit = document.getElementById("btn-submit-feedback");
+    if (!reqId) {
+      if (statusEl) {
+        statusEl.textContent = "⚠️ Primero ejecuta una consulta para poder registrar retroalimentación.";
+        statusEl.style.color = "#FF5A5F";
+        statusEl.style.display = "block";
+      }
+      return;
+    }
+
+    const rating = parseInt(document.getElementById("feedback-star-rating")?.value || "5", 10);
+    const category = document.getElementById("feedback-category-select")?.value || "GENERAL";
+    const comments = document.getElementById("feedback-comment-input")?.value || "";
+
+    if (btnSubmit) { btnSubmit.disabled = true; btnSubmit.textContent = "Enviando..."; }
+
+    try {
+      const res = await fetch("/api/v1/telemetry/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          request_id: reqId,
+          rating_score: rating,
+          is_positive: window.activeFeedbackSentiment ?? 1,
+          feedback_category: category,
+          comments: comments
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        if (statusEl) {
+          statusEl.textContent = `✓ Feedback registrado exitosamente para ${reqId}. Aportado al ciclo continuo MLOps.`;
+          statusEl.style.color = "#00F5D4";
+          statusEl.style.display = "block";
+        }
+        window.loadTelemetryExplorer();
+      } else {
+        throw new Error(data.detail || "Error registrando feedback");
+      }
+    } catch (err) {
+      if (statusEl) {
+        statusEl.textContent = `Error: ${err.message}`;
+        statusEl.style.color = "#FF5A5F";
+        statusEl.style.display = "block";
+      }
+    } finally {
+      if (btnSubmit) { btnSubmit.disabled = false; btnSubmit.textContent = "✉️ Enviar Feedback"; }
+    }
+  };
+
+  window.loadTelemetryExplorer = async function() {
+    try {
+      // 1. Fetch summary
+      const sumRes = await fetch("/api/v1/telemetry/summary");
+      if (sumRes.ok) {
+        const sum = await sumRes.json();
+        const devPill = document.getElementById("telemetry-device-pill");
+        if (devPill) devPill.textContent = `Cómputo: ${sum.active_compute_device || 'CPU SIMD'}`;
+
+        const kpiTot = document.getElementById("kpi-telemetry-total-inferences");
+        if (kpiTot) kpiTot.textContent = (sum.total_inferences || 0).toLocaleString();
+
+        const kpiPass = document.getElementById("kpi-telemetry-pass-rate");
+        if (kpiPass) kpiPass.textContent = `${sum.guardrails_pass_rate_pct || 100}% Guardrails Pass`;
+
+        const kpiLat = document.getElementById("kpi-telemetry-avg-latency");
+        if (kpiLat) kpiLat.textContent = `${Math.round(sum.avg_latency_ms || 0)} ms`;
+
+        const kpiTok = document.getElementById("kpi-telemetry-total-tokens");
+        if (kpiTok) kpiTok.textContent = (sum.total_tokens_consumed || 0).toLocaleString();
+
+        const kpiTokSub = document.getElementById("kpi-telemetry-tokens-breakdown");
+        if (kpiTokSub) kpiTokSub.textContent = `In: ${(sum.total_prompt_tokens || 0).toLocaleString()} | Out: ${(sum.total_completion_tokens || 0).toLocaleString()}`;
+
+        const kpiSat = document.getElementById("kpi-telemetry-satisfaction");
+        if (kpiSat) kpiSat.textContent = `${sum.feedback_positive_rate_pct || 100}%`;
+
+        const kpiRatSub = document.getElementById("kpi-telemetry-rating-sub");
+        if (kpiRatSub) kpiRatSub.textContent = `⭐ ${sum.feedback_avg_rating || 5.0} Promedio (${sum.feedback_total || 0} reviews)`;
+      }
+
+      // 2. Fetch logs (try with cookies or stored token)
+      const logsRes = await fetch("/api/v1/telemetry/logs?limit=15");
+      if (logsRes.ok) {
+        const data = await logsRes.json();
+        const tbody = document.getElementById("telemetry-logs-tbody");
+        if (tbody && data.logs) {
+          if (data.logs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 1rem;">No hay registros de inferencia registrados aún.</td></tr>';
+          } else {
+            tbody.innerHTML = data.logs.map(log => `
+              <tr>
+                <td><code style="color: #00E5FF;">${log.request_id}</code></td>
+                <td>${(log.created_at || '').substring(0, 19).replace('T', ' ')}</td>
+                <td><strong>${log.model_name}</strong><br><small style="color:#94a3b8;">${log.runtime_engine}</small></td>
+                <td>${log.user_id}</td>
+                <td><span style="color:#FFD166;">${log.total_tokens}</span> <small style="color:#94a3b8;">(${log.prompt_tokens}/${log.completion_tokens})</small></td>
+                <td><span style="color:#00F5D4;">${Math.round(log.latency_ms)} ms</span></td>
+                <td><span class="badge" style="background:${log.guardrail_verdict === 'PASS' ? 'rgba(0,245,212,0.15)' : 'rgba(255,90,95,0.15)'}; color:${log.guardrail_verdict === 'PASS' ? '#00F5D4' : '#FF5A5F'};">${log.guardrail_verdict}</span></td>
+                <td><small style="color:#cbd5e1;">${log.compute_device}</small></td>
+              </tr>
+            `).join("");
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("Telemetry explorer load error:", err);
+    }
+  };
+
   // --- Bootstrapping ---
   initThemeSwitcher();
   window.selectMethodologyPhase("phase_1", false); // false = no initial scroll jump on page load
@@ -4647,6 +4796,7 @@ executePortForecast();`;
   window.verifyWormAuditChainLive();
   window.loadDataPlatformManifest();
   window.fetchAuditSecurityEvents();
+  window.loadTelemetryExplorer();
   if (window.updateSoulBadgeView) window.updateSoulBadgeView();
 
   btnPredict.addEventListener("click", runForecast);

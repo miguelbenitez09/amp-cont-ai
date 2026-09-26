@@ -28,6 +28,41 @@ def get_root_credentials():
     return u_match.group(1), p_match.group(1).strip()
 
 
+def get_root_session():
+    """Performs full root login including MFA verification when enabled."""
+    username, password = get_root_credentials()
+    login_res = requests.post(
+        f"{BASE_URL}/api/v1/auth/login",
+        json={"username": username, "password": password},
+        timeout=5
+    )
+    data = login_res.json()
+    if data.get("mfa_required"):
+        import sqlite3, base64, struct, time, hmac, hashlib
+        conn = sqlite3.connect(ROOT_DIR / "data" / "enterprise_db" / "portops_platform.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT mfa_secret FROM users WHERE username = ?;", (username,))
+        row = cursor.fetchone()
+        conn.close()
+        secret_b32 = row[0]
+        pad_len = (8 - len(secret_b32) % 8) % 8
+        key = base64.b32decode(secret_b32 + "=" * pad_len, casefold=True)
+        t = int(time.time() // 30)
+        msg = struct.pack(">Q", t)
+        h = hmac.new(key, msg, hashlib.sha1).digest()
+        offset = h[-1] & 0x0F
+        totp_int = (struct.unpack(">I", h[offset:offset + 4])[0] & 0x7FFFFFFF) % 1_000_000
+        totp_code = f"{totp_int:06d}"
+
+        mfa_res = requests.post(
+            f"{BASE_URL}/api/v1/auth/mfa/verify",
+            json={"temp_token": data["temp_token"], "totp_code": totp_code},
+            timeout=5
+        )
+        return mfa_res.json(), username
+    return data, username
+
+
 def test_health_live():
     res = requests.get(f"{BASE_URL}/health/live", timeout=5)
     assert res.status_code == 200
@@ -62,14 +97,7 @@ def test_health_version():
 
 
 def test_auth_login_and_me():
-    username, password = get_root_credentials()
-    login_res = requests.post(
-        f"{BASE_URL}/api/v1/auth/login",
-        json={"username": username, "password": password},
-        timeout=5
-    )
-    assert login_res.status_code == 200
-    data = login_res.json()
+    data, username = get_root_session()
     assert "session_token" in data
     assert data["user"]["username"] == username
     assert "root" in data["roles"]
@@ -90,9 +118,8 @@ def test_auth_login_and_me():
 
 
 def test_auth_simulate_role():
-    username, password = get_root_credentials()
-    login_res = requests.post(f"{BASE_URL}/api/v1/auth/login", json={"username": username, "password": password}, timeout=5)
-    token = login_res.json()["session_token"]
+    data, _ = get_root_session()
+    token = data["session_token"]
 
     sim_res = requests.post(
         f"{BASE_URL}/api/v1/auth/simulate-role",
@@ -166,9 +193,8 @@ def test_models_benchmark_and_registry():
 
 
 def test_simulations_and_worm():
-    username, password = get_root_credentials()
-    login_res = requests.post(f"{BASE_URL}/api/v1/auth/login", json={"username": username, "password": password}, timeout=5)
-    token = login_res.json()["session_token"]
+    data, _ = get_root_session()
+    token = data["session_token"]
 
     # Run simulation
     sim_res = requests.post(
@@ -193,3 +219,51 @@ def test_simulations_and_worm():
     events_res = requests.get(f"{BASE_URL}/api/v1/audit/events", timeout=5)
     assert events_res.status_code == 200
     assert len(events_res.json()["events"]) >= 1
+
+
+def test_telemetry_and_feedback():
+    data, _ = get_root_session()
+    token = data["session_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # 1. Check summary
+    sum_res = requests.get(f"{BASE_URL}/api/v1/telemetry/summary", timeout=5)
+    assert sum_res.status_code == 200
+    s_data = sum_res.json()
+    assert "total_inferences" in s_data
+    assert "active_compute_device" in s_data
+    assert "avg_latency_ms" in s_data
+
+    # 2. Trigger reasoning chat to get a request_id
+    chat_res = requests.post(
+        f"{BASE_URL}/api/v1/agents/reasoning-chat",
+        json={"query": "Proyección y normas aduaneras para contenedores en Puerto Balboa"},
+        timeout=10
+    )
+    assert chat_res.status_code == 200
+    c_data = chat_res.json()
+    req_id = c_data["request_id"]
+    assert req_id.startswith("req_")
+
+    # 3. Submit feedback
+    fb_res = requests.post(
+        f"{BASE_URL}/api/v1/telemetry/feedback",
+        headers=headers,
+        json={
+            "request_id": req_id,
+            "rating_score": 5,
+            "is_positive": 1,
+            "feedback_category": "ACCURACY",
+            "comments": "Auditoría automatizada conforme a Ley 6 de 2002."
+        },
+        timeout=5
+    )
+    assert fb_res.status_code == 200
+    assert fb_res.json()["status"] == "FEEDBACK_RECORDED"
+
+    # 4. Check telemetry logs as root
+    logs_res = requests.get(f"{BASE_URL}/api/v1/telemetry/logs", headers=headers, timeout=5)
+    assert logs_res.status_code == 200
+    l_data = logs_res.json()
+    assert l_data["total_records"] >= 1
+    assert any(log["request_id"] == req_id for log in l_data["logs"])

@@ -145,6 +145,29 @@ def seed_database(conn: sqlite3.Connection) -> None:
         ) VALUES (?, ?, 'GENESIS_BLOCK', 'root', 'root', ?, ?, '127.0.0.1', ?);
         """, (genesis_prev, genesis_hash, hashlib.sha256(genesis_payload.encode()).hexdigest(), genesis_payload, now_str))
 
+    # 6. Seed Default Model Access Policies
+    default_policies = [
+        ("pol_root_all", "root", "*", 8192, 50000, 10000000, '["*"]', 0, 1),
+        ("pol_admin_all", "admin", "*", 4096, 20000, 5000000, '["*"]', 0, 1),
+        ("pol_mlops_all", "mlops_engineer", "*", 4096, 10000, 2000000, '["get_port_forecast", "query_hscode_panama", "run_monte_carlo_risk_simulation"]', 0, 1),
+        ("pol_reviewer_all", "ml_reviewer", "*", 4096, 5000, 1000000, '["get_port_forecast", "query_hscode_panama"]', 0, 1),
+        ("pol_auditor_all", "maritime_auditor", "*", 4096, 5000, 1000000, '["query_hscode_panama", "get_port_forecast"]', 0, 1),
+        ("pol_operator_all", "terminal_operator", "*", 2048, 2500, 500000, '["get_port_forecast"]', 0, 1),
+        ("pol_analyst_all", "port_analyst", "*", 2048, 2500, 500000, '["get_port_forecast", "query_hscode_panama"]', 0, 1),
+        ("pol_viewer_all", "readonly_viewer", "*", 1024, 1000, 200000, '[]', 0, 1),
+    ]
+    for p in default_policies:
+        cursor.execute("""
+        INSERT INTO model_access_policies (
+            policy_id, role_id, model_name, max_tokens_per_req, daily_request_limit, daily_token_limit, allowed_tools, requires_approval, is_active, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(policy_id) DO UPDATE SET
+            max_tokens_per_req=excluded.max_tokens_per_req,
+            daily_request_limit=excluded.daily_request_limit,
+            daily_token_limit=excluded.daily_token_limit,
+            allowed_tools=excluded.allowed_tools;
+        """, (*p, now_str))
+
     conn.commit()
 
 

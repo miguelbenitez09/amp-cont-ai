@@ -653,6 +653,12 @@ Implementación completa de esquemas **Model Context Protocol (JSON-RPC 2.0)** p
 - **Base de Datos Arancelaria (`src/data/scrapers/ana_hscode_scraper.py`):** Catálogo estructurado con incisos de 8, 10 y 12 dígitos, DAI%, ITBMS% y entidades reguladoras (MIDA, MINSA, APA, MiAmbiente, DIASP).
 - **Validador ISO 6346 (`src/data/parsers/container_iso6346.py`):** Algoritmo Módulo-11 con factores de peso $2^i$, identificación de propietario BIC y categoría (`U`, `J`, `Z`), y parser de mensajes EDIFACT BAPLIE y COARRI.
 
+### 14.6 Telemetría de Cómputo, Feedback de Usuarios e Infraestructura como Código
+- **Telemetría en Tiempo Real (`/api/v1/telemetry/*`):** Rastreo de latencias, conteo de tokens de entrada y salida, hardware de cómputo activo (GPU CUDA / CPU SIMD AVX-512) y veredictos de guardrails en cada inferencia.
+- **Ciclo de Retroalimentación Continua (Feedback MLOps):** Registro directo de valoraciones por estrellas (1-5), votos binarios (👍/👎), categorías y comentarios técnicos para la mejora iterativa del modelo.
+- **Perfiles Reproducibles de Docker Compose:** `core`, `ml`, `rag`, `mcp`, `security`, `observability` y `full`, fijados en versiones estables LTS (Wazuh 4.9.0, MinIO RELEASE.2024-11-07, Redis 7.2.5, TimescaleDB PG16, vLLM 0.6.3).
+- **Módulos de Terraform (`infra/terraform/`):** Despliegue modular de servicios para entornos `local` y `production` con políticas de seguridad y exclusión estricta de archivos `.tfstate`.
+
 ---
 
 ## 15. Licencia, Atribución Obligatoria y Citación Académica

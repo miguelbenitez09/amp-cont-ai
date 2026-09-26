@@ -652,6 +652,62 @@
                 <span style="font-size: 0.75rem; color: #94A3B8; font-weight: bold; display: block; margin-bottom: 0.4rem;">🏛️ Fuentes y Citas Normativas Panameñas Trazables:</span>
                 <div id="cot-citations-tags" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
               </div>
+
+              <!-- Interactive Continuous Learning & Model Feedback Widget -->
+              <div id="cot-feedback-card" style="margin-top: 1.25rem; padding: 1rem; background: rgba(0, 229, 255, 0.04); border: 1px solid rgba(0, 229, 255, 0.25); border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.1rem;">📊</span>
+                    <h4 style="margin: 0; color: #F8FAFC; font-size: 0.95rem;">Evaluación de Respuesta & Feedback MLOps</h4>
+                    <span id="feedback-req-badge" class="badge" style="font-family: var(--font-mono); font-size: 0.72rem; background: rgba(0, 229, 255, 0.15); color: #00E5FF;">Req: Inactivo</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <button type="button" id="btn-feedback-thumb-up" class="btn btn-secondary btn-sm" style="border-radius: 20px; padding: 0.3rem 0.75rem; font-size: 0.85rem;" onclick="window.selectFeedbackSentiment(1)" title="Valoración Positiva">
+                      👍 Útil
+                    </button>
+                    <button type="button" id="btn-feedback-thumb-down" class="btn btn-secondary btn-sm" style="border-radius: 20px; padding: 0.3rem 0.75rem; font-size: 0.85rem;" onclick="window.selectFeedbackSentiment(0)" title="Valoración Negativa">
+                      👎 No útil
+                    </button>
+                  </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 140px 180px 1fr auto; gap: 0.75rem; align-items: center;">
+                  <div>
+                    <label style="font-size: 0.73rem; color: #94A3B8; display: block; margin-bottom: 2px;">Calificación (1-5):</label>
+                    <select id="feedback-star-rating" style="width: 100%; padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #FFD166; font-size: 0.82rem;">
+                      <option value="5" selected>⭐⭐⭐⭐⭐ (5/5)</option>
+                      <option value="4">⭐⭐⭐⭐ (4/5)</option>
+                      <option value="3">⭐⭐⭐ (3/5)</option>
+                      <option value="2">⭐⭐ (2/5)</option>
+                      <option value="1">⭐ (1/5)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style="font-size: 0.73rem; color: #94A3B8; display: block; margin-bottom: 2px;">Categoría:</label>
+                    <select id="feedback-category-select" style="width: 100%; padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #F8FAFC; font-size: 0.82rem;">
+                      <option value="ACCURACY" selected>Precisión Arancelaria</option>
+                      <option value="LEGAL_COMPLIANCE">Cumplimiento Legal (Ley 6/56)</option>
+                      <option value="REASONING_QUALITY">Calidad Razonamiento CoT</option>
+                      <option value="LATENCY">Velocidad / Latencia</option>
+                      <option value="GENERAL">General</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style="font-size: 0.73rem; color: #94A3B8; display: block; margin-bottom: 2px;">Comentarios técnicos (opcional):</label>
+                    <input type="text" id="feedback-comment-input" placeholder="Detalle técnico o corrección observada..." style="width: 100%; padding: 0.4rem 0.6rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #F8FAFC; font-size: 0.82rem;">
+                  </div>
+
+                  <div style="align-self: flex-end;">
+                    <button type="button" id="btn-submit-feedback" class="btn btn-primary btn-sm" style="padding: 0.45rem 1rem; font-weight: bold; background: #00E5FF; color: #070D1E; border: none;" onclick="window.submitModelFeedback()">
+                      ✉️ Enviar Feedback
+                    </button>
+                  </div>
+                </div>
+
+                <div id="feedback-status-msg" style="margin-top: 0.5rem; font-size: 0.76rem; display: none;"></div>
+              </div>
             </div>
 
           </div>
@@ -1821,6 +1877,68 @@
                   <td>platform</td>
                   <td><span class="badge" style="background:rgba(16,185,129,0.15); color:#10b981;">SUCCESS</span></td>
                   <td><code>none</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 5. Real-Time Inference Telemetry & User Feedback Explorer (MLOps Loop) -->
+        <div class="card" style="margin-top: 1.5rem; border-top: 4px solid var(--cyan-bright);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <span class="badge" style="background: rgba(0, 229, 255, 0.15); color: #00E5FF; margin-bottom: 0.25rem; display: inline-block;">OBSERVABILIDAD & RETROALIMENTACIÓN CONTINUA</span>
+              <h3 style="font-size: 1.15rem; color: #F8FAFC; margin: 0;">📡 Telemetría de Inferencia, Cómputo & Feedback de Usuarios</h3>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0.2rem 0 0 0;">Monitoreo en vivo de hardware de cómputo, desglose de tokens de entrada/salida, latencias y retroalimentación de usuarios.</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <span id="telemetry-device-pill" class="badge" style="background: rgba(0, 245, 212, 0.15); color: #00F5D4; font-family: var(--font-mono);">Dispositivo: Detectando...</span>
+              <button class="btn btn-secondary btn-sm" onclick="window.loadTelemetryExplorer()">🔄 Refrescar Telemetría</button>
+            </div>
+          </div>
+
+          <!-- Telemetry KPI Mini Grid -->
+          <div class="kpi-grid" style="margin-bottom: 1.25rem;">
+            <div class="kpi-card" style="padding: 0.85rem;">
+              <div class="kpi-title">Inferencias Totales</div>
+              <div class="kpi-value" id="kpi-telemetry-total-inferences" style="font-size: 1.25rem; color: #00E5FF;">0</div>
+              <div class="kpi-sub" id="kpi-telemetry-pass-rate">100% Guardrails Pass</div>
+            </div>
+            <div class="kpi-card" style="padding: 0.85rem;">
+              <div class="kpi-title">Latencia Promedio</div>
+              <div class="kpi-value" id="kpi-telemetry-avg-latency" style="font-size: 1.25rem; color: #00F5D4;">0 ms</div>
+              <div class="kpi-sub">End-to-End CoT</div>
+            </div>
+            <div class="kpi-card" style="padding: 0.85rem;">
+              <div class="kpi-title">Tokens Consumidos</div>
+              <div class="kpi-value" id="kpi-telemetry-total-tokens" style="font-size: 1.25rem; color: #FFD166;">0</div>
+              <div class="kpi-sub" id="kpi-telemetry-tokens-breakdown">In: 0 | Out: 0</div>
+            </div>
+            <div class="kpi-card" style="padding: 0.85rem;">
+              <div class="kpi-title">Satisfacción Usuarios</div>
+              <div class="kpi-value" id="kpi-telemetry-satisfaction" style="font-size: 1.25rem; color: #38BDF8;">100%</div>
+              <div class="kpi-sub" id="kpi-telemetry-rating-sub">⭐ 5.0 Promedio</div>
+            </div>
+          </div>
+
+          <!-- Telemetry Logs Table -->
+          <div class="table-responsive" style="max-height: 280px; overflow-y: auto;">
+            <table class="data-table" style="font-size: 0.76rem;">
+              <thead>
+                <tr>
+                  <th>Request ID</th>
+                  <th>Fecha / Hora (UTC)</th>
+                  <th>Modelo & Motor</th>
+                  <th>Usuario</th>
+                  <th>Tokens (Total / In / Out)</th>
+                  <th>Latencia (ms)</th>
+                  <th>Veredicto Guardrail</th>
+                  <th>Dispositivo</th>
+                </tr>
+              </thead>
+              <tbody id="telemetry-logs-tbody">
+                <tr>
+                  <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">Cargando registros de telemetría de inferencia...</td>
                 </tr>
               </tbody>
             </table>

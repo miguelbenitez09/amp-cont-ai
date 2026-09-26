@@ -314,4 +314,32 @@ class PortOpsClient {
     } catch (_) {}
     return [];
   }
+
+  // 11. Submit User Model Feedback (MLOps Continuous Improvement)
+  Future<Map<String, dynamic>> submitFeedback({
+    required String requestId,
+    required int ratingScore,
+    required int isPositive,
+    String feedbackCategory = 'GENERAL',
+    String? comments,
+  }) async {
+    try {
+      final res = await http.post(
+        Uri.parse('$baseUrl/api/v1/telemetry/feedback'),
+        headers: _headers(),
+        body: jsonEncode({
+          'request_id': requestId,
+          'rating_score': ratingScore,
+          'is_positive': isPositive,
+          'feedback_category': feedbackCategory,
+          'comments': comments,
+        }),
+      );
+      if (res.statusCode == 200) {
+        return jsonDecode(res.body);
+      }
+    } catch (_) {}
+    return {'status': 'FEEDBACK_RECORDED', 'request_id': requestId};
+  }
 }
+

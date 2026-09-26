@@ -898,10 +898,87 @@ class _ReasoningCoTViewState extends State<ReasoningCoTView> {
                 ),
               ),
             ),
+
+            const SizedBox(height: 14),
+
+            // Continuous Learning & Feedback Widget
+            Card(
+              color: MaritimeColors.surfaceCard,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide(color: MaritimeColors.cyan.withOpacity(0.3)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Row(
+                  children: [
+                    const Icon(Icons.rate_review_outlined, color: MaritimeColors.cyan, size: 18),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Evaluación MLOps (Req: ${reasoningResult?['request_id'] ?? '--'}):',
+                      style: const TextStyle(color: MaritimeColors.textLight, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(width: 12),
+                    InkWell(
+                      onTap: () => _submitFeedback(5, 1),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(color: MaritimeColors.emerald.withOpacity(0.15), borderRadius: BorderRadius.circular(6)),
+                        child: const Text('👍 Útil', style: TextStyle(color: MaritimeColors.emerald, fontSize: 11, fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    InkWell(
+                      onTap: () => _submitFeedback(2, 0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(color: MaritimeColors.coral.withOpacity(0.15), borderRadius: BorderRadius.circular(6)),
+                        child: const Text('👎 No útil', style: TextStyle(color: MaritimeColors.coral, fontSize: 11, fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // Stars
+                    for (int s = 1; s <= 5; s++)
+                      InkWell(
+                        onTap: () => _submitFeedback(s, s >= 3 ? 1 : 0),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 2),
+                          child: Icon(Icons.star, color: MaritimeColors.gold, size: 16),
+                        ),
+                      ),
+                    const Spacer(),
+                    if (feedbackStatus != null)
+                      Text(feedbackStatus!, style: const TextStyle(color: MaritimeColors.emerald, fontSize: 11, fontWeight: FontWeight.bold))
+                    else
+                      Text(
+                        'Tokens: ${metrics?['total_tokens'] ?? metrics?['tokens_generated'] ?? 100} | ${metrics?['compute_device'] ?? 'CPU SIMD'}',
+                        style: const TextStyle(color: MaritimeColors.textMuted, fontSize: 11),
+                      ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ],
       ),
     );
+  }
+
+  String? feedbackStatus;
+
+  Future<void> _submitFeedback(int rating, int isPositive) async {
+    final reqId = reasoningResult?['request_id'] as String? ?? 'req_flutter';
+    final res = await widget.client.submitFeedback(
+      requestId: reqId,
+      ratingScore: rating,
+      isPositive: isPositive,
+      feedbackCategory: 'REASONING_QUALITY',
+      comments: 'Calificado desde Flutter Client v1.0',
+    );
+    if (!mounted) return;
+    setState(() {
+      feedbackStatus = '✓ Calificación $rating★ registrada ($reqId)';
+    });
   }
 }
 

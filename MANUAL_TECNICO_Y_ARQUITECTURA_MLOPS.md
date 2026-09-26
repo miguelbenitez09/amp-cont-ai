@@ -548,6 +548,24 @@ Implementado en `src/models/inference/engine.py`:
 - Regularización isotónica para asegurar matemáticamente que jamás ocurra un cruce cuantílico ($P_{10} \le P_{50} \le P_{90}$).
 - Capacidad de simulación paramétrica What-If para shocks operativos inmediatos.
 
+### 10.4 Observabilidad, Telemetría de Cómputo y Feedback Loops
+- **Registro de Telemetría Real (`inference_telemetry_logs`):** Cada inferencia registra su identificador correlacionado (`request_id`), usuario emisor, modelo/motor de ejecución, dispositivo de hardware activo (GPU CUDA / CPU SIMD AVX-512), latencia total en milisegundos, desglose de tokens de entrada (`prompt_tokens`), salida (`completion_tokens`) y total, junto con el veredicto emitido por los guardrails de seguridad.
+- **Ciclo de Retroalimentación de Usuarios (`model_interaction_feedback`):** Interfaz interactiva para recolectar valoraciones (1 a 5 estrellas, thumbs up/down, categoría y comentarios cualitativos) respaldadas criptográficamente en el ledger WORM. Esta información alimenta de forma continua las decisiones de reentrenamiento y curaduría de datasets.
+- **RAG Regulatorio con Fechas Bitemporales y Permisología:** Mapeo jerárquico desde el Sistema Armonizado de la OMA (6 dígitos) a la nomenclatura nacional ANA / SIECA (10 a 12 dígitos), con vigencia bitemporal (`effective_from`, `effective_to`), protocolos de inspección en muelle y asignación de entidades reguladoras (MIDA, MINSA, APA, MiAmbiente, DIASP, AMP).
+
+### 10.5 Despliegue Contenerizado e Infraestructura como Código (IaC)
+- **Perfiles Modulares de Docker Compose:**
+  - `core`: API FastAPI, base de datos TimescaleDB/PostgreSQL y capa de caché Redis.
+  - `ml`: Servidor de inferencia OpenAI-compatible vLLM con asignación de GPU NVIDIA.
+  - `rag`: Almacenamiento de objetos S3 compatible MinIO con retención de artefactos.
+  - `mcp`: Servidor JSON-RPC 2.0 para agentes y herramientas externas.
+  - `security`: Pila Zero-Trust Wazuh (Manager, Indexer OpenSearch y Dashboard).
+  - `observability`: Métricas en tiempo real con Prometheus y paneles Grafana.
+  - `full`: Pila unificada completa de grado empresarial.
+- **Módulos de Terraform Versionados (`infra/terraform/`):**
+  - Módulos desacoplados para `docker_stack`, `monitoring` y `security`.
+  - Entornos reproducibles `local` y `production` con versiones fijadas de proveedores y exclusión estricta de archivos de estado (`.tfstate`) en el control de versiones.
+
 ---
 
 ## 11. Términos Legales y Atribución Obligatoria
