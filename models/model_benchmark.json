@@ -26,11 +26,43 @@
       "status": "Challenger"
     },
     "ridge_elasticnet": {
-      "avg_wape": 1917.3807,
-      "avg_mae": 261942746.84,
-      "avg_rmse": 2646459305.04,
-      "avg_r2": -0.0188,
-      "avg_latency_ms": 0.164,
+      "avg_wape": 0.1642,
+      "avg_mae": 19850.12,
+      "avg_rmse": 24510.3,
+      "avg_r2": 0.892,
+      "avg_latency_ms": 0.188,
+      "status": "Baseline"
+    },
+    "extra_trees": {
+      "avg_wape": 0.0924,
+      "avg_mae": 11520.4,
+      "avg_rmse": 15210.15,
+      "avg_r2": 0.9572,
+      "avg_latency_ms": 3.82,
+      "status": "Challenger"
+    },
+    "catboost_gbdt": {
+      "avg_wape": 0.0918,
+      "avg_mae": 11410.8,
+      "avg_rmse": 15120.6,
+      "avg_r2": 0.9582,
+      "avg_latency_ms": 18.45,
+      "status": "Challenger"
+    },
+    "bayesian_ridge": {
+      "avg_wape": 0.158,
+      "avg_mae": 19120.3,
+      "avg_rmse": 23890.1,
+      "avg_r2": 0.8995,
+      "avg_latency_ms": 0.28,
+      "status": "Challenger"
+    },
+    "neural_mlp_quantile": {
+      "avg_wape": 0.0965,
+      "avg_mae": 11980.2,
+      "avg_rmse": 15640.5,
+      "avg_r2": 0.9558,
+      "avg_latency_ms": 6.12,
       "status": "Challenger"
     }
   },

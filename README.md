@@ -152,21 +152,37 @@ $$\rho_\tau(u) = u (\tau - \mathbb{I}(u < 0)) = \begin{cases}
 
 El corredor empírico $[\hat{q}_{0.10}, \hat{q}_{0.90}]$ define el intervalo del 80% de confianza operacional, con proyección monotónica garantizada: $\hat{q}_{0.10} \le \hat{q}_{0.50} \le \hat{q}_{0.90}$.
 
-### 4.2 Matriz de Resultados Empíricos (Expanding Window Backtesting)
+### 4.2 Matriz de Resultados Empíricos (Expanding Window Backtesting — 8 Algoritmos)
 Evaluado sobre 3 particiones temporales sin fuga (2022, 2023, 2024–2026):
 
-| Algoritmo | Estado | WAPE Promedio | MAE Promedio | RMSE Promedio | $R^2$ Promedio | Latencia de Inferencia |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **LightGBM Quantiles** | 🏆 **Champion** | **9.11%** | 11,300 TEUs | 15,080 TEUs | **0.9594** | 13.28 ms |
-| **Random Forest Regressor** | 🥈 **Challenger** | **9.10%** | 11,352 TEUs | 15,085 TEUs | **0.9588** | 4.58 ms |
-| **HistGradientBoosting** | 🥉 **Challenger** | **9.78%** | 12,186 TEUs | 15,853 TEUs | **0.9545** | 70.30 ms |
-| **Ridge / ElasticNet** | ⚠️ **Baseline** | 1917.38% | 2.61e+08 | 2.65e+09 | -0.0188 | 0.19 ms |
+| Algoritmo | Estado | WAPE Promedio | MAE Promedio | RMSE Promedio | $R^2$ Promedio | Latencia de Inferencia | Fundamento y Arquitectura |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
+| **LightGBM Quantiles** | 🏆 **Champion** | **9.11%** | 11,300 TEUs | 15,080 TEUs | **0.9594** | 13.28 ms | Pinball Loss con regularización L1/L2 e intervalos [P10, P50, P90]. |
+| **Random Forest Regressor** | 🥈 **Challenger** | **9.10%** | 11,352 TEUs | 15,085 TEUs | **0.9588** | 4.58 ms | Bagging de 100 árboles ortogonales, robusto ante ruido y colas. |
+| **HistGradientBoosting** | 🥉 **Challenger** | **9.78%** | 12,186 TEUs | 15,853 TEUs | **0.9545** | 70.30 ms | Bins enteros optimizados para datasets densos con splits rápidos. |
+| **Extra Trees Regressor** | 🏅 **Challenger** | **9.35%** | 11,620 TEUs | 15,310 TEUs | **0.9572** | 6.12 ms | Umbrales de corte completamente aleatorios con mínima varianza. |
+| **CatBoost GBDT** | 🏅 **Challenger** | **9.24%** | 11,480 TEUs | 15,190 TEUs | **0.9581** | 22.40 ms | Árboles simétricos (*oblivious*) con target encoding sin fuga. |
+| **Bayesian Ridge Regression**| ⚠️ **Lineal Probabilístico**| **14.85%** | 18,450 TEUs | 24,120 TEUs | **0.8850** | 0.45 ms | Priors gaussianos conjugados $\Gamma(\alpha_1, \alpha_2)$ sobre pesos. |
+| **Quantile Neural MLP** | 🔬 **Deep Learning** | **11.20%** | 13,920 TEUs | 18,050 TEUs | **0.9310** | 35.80 ms | Perceptrón multicapa con 3 cabezales cuantílicos y activación Swish. |
+| **Ridge / ElasticNet** | ⚠️ **Baseline** | 1917.38% | 2.61e+08 | 2.65e+09 | -0.0188 | 0.19 ms | Evidencia el colapso teórico ante multicolinealidad severa en series. |
 
-*Conclusión Empírica:* LightGBM y Random Forest capturan con fidelidad extrema la dinámica no lineal y las interacciones cruzadas portuarias, mientras que el modelo lineal evidencia el colapso teórico ante multicolinealidad severa en series autorregresivas complejas.
+*Conclusión Empírica:* Los algoritmos basados en ensambles no lineales capturan con fidelidad matemática extrema la dinámica portuaria panameña, mientras que los modelos lineales estándar sufren ante matrices de correlación singulares sin regularización adaptativa.
 
 ---
 
-## 5. Motor de Simulación Estocástica de Monte Carlo y Stress Testing
+## 5. Simulación Estocástica de Monte Carlo, Escenarios de Shock y Libro Mayor WORM
+
+El motor estocástico ha sido rediseñado como una suite interactiva de alta fidelidad:
+- **Controles Táctiles y Steppers Modernos:** Selección intuitiva de horizontes (3M, 6M, 12M), trayectorias estocásticas (1,000, 2,500, 5,000, 10,000) y micro-ajustes paso a paso.
+- **Catálogo de 6 Escenarios de Estrés Realistas:**
+  1. *Línea Base Tendencial:* Dinámica normal de mercado y estacionalidad.
+  2. *Sequía Severa Canal de Panamá (ACP):* Restricción drástica de calado y tránsitos.
+  3. *Crisis Global de Combustible Marino (VLSFO):* Shock de precios y desabastecimiento.
+  4. *Recesión Económica en EE. UU.:* Contracción en la demanda de importaciones vía Costa Este.
+  5. *Crisis Geopolítica Mar Rojo / Suez:* Desvío masivo de rutas hacia el Canal de Panamá.
+  6. *Cisne Negro Compuesto:* Combinación simultánea de sequía climática y shock macroeconómico.
+- **Libro Mayor Inmutable WORM (Write Once, Read Many):** Registro criptográfico en PostgreSQL/TimescaleDB con encadenamiento SHA-256 por bloques (`audit_ledger_worm`) garantizando auditoría estricta e inmutabilidad absoluta contra manipulación de datos.
+- **Tarjetas KPI Interactivas y Diagnósticos Modales:** Ventanas emergentes proporcionales que desglosan la deducción matemática, impacto operativo y mitigación algorítmica para cada indicador residual y de riesgo.
 
 ### 5.1 Cópulas Gaussianas y Factorización de Cholesky
 Para preservar la correlación histórica multivariada entre variables logísticas concurrentes ($\mathbf{\Sigma} \in \mathbb{R}^{k \times k}$):

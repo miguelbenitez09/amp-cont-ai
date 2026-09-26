@@ -3760,3 +3760,335 @@ footer {
   font-family: var(--font-mono);
 }
 
+/* ========================================================================= */
+/* SUBTLE PHASE STEPPER BUTTONS & WORKSTATION NAVIGATION                     */
+/* ========================================================================= */
+.phase-nav-step-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.btn-subtle-phase-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-dim, #cbd5e1);
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.btn-subtle-phase-nav:hover {
+  color: var(--cyan-bright, #06b6d4);
+  border-color: rgba(6, 182, 212, 0.4);
+  background: rgba(6, 182, 212, 0.08);
+  transform: translateY(-1px);
+}
+
+.btn-subtle-phase-nav:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.phase-step-indicator {
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-family: var(--font-mono, monospace);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+.mmodal-phase-controls-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.45rem 1rem;
+  background: rgba(3, 7, 18, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ========================================================================= */
+/* TACTILE SIMULATION CONTROLS (PILLS, STEPPERS, PRESETS)                    */
+/* ========================================================================= */
+.sim-pill-group {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+
+.sim-pill-btn {
+  flex: 1;
+  padding: 0.4rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.sim-pill-btn:hover {
+  border-color: rgba(6, 182, 212, 0.4);
+  color: #e2e8f0;
+}
+
+.sim-pill-btn.active {
+  background: rgba(6, 182, 212, 0.18);
+  border-color: var(--cyan-bright, #06b6d4);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.25);
+}
+
+.sim-stepper-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.sim-stepper-btn {
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sim-stepper-btn:hover {
+  background: rgba(6, 182, 212, 0.15);
+  border-color: var(--cyan-bright, #06b6d4);
+  color: #fff;
+}
+
+.sim-stepper-value {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-mono, monospace);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--cyan-bright, #06b6d4);
+  padding: 0.35rem 0.5rem;
+  background: rgba(3, 7, 18, 0.8);
+  border-radius: 6px;
+  border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
+.sim-presets-row {
+  display: flex;
+  gap: 0.3rem;
+  margin-top: 0.4rem;
+}
+
+.sim-preset-btn {
+  flex: 1;
+  padding: 0.22rem 0.35rem;
+  font-size: 0.72rem;
+  font-family: var(--font-mono, monospace);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sim-preset-btn:hover {
+  border-color: rgba(6, 182, 212, 0.3);
+  color: #e2e8f0;
+}
+
+.sim-preset-btn.active {
+  background: rgba(6, 182, 212, 0.15);
+  border-color: var(--cyan-bright, #06b6d4);
+  color: #fff;
+}
+
+/* ========================================================================= */
+/* INTERACTIVE & CLICKABLE KPI CARDS                                         */
+/* ========================================================================= */
+.interactive-kpi-card,
+.clickable-kpi-card {
+  cursor: pointer;
+  position: relative;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.interactive-kpi-card:hover,
+.clickable-kpi-card:hover {
+  border-color: var(--cyan-bright, #06b6d4) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(6, 182, 212, 0.18);
+}
+
+.kpi-card-header-mini {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.info-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  font-size: 0.68rem;
+  color: var(--cyan-bright, #06b6d4);
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  opacity: 0.8;
+  transition: all 0.2s ease;
+}
+
+.interactive-kpi-card:hover .info-icon-badge,
+.clickable-kpi-card:hover .info-icon-badge {
+  opacity: 1;
+  background: var(--cyan-bright, #06b6d4);
+  color: #030712;
+}
+
+/* ========================================================================= */
+/* COMPACT PROPORTIONAL DIALOG (MATHEMATICAL DEDUCTION MODAL)                */
+/* ========================================================================= */
+.compact-proportional-dialog {
+  max-width: 680px;
+  width: 92%;
+  border-radius: 12px;
+  background: rgba(11, 23, 39, 0.97) !important;
+  border: 1px solid rgba(6, 182, 212, 0.35) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(6, 182, 212, 0.15) !important;
+  backdrop-filter: blur(16px);
+}
+
+.cp-modal-body {
+  padding: 1.25rem 1.5rem;
+  max-height: 72vh;
+  overflow-y: auto;
+}
+
+.cp-formula-card {
+  background: rgba(3, 7, 18, 0.85);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin: 0.75rem 0;
+  text-align: center;
+}
+
+.cp-formula-math {
+  font-size: 1.15rem;
+  color: #38bdf8;
+  padding: 0.5rem 0;
+  overflow-x: auto;
+}
+
+.cp-code-snippet {
+  background: #030712;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 0.65rem 0.85rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  color: #a5f3fc;
+  overflow-x: auto;
+  margin-top: 0.5rem;
+}
+
+.cp-section-block {
+  margin-bottom: 1rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 3px solid var(--cyan-bright, #06b6d4);
+}
+
+.cp-section-block h4 {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--cyan-bright, #06b6d4);
+  margin: 0 0 0.4rem 0;
+}
+
+.cp-section-block p {
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: #cbd5e1;
+  margin: 0;
+}
+
+/* ========================================================================= */
+/* WORM SIMULATION RUNS HISTORY TABLE                                        */
+/* ========================================================================= */
+.sim-history-table {
+  width: 100%;
+  font-size: 0.78rem;
+}
+
+.sim-history-table th {
+  background: rgba(15, 23, 42, 0.9);
+  padding: 0.5rem 0.6rem;
+  color: #94a3b8;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sim-history-table td {
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
+}
+
+.sim-hash-cell {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  color: var(--cyan-bright, #06b6d4);
+  background: rgba(6, 182, 212, 0.08);
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+  border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.sim-block-badge {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.clickable-row:hover {
+  background: rgba(6, 182, 212, 0.1) !important;
+}
+
+

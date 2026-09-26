@@ -253,7 +253,18 @@ class MonteCarloEngine:
             params["volatility_mult"] = 1.8
             params["jump_lambda"] = 0.20
             params["jump_mu"] = -0.15
-        elif scenario_type == "black_swan_compound":
+        elif scenario_type in ["us_recession", "recession_us"]:
+            params["transshipment_mult"] = 0.78
+            params["volatility_mult"] = 1.4
+            params["jump_lambda"] = 0.15
+            params["jump_mu"] = -0.22
+        elif scenario_type in ["geopolitical_red_sea", "red_sea_crisis"]:
+            params["transshipment_mult"] = 0.85
+            params["empty_mult"] = 1.30
+            params["volatility_mult"] = 1.6
+            params["jump_lambda"] = 0.25
+            params["jump_mu"] = -0.18
+        elif scenario_type in ["black_swan_compound", "compound_black_swan"]:
             params["transshipment_mult"] = 0.55
             params["empty_mult"] = 1.50
             params["volatility_mult"] = 2.2

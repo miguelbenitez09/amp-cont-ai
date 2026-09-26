@@ -80,7 +80,7 @@
       </button>
       <button class="tab-btn" data-tab="tab-simulation">
         <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="15.5" r="1.5"></circle></svg>
-        Simulación Monte Carlo & Estrés
+        Simulación
       </button>
       <button class="tab-btn" data-tab="tab-methodology">
         <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
@@ -132,7 +132,7 @@
             </button>
             <button class="btn btn-secondary" onclick="document.querySelector('[data-tab=tab-simulation]').click()">
               <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="15.5" r="1.5"></circle></svg>
-              Simulador Monte Carlo & Estrés
+              Simulación
             </button>
             <a href="/docs" target="_blank" class="btn btn-outline">
               <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
@@ -647,40 +647,79 @@
         <!-- Left: Residual Stats & Feature Importance -->
         <div>
           <div class="card">
-            <div class="card-header">
-              <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-              <h2>Distribución y Propiedades de los Residuos (Errores del Modelo Champion)</h2>
+            <div class="card-header" style="justify-content: space-between;">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <div>
+                  <h2>Distribución y Propiedades de los Residuos (LightGBM Champion)</h2>
+                  <p class="card-subtitle">Auditoría matemática de insesgadez, dispersión y colas pesadas</p>
+                </div>
+              </div>
+              <span class="badge" style="background:rgba(6,182,212,0.15); color:var(--cyan-bright); font-size:0.72rem;">🔍 Haz clic en cualquier tarjeta</span>
             </div>
-            <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 1rem;">
-              <div class="kpi-card mini">
-                <div class="kpi-title">Error Medio</div>
+
+            <!-- 4 Interactive Clickable Residual Cards -->
+            <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 1.25rem;">
+              <div class="kpi-card mini clickable-kpi-card" id="res-card-mean" onclick="window.openResidualMetricModal('mean_residual')" title="Clic para ver deducción matemática e impacto operacional">
+                <div class="kpi-card-header-mini">
+                  <span class="kpi-title">Error Medio</span>
+                  <span class="info-icon-badge">ⓘ</span>
+                </div>
                 <div class="kpi-value" id="res-mean">+7,788 TEUs</div>
+                <div class="kpi-sub">Insesgadez / Bias (+1.19%)</div>
               </div>
-              <div class="kpi-card mini">
-                <div class="kpi-title">Desviación Estándar</div>
+
+              <div class="kpi-card mini clickable-kpi-card" id="res-card-std" onclick="window.openResidualMetricModal('std_residual')" title="Clic para ver deducción matemática e impacto operacional">
+                <div class="kpi-card-header-mini">
+                  <span class="kpi-title">Desv. Estándar</span>
+                  <span class="info-icon-badge">ⓘ</span>
+                </div>
                 <div class="kpi-value" id="res-std">16,415 TEUs</div>
+                <div class="kpi-sub">Dispersión Residual (σ_e)</div>
               </div>
-              <div class="kpi-card mini">
-                <div class="kpi-title">Error Absoluto Mediano</div>
+
+              <div class="kpi-card mini clickable-kpi-card" id="res-card-med" onclick="window.openResidualMetricModal('median_absolute_error')" title="Clic para ver deducción matemática e impacto operacional">
+                <div class="kpi-card-header-mini">
+                  <span class="kpi-title">Error Abs. Mediano</span>
+                  <span class="info-icon-badge">ⓘ</span>
+                </div>
                 <div class="kpi-value" id="res-med">9,891 TEUs</div>
+                <div class="kpi-sub">Robustez MedAE (L1)</div>
               </div>
-              <div class="kpi-card mini">
-                <div class="kpi-title">Asimetría (Skewness)</div>
-                <div class="kpi-value" id="res-skew">+0.405 (Leve)</div>
+
+              <div class="kpi-card mini clickable-kpi-card" id="res-card-skew" onclick="window.openResidualMetricModal('skewness')" title="Clic para ver deducción matemática e impacto operacional">
+                <div class="kpi-card-header-mini">
+                  <span class="kpi-title">Asimetría</span>
+                  <span class="info-icon-badge">ⓘ</span>
+                </div>
+                <div class="kpi-value" id="res-skew">+0.406</div>
+                <div class="kpi-sub">Fisher-Pearson Skewness</div>
               </div>
             </div>
-            <div class="chart-container" style="height: 250px;">
+
+            <!-- Decompressed and Enlarged Residuals Histogram Chart -->
+            <div class="chart-container" style="height: 300px; padding: 0.5rem; background: rgba(3, 7, 18, 0.5); border-radius: 8px;">
               <canvas id="residualsChart"></canvas>
             </div>
           </div>
 
           <div class="card" style="margin-top: 1rem;">
-            <div class="card-header">
-              <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-              <h2>Top 10 Importancia de Características (Split Gain en LightGBM)</h2>
+            <div class="card-header" style="justify-content: space-between;">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                <div>
+                  <h2>Top 10 Importancia de Características (Split Gain en LightGBM)</h2>
+                  <p class="card-subtitle">Contribución porcentual acumulada a la reducción de entropía / varianza</p>
+                </div>
+              </div>
+              <span class="badge" style="background:rgba(56,189,248,0.15); color:var(--cyan-bright); font-size:0.72rem;">💡 Clic en cualquier barra</span>
             </div>
-            <div class="chart-container" style="height: 280px;">
+            <div class="chart-container" style="height: 300px; padding: 0.5rem; background: rgba(3, 7, 18, 0.5); border-radius: 8px;">
               <canvas id="featImpChart"></canvas>
+            </div>
+            <!-- Quick Feature Inspection Buttons -->
+            <div class="feature-quick-pills" id="feature-quick-pills" style="display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.75rem;">
+              <!-- Populated by JS -->
             </div>
           </div>
         </div>
@@ -690,10 +729,13 @@
           <div class="card">
             <div class="card-header">
               <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-              <h2>Análisis de Multicolinealidad y VIF (Factor de Inflación de la Varianza)</h2>
+              <div>
+                <h2>Análisis de Multicolinealidad y VIF (Variance Inflation Factor)</h2>
+                <p class="card-subtitle">Invariancia de árboles de decisión frente al colapso de modelos lineales</p>
+              </div>
             </div>
-            <p style="color:#94a3b8; font-size:0.88rem; margin-bottom: 0.75rem;">
-              Las variables independientes con <span class="badge" style="background:#0f2942; color:#38bdf8;">VIF &lt; 5.0</span> presentan ortogonalidad matemática óptima. Los lags autorregresivos correlacionados son absorbidos de forma no lineal por los árboles de LightGBM.
+            <p style="color:#94a3b8; font-size:0.85rem; margin-bottom: 0.75rem; line-height: 1.5;">
+              Las covariables con <span class="badge" style="background:#0f2942; color:#38bdf8;">VIF &lt; 5.0</span> exhiben ortogonalidad geométrica. Los lags autorregresivos altamente correlacionados son particionados de forma voraz y ortogonal por LightGBM sin desestabilizar la inferencia.
             </p>
             <div class="vif-badges-grid" id="vif-container">
               <!-- Populated via JS -->
@@ -701,7 +743,10 @@
 
             <div class="divider"></div>
 
-            <h3 style="font-size:0.95rem; margin-bottom: 0.5rem; color:#e2e8f0;">Pares de Máxima Correlación Bivariada (|r| &gt; 0.85):</h3>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+              <h3 style="font-size:0.92rem; margin:0; color:#e2e8f0;">Pares de Máxima Correlación Bivariada (|r| &gt; 0.85):</h3>
+              <span style="font-size:0.75rem; color:var(--text-muted);">🔍 Clic en la fila para inspeccionar</span>
+            </div>
             <div class="table-responsive">
               <table class="data-table" id="corr-table">
                 <thead>
@@ -709,11 +754,11 @@
                     <th>Característica 1</th>
                     <th>Característica 2</th>
                     <th>Correlación (|r|)</th>
-                    <th>Tratamiento</th>
+                    <th>Tratamiento Algorítmico</th>
                   </tr>
                 </thead>
                 <tbody id="corr-tbody">
-                  <!-- Populated via JS -->
+                  <!-- Populated via JS with clickable rows -->
                 </tbody>
               </table>
             </div>
@@ -722,10 +767,13 @@
           <div class="card" style="margin-top: 1rem;">
             <div class="card-header">
               <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M3 12h3M18 12h3M12 3v3M12 18v3"></path></svg>
-              <h2>Catálogo y Tratamiento de Variables Confundidoras (Confounders)</h2>
+              <div>
+                <h2>Catálogo y Tratamiento Causal de Variables Confundidoras</h2>
+                <p class="card-subtitle">Identificación vía Grafo Acíclico Dirigido (DAG de Judea Pearl) y Criterio Backdoor</p>
+              </div>
             </div>
             <div id="confounders-list">
-              <!-- Populated via JS -->
+              <!-- Populated via JS with expandable cards -->
             </div>
           </div>
         </div>
@@ -734,7 +782,7 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- TAB 4: SIMULACIÓN MONTE CARLO & ESTRÉS     -->
+    <!-- TAB 4: SIMULACIÓN                          -->
     <!-- ========================================== -->
     <section id="tab-simulation" class="tab-content">
       <div class="dashboard-grid">
@@ -743,85 +791,177 @@
         <aside class="card">
           <div class="card-header">
             <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="15.5" r="1.5"></circle></svg>
-            <h2>Configuración Estocástica</h2>
+            <div>
+              <h2>Configuración Estocástica</h2>
+              <p class="card-subtitle">Parámetros del motor Monte Carlo multivariado</p>
+            </div>
           </div>
 
           <div class="form-group">
-            <label for="sim-port-select">Terminal a Evaluar:</label>
-            <select id="sim-port-select">
-              <option value="Puerto Balboa">Puerto Balboa</option>
-              <option value="SSA Marine MIT">SSA Marine MIT</option>
-              <option value="PSA Panama International Terminal">PSA Panama</option>
-              <option value="Colon Container Terminal">Colon Container Terminal</option>
-              <option value="Puerto Cristóbal">Puerto Cristóbal</option>
+            <label for="sim-port-select">Terminal Portuaria:</label>
+            <select id="sim-port-select" class="form-select">
+              <option value="Puerto Balboa">Puerto Balboa (Pacífico)</option>
+              <option value="SSA Marine MIT">SSA Marine MIT (Atlántico)</option>
+              <option value="PSA Panama International Terminal">PSA Panama (Pacífico)</option>
+              <option value="Colon Container Terminal">Colon Container Terminal (Atlántico)</option>
+              <option value="Puerto Cristóbal">Puerto Cristóbal (Atlántico)</option>
+              <option value="Bocas Fruit Co.">Bocas Fruit Co. (Atlántico)</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label for="sim-scenario-select">Escenario de Estrés / Shock:</label>
-            <select id="sim-scenario-select">
-              <option value="baseline">🎲 Línea Base Estocástica (Cholesky L*L^T)</option>
-              <option value="canal_drought">📉 Sequía Severa en Canal de Panamá</option>
-              <option value="bunker_crisis">⛽ Shock Petrolero y Alza de Bunkering (+60%)</option>
-              <option value="us_recession">🚢 Recesión en EE.UU. / Flete Transpacífico</option>
-              <option value="compound_black_swan">🌪️ Cisne Negro Compuesto (Merton Jumps)</option>
+            <label for="sim-scenario-select">Escenario de Estrés / Shock Operacional:</label>
+            <select id="sim-scenario-select" class="form-select">
+              <option value="baseline">🎲 Línea Base Estocástica (Cholesky L·Lᵀ)</option>
+              <option value="canal_drought">📉 Sequía Severa en Canal de Panamá (-35% trasbordo)</option>
+              <option value="empty_imbalance">📦 Shock de Reposicionamiento de Vacíos (+45% desbalance)</option>
+              <option value="bunker_crisis">⛽ Shock Petrolero y Alza de Bunkering VLSFO (+60%)</option>
+              <option value="us_recession">🚢 Recesión EE.UU. / Caída Demanda Costa Este (-22%)</option>
+              <option value="compound_black_swan">🌪️ Cisne Negro Multidimensional (Merton Jump Diffusion)</option>
             </select>
           </div>
 
+          <!-- Tactile Horizon Selection (Pills replacing slider) -->
           <div class="form-group">
-            <label for="sim-paths-slider">
-              <span>Trayectorias Sintéticas:</span>
-              <span class="slider-val" id="sim-paths-val">200 caminos</span>
+            <label>Horizonte de Proyección Temporal:</label>
+            <div class="sim-pill-group" id="sim-horizon-pill-group">
+              <button type="button" class="sim-pill-btn" data-months="3" onclick="window.setSimHorizon(3)">3 Meses (Trimestral)</button>
+              <button type="button" class="sim-pill-btn active" data-months="6" onclick="window.setSimHorizon(6)">6 Meses (Semestral)</button>
+              <button type="button" class="sim-pill-btn" data-months="12" onclick="window.setSimHorizon(12)">12 Meses (Anual)</button>
+            </div>
+            <input type="hidden" id="sim-horizon-val" value="6">
+            <input type="range" id="sim-horizon-slider" min="3" max="12" value="6" step="1" style="display:none;">
+          </div>
+
+          <!-- Tactile Trajectories Selection (Stepper + Fast Presets replacing slider) -->
+          <div class="form-group">
+            <label>
+              <span>Trayectorias Estocásticas:</span>
+              <span class="slider-val" id="sim-paths-display" style="font-weight:700; color:var(--cyan-bright);">1,000 caminos</span>
             </label>
-            <input type="range" id="sim-paths-slider" min="50" max="500" value="200" step="50">
+            <div class="sim-stepper-control">
+              <button type="button" class="sim-stepper-btn" onclick="window.stepSimPaths(-500)" title="Reducir 500 rutas">−500</button>
+              <div class="sim-stepper-value" id="sim-paths-stepper-label">1,000</div>
+              <button type="button" class="sim-stepper-btn" onclick="window.stepSimPaths(500)" title="Aumentar 500 rutas">+500</button>
+            </div>
+            <div class="sim-presets-row">
+              <button type="button" class="sim-preset-btn active" onclick="window.setSimPaths(1000)">1,000</button>
+              <button type="button" class="sim-preset-btn" onclick="window.setSimPaths(2500)">2,500</button>
+              <button type="button" class="sim-preset-btn" onclick="window.setSimPaths(5000)">5,000</button>
+              <button type="button" class="sim-preset-btn" onclick="window.setSimPaths(10000)">10,000</button>
+            </div>
+            <input type="hidden" id="sim-paths-val" value="1000">
+            <input type="range" id="sim-paths-slider" min="50" max="10000" value="1000" step="100" style="display:none;">
           </div>
 
           <div class="form-group">
-            <label for="sim-horizon-slider">
-              <span>Horizonte de Simulación:</span>
-              <span class="slider-val" id="sim-horizon-val">6 meses</span>
-            </label>
-            <input type="range" id="sim-horizon-slider" min="3" max="12" value="6" step="1">
+            <label for="sim-user-select">Usuario Auditor (Cuota & WORM Ledger):</label>
+            <select id="sim-user-select" class="form-select" style="font-size:0.8rem;">
+              <option value="operador_puerto">operador_puerto (2 vCPU / 4GB RAM)</option>
+              <option value="analista_amp">analista_amp (4 vCPU / 8GB RAM)</option>
+              <option value="director_logistica">director_logistica (8 vCPU / 16GB RAM + GPU)</option>
+            </select>
           </div>
 
-          <button id="btn-simulate" class="btn-primary" style="margin-top: 1rem;">
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+          <button id="btn-simulate" class="btn-primary" style="margin-top: 1rem; width:100%;">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
             Ejecutar Simulación Monte Carlo
           </button>
         </aside>
 
         <!-- Simulation Analytics Column -->
         <div class="analytics-col">
+          <!-- 4 Interactive KPI Cards with Educational Popovers -->
           <div class="kpi-grid">
-            <div class="kpi-card">
-              <div class="kpi-title">Volumen Esperado (E[Y])</div>
+            <div class="kpi-card interactive-kpi-card" id="sim-card-expected" onclick="window.openSimKpiPopover('expected')">
+              <div class="kpi-card-header-mini">
+                <span class="kpi-title">Volumen Esperado (E[Y])</span>
+                <span class="info-icon-badge" title="Ver deducción formal">ⓘ</span>
+              </div>
               <div class="kpi-value" id="sim-kpi-expected">-- TEUs</div>
               <div class="kpi-sub">Media Ponderada de Caminos</div>
             </div>
-            <div class="kpi-card">
-              <div class="kpi-title">Value at Risk (VaR 95%)</div>
+
+            <div class="kpi-card interactive-kpi-card" id="sim-card-var95" onclick="window.openSimKpiPopover('var95')">
+              <div class="kpi-card-header-mini">
+                <span class="kpi-title">Value at Risk (VaR 95%)</span>
+                <span class="info-icon-badge" title="Ver deducción formal">ⓘ</span>
+              </div>
               <div class="kpi-value" id="sim-kpi-var95">-- TEUs</div>
               <div class="kpi-sub">Piso Mínimo con 95% Confianza</div>
             </div>
-            <div class="kpi-card">
-              <div class="kpi-title">Conditional VaR (CVaR 95%)</div>
+
+            <div class="kpi-card interactive-kpi-card" id="sim-card-cvar" onclick="window.openSimKpiPopover('cvar')">
+              <div class="kpi-card-header-mini">
+                <span class="kpi-title">Conditional VaR (CVaR 95%)</span>
+                <span class="info-icon-badge" title="Ver deducción formal">ⓘ</span>
+              </div>
               <div class="kpi-value" id="sim-kpi-cvar">-- TEUs</div>
               <div class="kpi-sub">Expected Shortfall (Peor 5%)</div>
             </div>
-            <div class="kpi-card">
-              <div class="kpi-title">Prob. Caída Severa (&gt;25%)</div>
+
+            <div class="kpi-card interactive-kpi-card" id="sim-card-prob" onclick="window.openSimKpiPopover('prob')">
+              <div class="kpi-card-header-mini">
+                <span class="kpi-title">Prob. Caída Severa (&gt;25%)</span>
+                <span class="info-icon-badge" title="Ver deducción formal">ⓘ</span>
+              </div>
               <div class="kpi-value" id="sim-kpi-prob">-- %</div>
               <div class="kpi-sub">Riesgo de Quiebre de Patio</div>
             </div>
           </div>
 
+          <!-- Stochastic Fan Chart Container -->
           <div class="card" style="margin-top: 1rem;">
-            <div class="card-header">
-              <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
-              <h2>Abanico Estocástico de Trayectorias Simuladas (Fan Chart con Cuantiles P10–P90)</h2>
+            <div class="card-header" style="justify-content: space-between;">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+                <div>
+                  <h2>Abanico Estocástico de Trayectorias (Fan Chart P10–P90)</h2>
+                  <p class="card-subtitle">Bandas cuantílicas empíricas de incertidumbre bajo procesos de saltos de Poisson</p>
+                </div>
+              </div>
+              <span class="badge" id="sim-run-status-badge" style="background:rgba(16,185,129,0.15); color:var(--emerald-success); border:1px solid rgba(16,185,129,0.3);">WORM Inmutable Listo</span>
             </div>
-            <div class="chart-container" style="height: 340px;">
+            <div class="chart-container" style="height: 350px;">
               <canvas id="simChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Enterprise WORM Simulation Runs Ledger History -->
+          <div class="card" style="margin-top: 1.25rem;">
+            <div class="card-header" style="justify-content: space-between;">
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div>
+                  <h3>Registro Inmutable de Simulaciones (PostgreSQL / TimescaleDB WORM Ledger)</h3>
+                  <p class="card-subtitle">Encadenamiento criptográfico SHA-256, telemetría de cómputo y consumo de cuotas</p>
+                </div>
+              </div>
+              <button class="btn btn-secondary" onclick="window.loadSimulationHistory()" style="font-size:0.75rem; padding:0.35rem 0.75rem;">
+                ↻ Actualizar Historial WORM
+              </button>
+            </div>
+            <div class="table-responsive" style="margin-top:0.75rem;">
+              <table class="data-table sim-history-table">
+                <thead>
+                  <tr>
+                    <th>Bloque #</th>
+                    <th>Fecha / Hora (UTC)</th>
+                    <th>Usuario</th>
+                    <th>Puerto</th>
+                    <th>Escenario</th>
+                    <th>Rutas</th>
+                    <th>Horizonte</th>
+                    <th>Vol. Esperado</th>
+                    <th>VaR 95%</th>
+                    <th>Latencia / vCPU</th>
+                    <th>Hash Criptográfico (SHA-256)</th>
+                  </tr>
+                </thead>
+                <tbody id="sim-history-tbody">
+                  <tr><td colspan="11" style="text-align:center; color:var(--text-muted); padding:1.5rem;">Haz clic en "Ejecutar Simulación Monte Carlo" para registrar bloques inmutables WORM.</td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -959,7 +1099,18 @@
         <div id="method-deepdive-workstation" class="deepdive-workstation">
           <div class="deepdive-header">
             <div class="deepdive-header-left">
-              <span class="badge" id="workstation-phase-badge" style="background:rgba(6,182,212,0.15); color:var(--cyan-bright); border:1px solid rgba(6,182,212,0.3);">FASE 1 SELECCIONADA</span>
+              <div class="phase-nav-step-container">
+                <button type="button" id="btn-prev-phase-workstation" class="btn-subtle-phase-nav" onclick="window.goToPreviousPhase()" title="Ir a la fase anterior">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                  <span>Fase Anterior</span>
+                </button>
+                <span class="badge" id="workstation-phase-badge" style="background:rgba(6,182,212,0.15); color:var(--cyan-bright); border:1px solid rgba(6,182,212,0.3);">FASE 1 SELECCIONADA</span>
+                <span id="workstation-phase-counter" class="phase-step-indicator">1 / 8</span>
+                <button type="button" id="btn-next-phase-workstation" class="btn-subtle-phase-nav" onclick="window.goToNextPhase()" title="Ir a la siguiente fase">
+                  <span>Siguiente Fase</span>
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+              </div>
               <h3 id="workstation-phase-title">Ingesta Cruda & Extracción de 353 Boletines Estadísticos AMP</h3>
               <p id="workstation-phase-sub" style="font-size:0.8rem; color:var(--text-muted); margin:0;">Trazabilidad completa desde datosabiertos.gob.pa hasta el Data Lakehouse Parquet</p>
             </div>
@@ -1067,7 +1218,19 @@
         <button id="mmodal-close-btn" class="modal-close" onclick="window.closeCenteredMethodologyModal()" aria-label="Cerrar">&times;</button>
       </div>
 
-      <!-- Top Phase Navigation Bar (8 Fases en Horizontal Scroll) -->
+      <!-- Top Phase Navigation Bar (8 Fases en Horizontal Scroll) with Step Buttons -->
+      <div class="mmodal-phase-controls-row">
+        <button type="button" class="btn-subtle-phase-nav" onclick="window.goToPreviousPhase()" title="Ir a la fase anterior">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span>Fase Anterior</span>
+        </button>
+        <span id="mmodal-phase-counter" class="phase-step-indicator">Fase 1 / 8</span>
+        <button type="button" class="btn-subtle-phase-nav" onclick="window.goToNextPhase()" title="Ir a la siguiente fase">
+          <span>Siguiente Fase</span>
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
+
       <div class="mmodal-phase-navbar" id="mmodal-phase-navbar">
         <button class="mmodal-phase-tab active" data-phase="phase_1" onclick="window.switchModalPhase('phase_1')">
           <span class="mmodal-phase-num">F1</span> Bronze Ingesta
@@ -1125,6 +1288,31 @@
       <div class="modal-footer">
         <span class="modal-author">Panamá PortOps-AI v1.0 • Desarrollado v1.0 Miguel Benítez • Fines Educativos</span>
         <button onclick="window.closeCenteredMethodologyModal()" class="btn-primary" style="width: auto; padding: 0.45rem 1.2rem; font-size: 0.85rem;">Cerrar Vista Centrada</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL PROPORCIONAL COMPACTO PARA DIAGNÓSTICOS, FEATURES Y CORRELACIÓN    -->
+  <!-- ========================================================================= -->
+  <div id="compact-proportional-modal" class="modal-backdrop">
+    <div class="modal-dialog compact-proportional-dialog">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-badge-cat" id="cp-modal-badge">DIAGNÓSTICO ESTADÍSTICO</span>
+          <h2 id="cp-modal-title">Título del Análisis</h2>
+          <p id="cp-modal-sub" class="settings-subtitle">Fundamentación matemática, fórmula LaTeX y traducción operativa</p>
+        </div>
+        <button class="modal-close" onclick="window.closeCompactModal()" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <div class="modal-body cp-modal-body" id="cp-modal-content">
+        <!-- Injected dynamically by app.js -->
+      </div>
+
+      <div class="modal-footer" style="justify-content: space-between;">
+        <span class="modal-author" style="font-size:0.75rem;">Panamá PortOps-AI v1.0 • Desarrollado v1.0 Miguel Benítez</span>
+        <button onclick="window.closeCompactModal()" class="btn-primary" style="width: auto; padding: 0.4rem 1.1rem; font-size: 0.82rem;">Entendido / Cerrar</button>
       </div>
     </div>
   </div>

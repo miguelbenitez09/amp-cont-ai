@@ -106,3 +106,120 @@ def test_api_methodology(client):
     assert "normalization_standardization" in data
     assert "anonymization_and_privacy" in data
     assert "Miguel Benítez" in data["author"]
+
+def test_api_models_compare_eight_algorithms(client):
+    """Verifies that /api/models/compare returns all 8 benchmarked machine learning models."""
+    response = client.get("/api/models/compare")
+    assert response.status_code == 200
+    data = response.json()
+    comparison = data["benchmark_comparison"]
+    expected_models = [
+        "lightgbm", "random_forest", "gradient_boosting", "ridge_elasticnet",
+        "extra_trees", "catboost_gbdt", "bayesian_ridge", "neural_mlp_quantile"
+    ]
+    for model_key in expected_models:
+        assert model_key in comparison, f"Model {model_key} missing from benchmark comparison"
+        entry = comparison[model_key]
+        assert "avg_wape" in entry or "wape" in entry
+        assert "avg_mae" in entry or "mae" in entry
+        assert "avg_rmse" in entry or "rmse" in entry
+        assert "avg_r2" in entry or "r2" in entry
+        assert "avg_latency_ms" in entry or "latency_ms" in entry
+
+def test_api_diagnostics_detail_endpoints(client):
+    """Verifies detailed diagnostic modal endpoints for residuals, features, and correlations."""
+    # 1. Residual detail
+    resp_res = client.get("/api/diagnostics/residual-detail/mean_residual")
+    assert resp_res.status_code == 200
+    res_data = resp_res.json()
+    assert res_data["metric_key"] == "mean_residual"
+    detail = res_data["detail"]
+    assert "formula_latex" in detail
+    assert "mathematical_deduction" in detail
+    assert "operational_impact" in detail
+
+    # 2. Feature detail
+    resp_feat = client.get("/api/diagnostics/feature-detail/teu_lag1")
+    assert resp_feat.status_code == 200
+    feat_data = resp_feat.json()
+    assert feat_data["feature_name"] == "teu_lag1"
+    feat_detail = feat_data["detail"]
+    assert "formula_latex" in feat_detail
+    assert "domain_rationale" in feat_detail
+    assert "split_gain_pct" in feat_detail
+
+    # 3. Correlation detail
+    resp_corr = client.get("/api/diagnostics/correlation-detail/teu_total/teu_lag1")
+    assert resp_corr.status_code == 200
+    corr_data = resp_corr.json()
+    assert corr_data["feature1"] == "teu_total"
+    corr_detail = corr_data["detail"]
+    assert "pearson_r" in corr_detail
+    assert "vif_impact" in corr_detail
+    assert "tree_invariance_rationale" in corr_detail
+
+def test_api_simulation_run_and_worm_audit(client):
+    """Verifies simulation execution, WORM ledger logging, history retrieval, and quotas."""
+    sim_payload = {
+        "port": "Puerto Balboa",
+        "scenario": "us_recession",
+        "n_paths": 1000,
+        "horizon_months": 6,
+        "user": "operador_terminal_balboa"
+    }
+    resp_run = client.post("/api/simulation/run", json=sim_payload)
+    assert resp_run.status_code == 200
+    run_data = resp_run.json()
+    assert run_data["status"] == "success"
+    assert "metrics" in run_data
+    assert "audit_block" in run_data
+    assert run_data["audit_block"]["block_hash"].startswith("0x") or len(run_data["audit_block"]["block_hash"]) == 64
+    assert run_data["audit_block"]["tamper_evident"] is True
+
+    # Check history
+    resp_hist = client.get("/api/simulation/history?limit=10")
+    assert resp_hist.status_code == 200
+    hist_data = resp_hist.json()
+    assert "history" in hist_data
+    assert len(hist_data["history"]) >= 1
+    latest_run = hist_data["history"][0]
+    assert latest_run["user_id"] == "operador_terminal_balboa"
+    assert latest_run["port"] == "Puerto Balboa"
+
+    # Check quotas
+    resp_quotas = client.get("/api/simulation/quotas")
+    assert resp_quotas.status_code == 200
+    quotas_data = resp_quotas.json()
+    assert "quotas" in quotas_data
+    quota_usernames = [q["username"] for q in quotas_data["quotas"]]
+    assert "root" in quota_usernames
+    assert "admin_amp" in quota_usernames
+
+def test_postgres_audit_manager_worm_tamper_evident():
+    """Direct verification of PostgresAuditManager WORM chain integrity and resource tracking."""
+    from src.infrastructure.db.postgres_audit import get_audit_manager
+    mgr = get_audit_manager()
+    record = mgr.log_simulation_run(
+        user_id="test_auditor_amp",
+        port="Manzanillo International Terminal (MIT)",
+        scenario="geopolitical_red_sea",
+        n_paths=1000,
+        horizon_months=6,
+        expected_volume=215000.0,
+        var_95=168000.0,
+        cvar_95=152000.0,
+        severe_drop_prob=0.125,
+        execution_latency_ms=45.2,
+        vcpu_used=2.0,
+        gpu_used=0.0
+    )
+    assert record["block_number"] >= 1
+    assert "block_hash" in record
+    assert "prev_block_hash" in record
+
+    # Verify WORM chain
+    chain_status = mgr.verify_worm_chain()
+    assert chain_status["valid"] is True
+    assert chain_status["tampering_detected"] is False
+    assert chain_status["verified_blocks"] >= 1
+

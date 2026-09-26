@@ -73,6 +73,8 @@ mlflow.db-journal
 logs/*
 !logs/.gitkeep
 *.log
+data/enterprise_db/
+*.db
 
 # Large Datasets (Medallion Architecture - Excluded from Git tracking)
 # Raw, Silver, and Gold data are generated deterministically via reproducible pipeline

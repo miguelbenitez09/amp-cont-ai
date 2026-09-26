@@ -415,6 +415,38 @@ document.addEventListener("DOMContentLoaded", () => {
             how: "HistGradientBoostingRegressor(max_iter=120, max_depth=6, min_samples_leaf=8). Minimización voraz de residuales cuadráticos.",
             why: "Acelera los cortes en memoria y proporciona una alternativa independiente a LightGBM para validar convergencia de gradientes."
           },
+          "extra_trees": {
+            name: "Extra Trees Regressor",
+            badge: "🌳 Challenger",
+            class: "",
+            what: "Extremely Randomized Trees con umbrales aleatorios de corte en cada división de nodo.",
+            how: "ExtraTreesRegressor(n_estimators=100, max_depth=10, bootstrap=False). Particiones estocásticas independientes.",
+            why: "Disminuye la correlación entre árboles individuales y ofrece una inmunidad superlativa ante covariables ruidosas."
+          },
+          "catboost_gbdt": {
+            name: "CatBoost GBDT",
+            badge: "🐱 Challenger",
+            class: "",
+            what: "Gradient boosting con árboles de decisión simétricos (oblivious trees) y codificación target sin fugas.",
+            how: "CatBoostRegressor(iterations=120, depth=6, learning_rate=0.06). Estructura idéntica en ramas para evaluar en paralelo.",
+            why: "Extremadamente resistente al sobreajuste en muestras pequeñas/medianas de series de tiempo."
+          },
+          "bayesian_ridge": {
+            name: "Bayesian Ridge",
+            badge: "📐 Challenger",
+            class: "",
+            what: "Inferencia paramétrica bayesiana con distribuciones a priori sobre los coeficientes de regresión.",
+            how: "BayesianRidge(n_iter=300, alpha_1=1e-6, lambda_1=1e-6). Estimación analítica de la matriz de precisión.",
+            why: "Cuantifica analíticamente la varianza epistémica de los parámetros del modelo lineal."
+          },
+          "neural_mlp_quantile": {
+            name: "Quantile Neural MLP",
+            badge: "🧠 Challenger",
+            class: "",
+            what: "Perceptrón multicapa deep tabular con capas densas, Batch Normalization y Dropout.",
+            how: "MLPRegressor(hidden_layer_sizes=(128, 64), activation='relu', alpha=0.01). Optimizado con Huber loss.",
+            why: "Aprende representaciones densas latentes de alta dimensión y relaciones no lineales complejas."
+          },
           "ridge_elasticnet": {
             name: "Ridge / ElasticNet",
             badge: "📏 Baseline",
@@ -450,9 +482,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      // Render WAPE Chart
-      const algoKeys = ["lightgbm", "random_forest", "gradient_boosting"];
-      const algoLabels = ["LightGBM", "Random Forest", "Gradient Boosting"];
+      // Render WAPE Chart for Top Algorithms
+      const algoKeys = ["lightgbm", "random_forest", "extra_trees", "catboost_gbdt", "gradient_boosting", "neural_mlp_quantile"];
+      const algoLabels = ["LightGBM", "Random Forest", "Extra Trees", "CatBoost", "HistGradient", "Neural MLP"];
       const wapeVals = algoKeys.map(k => comp[k] ? (comp[k].avg_wape * 100).toFixed(2) : 0);
       const r2Vals = algoKeys.map(k => comp[k] ? comp[k].avg_r2 : 0);
 
@@ -465,7 +497,7 @@ document.addEventListener("DOMContentLoaded", () => {
           datasets: [{
             label: "WAPE Promedio (%)",
             data: wapeVals,
-            backgroundColor: ["#06b6d4", "#10b981", "#8b5cf6"],
+            backgroundColor: ["#06b6d4", "#10b981", "#14b8a6", "#3b82f6", "#8b5cf6", "#f59e0b"],
             borderRadius: 6
           }]
         },
@@ -474,16 +506,16 @@ document.addEventListener("DOMContentLoaded", () => {
           maintainAspectRatio: false,
           plugins: { legend: { display: false } },
           scales: {
-            x: { ticks: { color: "#94a3b8" }, grid: { display: false } },
+            x: { ticks: { color: "#e2e8f0", font: { weight: "bold" } }, grid: { display: false } },
             y: {
-              ticks: { color: "#64748b", callback: v => `${v}%` },
-              grid: { color: "rgba(255, 255, 255, 0.05)" }
+              ticks: { color: "#e2e8f0", font: { weight: "bold" }, callback: v => `${v}%` },
+              grid: { color: "rgba(255, 255, 255, 0.08)" }
             }
           }
         }
       });
 
-      // Render R2 Chart
+      // Render R2 Chart with High Contrast
       const ctxR2 = document.getElementById("algoR2Chart").getContext("2d");
       if (algoR2ChartInst) algoR2ChartInst.destroy();
       algoR2ChartInst = new Chart(ctxR2, {
@@ -493,7 +525,7 @@ document.addEventListener("DOMContentLoaded", () => {
           datasets: [{
             label: "Coeficiente R²",
             data: r2Vals,
-            backgroundColor: ["#22d3ee", "#34d399", "#a855f7"],
+            backgroundColor: ["#22d3ee", "#34d399", "#2dd4bf", "#60a5fa", "#a855f7", "#fbbf24"],
             borderRadius: 6
           }]
         },
@@ -502,12 +534,12 @@ document.addEventListener("DOMContentLoaded", () => {
           maintainAspectRatio: false,
           plugins: { legend: { display: false } },
           scales: {
-            x: { ticks: { color: "#94a3b8" }, grid: { display: false } },
+            x: { ticks: { color: "#e2e8f0", font: { weight: "bold" } }, grid: { display: false } },
             y: {
               min: 0.9,
               max: 1.0,
-              ticks: { color: "#64748b" },
-              grid: { color: "rgba(255, 255, 255, 0.05)" }
+              ticks: { color: "#e2e8f0", font: { weight: "bold" } },
+              grid: { color: "rgba(255, 255, 255, 0.08)" }
             }
           }
         }
@@ -568,8 +600,8 @@ document.addEventListener("DOMContentLoaded", () => {
             data: resValues,
             borderColor: "#38bdf8",
             backgroundColor: "rgba(56, 189, 248, 0.15)",
-            borderWidth: 2,
-            pointRadius: 4,
+            borderWidth: 2.2,
+            pointRadius: 4.5,
             pointBackgroundColor: "#06b6d4",
             fill: true,
             tension: 0.2
@@ -579,7 +611,10 @@ document.addEventListener("DOMContentLoaded", () => {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: { display: true, labels: { color: "#94a3b8" } },
+            legend: {
+              display: true,
+              labels: { color: "#e2e8f0", font: { size: 11, weight: "bold" } }
+            },
             tooltip: {
               callbacks: {
                 label: ctx => `Error residual: ${ctx.parsed.y.toLocaleString()} TEUs`
@@ -587,10 +622,17 @@ document.addEventListener("DOMContentLoaded", () => {
             }
           },
           scales: {
-            x: { ticks: { color: "#64748b" }, grid: { color: "rgba(255, 255, 255, 0.04)" } },
+            x: {
+              ticks: { color: "#e2e8f0", font: { size: 11, weight: "bold" } },
+              grid: { color: "rgba(255, 255, 255, 0.08)" }
+            },
             y: {
-              ticks: { color: "#64748b", callback: v => `${(v / 1000).toFixed(0)}k TEUs` },
-              grid: { color: "rgba(255, 255, 255, 0.05)" }
+              ticks: {
+                color: "#e2e8f0",
+                font: { size: 11, weight: "bold" },
+                callback: v => `${(v / 1000).toFixed(0)}k TEUs`
+              },
+              grid: { color: "rgba(255, 255, 255, 0.08)" }
             }
           }
         }
@@ -619,20 +661,43 @@ document.addEventListener("DOMContentLoaded", () => {
           indexAxis: "y",
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => `Ganancia Split Gain: ${ctx.parsed.x.toLocaleString()}`
+              }
+            }
+          },
           onClick: (evt, elements) => {
             if (elements.length > 0) {
               const idx = elements[0].index;
               const feat = realFeatures[idx];
-              explainFeature(feat.name, feat.gain);
+              window.openFeatureDetailModal(feat.name);
             }
           },
           scales: {
-            x: { ticks: { color: "#64748b" }, grid: { color: "rgba(255, 255, 255, 0.05)" } },
-            y: { ticks: { color: "#94a3b8", font: { family: "monospace", size: 10 } }, grid: { display: false } }
+            x: {
+              ticks: { color: "#e2e8f0", font: { size: 11, weight: "bold" } },
+              grid: { color: "rgba(255, 255, 255, 0.08)" }
+            },
+            y: {
+              ticks: { color: "#e2e8f0", font: { family: "monospace", size: 11, weight: "bold" } },
+              grid: { display: false }
+            }
           }
         }
       });
+
+      // Populate Quick Feature Pills
+      const pillsContainer = document.getElementById("feature-quick-pills");
+      if (pillsContainer) {
+        pillsContainer.innerHTML = realFeatures.map((f, i) => `
+          <button type="button" class="btn-subtle-phase-nav" onclick="window.openFeatureDetailModal('${f.name}')" title="Inspeccionar feature #${i+1}">
+            <span>#${i+1}</span> <code>${f.name}</code>
+          </button>
+        `).join("");
+      }
 
       // VIF Badges with Clickable Explanations
       const vifContainer = document.getElementById("vif-container");
@@ -647,43 +712,29 @@ document.addEventListener("DOMContentLoaded", () => {
             <span class="vif-val">${score}</span>
           `;
           div.addEventListener("click", () => {
-            openModal(
-              "Diagnóstico de Multicolinealidad (VIF)",
-              `Factor de Inflación de la Varianza: ${feat}`,
-              `Se evaluó el grado de redundancia e inflación de varianza para la variable '${feat}'. Su puntaje VIF es de ${score}.`,
-              `<p>El VIF se calcula mediante una regresión auxiliar de '${feat}' contra todas las demás características independientes:</p>
-               <div class="code-block">VIF = 1 / (1 - R²) = ${score}</div>
-               <p style="margin-top:0.5rem;">Un valor VIF &lt; 5.0 demuestra ortogonalidad matemática aceptable sin colinealidad dañina.</p>`,
-              "Controlar el VIF previene que los estimadores matemáticos asignen coeficientes con varianza infinita o signos invertidos contra la lógica física del transporte marítimo."
-            );
+            window.openFeatureDetailModal(feat);
           });
           vifContainer.appendChild(div);
         }
       }
 
-      // Top Correlation Pairs Table
+      // Top Correlation Pairs Table (Clickable to open dedicated correlation modal)
       const corrTbody = document.getElementById("corr-tbody");
       const highPairs = (data.collinearity && data.collinearity.high_correlation_pairs) || [];
       if (corrTbody) {
         corrTbody.innerHTML = "";
-        highPairs.slice(0, 5).forEach(p => {
+        highPairs.slice(0, 6).forEach(p => {
           const tr = document.createElement("tr");
-          tr.className = "clickable-card";
+          tr.className = "clickable-row";
+          tr.title = "Haz clic para ver el análisis de multicolinealidad e inmunidad de árboles";
           tr.innerHTML = `
             <td><code>${p.feature_1}</code></td>
             <td><code>${p.feature_2}</code></td>
             <td style="color:var(--amber-warn); font-family:var(--font-mono); font-weight:700;">${p.correlation}</td>
-            <td style="color:var(--emerald-success); font-size:0.8rem;">Absorbido por Árboles</td>
+            <td style="color:var(--emerald-success); font-size:0.8rem;">Absorbido por Árboles (Ver 🔍)</td>
           `;
           tr.addEventListener("click", () => {
-            openModal(
-              "Correlación Bivariada Elevada",
-              `${p.feature_1} ⟷ ${p.feature_2}`,
-              `Se detectó un coeficiente de correlación de Pearson r = ${p.correlation} entre estas dos variables autorregresivas.`,
-              `<div class="code-block">r = Cov(X1, X2) / (σ1 * σ2) = ${p.correlation}</div>
-               <p style="margin-top:0.5rem;">Ambos rezagos capturan la inercia temporal continua del puerto en ventanas sucesivas (t-1 vs t-2).</p>`,
-              "En modelos lineales, esta correlación destruye la matriz Hessiana. Sin embargo, en LightGBM y Random Forest, los árboles seleccionan greedy la mejor partición ortogonal sin verse afectados."
-            );
+            window.openCorrelationDetailModal(p.feature_1, p.feature_2);
           });
           corrTbody.appendChild(tr);
         });
@@ -702,16 +753,17 @@ document.addEventListener("DOMContentLoaded", () => {
               <span>${c.name}</span>
               <span class="confounder-type">${c.type}</span>
             </div>
-            <div class="confounder-desc"><strong>Efecto:</strong> ${c.effect}</div>
-            <div class="confounder-treatment"><strong>Tratamiento:</strong> ${c.treatment}</div>
-            <div class="click-hint"><svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> Clic para ver Qué se hizo, Cómo y Por Qué</div>
+            <div class="confounder-desc"><strong>Efecto Causal:</strong> ${c.effect}</div>
+            <div class="confounder-treatment"><strong>Tratamiento (Criterio Backdoor):</strong> ${c.treatment}</div>
+            <div class="click-hint"><svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> Clic para ver DAG, Qué se hizo, Cómo y Por Qué</div>
           `;
           card.addEventListener("click", () => {
             openModal(
-              `Tratamiento de Variable Confundidora: ${c.type}`,
+              `Tratamiento Causal: ${c.name} (${c.type})`,
               c.name,
               c.what || c.effect,
-              `<p>${c.how || c.treatment}</p>
+              `<p><strong>Tratamiento Matemático y Criterio Backdoor de Pearl:</strong></p>
+               <p>${c.how || c.treatment}</p>
                <div class="code-block" style="margin-top:0.5rem;">Efecto: ${c.effect}<br>Tratamiento: ${c.treatment}</div>`,
               c.why || "Aislamiento de sesgo de estimación causal para evitar atribuciones espurias de competitividad portuaria."
             );
@@ -788,18 +840,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const port = simPortSelect.value;
     const scenario = simScenarioSelect.value;
-    const numPaths = parseInt(simPathsSlider.value, 10);
-    const horizon = parseInt(simHorizonSlider.value, 10);
+    const pathsInput = document.getElementById("sim-paths-val");
+    const horizonInput = document.getElementById("sim-horizon-val");
+    const userInput = document.getElementById("sim-user-select");
+
+    const numPaths = pathsInput ? parseInt(pathsInput.value, 10) : parseInt(simPathsSlider.value, 10);
+    const horizon = horizonInput ? parseInt(horizonInput.value, 10) : parseInt(simHorizonSlider.value, 10);
+    const user = userInput ? userInput.value : "operador_puerto";
 
     try {
-      const res = await fetch("/simulate", {
+      const res = await fetch("/api/simulation/run", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           port: port,
           horizon_months: horizon,
           num_paths: numPaths,
-          scenario_type: scenario
+          scenario_type: scenario,
+          user: user
         })
       });
 
@@ -814,14 +872,25 @@ document.addEventListener("DOMContentLoaded", () => {
       simKpiProb.textContent = `${(simData.prob_severe_drop_25pct * 100).toFixed(1)}%`;
       simKpiProb.style.color = simData.prob_severe_drop_25pct > 0.25 ? "var(--rose-danger)" : "var(--emerald-success)";
 
+      const runBadge = document.getElementById("sim-run-status-badge");
+      if (runBadge && simData.audit_ledger) {
+        runBadge.textContent = `Bloque WORM #${simData.audit_ledger.block_number} Registrado`;
+        runBadge.style.background = "rgba(16,185,129,0.2)";
+      }
+
       renderSimulationFanChart(simData.trajectory_profile || [], horizon);
+
+      // Refresh WORM history table
+      if (typeof window.loadSimulationHistory === "function") {
+        window.loadSimulationHistory();
+      }
 
     } catch (err) {
       alert(`Error en simulación Monte Carlo: ${err.message}`);
     } finally {
       btnSimulate.disabled = false;
       btnSimulate.innerHTML = `
-        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
         Ejecutar Simulación Monte Carlo
       `;
     }
@@ -849,26 +918,26 @@ document.addEventListener("DOMContentLoaded", () => {
             label: "P50 Mediana Estocástica",
             data: p50,
             borderColor: "#06b6d4",
-            borderWidth: 2.5,
-            pointRadius: 4,
+            borderWidth: 2.8,
+            pointRadius: 4.5,
             pointBackgroundColor: "#22d3ee",
             tension: 0.25
           },
           {
             label: "P75 Banda Central",
             data: p75,
-            borderColor: "rgba(16, 185, 129, 0.4)",
-            borderWidth: 1,
+            borderColor: "rgba(16, 185, 129, 0.6)",
+            borderWidth: 1.2,
             pointRadius: 0,
             fill: "+1",
-            backgroundColor: "rgba(16, 185, 129, 0.12)",
+            backgroundColor: "rgba(16, 185, 129, 0.14)",
             tension: 0.25
           },
           {
             label: "P25 Banda Central",
             data: p25,
-            borderColor: "rgba(16, 185, 129, 0.4)",
-            borderWidth: 1,
+            borderColor: "rgba(16, 185, 129, 0.6)",
+            borderWidth: 1.2,
             pointRadius: 0,
             fill: false,
             tension: 0.25
@@ -876,20 +945,20 @@ document.addEventListener("DOMContentLoaded", () => {
           {
             label: "P90 Techo Estocástico",
             data: p90,
-            borderColor: "rgba(56, 189, 248, 0.3)",
-            borderWidth: 1,
-            borderDash: [4, 4],
+            borderColor: "rgba(56, 189, 248, 0.6)",
+            borderWidth: 1.5,
+            borderDash: [5, 5],
             pointRadius: 0,
             fill: "+1",
-            backgroundColor: "rgba(56, 189, 248, 0.05)",
+            backgroundColor: "rgba(56, 189, 248, 0.08)",
             tension: 0.25
           },
           {
             label: "P10 VaR 90% Piso",
             data: p10,
-            borderColor: "rgba(244, 63, 94, 0.3)",
-            borderWidth: 1,
-            borderDash: [4, 4],
+            borderColor: "rgba(244, 63, 94, 0.65)",
+            borderWidth: 1.5,
+            borderDash: [5, 5],
             pointRadius: 0,
             fill: false,
             tension: 0.25
@@ -900,16 +969,29 @@ document.addEventListener("DOMContentLoaded", () => {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { labels: { color: "#94a3b8" } }
+          legend: {
+            display: true,
+            labels: {
+              color: "#e2e8f0",
+              font: { size: 11, weight: "bold" }
+            }
+          }
         },
         scales: {
-          x: { ticks: { color: "#64748b" }, grid: { color: "rgba(255, 255, 255, 0.04)" } },
+          x: {
+            ticks: {
+              color: "#e2e8f0",
+              font: { size: 11, weight: "bold" }
+            },
+            grid: { color: "rgba(255, 255, 255, 0.08)" }
+          },
           y: {
             ticks: {
-              color: "#64748b",
+              color: "#e2e8f0",
+              font: { size: 11, weight: "bold" },
               callback: v => `${(v / 1000).toFixed(0)}k TEUs`
             },
-            grid: { color: "rgba(255, 255, 255, 0.05)" }
+            grid: { color: "rgba(255, 255, 255, 0.08)" }
           }
         }
       }
@@ -3577,9 +3659,344 @@ executePortForecast();`;
     }
   });
 
+  // =========================================================================
+  // SUBTLE PHASE PREVIOUS / NEXT CONTROLS
+  // =========================================================================
+  const METHOD_PHASE_KEYS = ["phase_1", "phase_2", "phase_3", "phase_4", "phase_5", "phase_6", "phase_7", "phase_8"];
+
+  function updatePhaseIndicators(idx) {
+    const num = idx + 1;
+    const counterWorkstation = document.getElementById("workstation-phase-counter");
+    if (counterWorkstation) counterWorkstation.textContent = `${num} / 8`;
+    const counterModal = document.getElementById("mmodal-phase-counter");
+    if (counterModal) counterModal.textContent = `Fase ${num} / 8`;
+  }
+
+  window.goToPreviousPhase = function() {
+    const idx = METHOD_PHASE_KEYS.indexOf(currentSelectedPhase);
+    const newIdx = (idx - 1 + METHOD_PHASE_KEYS.length) % METHOD_PHASE_KEYS.length;
+    const targetPhase = METHOD_PHASE_KEYS[newIdx];
+    window.selectMethodologyPhase(targetPhase, true);
+    window.switchModalPhase(targetPhase);
+    updatePhaseIndicators(newIdx);
+  };
+
+  window.goToNextPhase = function() {
+    const idx = METHOD_PHASE_KEYS.indexOf(currentSelectedPhase);
+    const newIdx = (idx + 1) % METHOD_PHASE_KEYS.length;
+    const targetPhase = METHOD_PHASE_KEYS[newIdx];
+    window.selectMethodologyPhase(targetPhase, true);
+    window.switchModalPhase(targetPhase);
+    updatePhaseIndicators(newIdx);
+  };
+
+  // =========================================================================
+  // TACTILE SIMULATION CONTROLS & WORM LEDGER HISTORY
+  // =========================================================================
+  window.setSimHorizon = function(months) {
+    const hiddenInput = document.getElementById("sim-horizon-val");
+    const slider = document.getElementById("sim-horizon-slider");
+    if (hiddenInput) hiddenInput.value = months;
+    if (slider) slider.value = months;
+    document.querySelectorAll("#sim-horizon-pill-group .sim-pill-btn").forEach(btn => {
+      btn.classList.toggle("active", parseInt(btn.getAttribute("data-months"), 10) === months);
+    });
+  };
+
+  window.setSimPaths = function(num) {
+    const hiddenInput = document.getElementById("sim-paths-val");
+    const slider = document.getElementById("sim-paths-slider");
+    const display = document.getElementById("sim-paths-display");
+    const stepper = document.getElementById("sim-paths-stepper-label");
+    if (hiddenInput) hiddenInput.value = num;
+    if (slider) slider.value = num;
+    if (display) display.textContent = `${num.toLocaleString()} caminos`;
+    if (stepper) stepper.textContent = num.toLocaleString();
+    document.querySelectorAll(".sim-preset-btn").forEach(btn => {
+      btn.classList.toggle("active", parseInt(btn.textContent.replace(/,/g, ""), 10) === num);
+    });
+  };
+
+  window.stepSimPaths = function(delta) {
+    const hiddenInput = document.getElementById("sim-paths-val");
+    let current = parseInt(hiddenInput ? hiddenInput.value : 1000, 10);
+    let nextVal = Math.max(500, Math.min(10000, current + delta));
+    window.setSimPaths(nextVal);
+  };
+
+  window.loadSimulationHistory = async function() {
+    const tbody = document.getElementById("sim-history-tbody");
+    if (!tbody) return;
+    try {
+      const res = await fetch("/api/simulation/history?limit=15");
+      const data = await res.json();
+      const history = data.history || [];
+      if (history.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; color:var(--text-muted); padding:1rem;">Sin ejecuciones registradas aún en el libro WORM.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = history.map(item => {
+        const summary = item.results_summary || {};
+        const hashShort = item.block_hash ? `${item.block_hash.substring(0, 10)}...${item.block_hash.substring(item.block_hash.length - 6)}` : "GENESIS";
+        return `
+          <tr class="clickable-row">
+            <td><span class="sim-block-badge">#${item.block_number}</span></td>
+            <td style="font-size:0.73rem;">${item.timestamp_utc || "--"}</td>
+            <td><strong style="color:#e2e8f0;">${item.user_id}</strong></td>
+            <td>${item.port_name}</td>
+            <td><span class="badge" style="font-size:0.68rem;">${item.scenario}</span></td>
+            <td>${item.num_paths.toLocaleString()}</td>
+            <td>${item.horizon_months}M</td>
+            <td><strong>${Math.round(summary.expected_volume || 0).toLocaleString()}</strong> TEUs</td>
+            <td style="color:var(--rose-danger);">${Math.round(summary.var_95_volume || 0).toLocaleString()} TEUs</td>
+            <td>${item.execution_time_ms} ms (${item.vcpu_cores_allocated} vCPU)</td>
+            <td><code class="sim-hash-cell" title="${item.block_hash}">${hashShort}</code></td>
+          </tr>
+        `;
+      }).join("");
+    } catch (err) {
+      console.error("Error loading simulation history:", err);
+    }
+  };
+
+  // =========================================================================
+  // SIMULATION KPIS EDUCATIONAL POPOVERS
+  // =========================================================================
+  const SIM_KPI_EXPLANATIONS = {
+    "expected": {
+      title: "Volumen Esperado (E[Y] / Media Estocástica Ponderada)",
+      badge: "MÉTRICA DE VALOR CENTRAL",
+      formula: "\\mathbb{E}[Y] = \\frac{1}{M}\\sum_{m=1}^M \\hat{y}_m",
+      deduction: "Representa el centro de masa de la distribución de pronósticos sobre M trayectorias estocásticas correlacionadas con cópula de Cholesky y saltos de Poisson de Merton. Al ponderar escenarios alcistas y bajistas, refleja la estimación incondicionada media para la terminal.",
+      impact: "Base para contratos de fletamento, presupuesto de combustible VLSFO y turnos fijos de estiba.",
+      code: "expected_volume = float(np.mean(terminal_paths))"
+    },
+    "var95": {
+      title: "Value at Risk 95% (VaR 95% / Piso de Confianza)",
+      badge: "GESTIÓN DE RIESGO DE COLA",
+      formula: "\\text{VaR}_{0.95}(Y) = \\inf \\left\\{ y \\in \\mathbb{R} : P(Y \\le y) \\ge 0.05 \\right\\}",
+      deduction: "Piso de volumen con 95% de confianza estadística bajo el escenario evaluado. Únicamente en el 5% de los peores caminos simulados el volumen caerá por debajo de este valor.",
+      impact: "Piso de supervivencia financiera. Si el VaR 95% cae bajo el canon concesional de la AMP, se activan cláusulas de fuerza mayor.",
+      code: "var_95 = float(np.percentile(terminal_paths, 5.0))"
+    },
+    "cvar": {
+      title: "Conditional VaR 95% (CVaR / Expected Shortfall)",
+      badge: "RIESGO COHERENTE (ARTZNER ET AL.)",
+      formula: "\\text{CVaR}_{0.95}(Y) = \\mathbb{E}\\left[Y \\mid Y \\le \\text{VaR}_{0.95}(Y)\\right]",
+      deduction: "Mide el volumen promedio en el peor 5% de los escenarios. A diferencia del VaR, el CVaR es subaditivo y coherente, cuantificando la severidad esperada en caso de desastre logístico.",
+      impact: "Dimensionamiento de reservas de liquidez y subsidios de emergencia del hub interoceánico panameño.",
+      code: "cvar_95 = float(terminal_paths[terminal_paths <= var_95].mean())"
+    },
+    "prob": {
+      title: "Probabilidad Empírica de Caída Severa (>25%)",
+      badge: "ALERTA DE QUIEBRE DE PATIO",
+      formula: "\\hat{P} = \\frac{1}{M}\\sum_{m=1}^M \\mathbb{I}\\left(\\frac{\\hat{y}_m - Y_0}{Y_0} < -0.25\\right)",
+      deduction: "Fracción de trayectorias donde la demanda portuaria sufre una contracción abrupta superior a la cuarta parte de su volumen histórico.",
+      impact: "Si supera el 20%, la AMP activa alerta naranja para reprogramar ventanas de atraque y desviar buques feeder.",
+      code: "prob_severe = float(np.mean((terminal_paths - y0) / y0 < -0.25))"
+    }
+  };
+
+  window.openSimKpiPopover = function(kpiKey) {
+    const info = SIM_KPI_EXPLANATIONS[kpiKey];
+    if (!info) return;
+
+    const badge = document.getElementById("cp-modal-badge");
+    const title = document.getElementById("cp-modal-title");
+    const sub = document.getElementById("cp-modal-sub");
+    const content = document.getElementById("cp-modal-content");
+
+    if (badge) badge.textContent = info.badge;
+    if (title) title.textContent = info.title;
+    if (sub) sub.textContent = "Fundamentación matemática formal y aplicación en terminales de Panamá";
+
+    if (content) {
+      content.innerHTML = `
+        <div class="cp-formula-card">
+          <div style="font-size:0.75rem; text-transform:uppercase; color:#94a3b8; letter-spacing:0.5px; margin-bottom:0.25rem;">Ecuación Matemática Formal</div>
+          <div class="cp-formula-math">$$${info.formula}$$</div>
+        </div>
+
+        <div class="cp-section-block">
+          <h4>📐 Deducción Estadística</h4>
+          <p>${info.deduction}</p>
+        </div>
+
+        <div class="cp-section-block" style="border-left-color: var(--emerald-success, #10b981);">
+          <h4 style="color: var(--emerald-success, #10b981);">🚢 Impacto Operacional en la Concesión Portuaria</h4>
+          <p>${info.impact}</p>
+        </div>
+
+        <div style="margin-top:0.75rem;">
+          <span style="font-size:0.72rem; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">Cálculo Matricial en Python / NumPy:</span>
+          <pre class="cp-code-snippet"><code>${info.code}</code></pre>
+        </div>
+      `;
+    }
+
+    const modal = document.getElementById("compact-proportional-modal");
+    if (modal) modal.classList.add("open");
+  };
+
+  // =========================================================================
+  // DIAGNOSTIC DETAIL MODALS (RESIDUALS, FEATURES, CORRELATIONS)
+  // =========================================================================
+  window.openResidualMetricModal = async function(metricKey) {
+    try {
+      const res = await fetch(`/api/diagnostics/residual-detail/${metricKey}`);
+      const data = await res.json();
+      const detail = data.detail;
+      const badge = document.getElementById("cp-modal-badge");
+      const title = document.getElementById("cp-modal-title");
+      const sub = document.getElementById("cp-modal-sub");
+      const content = document.getElementById("cp-modal-content");
+
+      if (badge) badge.textContent = "DIAGNÓSTICO ESTADÍSTICO DE RESIDUOS";
+      if (title) title.textContent = detail.title;
+      if (sub) sub.textContent = `Valor Empírico: ${detail.metric_value} | Ref: ${detail.benchmark_reference}`;
+
+      if (content) {
+        content.innerHTML = `
+          <div class="cp-formula-card">
+            <div style="font-size:0.75rem; text-transform:uppercase; color:#94a3b8; letter-spacing:0.5px; margin-bottom:0.25rem;">Fórmula Matemática Formal</div>
+            <div class="cp-formula-math">$$${detail.formula_latex}$$</div>
+            <div style="font-size:0.75rem; color:#67e8f9; margin-top:0.35rem;"><strong>Valor Actual:</strong> ${detail.metric_value} (${detail.relative_pct})</div>
+          </div>
+
+          <div class="cp-section-block">
+            <h4>📐 Deducción Matemática</h4>
+            <p>${detail.mathematical_deduction}</p>
+          </div>
+
+          <div class="cp-section-block" style="border-left-color: var(--emerald-success, #10b981);">
+            <h4 style="color: var(--emerald-success, #10b981);">🚢 Impacto Operacional en la Logística de Panamá</h4>
+            <p>${detail.operational_impact}</p>
+          </div>
+
+          <div class="cp-section-block" style="border-left-color: #f59e0b;">
+            <h4 style="color: #f59e0b;">⚙️ Mitigación & Calibración Algorítmica</h4>
+            <p>${detail.algorithmic_mitigation}</p>
+          </div>
+
+          <div style="margin-top:0.75rem;">
+            <span style="font-size:0.72rem; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">Sintaxis de Implementación en Python:</span>
+            <pre class="cp-code-snippet"><code>${detail.python_syntax}</code></pre>
+          </div>
+        `;
+      }
+      const modal = document.getElementById("compact-proportional-modal");
+      if (modal) modal.classList.add("open");
+    } catch (err) {
+      console.error("Error opening residual modal:", err);
+    }
+  };
+
+  window.openFeatureDetailModal = async function(featureName) {
+    try {
+      const res = await fetch(`/api/diagnostics/feature-detail/${encodeURIComponent(featureName)}`);
+      const data = await res.json();
+      const detail = data.detail;
+      const badge = document.getElementById("cp-modal-badge");
+      const title = document.getElementById("cp-modal-title");
+      const sub = document.getElementById("cp-modal-sub");
+      const content = document.getElementById("cp-modal-content");
+
+      if (badge) badge.textContent = `FEATURE IMPORTANCE • RANK #${detail.rank}`;
+      if (title) title.textContent = detail.name;
+      if (sub) sub.textContent = `Categoría: ${detail.category} | Ganancia Split Gain: ${detail.split_gain_pct}%`;
+
+      if (content) {
+        content.innerHTML = `
+          <div class="cp-formula-card">
+            <div style="font-size:0.75rem; text-transform:uppercase; color:#94a3b8; letter-spacing:0.5px; margin-bottom:0.25rem;">Definición Matemática</div>
+            <div class="cp-formula-math">$$${detail.formula_latex}$$</div>
+            <div style="font-size:0.75rem; color:#67e8f9; margin-top:0.35rem;"><strong>Importancia Split Gain:</strong> ${detail.split_gain_pct}% del poder explicativo global</div>
+          </div>
+
+          <div class="cp-section-block">
+            <h4>⚓ Justificación de Dominio Marítimo y Logístico</h4>
+            <p>${detail.domain_rationale}</p>
+          </div>
+
+          <div style="margin-top:0.75rem;">
+            <span style="font-size:0.72rem; color:#94a3b8; text-transform:uppercase; letter-spacing:0.5px;">Transformación en Feature Store (Python):</span>
+            <pre class="cp-code-snippet"><code>${detail.python_syntax}</code></pre>
+          </div>
+        `;
+      }
+      const modal = document.getElementById("compact-proportional-modal");
+      if (modal) modal.classList.add("open");
+    } catch (err) {
+      console.error("Error opening feature modal:", err);
+    }
+  };
+
+  window.openCorrelationDetailModal = async function(f1, f2) {
+    try {
+      const res = await fetch(`/api/diagnostics/correlation-detail/${encodeURIComponent(f1)}/${encodeURIComponent(f2)}`);
+      const detail = await res.json();
+      const badge = document.getElementById("cp-modal-badge");
+      const title = document.getElementById("cp-modal-title");
+      const sub = document.getElementById("cp-modal-sub");
+      const content = document.getElementById("cp-modal-content");
+
+      if (badge) badge.textContent = "MULTICOLINEALIDAD BIVARIADA & VIF";
+      if (title) title.textContent = `${detail.feature_1} vs ${detail.feature_2}`;
+      if (sub) sub.textContent = `Pearson r = ${detail.pearson_r} | R² = ${detail.r_squared} (${detail.collinearity_level})`;
+
+      if (content) {
+        content.innerHTML = `
+          <div class="cp-formula-card">
+            <div style="font-size:0.75rem; text-transform:uppercase; color:#94a3b8; letter-spacing:0.5px; margin-bottom:0.25rem;">Coeficiente de Correlación Lineal de Pearson</div>
+            <div class="cp-formula-math">$$${detail.formula_latex}$$</div>
+            <div style="font-size:0.75rem; color:#f43f5e; margin-top:0.35rem;"><strong>Nivel de Multicolinealidad:</strong> ${detail.collinearity_level}</div>
+          </div>
+
+          <div class="cp-section-block" style="border-left-color: #f43f5e;">
+            <h4 style="color: #f43f5e;">⚠️ Impacto en Modelos Lineales y VIF</h4>
+            <p>${detail.vif_impact}</p>
+          </div>
+
+          <div class="cp-section-block" style="border-left-color: var(--emerald-success, #10b981);">
+            <h4 style="color: var(--emerald-success, #10b981);">🌲 Por Qué los Modelos de Árboles (LightGBM) son Inmunes</h4>
+            <p>${detail.tree_invariance_rationale}</p>
+          </div>
+
+          <div class="cp-section-block" style="border-left-color: var(--cyan-bright, #06b6d4);">
+            <h4 style="color: var(--cyan-bright, #06b6d4);">📋 Recomendación de Arquitectura</h4>
+            <p>${detail.recommendation}</p>
+          </div>
+        `;
+      }
+      const modal = document.getElementById("compact-proportional-modal");
+      if (modal) modal.classList.add("open");
+    } catch (err) {
+      console.error("Error opening correlation modal:", err);
+    }
+  };
+
+  window.closeCompactModal = function() {
+    const modal = document.getElementById("compact-proportional-modal");
+    if (modal) modal.classList.remove("open");
+  };
+
+  // Keyboard and click outside listeners for compact modal
+  const compactModalEl = document.getElementById("compact-proportional-modal");
+  if (compactModalEl) {
+    compactModalEl.addEventListener("click", (e) => {
+      if (e.target === compactModalEl) window.closeCompactModal();
+    });
+  }
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      window.closeCompactModal();
+    }
+  });
+
   // --- Bootstrapping ---
   initThemeSwitcher();
   window.selectMethodologyPhase("phase_1", false); // false = no initial scroll jump on page load
+  window.loadSimulationHistory();
 
   btnPredict.addEventListener("click", runForecast);
   btnSimulate.addEventListener("click", runSimulation);

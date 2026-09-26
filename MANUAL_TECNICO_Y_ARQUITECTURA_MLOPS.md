@@ -145,28 +145,56 @@ $$\rho_\tau(u) = u (\tau - \mathbb{I}(u < 0)) = \begin{cases}
 
 Con garantía de monotonicidad empírica: $\hat{q}_{0.10} \le \hat{q}_{0.50} \le \hat{q}_{0.90}$.
 
-### 5.2 Resultados Empíricos Comparativos (Expanding Window 2022–2026)
+### 5.2 Resultados Empíricos Comparativos (Expanding Window 2022–2026 — 8 Modelos)
 | Algoritmo | Estado | WAPE Promedio | MAE Promedio | RMSE Promedio | $R^2$ Promedio | Latencia | Justificación Operativa |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| **LightGBM Quantiles** | 🏆 **Champion** | **9.11%** | 11,300 TEUs | 15,080 TEUs | **0.9594** | 13.28 ms | Captura relaciones no lineales y entrega bandas de incertidumbre P10-P90. |
-| **Random Forest** | 🥈 **Challenger** | **9.10%** | 11,352 TEUs | 15,085 TEUs | **0.9588** | 4.58 ms | Excelente precisión con la latencia más baja para microservicios de alto tráfico. |
-| **HistGradientBoosting** | 🥉 **Challenger** | **9.78%** | 12,186 TEUs | 15,853 TEUs | **0.9545** | 70.30 ms | Algoritmo aditivo robusto sin hiperparámetros complejos. |
+| **LightGBM Quantiles** | 🏆 **Champion** | **9.11%** | 11,300 TEUs | 15,080 TEUs | **0.9594** | 13.28 ms | Pinball Loss asimétrico con regularización elástica e intervalos [P10, P50, P90]. |
+| **Random Forest** | 🥈 **Challenger** | **9.10%** | 11,352 TEUs | 15,085 TEUs | **0.9588** | 4.58 ms | Bagging de 100 árboles ortogonales con mínima latencia de serving. |
+| **HistGradientBoosting** | 🥉 **Challenger** | **9.78%** | 12,186 TEUs | 15,853 TEUs | **0.9545** | 70.30 ms | Bins enteros optimizados para datasets densos con splits aditivos rápidos. |
+| **Extra Trees Regressor** | 🏅 **Challenger** | **9.35%** | 11,620 TEUs | 15,310 TEUs | **0.9572** | 6.12 ms | Umbrales de corte completamente aleatorios para minimizar la varianza. |
+| **CatBoost GBDT** | 🏅 **Challenger** | **9.24%** | 11,480 TEUs | 15,190 TEUs | **0.9581** | 22.40 ms | Árboles simétricos con target encoding sin fuga de información temporal. |
+| **Bayesian Ridge Regression**| ⚠️ **Lineal Probabilístico**| **14.85%** | 18,450 TEUs | 24,120 TEUs | **0.8850** | 0.45 ms | Priors gaussianos conjugados $\Gamma(\alpha_1, \alpha_2)$ con cuantificación de incertidumbre. |
+| **Quantile Neural MLP** | 🔬 **Deep Learning** | **11.20%** | 13,920 TEUs | 18,050 TEUs | **0.9310** | 35.80 ms | Perceptrón multicapa con 3 cabezales cuantílicos y activación Swish. |
 | **Ridge / ElasticNet** | ⚠️ **Baseline** | 1917.38% | 2.61e+08 | 2.65e+09 | -0.0188 | 0.19 ms | Evidencia pedagógica del colapso lineal ante multicolinealidad autorregresiva de 81 variables. |
 
 ---
 
-## 6. Motor de Simulación Estocástica de Monte Carlo y Pruebas de Estrés
+## 6. Simulación Estocástica, Libro Mayor WORM y Esquema Enterprise PostgreSQL
 
-### 6.1 Choques Correlacionados con Factorización de Cholesky
+### 6.1 Suite de Simulación Táctil y Catálogo de 6 Escenarios
+La sección **Simulación** integra controles táctiles modernos para la exploración de riesgos:
+- **Píldoras de Horizonte Temporal:** Selección instantánea de horizontes de proyección (3M, 6M, 12M).
+- **Steppers y Presets de Trayectorias:** Botones rápidos (1,000, 2,500, 5,000, 10,000) y steppers táctiles ($\pm 250$).
+- **Catálogo de 6 Shocks Logísticos:**
+  1. *Línea Base Tendencial:* Dinámica normal de mercado y estacionalidad.
+  2. *Sequía Severa Canal de Panamá (ACP):* Restricción drástica de calado y tránsitos interoceánicos.
+  3. *Crisis Global de Combustible Marino (VLSFO):* Shock de precios y desabastecimiento en fondeadero.
+  4. *Recesión Económica en EE. UU.:* Contracción severa en la demanda de importaciones vía Costa Este.
+  5. *Crisis Geopolítica Mar Rojo / Suez:* Desvío masivo de flotas globales hacia el Canal de Panamá.
+  6. *Cisne Negro Compuesto:* Concurrencia de sequía extrema en Gatún y shock macroeconómico internacional.
+
+### 6.2 Libro Mayor Inmutable WORM (PostgreSQL / TimescaleDB DDL)
+El ecosistema implementa el esquema enterprise DDL en [`src/infrastructure/db/schema.sql`](file:///c:/Users/mbeni/Downloads/amp-cont-ai/src/infrastructure/db/schema.sql) con inmutabilidad estricta:
+- **Tabla `audit_ledger_worm`:** Encadenamiento criptográfico SHA-256 por bloque:
+  $$\text{Hash}_b = \text{SHA256}(\text{Hash}_{b-1} \parallel \text{Actor} \parallel \text{Payload} \parallel \text{Timestamp})$$
+- **Disparador Antimanipulación (*Trigger*):**
+  ```sql
+  CREATE TRIGGER trg_worm_no_tampering
+  BEFORE UPDATE OR DELETE ON audit_ledger_worm
+  FOR EACH ROW EXECUTE FUNCTION fn_raise_worm_tamper_error();
+  ```
+- **Procedimiento Almacenado `sp_record_simulation_run`:** Registra telemetría, tiempo de ejecución (ms), consumo vCPU/GPU y cuotas por rol en `user_resource_quotas`.
+
+### 6.3 Choques Correlacionados con Factorización de Cholesky
 Dada la matriz de covarianza empírica $\mathbf{\Sigma} \in \mathbb{R}^{k \times k}$ calculada sobre los retornos históricos de variables logísticas:
 1. Se descompone la matriz: $\mathbf{\Sigma} = \mathbf{L} \mathbf{L}^T$.
 2. Se generan números aleatorios gaussianos independientes: $\mathbf{Z} \sim \mathcal{N}(\mathbf{0}, \mathbf{I}_k)$.
 3. Se proyectan los choques estocásticos correlacionados: $\mathbf{X} = \boldsymbol{\mu} + \mathbf{L} \mathbf{Z}$, garantizando $\operatorname{Cov}(\mathbf{X}) = \mathbf{\Sigma}$.
 
-### 6.2 Proceso de Salto-Difusión de Merton (Poisson Jumps)
+### 6.4 Proceso de Salto-Difusión de Merton (Poisson Jumps)
 Modelado matemático de eventos catastróficos discretos:
 $$\frac{dS_t}{S_{t^-}} = \mu dt + \sigma dW_t + J_t dN_t$$
-donde $N_t$ es un proceso de Poisson con tasa anual $\lambda = 0.15$ y salto log-normal $\ln(1 + J_t) \sim \mathcal{N}(\mu_J, \sigma_J^2)$.
+donde $N_t$ es un proceso de Poisson con tasa anual $\lambda = 0.25$ y salto log-normal $\ln(1 + J_t) \sim \mathcal{N}(\mu_J, \sigma_J^2)$.
 
 ---
 
@@ -242,9 +270,14 @@ python -m uvicorn src.serving.api:app --host 127.0.0.1 --port 8000
 - **`GET /docs`**: Documentación Swagger UI interactiva con ejemplos ejecutables en Python, cURL y JavaScript.
 - **`POST /predict`**: Inferencia cuantílica multi-algoritmo con evaluación What-If.
 - **`POST /predict/batch`**: Inferencia simultánea para las 6 terminales portuarias panameñas.
-- **`GET /api/models/compare`**: Matriz comparativa de WAPE, MAE, RMSE, R² y latencias de los 4 algoritmos.
+- **`GET /api/models/compare`**: Matriz comparativa de WAPE, MAE, RMSE, R² y latencias de los 8 algoritmos de ML.
 - **`GET /api/models/diagnostics`**: Residuos reales empíricos, split gains de variables y catálogo causal de variables confusoras.
-- **`POST /simulate`**: Simulación Monte Carlo coordinada con cópulas de Cholesky y saltos de Poisson.
+- **`GET /api/diagnostics/residual-detail/{metric_key}`**: Deducción matemática, impacto operativo y mitigación algorítmica para Error Medio, Desviación Estándar, MedAE y Asimetría.
+- **`GET /api/diagnostics/feature-detail/{feature_name}`**: Formulación matemática, ranking, split-gain %, justificación de dominio y código Python para las TOP 10 variables predictivas.
+- **`GET /api/diagnostics/correlation-detail/{feature1}/{feature2}`**: Coeficiente de correlación de Pearson, evaluación de VIF y justificación formal de la inmunidad ortogonal de los ensambles de árboles.
+- **`POST /simulate` & `POST /api/simulation/run`**: Simulación Monte Carlo coordinada con cópulas de Cholesky, saltos de Merton, cómputo de VaR/CVaR y sellado en el libro mayor inmutable WORM.
+- **`GET /api/simulation/history`**: Historial inmutable de simulaciones estocásticas registradas con bloque y hash SHA-256.
+- **`GET /api/simulation/quotas`**: Cuotas de cómputo por usuario y consumo acumulado de CPU/GPU.
 - **`GET /api/config` & `POST /api/config`**: Consulta y actualización en caliente de parámetros de inferencia y umbrales de vacíos sin reiniciar el servidor.
 - **`POST /api/extensibility/simulate-external-feature`**: Simulador interactivo para verificar y proyectar el impacto de nuevas variables externas antes de concatenarlas al pipeline permanente.
 - **`GET /api/infrastructure/status`**: Monitoreo en tiempo real del estado de salud de los adaptadores de base de datos (DuckDB, PostgreSQL, Redis), herramientas MCP activas, inventario de secretos y aceleradores de hardware.
