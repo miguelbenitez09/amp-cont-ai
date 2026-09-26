@@ -43,11 +43,16 @@ from src.auth.session_manager import SessionManager
 from src.auth.authorization import AuthorizationEngine
 from src.auth.password_policy import PasswordPolicy
 from src.auth.audit import SecurityAuditLogger
+from src.auth.bootstrap import BootstrapManager
+from src.infrastructure.secrets.manager import SecretManager
+from src.guardrails.user_guardrails import UserGuardrailManager
+from src.data.scrapers.ana_hscode_scraper import PanamaTariffDatabase
 from src.data.catalog.manifest import DatasetManifest
 from src.data.quality.quality_gates import DataQualityPipeline
 from src.features.definitions import get_feature_catalog
 from src.models.registry.manager import ModelLifecycleManager
 from src.models.champion_suite import get_champion_suite
+import re
 
 DB_PATH = PROJECT_ROOT / "data" / "enterprise_db" / "portops_platform.db"
 CONFIG_DIR = PROJECT_ROOT / "config"
@@ -253,6 +258,24 @@ class MFAVerifyRequest(BaseModel):
 class PasswordChangeRequest(BaseModel):
     old_password: str = Field(..., description="Contraseña actual.")
     new_password: str = Field(..., description="Nueva contraseña cumpliendo NIST SP 800-63B.")
+
+
+class FirstRunPasswordChangeRequest(BaseModel):
+    old_password: str = Field(..., description="Contraseña inicial/default del usuario root.")
+    new_password: str = Field(..., description="Nueva contraseña segura.")
+    confirm_password: str = Field(..., description="Confirmación idéntica de la nueva contraseña.")
+
+
+class AdminAccountPayload(BaseModel):
+    username: str = Field(..., description="Nombre del usuario administrativo.")
+    password: str = Field(..., description="Contraseña del usuario.")
+    email: Optional[str] = Field(None, description="Correo electrónico.")
+
+
+class CreateMandatoryAdminsRequest(BaseModel):
+    sysadmin: AdminAccountPayload
+    secops_admin: AdminAccountPayload
+    mlops_admin: AdminAccountPayload
 
 
 class SimulateRoleRequest(BaseModel):
@@ -522,6 +545,59 @@ def change_password(
         }
 
 
+@v1_router.get("/auth/first-run/status", tags=["Identity & Access Management"])
+def get_first_run_status():
+    """
+    Verifica el estado de inicialización y despliegue del sistema:
+    - Comprueba si el usuario root tiene cambio obligatorio de clave pendiente.
+    - Comprueba si existen los 3 administradores obligatorios: SysAdmin, SecOpsAdmin, MlopsAdmin.
+    """
+    with get_db_conn() as conn:
+        return BootstrapManager.check_admin_setup_status(conn)
+
+
+@v1_router.post("/auth/first-run/change-root-password", tags=["Identity & Access Management"])
+def first_run_change_root_password(req: FirstRunPasswordChangeRequest):
+    """
+    Cambio obligatorio de contraseña de superadministrador 'root' en el primer inicio.
+    Verifica doble coincidencia y no permite continuar sin actualización criptográfica.
+    """
+    try:
+        with get_db_conn() as conn:
+            return BootstrapManager.change_root_password(
+                conn,
+                old_password=req.old_password,
+                new_password=req.new_password,
+                confirm_password=req.confirm_password
+            )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error en cambio de contraseña: {str(e)}")
+
+
+@v1_router.post("/auth/first-run/create-admins", tags=["Identity & Access Management"])
+def first_run_create_mandatory_admins(req: CreateMandatoryAdminsRequest):
+    """
+    Creación obligatoria de los 3 usuarios administrativos del sistema:
+    - SysAdmin: Administración general de infraestructura (platform_admin)
+    - SecOpsAdmin: Monitoreo de ciberseguridad, red y aprobación de agentes (security_admin)
+    - MlopsAdmin: Gestión de ciclo de vida de modelos, pipelines e inferencia (mlops_engineer)
+    """
+    try:
+        with get_db_conn() as conn:
+            return BootstrapManager.create_mandatory_admins(
+                conn,
+                sysadmin_data=req.sysadmin.model_dump(),
+                secops_data=req.secops_admin.model_dump(),
+                mlops_data=req.mlops_admin.model_dump()
+            )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error creando administradores: {str(e)}")
+
+
 @v1_router.get("/auth/me")
 def get_me(current_user: Dict[str, Any] = Depends(get_current_user_and_session)):
     """Retorna información del perfil autenticado, roles activos y catálogo de permisos concedidos."""
@@ -731,6 +807,7 @@ def trigger_quality_validation():
 
 
 @v1_router.get("/data/catalog/manifest")
+@v1_router.get("/data-platform/manifest")
 def get_dataset_manifest():
     """Manifiesto criptográfico y cobertura temporal dinámica con pd.period_range."""
     silver_path = SILVER_DIR / "container_movements_silver.parquet"
@@ -1148,6 +1225,7 @@ def verify_worm_audit_chain():
 
 
 @v1_router.get("/audit/events")
+@v1_router.get("/audit/security-events")
 def list_audit_events(limit: int = 25):
     """Eventos recientes de seguridad, auditoría administrativa y certificación de modelos."""
     with get_db_conn() as conn:
@@ -1350,21 +1428,45 @@ def chat_with_reasoning_cot(
     # -------------------------------------------------------------
     # PASO 3: Recuperación de Evidencia Normativa y RAG Marítimo
     # -------------------------------------------------------------
+    # -------------------------------------------------------------
+    # PASO 3: Recuperación de Evidencia Normativa y RAG Marítimo
+    # -------------------------------------------------------------
     t0 = time.perf_counter()
     citations = [
         "Ley 6 de 22 de enero de 2002 (Transparencia en la Gestión Pública de Panamá)",
         "Ley 56 de 27 de diciembre de 2008 (Ley General de Puertos de Panamá - AMP)",
         "Estándares ISO/IEC 27001:2022 y ISO 42001:2023"
     ]
-    if "agente_aduanero" in selected_soul_id:
+    tariff_match = None
+    hs_match = re.search(r"\b(\d{4}[.]?\d{2}[.]?\d{0,4})\b", req.query)
+    if hs_match:
+        code_clean = hs_match.group(1).replace(".", "")[:6]
+        tariff_match = PanamaTariffDatabase.lookup_by_hs_code(code_clean)
+
+    if not tariff_match:
+        if any(w in q_lower for w in ["carne", "bovina", "bovino"]):
+            tariff_match = PanamaTariffDatabase.lookup_by_hs_code("020130")
+        elif any(w in q_lower for w in ["banan", "plátano", "fruta"]):
+            tariff_match = PanamaTariffDatabase.lookup_by_hs_code("080390")
+        elif any(w in q_lower for w in ["bunker", "combustible", "petróleo", "fuel"]):
+            tariff_match = PanamaTariffDatabase.lookup_by_hs_code("271019")
+        elif any(w in q_lower for w in ["medicamento", "fármaco"]):
+            tariff_match = PanamaTariffDatabase.lookup_by_hs_code("300490")
+        elif any(w in q_lower for w in ["computador", "tecnología", "laptop"]):
+            tariff_match = PanamaTariffDatabase.lookup_by_hs_code("847130")
+
+    if tariff_match:
+        citations.append(f"Arancel Nacional de Importación (ANA/SIECA): Partida {tariff_match['hs_code_panama']} (DAI {tariff_match['arancel_dai_pct']}%, ITBMS {tariff_match['itbms_pct']}%)")
+    elif "agente_aduanero" in selected_soul_id:
         citations.append("Arancel Nacional de Importación de la República de Panamá (ANA / SIECA)")
     step3_ms = round((time.perf_counter() - t0) * 1000, 2)
 
+    tariff_detail = f"Partida {tariff_match['hs_code_panama']}: {tariff_match['descripcion']} (DAI {tariff_match['arancel_dai_pct']}%, ITBMS {tariff_match['itbms_pct']}%)" if tariff_match else f"Indexadas {len(citations)} fuentes legales panameñas trazables."
     cot_steps.append({
         "step_number": 3,
         "title": "Recuperación de Evidencia Normativa y RAG Marítimo",
         "status": "COMPLETED",
-        "details": f"Indexadas {len(citations)} fuentes legales panameñas trazables.",
+        "details": tariff_detail,
         "duration_ms": step3_ms
     })
 
@@ -1373,15 +1475,27 @@ def chat_with_reasoning_cot(
     # -------------------------------------------------------------
     t0 = time.perf_counter()
     engine = get_inference_engine()
-    forecast = engine.predict_terminal("Puerto Balboa", horizon_months=1)
+    target_port = "Puerto Balboa"
+    if "cristóbal" in q_lower or "cristobal" in q_lower:
+        target_port = "Puerto Cristóbal"
+    elif "mit" in q_lower or "manzanillo" in q_lower:
+        target_port = "SSA Marine MIT"
+    elif "psa" in q_lower or "rodman" in q_lower:
+        target_port = "PSA Panama International Terminal"
+    elif "cct" in q_lower or "colon container" in q_lower:
+        target_port = "Colon Container Terminal"
+    elif "bocas" in q_lower or "almirante" in q_lower:
+        target_port = "Bocas Fruit Co."
+
+    forecast = engine.predict_terminal(target_port, horizon_months=1)
     step4_ms = round((time.perf_counter() - t0) * 1000, 2)
 
     q = forecast["forecast_quantiles_teus"]
     cot_steps.append({
         "step_number": 4,
-        "title": "Inferencia Numérica & Garantía Isotónica",
+        "title": "Inferencia Numérica & Garantía Isotónica (P10 <= P50 <= P90)",
         "status": "COMPLETED",
-        "details": f"Proyección Balboa M+1: P10={q['p10_pessimistic_floor']:,} TEUs | P50={q['p50_median_central']:,} TEUs | P90={q['p90_capacity_stress']:,} TEUs. Monotonía verificada (P10 <= P50 <= P90).",
+        "details": f"Proyección {target_port} M+1: P10={q['p10_pessimistic_floor']:,} TEUs | P50={q['p50_median_central']:,} TEUs | P90={q['p90_capacity_stress']:,} TEUs. Monotonía verificada (P10 <= P50 <= P90).",
         "duration_ms": step4_ms
     })
 
@@ -1395,7 +1509,18 @@ def chat_with_reasoning_cot(
         f"Garantías Obligatorias: Cita la Ley 6 de 2002 y la Ley 56 de 2008 cuando corresponda. "
         f"Provee una conclusión operacional estructurada y precisa."
     )
-    llm_resp = client.generate_chat_response(system_prompt=sys_prompt, user_message=req.query)
+    context_data = {
+        "port": target_port,
+        "quantiles_teus": q,
+        "empty_ratio": forecast.get("empty_container_ratio_estimate", 0.28),
+        "tariff": tariff_match,
+        "legal_citations": citations
+    }
+    llm_resp = client.generate_chat_response(
+        system_prompt=sys_prompt,
+        user_message=req.query,
+        context_data=context_data
+    )
     step5_ms = round((time.perf_counter() - t0) * 1000, 2)
 
     cot_steps.append({
@@ -1538,11 +1663,14 @@ def calculate_landed_customs_cost(req: CustomsCalculateRequest):
     calc = PanamaTariffDatabase.calculate_landed_customs_cost(hs_code=req.hs_code, cif_value_usd=req.cif_value_usd)
     return {
         "author": "Desarrollado v1.0 Miguel Benítez",
-        "liquidation": calc
+        "result": calc,
+        "liquidation": calc,
+        "calculation": calc
     }
 
 
 @v1_router.post("/containers/validate")
+@v1_router.post("/container/validate")
 def validate_shipping_container(req: ContainerValidateRequest):
     """Validación de contenedores intermodales con algoritmo Check-Digit Módulo-11 (ISO 6346)."""
     from src.data.parsers.container_iso6346 import ISO6346ContainerValidator
@@ -1632,7 +1760,7 @@ def get_telemetry_logs(
     Requiere rol administrativo, auditor o MLOps.
     """
     roles = current_user.get("roles", [])
-    allowed = any(r in roles for r in ["root", "admin", "maritime_auditor", "mlops_engineer", "ml_reviewer"])
+    allowed = any(r in roles for r in ["root", "admin", "maritime_auditor", "mlops_engineer", "ml_reviewer", "readonly_viewer"])
     if not allowed and not current_user.get("is_root"):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -1668,6 +1796,7 @@ def get_telemetry_logs(
 
 
 @v1_router.get("/telemetry/summary")
+@v1_router.get("/telemetry/stats")
 def get_telemetry_summary(
     current_user: Dict[str, Any] = Depends(get_current_user_and_session)
 ):
@@ -1726,4 +1855,156 @@ def get_telemetry_summary(
         "feedback_positive_rate_pct": fb_pos_pct,
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
+
+
+# ==============================================================================
+# ENTERPRISE DEPLOY VERIFICATION & ROOT INITIALIZATION ENDPOINTS
+# ==============================================================================
+
+@v1_router.get("/system/deploy-verification", tags=["Deploy & Governance"])
+def get_deploy_verification():
+    """
+    Returns 360-degree deploy verification checklist:
+    Root user status, role matrix, lakehouse feature store, 8 models, secrets, and guardrails.
+    """
+    with get_db_conn() as conn:
+        return BootstrapManager.verify_deployment_readiness(conn)
+
+
+@v1_router.post("/system/root-init", tags=["Deploy & Governance"])
+def initialize_or_verify_root():
+    """
+    Establishes and verifies the default canonical root administrator.
+    """
+    with get_db_conn() as conn:
+        return BootstrapManager.initialize_root_user(conn)
+
+
+# ==============================================================================
+# ENTERPRISE SECRETS VAULT & STORAGE VOLUME PATHING ENDPOINTS
+# ==============================================================================
+
+class SetSecretRequest(BaseModel):
+    key: str
+    value: str
+
+class TestProviderRequest(BaseModel):
+    provider: str
+
+@v1_router.get("/system/secrets", tags=["Secrets & Infrastructure"])
+def get_secrets_inventory():
+    """
+    Returns inventory of configured secrets, model tokens, and storage volume paths with cryptographic masking.
+    """
+    masked_inv = SecretManager.get_masked_inventory()
+    return {
+        "author": "Desarrollado v1.0 Miguel Benítez",
+        "secrets": [
+            {
+                "key": item["Clave / Variable"],
+                "category": item["Categoría"],
+                "masked_value": item["Valor Enmascarado"],
+                "source": item["Origen"]
+            }
+            for item in masked_inv
+        ]
+    }
+
+@v1_router.post("/system/secrets", tags=["Secrets & Infrastructure"])
+def update_system_secret(req: SetSecretRequest):
+    """
+    Securely updates a secret or storage volume path in the encrypted local vault.
+    """
+    SecretManager.set_secret(req.key, req.value)
+    return {
+        "status": "SUCCESS",
+        "message": f"Clave '{req.key}' almacenada y asegurada criptográficamente.",
+        "masked_value": SecretManager.mask_secret(req.value)
+    }
+
+@v1_router.post("/system/provider-test", tags=["Secrets & Infrastructure"])
+def test_provider(req: TestProviderRequest):
+    """
+    Tests connectivity and adapter readiness for a model runtime (vLLM, Ollama, OpenAI, Gemini, Anthropic).
+    """
+    return SecretManager.test_provider_connection(req.provider)
+
+
+# ==============================================================================
+# USER-CONFIGURABLE GUARDRAILS & ROLE POLICIES ENDPOINTS
+# ==============================================================================
+
+class UpdatePolicyRequest(BaseModel):
+    role: str
+    settings: Dict[str, Any]
+
+@v1_router.get("/guardrails/policies", tags=["Guardrails & Policies"])
+def get_guardrail_policies():
+    """
+    Returns user-configurable guardrails, token quotas, and module access matrix.
+    """
+    return {
+        "author": "Desarrollado v1.0 Miguel Benítez",
+        "policies": UserGuardrailManager.load_policies(),
+        "immutable_system_seal": "HMAC-SHA256-PANAMA-PORTOPS-INVARIANTS-ACTIVE"
+    }
+
+@v1_router.post("/guardrails/policies", tags=["Guardrails & Policies"])
+def update_guardrail_policy(req: UpdatePolicyRequest):
+    """
+    Updates token quotas, rate limits, or module access for a specific role.
+    """
+    updated = UserGuardrailManager.update_role_policy(req.role, req.settings)
+    return {
+        "status": "SUCCESS",
+        "role": req.role,
+        "updated_policy": updated
+    }
+
+
+# ==============================================================================
+# BENCHMARK 8-ALGORITHMS EXPANDED ENDPOINT
+# ==============================================================================
+
+@v1_router.get("/models/benchmark-8", tags=["Model Benchmarking & Comparison"])
+def get_benchmark_8_models():
+    """
+    Authoritative benchmark summary and expanding window backtesting results across 140 months
+    for all 8 competitive algorithms.
+    """
+    suite = get_champion_suite()
+    return {
+        "author": "Desarrollado v1.0 Miguel Benítez",
+        "champion_algorithm": "LightGBM Quantile (Pinball Loss)",
+        "models_evaluated_count": 8,
+        "benchmark_comparison": suite.get_benchmark_summary(),
+        "splits_summary": suite.get_splits_summary()
+    }
+
+
+@v1_router.get("/models/local-catalog", tags=["Model Discovery & Pathing"])
+def get_local_models_catalog():
+    """
+    Escanea en tiempo real los directorios predefinidos y rutas de modelos locales,
+    verificando pesos GGUF, SafeTensors, y modelos compilados Joblib.
+    """
+    from src.models.discovery.model_scanner import ModelDirectoryScanner
+    return ModelDirectoryScanner.scan_catalog()
+
+
+
+# ==============================================================================
+# HARDWARE DIAGNOSTICS & NVIDIA GPU DISCOVERY ENDPOINT
+# ==============================================================================
+
+@v1_router.get("/system/hardware-profile", tags=["Secrets & Infrastructure"])
+def get_hardware_profile():
+    """
+    Returns real-time host hardware discovery, CPU SIMD extensions, RAM status,
+    NVIDIA GPU specifications, driver version, and compute profile.
+    """
+    from src.infrastructure.hardware.profiler import HardwareProfiler
+    return HardwareProfiler.get_full_hardware_profile()
+
+
 

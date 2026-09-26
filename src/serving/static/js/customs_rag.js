@@ -200,37 +200,48 @@
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      const c = data.result || data.calculation || data;
+      const c = data.liquidation || data.result || data.calculation || data;
 
       resultsBox.innerHTML = `
-        <div style="background: rgba(10, 18, 36, 0.95); border: 1px solid rgba(0, 229, 255, 0.3); border-radius: 8px; padding: 1rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
-            <span style="font-weight: bold; color: #F8FAFC; font-size: 0.88rem;">Liquidación Oficial DUA</span>
-            <span class="badge" style="background: rgba(0, 245, 212, 0.15); color: #00F5D4; font-size: 0.72rem;">Subpartida: ${c.hs_code_panama || hsCode}</span>
+        <div style="background: rgba(10, 18, 36, 0.95); border: 1px solid rgba(0, 229, 255, 0.35); border-radius: 8px; padding: 1.1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.6rem;">
+            <div>
+              <div style="font-weight: bold; color: #F8FAFC; font-size: 0.95rem;">${c.commodity_description || "Liquidación Oficial DUA"}</div>
+              <div style="font-size: 0.76rem; color: #00E5FF; font-family: var(--font-mono); margin-top: 2px;">HS: ${c.hs_code || hsCode}</div>
+            </div>
+            <span class="badge" style="background: rgba(0, 245, 212, 0.15); color: #00F5D4; font-size: 0.75rem; font-weight: 600;">DAI: ${c.dai_rate_pct || 0}% • ITBMS: ${c.itbms_rate_pct || 7}%</span>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.82rem; margin-bottom: 0.75rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.84rem; margin-bottom: 0.85rem;">
             <div style="color: var(--text-muted);">Valor CIF Declarado:</div>
             <div style="text-align: right; font-weight: bold; color: #F8FAFC;">$${(c.cif_value_usd || cifVal).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD</div>
 
             <div style="color: var(--text-muted);">Arancel DAI (${c.dai_rate_pct || 0}%):</div>
             <div style="text-align: right; font-weight: bold; color: #FFD166;">$${(c.dai_usd || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD</div>
 
-            <div style="color: var(--text-muted);">Impuesto ITBMS (${c.itbms_rate_pct || 0}%):</div>
+            <div style="color: var(--text-muted);">Impuesto ITBMS (${c.itbms_rate_pct || 7}%):</div>
             <div style="text-align: right; font-weight: bold; color: #38BDF8;">$${(c.itbms_usd || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD</div>
 
-            <div style="color: var(--text-muted);">Tasa DUA ANA:</div>
+            <div style="color: var(--text-muted);">Tasa DUA Aduanas (ANA):</div>
             <div style="text-align: right; font-weight: bold; color: #F8FAFC;">$${(c.customs_declaration_fee_usd || 70.0).toFixed(2)} USD</div>
           </div>
 
-          <div style="border-top: 1px dashed var(--border-color); padding-top: 0.5rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-            <span style="font-weight: bold; color: #FF5A5F; font-size: 0.85rem;">Total Tributos Aduaneros:</span>
-            <span style="font-weight: bold; color: #FF5A5F; font-size: 1rem;">$${(c.total_import_taxes_usd || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD</span>
+          <div style="background: rgba(15, 23, 42, 0.7); border-radius: 6px; padding: 0.55rem 0.75rem; margin-bottom: 0.75rem; font-size: 0.78rem; border-left: 3px solid #00E5FF;">
+            <div style="color: #94A3B8;"><strong>Entidades Reguladoras:</strong> ${(c.regulatory_entities || ['Aduanas-ANA']).join(', ')}</div>
+            <div style="color: #CBD5E1; margin-top: 3px;"><strong>Permiso Requerido:</strong> ${c.permits_required || 'Trámite aduanero estándar con inspección regular'}</div>
           </div>
 
-          <div style="background: rgba(0, 245, 212, 0.08); border-radius: 6px; padding: 0.6rem 0.75rem; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-weight: bold; color: #00F5D4; font-size: 0.88rem;">Costo Puesto en Muelle (Landed Cost):</span>
-            <span style="font-weight: bold; color: #00F5D4; font-size: 1.15rem;">$${(c.total_landed_cost_usd || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD</span>
+          <div style="border-top: 1px dashed var(--border-color); padding-top: 0.6rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-weight: bold; color: #FF5A5F; font-size: 0.88rem;">Total Tributos Aduaneros:</span>
+            <span style="font-weight: bold; color: #FF5A5F; font-size: 1.05rem;">$${(c.total_import_taxes_usd || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD</span>
+          </div>
+
+          <div style="background: rgba(0, 245, 212, 0.1); border: 1px solid rgba(0, 245, 212, 0.3); border-radius: 6px; padding: 0.65rem 0.85rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <span style="font-weight: bold; color: #00F5D4; font-size: 0.9rem; display: block;">Costo Puesto en Muelle (Landed Cost):</span>
+              <span style="font-size: 0.72rem; color: #94A3B8;">Tasa efectiva: ${c.effective_tax_rate_pct || 0}%</span>
+            </div>
+            <span style="font-weight: bold; color: #00F5D4; font-size: 1.25rem;">$${(c.total_landed_cost_usd || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD</span>
           </div>
         </div>
       `;

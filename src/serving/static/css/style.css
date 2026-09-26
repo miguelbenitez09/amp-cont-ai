@@ -106,6 +106,40 @@ body.theme-tactical-mono {
   --shadow-glow: 0 0 25px rgba(56, 189, 248, 0.2);
 }
 
+/* Theme 5: Pacífico Sunset / Coral Neón & Púrpura */
+body.theme-pacific-sunset {
+  --bg-base: #0b0714;
+  --bg-surface: #170d2b;
+  --bg-card: rgba(28, 16, 52, 0.8);
+  --bg-card-hover: rgba(40, 24, 72, 0.95);
+  --bg-input: rgba(20, 10, 38, 0.95);
+  --border-color: rgba(244, 63, 94, 0.25);
+  --border-focus: #f43f5e;
+  --text-main: #fff1f2;
+  --text-muted: #fda4af;
+  --cyan-primary: #f43f5e;
+  --cyan-bright: #fb7185;
+  --blue-vivid: #f59e0b;
+  --shadow-glow: 0 0 25px rgba(244, 63, 94, 0.25);
+}
+
+/* Theme 6: Midnight Cobalt / Azul Profundo de Alta Fidelidad */
+body.theme-midnight-cobalt {
+  --bg-base: #020617;
+  --bg-surface: #0a1435;
+  --bg-card: rgba(12, 28, 68, 0.8);
+  --bg-card-hover: rgba(18, 40, 96, 0.95);
+  --bg-input: rgba(6, 16, 42, 0.95);
+  --border-color: rgba(56, 189, 248, 0.28);
+  --border-focus: #0ea5e9;
+  --text-main: #f0f9ff;
+  --text-muted: #bae6fd;
+  --cyan-primary: #0284c7;
+  --cyan-bright: #38bdf8;
+  --blue-vivid: #60a5fa;
+  --shadow-glow: 0 0 25px rgba(14, 165, 233, 0.3);
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -260,42 +294,60 @@ header {
   border-color: var(--blue-vivid);
 }
 
-/* Tabs Navigation */
+/* Tabs Navigation - Vanguard Modern Control Bar */
 .tabs-nav {
   max-width: 1440px;
-  margin: 1.25rem auto 0;
-  padding: 0 1.5rem;
+  margin: 1.25rem auto 0.75rem;
+  padding: 0.5rem 0.8rem;
   display: flex;
-  gap: 0.5rem;
-  border-bottom: 1px solid var(--border-color);
+  align-items: center;
+  gap: 0.55rem;
+  background: rgba(13, 21, 39, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(6, 182, 212, 0.22);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.tabs-nav::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera - completely eliminates ugly scrollbar */
 }
 
 .tab-btn {
-  background: transparent;
-  border: none;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid transparent;
   color: var(--text-muted);
-  font-size: 0.92rem;
-  font-weight: 500;
-  padding: 0.75rem 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.65rem 1.1rem;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s ease;
+  gap: 0.55rem;
+  border-radius: 8px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
+  user-select: none;
 }
 
 .tab-icon {
-  width: 16px;
-  height: 16px;
+  width: 17px;
+  height: 17px;
   color: var(--text-dim);
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .tab-btn:hover {
   color: var(--text-main);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
 }
 
 .tab-btn:hover .tab-icon {
@@ -303,12 +355,16 @@ header {
 }
 
 .tab-btn.active {
-  color: var(--cyan-bright);
-  border-bottom-color: var(--cyan-bright);
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.22), rgba(56, 189, 248, 0.1));
+  border-color: rgba(6, 182, 212, 0.5);
+  box-shadow: 0 0 18px rgba(6, 182, 212, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
 }
 
 .tab-btn.active .tab-icon {
   color: var(--cyan-bright);
+  filter: drop-shadow(0 0 6px var(--cyan-bright));
 }
 
 /* Main Content Layout */
@@ -4471,3 +4527,147 @@ footer {
   border-color: rgba(0, 229, 255, 0.3);
   transition: all 0.2s ease;
 }
+
+/* =========================================================================
+   PORTOPS-AI v2.0 RESIDUALS, KPI GRIDS, FIRST-RUN MODAL & ANALYSIS BOX
+   ========================================================================= */
+
+/* Diagnostics Dashboard Layout: Equal spacious 2-column layout */
+#tab-diagnostics .dashboard-grid {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 1100px) {
+  #tab-diagnostics .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Universal KPI Grid & Cards */
+.kpi-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.kpi-card {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 8px;
+  padding: 0.75rem;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-card.mini {
+  padding: 0.65rem 0.8rem;
+}
+
+.clickable-kpi-card {
+  cursor: pointer;
+  border-color: rgba(6, 182, 212, 0.3);
+  background: rgba(10, 20, 38, 0.7);
+  user-select: none;
+}
+
+.clickable-kpi-card:hover {
+  transform: translateY(-2px);
+  border-color: #00E5FF;
+  box-shadow: 0 4px 18px rgba(0, 229, 255, 0.25);
+  background: rgba(14, 28, 54, 0.85);
+}
+
+.clickable-kpi-card:active {
+  transform: translateY(0);
+}
+
+.kpi-card-header-mini {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.kpi-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #94A3B8;
+  letter-spacing: 0.03em;
+}
+
+.info-icon-badge {
+  font-size: 0.72rem;
+  color: #00E5FF;
+  opacity: 0.8;
+}
+
+.kpi-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #F8FAFC;
+  line-height: 1.25;
+}
+
+.kpi-sub {
+  font-size: 0.68rem;
+  color: #64748B;
+  margin-top: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+  .kpi-grid[style*="repeat(4"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Algorithm Bar-Click Analysis Box */
+#algo-chart-analysis-box {
+  animation: fadeIn 0.25s ease-out;
+  transition: all 0.2s ease;
+}
+
+/* First-Run Setup Modal Styling */
+#first-run-setup-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10000;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+}
+
+#first-run-setup-modal.open {
+  display: flex !important;
+}
+
+#first-run-setup-modal .modal-dialog {
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* KaTeX and Math Formula Rendering Polish */
+.cp-formula-math {
+  font-size: 1.15rem;
+  color: #38BDF8;
+  padding: 0.5rem 0;
+  overflow-x: auto;
+  text-align: center;
+}
+
+.cp-formula-math .katex-display {
+  margin: 0.5em 0 !important;
+}
+

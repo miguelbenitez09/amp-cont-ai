@@ -141,6 +141,11 @@ class MCPSoulManager:
         return None
 
     @classmethod
+    def get_soul_by_id(cls, soul_id: str) -> Optional[Dict[str, Any]]:
+        """Alias for get_soul."""
+        return cls.get_soul(soul_id)
+
+    @classmethod
     def verify_soul_seal(cls, soul_id: str) -> Dict[str, Any]:
         """
         Cryptographically verifies that the soul has not been tampered with or modified.

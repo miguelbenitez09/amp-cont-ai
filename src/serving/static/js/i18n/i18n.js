@@ -13,14 +13,21 @@
     init() {
       this.dictionaries["es"] = window.I18N_ES || {};
       this.dictionaries["en"] = window.I18N_EN || {};
+      this.dictionaries["pt"] = window.I18N_PT || {};
 
       // Determine starting language from localStorage or navigator
       const savedLang = localStorage.getItem(STORAGE_KEY);
-      if (savedLang && (savedLang === "es" || savedLang === "en")) {
+      if (savedLang && (savedLang === "es" || savedLang === "en" || savedLang === "pt")) {
         this.currentLang = savedLang;
       } else {
         const navLang = (navigator.language || "").toLowerCase();
-        this.currentLang = navLang.startsWith("en") ? "en" : "es";
+        if (navLang.startsWith("pt")) {
+          this.currentLang = "pt";
+        } else if (navLang.startsWith("en")) {
+          this.currentLang = "en";
+        } else {
+          this.currentLang = "es";
+        }
       }
 
       // Initial DOM translation
@@ -29,7 +36,7 @@
     },
 
     setLanguage(lang) {
-      if (lang !== "es" && lang !== "en") return;
+      if (lang !== "es" && lang !== "en" && lang !== "pt") return;
       this.currentLang = lang;
       localStorage.setItem(STORAGE_KEY, lang);
       document.documentElement.lang = lang;

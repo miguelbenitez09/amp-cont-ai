@@ -21,8 +21,8 @@ def get_root_credentials():
     if not cred_file.exists():
         pytest.skip(".bootstrap/root-credentials.txt not found")
     content = cred_file.read_text(encoding="utf-8")
-    u_match = re.search(r"(?:Username|Usuario):\s+(root_\w+)", content)
-    p_match = re.search(r"(?:Password|Password Temporal):\s+([^\r\n]+)", content)
+    u_match = re.search(r"(?:Username|Usuario):\s+(root(?:_\w+)?)", content)
+    p_match = re.search(r"(?:Password|Password Temporal|Default Pass):\s+([^\r\n]+)", content)
     if not u_match or not p_match:
         pytest.fail("Could not parse root credentials file")
     return u_match.group(1), p_match.group(1).strip()

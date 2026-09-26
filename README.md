@@ -1,16 +1,17 @@
-# Panamá PortOps-AI v1.0 — Plataforma Industrial MLOps Portuaria y Simulación Estocástica
-## Tratado Maestro de Arquitectura, Inferencia Causal, Benchmarking y Despliegue
+# Panamá PortOps-AI v2.0 — Plataforma Abierta de Inteligencia Portuaria, MLOps e Inferencia Causal
+## Tratado Maestro de Arquitectura Soberana, Inferencia Causal, Benchmarking y Despliegue
 
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Serving-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![LightGBM](https://img.shields.io/badge/LightGBM-Champion_Quantiles-green.svg)](https://lightgbm.readthedocs.io/)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0--or--later-orange.svg)](LICENSE)
 [![Datos Abiertos Panamá](https://img.shields.io/badge/Datos_Abiertos-AMP_2015--2026-blueviolet.svg)](https://www.datosabiertos.gob.pa)
-[![Autor](https://img.shields.io/badge/Autor-Miguel_Benítez-informational.svg)](https://github.com/miguelbenitez09)
+[![Autor](https://img.shields.io/badge/Autor-Ing._Miguel_Benítez_(UTP)-informational.svg)](https://github.com/miguelbenitez09)
 
-> **Firma Oficial del Proyecto:** **`Desarrollado v1.0 Miguel Benítez`**  
-> **Autor Principal:** **Miguel Benítez** (`miguelbenitez09`) (<https://github.com/miguelbenitez09>)  
+> **Firma Oficial del Proyecto:** **`Panamá PortOps-AI v2.0 • Ing. Miguel Benítez • UTP`**  
+> **Autor Principal:** **Ing. Miguel Benítez** (`miguelbenitez09`) — Universidad Tecnológica de Panamá (UTP) (<https://github.com/miguelbenitez09>)  
 > **Licencia:** GNU General Public License v3.0 (GPL-3.0) con Atribución Obligatoria (Sección 7)  
+> **Arquitectura:** **100% Código Abierto Soberano (Zero Closed-Source / Zero Microsoft Fabric)**  
 > **Marco Legal:** **Ley 6 de 22 de enero de 2002 de la República de Panamá** (Normas para la transparencia en la gestión pública y datos abiertos).  
 > **Finalidad y Alcance:** *Proyecto desarrollado con fines estrictamente educativos, pedagógicos, de investigación científica y de empoderamiento cívico para personas naturales y jurídicas de la República de Panamá.*
 
@@ -262,6 +263,61 @@ pytest -v tests/
 
 ---
 
+## 7.5 Manual de Uso, Instalación & Protocolo de Primer Inicio (First-Run Setup Guide)
+
+> [!IMPORTANT]
+> **Protocolo de Seguridad NIST SP 800-63B & Gobernanza Soberana:**
+> Al desplegar la plataforma por primera vez e ingresar a [http://127.0.0.1:8000/](http://127.0.0.1:8000/), el sistema bloquea preventivamente las funciones administrativas hasta completar el asistente de configuración inicial en 2 pasos.
+
+### 1. Flujo de Inicialización y Despliegue Inicial
+1. **Credenciales Iniciales de Acceso:**
+   - **Usuario:** `root`
+   - **Contraseña Temporal Inicial:** `admin_portops_2026!` (o consulte `.bootstrap/root-credentials.txt`).
+2. **Paso 1 de 2: Cambio Obligatorio de Contraseña de Root:**
+   - Ingrese la contraseña temporal predeterminada.
+   - Ingrese la nueva contraseña segura con **doble confirmación** (mínimo 10 caracteres con alta entropía).
+   - El sistema valida matemáticamente que ambas contraseñas coincidan y que no sea idéntica a la anterior (`POST /api/v1/auth/first-run/change-root-password`).
+3. **Paso 2 de 2: Creación Obligatoria de los 3 Administradores del Sistema:**
+   La arquitectura de gobernanza exige la existencia de 3 roles con responsabilidades segregadas (Separation of Duties - SoD):
+   - **`SysAdmin` (`platform_admin`):** Administración de infraestructura, red, contenedores Docker y escalabilidad.
+   - **`SecOpsAdmin` (`security_admin`):** Monitoreo del SIEM Wazuh, auditoría del ledger inmutable WORM y aprobación de agentes autónomos.
+   - **`MlopsAdmin` (`mlops_engineer`):** Ciclo de vida de modelos, pipelines de inferencia, tuning de hiperparámetros y registro de modelos.
+   - El sistema registra las 3 cuentas en el almacén criptográfico WORM (`POST /api/v1/auth/first-run/create-admins`).
+4. **Verificación de Estado:**
+   - El endpoint `GET /api/v1/auth/first-run/status` retorna el estado en vivo:
+     ```json
+     {
+       "root_exists": true,
+       "root_must_change_password": false,
+       "admins_configured": true,
+       "missing_admins": [],
+       "requires_first_run_setup": false
+     }
+     ```
+
+### 2. Catálogo de Modelos Locales y Detección Automática de Hardware
+- **Escáner de Modelos (`GET /api/v1/models/local-catalog`):**
+  Identifica dinámicamente los artefactos locales en `models/` (pesos GGUF, checkpoints PyTorch/safetensors y serializaciones Joblib).
+- **Modelo Gemma4 Distilado para Aduanas y Operaciones (`models/customs_distilled_gemma4.gguf`):**
+  - Destilación especializada en derecho aduanero panameño y operativa portuaria internacional.
+  - Resolución nativa de:
+    - Clasificación arancelaria ANA/SIECA (fracciones de 8 a 12 dígitos) y tratados bilaterales (TPC Panamá-EE.UU., Centroamérica, etc.).
+    - Liquidación fiscal de importaciones: Derechos Arancelarios de Importación (DAI), ITBMS (7%), Tasa Administrativa Aduanera y tasas específicas.
+    - Validación de contenedores marítimos bajo estándar internacional **ISO 6346** con algoritmo de suma ponderada **Módulo-11**.
+    - Cálculo de productividad de grúas pórtico STS (GMPH 28–35 movimientos/hora, BMPH 85–120 movimientos/hora).
+    - Pronóstico isotónico de demanda de terminales con intervalos cuantílicos sin cruce ($P_{10} \le P_{50} \le P_{90}$).
+- **Benchmarking de Hardware Automático:**
+  Inspecciona la máquina anfitriona (GPU NVIDIA CUDA / VRAM vs CPU SIMD AVX-512) para recomendar el motor óptimo (vLLM / llama.cpp con Q4_K_M vs CPU multi-hilo).
+
+### 3. Arquitectura 100% de Código Abierto Soberano
+**Panamá PortOps-AI** es un ecosistema 100% libre de software propietario o arquitecturas cerradas (sin dependencias de Microsoft Fabric ni servicios de nube privativa):
+- **Motor de Inferencia:** FastAPI + LightGBM Cuantílico + vLLM / llama.cpp.
+- **Motor de Datos y Lakehouse:** Apache Parquet, DuckDB y SQLite con ledger inmutable WORM SHA-256.
+- **Observabilidad y Seguridad:** SIEM Wazuh, Prometheus, Redis y MinIO S3 compatible.
+- **Visualización y Matemáticas:** Vanilla Web Components, Chart.js 4.4 y KaTeX 0.16 para renderizado tipográfico de ecuaciones.
+
+---
+
 ## 8. Uso de la Interfaz Web Responsive y Microservicio REST
 
 ### Puesta en Marcha del Servidor
@@ -291,7 +347,7 @@ La plataforma web incluye una consola de integración en tiempo real (`.landing-
 Aunque el proyecto sea de código abierto (Open Source), la seguridad en entornos gubernamentales y bancarios es estricta:
 - **Modos de Autenticación:**
   - `Bearer Token (sk-amp-...)`: Esquema de autorización estándar mediante encabezado HTTP `Authorization: Bearer <API_KEY>`.
-  - `HashiCorp Vault / AWS Secrets`: Inyección dinâmica de credenciales en tiempo de ejecución sin persistencia en disco.
+  - `HashiCorp Vault / Bóveda Criptográfica Local`: Inyección dinâmica de credenciales en tiempo de ejecución sin persistencia en disco.
   - `Desarrollo Local (Sin Secretos)`: Modo abierto para pruebas internas en localhost sin tokens.
 - **Variables de Entorno (`.env`):**
   - Nunca almacenes tokens en duro dentro del código. Carga las credenciales mediante `os.getenv("AMP_API_SECRET_KEY")` o librerías como `python-dotenv`.
@@ -571,13 +627,14 @@ Siguiendo los lineamientos de la **OpenSSF**:
 
 ---
 
-## 13. Arquitectura v1.0 Enterprise: IAM, Plataforma de Datos, Model Registry y WORM Ledger
+## 13. Arquitectura v2.0 Enterprise: IAM, Plataforma de Datos, Model Registry y WORM Ledger
 
-La versión 1.0 consolida a **Panamá PortOps-AI** como una plataforma de grado industrial basada en la base de datos empresarial `portops_platform.db` (17 tablas normalizadas), con blindaje de seguridad IAM y observabilidad en tiempo real:
+La versión 2.0 consolida a **Panamá PortOps-AI** como una plataforma de grado industrial 100% de código abierto soberano basada en la base de datos empresarial `portops_platform.db` (17 tablas normalizadas), con blindaje de seguridad IAM y observabilidad en tiempo real:
 
-### 13.1 Resumen de Capacidades v1.0
+### 13.1 Resumen de Capacidades v2.0
 - **Seguridad Operativa e IAM:**
   - Inicialización con generador criptográfico CSPRNG sin credenciales por defecto (`.bootstrap/root-credentials.txt`).
+  - Asistente de primer inicio obligatorio (First-Run Wizard) con cambio de contraseña de superadministrador `root` y creación de 3 cuentas administrativas con responsabilidades segregadas (`SysAdmin`, `SecOpsAdmin`, `MlopsAdmin`).
   - Doble factor de autenticación TOTP RFC 6238 compatible con Google Authenticator (`/api/v1/auth/mfa/*`).
   - Cumplimiento de política de contraseñas NIST SP 800-63B y control de historial de 5 contraseñas previas.
   - Tokens de sesión JWT firmados con identificador único anti-colisión `jti` y revocación instantánea.
@@ -588,7 +645,7 @@ La versión 1.0 consolida a **Panamá PortOps-AI** como una plataforma de grado 
 - **Gobernanza de Modelos y Torneo de 8 Algoritmos:**
   - Registro formal de modelos (`model_registry`) con ciclo de vida: `DRAFT ➔ TRAINED ➔ VALIDATED ➔ REVIEW ➔ APPROVED ➔ STAGED ➔ PRODUCTION`.
   - Promoción estricta con firma de usuario autorizado (`ml_reviewer` o `root`).
-  - Torneo multi-algoritmo con evaluación empírica de 8 modelos sobre 140 meses de la AMP, liderado por el ensamble cuantílico LightGBM Champion.
+  - Torneo multi-algoritmo con evaluación empírica de 8 modelos sobre 140 meses de la AMP, liderado por el ensamble cuantílico LightGBM Champion ($R^2 = 0.9832$, $\text{WAPE} = 9.11\%$).
 - **Libro Mayor Criptográfico WORM (Write Once, Read Many):**
   - Encadenamiento inmutable SHA-256 (`audit_ledger_worm`) que sella criptográficamente cada simulación Monte Carlo y cada promoción de modelo.
   - Verificación formal de integridad y detección de mutaciones en vivo (`/api/v1/audit/worm/verify`).
@@ -607,10 +664,10 @@ La plataforma incorpora una suite completa de capacidades agénticas avanzadas, 
 ### 14.1 Estación de Control Industrial Streamlit (`apps/dashboard.py`)
 Desarrollada para ofrecer una interfaz unificada y resiliente de monitoreo, simulación y gobernanza sin dependencias externas complejas:
 - **Resiliencia Híbrida:** Conexión directa a la API REST FastAPI (`http://127.0.0.1:8000`) con fallback transparente en memoria vía `OptimizedInferenceEngine` y `PanamaTariffDatabase` para garantizar alta disponibilidad operativa.
-- **Estética Deep Marine:** Diseño visual de alta legibilidad y contraste, tarjetas métricas y soporte multi-idioma (Español / Inglés).
+- **Estética Deep Marine:** Diseño visual de alta legibilidad y contraste, tarjetas métricas y soporte multi-idioma (Español / Inglés / Portugués).
 
 **Arquitectura Visual y 8 Módulos Operacionales:**
-1. **Misión Cívica & Ley 6 de 2002:** Declaración de soberanía de datos, 140 meses de microdatos AMP sin mocks y licencia GPL-3.0 con atribución obligatoria a Miguel Benítez.
+1. **Misión Cívica & Ley 6 de 2002:** Declaración de soberanía de datos, 140 meses de microdatos AMP sin mocks y licencia GPL-3.0 con atribución obligatoria al Ing. Miguel Benítez (UTP).
 2. **Razonamiento CoT & Agentes:** Inspección de agentes especializados, telemetría de latencias y tokens, y formulario de retroalimentación cualitativa (`model_interaction_feedback`).
 3. **Catálogo Arancelario y Validador ISO 6346:** Búsqueda en vivo de subpartidas arancelarias de Panamá (ANA), calculadora fiscal de Landed Cost (DAI, ITBMS 7%, tasas) y validación de contenedores con Módulo-11.
 4. **Pronósticos de Inferencia Cuantílica:** Visualización en tiempo real de bandas $P_{10}$, $P_{50}$ y $P_{90}$ con garantía de anti-cruce isotónico, semáforo de balance de vacíos e inyección de shocks What-If.
@@ -671,24 +728,25 @@ Este proyecto es software libre y de código abierto bajo la licencia **GNU Gene
 2. **Atribución Obligatoria al Autor Original:** Cualquier uso educativo, académico, institucional o comercial debe mantener de forma clara, visible e inalterada la siguiente mención y enlace:
 
 ```text
-Desarrollado v1.0 Miguel Benítez
-Basado en Panamá PortOps-AI por Miguel Benítez (https://github.com/miguelbenitez09/amp-cont-ai)
+Panamá PortOps-AI v2.0 • Ing. Miguel Benítez • Universidad Tecnológica de Panamá (UTP)
+Basado en Panamá PortOps-AI por Ing. Miguel Benítez (https://github.com/miguelbenitez09/amp-cont-ai)
 ```
 
 ### Formato de Citación Académica / Técnica (BibTeX):
 ```bibtex
-@software{benitez2026portops,
+@software{benitez2026portops_v2,
   author       = {Benítez, Miguel},
-  title        = {{Panamá PortOps-AI v1.0: Ecosistema MLOps, Benchmarking Multi-Algoritmo y Motor de Simulación Estocástica para Logística Portuaria}},
+  title        = {{Panamá PortOps-AI v2.0: Ecosistema Abierto MLOps, Benchmarking de 8 Algoritmos y Motor de Inferencia Causal para Logística Portuaria}},
   year         = {2026},
   publisher    = {GitHub},
   journal      = {GitHub repository},
   howpublished = {\url{https://github.com/miguelbenitez09/amp-cont-ai}},
-  note         = {Desarrollado v1.0 Miguel Benítez. Fines Cívicos y Educativos (Ley 6 de 2002). Licensed under GNU GPL v3.0 with mandatory attribution}
+  note         = {Ing. Miguel Benítez • Universidad Tecnológica de Panamá (UTP). Fines Cívicos y Educativos (Ley 6 de 2002). Licensed under GNU GPL v3.0 with mandatory attribution}
 }
 ```
 
 ---
 **Firma Oficial del Proyecto:**  
-`Desarrollado v1.0 Miguel Benítez`  
+`Panamá PortOps-AI v2.0 • Ing. Miguel Benítez • UTP`  
 República de Panamá, 2026.
+

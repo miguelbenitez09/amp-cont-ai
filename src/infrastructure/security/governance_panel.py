@@ -92,7 +92,7 @@ class PanamaSecurityGovernancePanel:
             "capabilities": [
                 "Reentrenamiento determinista con Semilla 42 o semillas custom",
                 "Creación y calibración de Presets e hiperparámetros en caliente",
-                "Simulación de nuevas variables externas y features tipo Fabric",
+                "Simulación de nuevas variables externas y features multivariadas para Lakehouse",
                 "Evaluación de torneos algorítmicos, WAPE, R² y residuos",
                 "Ejecución de simulaciones Monte Carlo y Reverse Stress Testing"
             ],

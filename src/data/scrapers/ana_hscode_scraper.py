@@ -56,6 +56,26 @@ class PanamaTariffDatabase:
             "base_legal": "Ley 23 de 15 de julio de 1997 (Sanidad Agropecuaria) y Arancel Nacional de Importación."
         },
         {
+            "hs_code_6": "020110",
+            "hs_code_panama": "0201.10.00.00.00",
+            "classification_system": "WCO HS 2022 / SIECA / ANA Panamá",
+            "descripcion": "Carne de la especie bovina, en canales o medias canales, fresca o refrigerada",
+            "capitulo": "02",
+            "seccion": "I - Animales Vivos y Productos del Reino Animal",
+            "unidad_medida": "Kilogramo (kg)",
+            "arancel_dai_pct": 25.0,
+            "itbms_pct": 0.0,
+            "entidades_reguladoras": ["APA", "MIDA-DNSA", "MINSA"],
+            "permiso_requerido": "Registro Sanitario APA / Inspección de Cuarentena en Muelle",
+            "tipo_mercancia": "ALIMENTOS_PERECEDEROS",
+            "requiere_reefer": True,
+            "effective_from": "2024-01-01",
+            "effective_to": "2026-12-31",
+            "procedimiento_importacion": "1. Notificación previa en Sistema Integrado APA. 2. Cadena de frío estricta (-1°C a 2°C) en contenedor reefer inspeccionado en recinto portuario. 3. Pago de DAI (25%) y tasa DUA.",
+            "procedimiento_exportacion": "1. Certificado zoosanitario de exportación emitido por MIDA-DNSA. 2. Despacho bajo régimen definitivo.",
+            "base_legal": "Ley 206 de 30 de marzo de 2021 (Agencia Panameña de Alimentos APA) y Arancel Nacional de Importación."
+        },
+        {
             "hs_code_6": "020130",
             "hs_code_panama": "0201.30.00.00.20",
             "classification_system": "WCO HS 2022 / SIECA / ANA Panamá",
@@ -384,12 +404,18 @@ class PanamaTariffDatabase:
 
     @classmethod
     def lookup_by_hs_code(cls, query: str) -> Optional[Dict[str, Any]]:
-        """Finds tariff item by 6-digit prefix or full Panama tariff code."""
-        clean = query.replace(".", "").replace(" ", "").strip()
+        """Finds tariff item by 6-digit prefix, full Panama tariff code, or semantic text search."""
+        if not query:
+            return None
+        clean = query.replace(".", "").replace(" ", "").strip().lower()
         for item in cls.OFFICIAL_TARIFF_ITEMS:
-            item_clean = item["hs_code_panama"].replace(".", "").replace(" ", "")
-            if item["hs_code_6"] == clean or clean in item_clean:
+            item_clean = item["hs_code_panama"].replace(".", "").replace(" ", "").lower()
+            if item["hs_code_6"] == clean or clean == item_clean or (len(clean) >= 4 and clean in item_clean):
                 return item
+        # Fallback to search_by_text
+        matches = cls.search_by_text(query)
+        if matches:
+            return matches[0]
         return None
 
     @classmethod

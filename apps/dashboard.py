@@ -38,7 +38,12 @@ if str(PROJECT_ROOT) not in sys.path:
 from src.data.scrapers.ana_hscode_scraper import PanamaTariffDatabase
 from src.data.parsers.container_iso6346 import ISO6346ContainerValidator
 from src.mcp.soul_manager import MCPSoulManager
-from src.models.inference_engine import OptimizedInferenceEngine
+from src.models.inference.engine import OptimizedInferenceEngine
+from src.models.champion_suite import get_champion_suite
+from src.auth.bootstrap import verify_deployment_readiness, initialize_root_user
+from src.infrastructure.secrets.manager import SecretManager
+from src.guardrails.user_guardrails import UserGuardrailManager
+from src.infrastructure.hardware.profiler import HardwareProfiler
 
 MODELS_DIR = PROJECT_ROOT / "models"
 GOLD_DIR = PROJECT_ROOT / "data" / "gold"
@@ -140,11 +145,15 @@ st.sidebar.markdown("""
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 🎛️ Parámetros de Operación")
 selected_port = st.sidebar.selectbox("Terminal Portuaria:", VALID_PORTS, index=0)
-selected_algorithm = st.sidebar.selectbox("Algoritmo Predictivo:", [
-    "LightGBM Champion (Cuantiles P10/P50/P90)",
-    "HistGradientBoosting Regressor",
-    "Random Forest Quantile",
-    "Ridge ElasticNet Regularizado"
+selected_algorithm = st.sidebar.selectbox("Algoritmo Predictivo (8 Evaluados):", [
+    "LightGBM Champion (Cuantiles P10/P50/P90 - WAPE 9.11%)",
+    "Random Forest Regressor (WAPE 9.15% - Latencia 4.58ms)",
+    "HistGradientBoosting Regressor (WAPE 9.72%)",
+    "CatBoost GBDT (WAPE 9.13%)",
+    "Extra Trees Regressor (WAPE 9.38%)",
+    "Quantile Neural MLP (WAPE 9.85%)",
+    "Bayesian Ridge Regression (WAPE 15.82%)",
+    "Ridge / ElasticNet Regularizado (WAPE 16.48% - Baseline)"
 ], index=0)
 
 horizon_months = st.sidebar.slider("Horizonte Predictivo (Meses):", min_value=1, max_value=6, value=3)
@@ -162,14 +171,16 @@ st.sidebar.markdown('<span class="badge-tag badge-amber">📊 140 MESES DATOS RE
 st.sidebar.caption("Marco Legal: Ley 6 de 2002 de Transparencia (República de Panamá). Licencia GNU GPL v3.0 con Atribución Obligatoria (Sección 7).")
 
 # --- Main Navigation Tabs ---
-tab_landing, tab_cot, tab_customs, tab_forecast, tab_sim, tab_data, tab_sec, tab_telemetry = st.tabs([
+tab_landing, tab_cot, tab_customs, tab_forecast, tab_benchmark, tab_sim, tab_data, tab_sec, tab_deploy, tab_telemetry = st.tabs([
     "🏠 Visión General & Misión",
     "🧠 Razonamiento CoT & Agentes",
     "🛃 RAG Aduanas, Aranceles & ISO 6346",
     "🔮 Pronóstico Cuantílico",
+    "🏆 Torneo 8 Algoritmos",
     "🎲 Simulación Monte Carlo",
     "🏛️ Lakehouse & Calidad 5D",
     "🔐 Seguridad, IAM & WORM",
+    "🚀 Verificación Despliegue 360°",
     "📊 Telemetría de Cómputo"
 ])
 
@@ -257,11 +268,14 @@ with tab_cot:
         soul_meta = MCPSoulManager.get_soul_by_id(soul_id)
         
         if soul_meta:
+            s_name = soul_meta.get("name") if isinstance(soul_meta, dict) else getattr(soul_meta, "name", "")
+            s_hash = soul_meta.get("immutable_hash", "") if isinstance(soul_meta, dict) else getattr(soul_meta, "immutable_hash", "")
+            s_seal = soul_meta.get("encrypted_seal", "") if isinstance(soul_meta, dict) else getattr(soul_meta, "encrypted_seal", "")
             st.markdown(f"""
             <div style="padding: 0.75rem; background: rgba(0, 245, 212, 0.06); border: 1px solid rgba(0, 245, 212, 0.3); border-radius: 8px; margin-bottom: 1rem;">
-              <div style="color: #00F5D4; font-weight: bold; font-size: 0.82rem;">{soul_meta.name}</div>
-              <div style="font-size: 0.72rem; color: #94A3B8; margin-top: 4px;"><strong>Hash:</strong> <code>{soul_meta.immutable_hash[:16]}...</code></div>
-              <div style="font-size: 0.72rem; color: #94A3B8;"><strong>Sello:</strong> <code>{soul_meta.encrypted_seal}</code></div>
+              <div style="color: #00F5D4; font-weight: bold; font-size: 0.82rem;">{s_name}</div>
+              <div style="font-size: 0.72rem; color: #94A3B8; margin-top: 4px;"><strong>Hash:</strong> <code>{s_hash[:16]}...</code></div>
+              <div style="font-size: 0.72rem; color: #94A3B8;"><strong>Sello:</strong> <code>{s_seal}</code></div>
             </div>
             """, unsafe_allow_html=True)
             
@@ -292,8 +306,12 @@ with tab_cot:
             
             # 2. Tariff lookup
             tariff_match = None
-            if "carne" in user_prompt.lower() or "0201" in user_prompt:
+            if "0201.10" in user_prompt or "020110" in user_prompt:
+                tariff_match = PanamaTariffDatabase.lookup_by_hs_code("020110")
+            elif "0201.30" in user_prompt or "020130" in user_prompt:
                 tariff_match = PanamaTariffDatabase.lookup_by_hs_code("020130")
+            elif "carne" in user_prompt.lower() or "0201" in user_prompt:
+                tariff_match = PanamaTariffDatabase.lookup_by_hs_code("020110") or PanamaTariffDatabase.lookup_by_hs_code("020130")
             elif "banan" in user_prompt.lower() or "0803" in user_prompt:
                 tariff_match = PanamaTariffDatabase.lookup_by_hs_code("080390")
             elif "bunker" in user_prompt.lower() or "2710" in user_prompt:
@@ -450,8 +468,9 @@ with tab_forecast:
     m1, m2, m3, m4 = st.columns(4)
     m1.metric("Pronóstico Central (P50)", f"{q['p50_median_central']:,.0f} TEUs", f"{bunker_shift:+d}% Shock Bunker")
     m2.metric("Piso de Seguridad (P10)", f"{q['p10_pessimistic_floor']:,.0f} TEUs", "Riesgo Mínimo (10%)")
-    m3.metric("Techo STS / Patio (P90)", f"{q['p90_capacity_stress']:,.0f} TEUs", "Estrés Capacidad (90%)")
-    m4.metric("Ratio de Vacíos Estimado", f"{pred['empty_container_ratio_estimate']:.2f}", pred['empty_container_imbalance_status'])
+    empty_ratio = pred.get("empty_container_ratio_estimate", 0.28)
+    empty_status = pred.get("empty_container_imbalance_status", "Equilibrio Operativo (28%)")
+    m4.metric("Ratio de Vacíos Estimado", f"{empty_ratio:.2f}", empty_status)
 
     # Time series projection dataframe
     months_series = pd.date_range(start="2026-04-01", periods=horizon_months, freq="MS")
@@ -488,7 +507,68 @@ with tab_forecast:
     st.plotly_chart(fig_forecast, use_container_width=True)
 
 # ==============================================================================
-# TAB 5: SIMULACIÓN ESTOCÁSTICA MONTE CARLO
+# TAB 5: TORNEO DE 8 ALGORITMOS & BENCHMARKING MLOPS
+# ==============================================================================
+with tab_benchmark:
+    st.markdown("### 🏆 Torneo de 8 Algoritmos Predictivos & Benchmarking Formal")
+    st.caption("Evaluación de backtesting temporal sobre 140 meses de la Autoridad Marítima de Panamá (AMP) con validación cruzada Expanding Window.")
+
+    suite = get_champion_suite()
+    comp_8 = suite.get_benchmark_summary()
+    splits_8 = suite.get_splits_summary()
+
+    b_cols = st.columns(4)
+    b_cols_2 = st.columns(4)
+    all_bcols = b_cols + b_cols_2
+
+    algo_items = list(comp_8.items())
+    for i, (k, v) in enumerate(algo_items):
+        with all_bcols[i]:
+            status_badge = "🏆 Champion" if v.get("status") == "Champion" else ("📏 Baseline" if "ridge" in k else "🥈 Challenger")
+            wape_txt = f"{v.get('avg_wape', 0)*100:.2f}%" if v.get("avg_wape", 0) < 5.0 else ">1,000% (Colapso)"
+            badge_class = "badge-cyan" if "Champion" in status_badge else ("badge-rose" if "Baseline" in status_badge else "badge-emerald")
+            st.markdown(f"""
+            <div class="metric-card">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                <span class="badge-tag {badge_class}">{status_badge}</span>
+                <span style="font-size:0.7rem; color:#94A3B8;">{v.get('avg_latency_ms', 0)} ms</span>
+              </div>
+              <div style="font-weight:700; font-size:0.95rem; color:#F8FAFC;">{v.get('name', k)}</div>
+              <div style="font-size:1.15rem; font-weight:800; color:#00E5FF; margin:6px 0;">WAPE: {wape_txt}</div>
+              <div style="font-size:0.75rem; color:#CBD5E1;">R²: <strong>{v.get('avg_r2', 0)}</strong> | RMSE: <strong>{v.get('avg_rmse', 0):,.0f}</strong></div>
+              <div style="font-size:0.7rem; color:#94A3B8; margin-top:4px;">{v.get('notes', '')}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    c_chart1, c_chart2 = st.columns(2)
+    names = [v.get('name', k) for k, v in comp_8.items()]
+    wapes = [min(v.get('avg_wape', 0)*100, 30.0) for k, v in comp_8.items()]
+    r2s = [max(v.get('avg_r2', 0), 0.0) for k, v in comp_8.items()]
+    colors = ["#00E5FF", "#00F5D4", "#38BDF8", "#14B8A6", "#818CF8", "#C084FC", "#F59E0B", "#EF4444"]
+
+    with c_chart1:
+        st.markdown("#### Comparativa de Error WAPE Promedio (%)")
+        fig_wape = px.bar(x=names, y=wapes, color=names, color_discrete_sequence=colors,
+                          labels={"x": "Algoritmo", "y": "WAPE (%)"})
+        fig_wape.update_layout(template="plotly_dark", showlegend=False, paper_bgcolor="rgba(0,0,0,0)",
+                               plot_bgcolor="rgba(11, 19, 43, 0.6)", height=320)
+        st.plotly_chart(fig_wape, use_container_width=True)
+
+    with c_chart2:
+        st.markdown("#### Coeficiente de Determinación R²")
+        fig_r2 = px.bar(x=names, y=r2s, color=names, color_discrete_sequence=colors,
+                        labels={"x": "Algoritmo", "y": "R² Score"})
+        fig_r2.update_layout(template="plotly_dark", showlegend=False, paper_bgcolor="rgba(0,0,0,0)",
+                             plot_bgcolor="rgba(11, 19, 43, 0.6)", height=320)
+        st.plotly_chart(fig_r2, use_container_width=True)
+
+    st.markdown("#### 📅 Desglose por Partición Temporal Fuera de Muestra (Expanding Window - 8 Algoritmos)")
+    df_splits = pd.DataFrame(splits_8)
+    if not df_splits.empty:
+        st.dataframe(df_splits, use_container_width=True)
+
+# ==============================================================================
+# TAB 6: SIMULACIÓN ESTOCÁSTICA MONTE CARLO
 # ==============================================================================
 with tab_sim:
     st.markdown("### 🎲 Simulación Estocástica de Riesgo Monte Carlo")
@@ -643,7 +723,110 @@ with tab_sec:
         st.dataframe(worm_sample, use_container_width=True, hide_index=True)
 
 # ==============================================================================
-# TAB 8: TELEMETRÍA DE CÓMPUTO E INFERENCIA
+# TAB 9: VERIFICACIÓN INICIAL DE DESPLIEGUE 360°, ROOT ADMIN & SECRETOS
+# ==============================================================================
+with tab_deploy:
+    st.markdown("### 🚀 Verificación Integral de Despliegue & Root Admin (Checklist 360°)")
+    st.caption("Verificación de cumplimiento de microservicios, seguridad criptográfica, gobernanza RBAC y volumen de almacenamiento.")
+
+    # 1. Run deploy verification
+    v_report = verify_deployment_readiness()
+    overall_ready = v_report.get("overall_ready", False)
+
+    top_c1, top_c2 = st.columns([2, 1])
+    with top_c1:
+        if overall_ready:
+            st.success("● SISTEMA LISTO PARA PRODUCCIÓN — Todos los componentes críticos verificados (100%).")
+        else:
+            st.warning("⚠️ SISTEMA EN MODO ADAPTATIVO — Algunos componentes opcionales requieren atención.")
+    with top_c2:
+        if st.button("⚡ Re-ejecutar Verificación 360°", use_container_width=True):
+            st.rerun()
+
+    # Hardware & GPU Discovery Card
+    hw = HardwareProfiler.get_full_hardware_profile()
+    gpu = hw.get("compute_engine", {}).get("gpu", {})
+    cpu = hw.get("compute_engine", {}).get("cpu", {})
+    mem = hw.get("lakehouse_storage", {}).get("memory", {})
+    os_env = hw.get("os_environment", {})
+
+    st.markdown("#### 🧭 Diagnóstico de Hardware del Anfitrión & Aceleración GPU (NVIDIA)")
+    hw_col1, hw_col2 = st.columns([1.5, 1])
+    with hw_col1:
+        gpu_badge = "badge-emerald" if gpu.get("has_nvidia_gpu") else "badge-amber"
+        st.markdown(f"""
+        <div class="metric-card" style="border-left: 4px solid #00E5FF;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#00E5FF; font-size:0.95rem;">🎮 Acelerador GPU: {gpu.get('device_name', 'No detectada')}</strong>
+            <span class="badge-tag {gpu_badge}">{'● GPU ACTIVA (CUDA)' if gpu.get('has_nvidia_gpu') else '● CPU SIMD'}</span>
+          </div>
+          <div style="font-size:0.82rem; color:#CBD5E1; margin:6px 0;">
+            • <strong>VRAM Dedicada:</strong> <span style="color:#00F5D4;">{gpu.get('total_vram_gb', 0)} GB ({gpu.get('total_vram_mib', 0)} MiB)</span> | 
+            • <strong>Driver:</strong> {gpu.get('driver_version', 'N/A')} | 
+            • <strong>Compute Cap:</strong> {gpu.get('compute_capability', 'N/A')}
+          </div>
+          <div style="font-size:0.8rem; color:#94A3B8;">
+            • <strong>Perfil Asignado:</strong> <code style="color:#38BDF8;">{hw.get('compute_engine', {}).get('recommended_profile')}</code><br>
+            • <strong>Diagnóstico:</strong> {gpu.get('summary', '')}
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+    with hw_col2:
+        admin_badge = "badge-emerald" if os_env.get("is_administrator") else "badge-cyan"
+        st.markdown(f"""
+        <div class="metric-card" style="border-left: 4px solid #c084fc;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:#c084fc; font-size:0.95rem;">💻 Host Specs & Permisos</strong>
+            <span class="badge-tag {admin_badge}">{os_env.get('elevation_status', 'STANDARD_USER')}</span>
+          </div>
+          <div style="font-size:0.82rem; color:#CBD5E1; margin:6px 0;">
+            • <strong>CPU:</strong> {cpu.get('physical_cores', 4)} Núcleos Físicos / {cpu.get('logical_cores', 8)} Hilos ({', '.join(cpu.get('simd_extensions', []))})<br>
+            • <strong>RAM:</strong> {mem.get('total_gb', 0)} GB Totales ({mem.get('available_gb', 0)} GB Disponibles)<br>
+            • <strong>SO:</strong> {os_env.get('system')} {os_env.get('release')} ({os_env.get('platform', '')})
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("#### Matriz de Validación de Puesta en Producción (360°):")
+    # Checklist grid
+    checklist = v_report.get("checklist", [])
+    chk_c1, chk_c2 = st.columns(2)
+    for i, item in enumerate(checklist):
+        target_col = chk_c1 if i % 2 == 0 else chk_c2
+        with target_col:
+            is_pass = item["status"] == "PASS"
+            badge_color = "#10B981" if is_pass else ("#F59E0B" if item["status"] == "WARN" else "#EF4444")
+            st.markdown(f"""
+            <div style="background: rgba(16, 26, 48, 0.7); border: 1px solid {badge_color}; border-radius: 8px; padding: 0.85rem; margin-bottom: 0.75rem;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 4px;">
+                <span style="font-weight:700; color:{badge_color}; font-size:0.88rem;">{item['check']}</span>
+                <span style="background:rgba(0,0,0,0.3); padding:2px 8px; border-radius:4px; font-size:0.75rem; color:{badge_color}; border:1px solid {badge_color};">● {item['status']}</span>
+              </div>
+              <p style="font-size:0.8rem; color:#CBD5E1; margin:0;">{item['message']}</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.markdown("#### 🔐 Bóveda Criptográfica & Adaptadores a Modelos de IA")
+    sec_c1, sec_c2 = st.columns([1.5, 1])
+    with sec_c1:
+        st.markdown("**Inventario de Secretos y Volúmenes de Almacenamiento:**")
+        vault_inv = SecretManager.get_masked_inventory()
+        df_vault = pd.DataFrame(vault_inv)
+        st.dataframe(df_vault, use_container_width=True, hide_index=True)
+
+    with sec_c2:
+        st.markdown("**Test de Conectividad de Runtimes:**")
+        prov_choice = st.selectbox("Seleccionar Runtime:", ["vllm", "ollama", "openai", "gemini", "anthropic"])
+        if st.button("🔌 Probar Adaptador de Inferencia"):
+            test_res = SecretManager.test_provider_connection(prov_choice)
+            if test_res.get("status") in ["READY", "CONFIGURED"]:
+                st.success(f"✓ {test_res.get('provider')}: {test_res.get('message')} ({test_res.get('latency_ms', 0)} ms)")
+            else:
+                st.info(f"ℹ️ {test_res.get('provider')}: {test_res.get('message')}")
+
+# ==============================================================================
+# TAB 10: TELEMETRÍA DE CÓMPUTO E INFERENCIA
 # ==============================================================================
 with tab_telemetry:
     st.markdown("### 📊 Telemetría de Cómputo e Inferencia en Tiempo Real")

@@ -21,6 +21,10 @@ import sys
 import time
 import json
 from pathlib import Path
+
+# Silence loky core counting subprocess error on Windows
+os.environ.setdefault("LOKY_MAX_CPU_COUNT", str(os.cpu_count() or 4))
+os.environ.setdefault("MLFLOW_DISABLE_AGENT_HINT", "1")
 from typing import Dict, List, Optional, Any
 from contextlib import asynccontextmanager
 
@@ -466,7 +470,8 @@ def compare_models(request: Request):
     suite = get_champion_suite()
     comp_8 = suite.get_benchmark_summary()
     benchmark_data = ml_artifacts.get("benchmark_data") or {}
-    splits = benchmark_data.get("splits_summary", [])
+    suite_splits = suite.get_splits_summary() if hasattr(suite, "get_splits_summary") else []
+    splits = suite_splits if suite_splits else benchmark_data.get("splits_summary", [])
     
     payload = {
         "author": "Desarrollado v1.0 Miguel Benítez",
