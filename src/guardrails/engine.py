@@ -112,3 +112,99 @@ class PortOpsGuardrails:
             violations=[],
             sanitized_payload={"sanitized_query": clean_text}
         )
+
+    @classmethod
+    def validate_maritime_context(cls, query_text: str) -> GuardrailResult:
+        """
+        Identifies whether query pertains to Panamanian maritime, port, customs, or logistics domain.
+        Prevents off-topic diversion, jailbreaks, and unrelated tasks.
+        """
+        # First sanitize injections
+        san_res = cls.sanitize_rag_query(query_text)
+        if not san_res.is_valid:
+            return san_res
+
+        q_lower = query_text.lower()
+        domain_keywords = [
+            "puerto", "port", "terminal", "balboa", "cristóbal", "cristobal", "manzanillo", "mit",
+            "psa", "rodman", "cct", "bocas fruit", "teu", "contenedor", "container", "bunkering",
+            "combustible", "calado", "draft", "canal", "acp", "amp", "fondeadero", "grúa", "sts",
+            "patio", "yard", "arancel", "hs code", "dai", "itbms", "aduanas", "ana", "mida",
+            "minsa", "apa", "cif", "edifact", "baplie", "coarri", "iso 6346", "ley 6", "ley 56",
+            "mlops", "pronóstico", "forecast", "monte carlo", "var", "cvar", "riesgo", "worm"
+        ]
+
+        # Check if at least one domain keyword matches or if query contains numbers/codes
+        matches = [kw for kw in domain_keywords if kw in q_lower]
+        if not matches and len(query_text.split()) > 4:
+            # Query is out of domain
+            return GuardrailResult(
+                is_valid=False,
+                risk_level="MEDIUM",
+                violations=["Consulta fuera de contexto operativo. El sistema está acotado exclusivamente al ámbito marítimo, portuario, aduanero y logístico de Panamá."],
+                sanitized_payload={"matched_keywords": [], "domain_relevant": False}
+            )
+
+        return GuardrailResult(
+            is_valid=True,
+            risk_level="LOW",
+            violations=[],
+            sanitized_payload={"matched_keywords": matches, "domain_relevant": True}
+        )
+
+    @classmethod
+    def validate_role_capability(cls, user_roles: List[str], required_capability: str) -> GuardrailResult:
+        """
+        Verifies if user's roles grant the requested operational capability.
+        """
+        if not user_roles:
+            user_roles = ["readonly_viewer"]
+
+        # Root admin has universal access
+        if "root_administrator" in user_roles or "root" in user_roles:
+            return GuardrailResult(is_valid=True, risk_level="LOW", violations=[])
+
+        role_permissions_map = {
+            "root_administrator": ["*"],
+            "maritime_auditor": ["audit.read", "models.read", "data.read", "simulations.read", "worm.verify"],
+            "port_operations_director": ["operations.manage", "models.read", "simulations.run", "data.read"],
+            "terminal_operator": ["operations.read", "models.read", "containers.validate"],
+            "customs_officer": ["customs.read", "customs.calculate", "containers.validate"],
+            "lead_data_scientist": ["models.train", "models.evaluate", "models.promote", "features.manage"],
+            "readonly_viewer": ["models.read", "data.read", "health.read"]
+        }
+
+        user_allowed_caps = set()
+        for r in user_roles:
+            caps = role_permissions_map.get(r, ["readonly"])
+            user_allowed_caps.update(caps)
+
+        if "*" in user_allowed_caps or required_capability in user_allowed_caps:
+            return GuardrailResult(is_valid=True, risk_level="LOW", violations=[])
+
+        return GuardrailResult(
+            is_valid=False,
+            risk_level="HIGH",
+            violations=[f"Rol no autorizado: se requiere la capacidad '{required_capability}' para esta operación."],
+            sanitized_payload={"user_roles": user_roles, "required_capability": required_capability}
+        )
+
+    @classmethod
+    def validate_soul_security(cls, soul_id: str) -> GuardrailResult:
+        """
+        Verifies the cryptographic immutability and anti-tamper seal of an MCP Soul.
+        """
+        from src.mcp.soul_manager import MCPSoulManager
+        verification = MCPSoulManager.verify_soul_seal(soul_id)
+        if not verification.get("valid"):
+            return GuardrailResult(
+                is_valid=False,
+                risk_level="CRITICAL",
+                violations=[verification.get("reason", "Fallo de validación criptográfica en Soul.")]
+            )
+        return GuardrailResult(
+            is_valid=True,
+            risk_level="LOW",
+            violations=[],
+            sanitized_payload=verification
+        )

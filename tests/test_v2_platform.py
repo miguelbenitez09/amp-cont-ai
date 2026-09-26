@@ -57,7 +57,7 @@ def test_health_version():
     res = requests.get(f"{BASE_URL}/health/version", timeout=5)
     assert res.status_code == 200
     data = res.json()
-    assert data["version"] == "2.0.0"
+    assert data["version"] == "1.0.0"
     assert "Miguel Benítez" in data["author"]
 
 

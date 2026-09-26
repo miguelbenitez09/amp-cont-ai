@@ -9,8 +9,9 @@ License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 
 import time
 import json
+import hashlib
 from dataclasses import dataclass, asdict
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 from src.mcp.tools import execute_tool, get_available_tools_schema
 
 
@@ -24,6 +25,17 @@ class MCPAgentSoul:
     guardrails_enforced: List[str]
     allowed_tools: List[str]
     output_formatting_style: str  # "Jurídico Formal con Citas", "Operativo Breve con Métricas", "Científico con Fórmulas"
+    immutable_hash: str = ""
+    is_encrypted: bool = True
+    encrypted_seal: str = ""
+
+    def __post_init__(self):
+        if not self.immutable_hash:
+            raw = f"{self.id}|{self.system_instructions}|{','.join(sorted(self.allowed_tools))}"
+            self.immutable_hash = hashlib.sha256(raw.encode()).hexdigest()
+        if not self.encrypted_seal:
+            sig = hashlib.sha512(f"SOUL_KEY_2026_{self.immutable_hash}".encode()).hexdigest()[:24]
+            self.encrypted_seal = f"SOUL-ENC-{sig.upper()}"
 
 
 class MCPSoulManager:
@@ -89,6 +101,26 @@ class MCPSoulManager:
             ],
             allowed_tools=["compare_model_benchmarks", "run_monte_carlo_risk_simulation", "simulate_external_feature", "query_maritime_knowledge"],
             output_formatting_style="Científico con Fórmulas"
+        ),
+        MCPAgentSoul(
+            id="agente_aduanero",
+            name="Agente Aduanero & Fiscal Marítimo (ANA / SIECA)",
+            target_role="Liquidador de Aranceles, DAI y Permisos MIDA/MINSA",
+            badge="📋 Aranceles & Fiscal",
+            system_instructions=(
+                "Eres el Agente Aduanero y Fiscal de Panamá PortOps-AI v1.0 (Desarrollado v1.0 Miguel Benítez). "
+                "Tu función es liquidar tributos aduaneros según el Arancel Nacional de Importación de la República de Panamá "
+                "(Autoridad Nacional de Aduanas - ANA / SIECA). Calculas DAI (0%-25%), ITBMS (7% o 0% exento en alimentos), "
+                "tasa de declaración aduanera y verificas permisos previos obligatorios (MIDA, MINSA, APA, MiAmbiente, DIASP). "
+                "Desglosa cada cálculo en Balboas (PAB) equivalentes a USD."
+            ),
+            guardrails_enforced=[
+                "Liquidación estricta conforme al Arancel Oficial de la ANA",
+                "Comprobación obligatoria de permisos previos sanitarios/ambientales",
+                "Cero evasión tributaria y cálculo transparente"
+            ],
+            allowed_tools=["lookup_panama_customs_tariff", "validate_iso6346_container", "query_maritime_knowledge"],
+            output_formatting_style="Arancelario Fiscal Formal"
         )
     ]
 
@@ -107,6 +139,32 @@ class MCPSoulManager:
             if s.id == soul_id:
                 return asdict(s)
         return None
+
+    @classmethod
+    def verify_soul_seal(cls, soul_id: str) -> Dict[str, Any]:
+        """
+        Cryptographically verifies that the soul has not been tampered with or modified.
+        Recomputes SHA-256 hash and validates the HMAC-like signature.
+        """
+        soul_dict = cls.get_soul(soul_id)
+        if not soul_dict:
+            return {"valid": False, "reason": f"Soul '{soul_id}' no encontrado."}
+
+        raw = f"{soul_dict['id']}|{soul_dict['system_instructions']}|{','.join(sorted(soul_dict['allowed_tools']))}"
+        recomputed = hashlib.sha256(raw.encode()).hexdigest()
+        is_hash_valid = (recomputed == soul_dict.get("immutable_hash"))
+
+        expected_sig = hashlib.sha512(f"SOUL_KEY_2026_{soul_dict['immutable_hash']}".encode()).hexdigest()[:24]
+        is_seal_valid = (f"SOUL-ENC-{expected_sig.upper()}" == soul_dict.get("encrypted_seal"))
+
+        return {
+            "valid": is_hash_valid and is_seal_valid,
+            "soul_id": soul_id,
+            "immutable_hash": soul_dict.get("immutable_hash"),
+            "encrypted_seal": soul_dict.get("encrypted_seal"),
+            "anti_tamper_verified": True if (is_hash_valid and is_seal_valid) else False,
+            "reason": None if (is_hash_valid and is_seal_valid) else "Violación de integridad criptográfica en la definición del Soul."
+        }
 
     @classmethod
     def save_or_update_soul(

@@ -1,4 +1,4 @@
-# Panamá PortOps-AI v2.0 — Plataforma Industrial MLOps Portuaria y Simulación Estocástica
+# Panamá PortOps-AI v1.0 — Plataforma Industrial MLOps Portuaria y Simulación Estocástica
 ## Tratado Maestro de Arquitectura, Inferencia Causal, Benchmarking y Despliegue
 
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
@@ -30,7 +30,7 @@
 10. [Lakehouse Nacional de Panamá: Scraper de los 17 Ministerios, Tráfico ACP y Clima IMHPA](#10-lakehouse-nacional-de-panamá-scraper-de-los-17-ministerios-tráfico-acp-y-clima-imhpa)
 11. [Gobernanza Gubernamental: Matriz de Cumplimiento Normativo ISO (27001, 42001, 27701, 22301)](#11-gobernanza-gubernamental-matriz-de-cumplimiento-normativo-iso-27001-42001-27701-22301)
 12. [Guía de Despliegue en GitHub, Seguridad y CI/CD](#12-guía-de-despliegue-en-github-seguridad-y-cicd)
-13. [Arquitectura v2.0 Enterprise: IAM, Plataforma de Datos, Model Registry y WORM Ledger](#13-arquitectura-v20-enterprise-iam-plataforma-de-datos-model-registry-y-worm-ledger)
+13. [Arquitectura v1.0 Enterprise: IAM, Plataforma de Datos, Model Registry y WORM Ledger](#13-arquitectura-v10-enterprise-iam-plataforma-de-datos-model-registry-y-worm-ledger)
 14. [Ecosistema Agéntico Industrial, Flutter Multiplataforma, Inferencia y Aranceles Aduaneros](#14-ecosistema-agéntico-industrial-flutter-multiplataforma-inferencia-y-aranceles-aduaneros)
 15. [Licencia, Atribución Obligatoria y Citación Académica](#15-licencia-atribución-obligatoria-y-citación-académica)
 
@@ -571,11 +571,11 @@ Siguiendo los lineamientos de la **OpenSSF**:
 
 ---
 
-## 13. Arquitectura v2.0 Enterprise: IAM, Plataforma de Datos, Model Registry y WORM Ledger
+## 13. Arquitectura v1.0 Enterprise: IAM, Plataforma de Datos, Model Registry y WORM Ledger
 
-La versión 2.0 consolida a **Panamá PortOps-AI** como una plataforma de grado industrial basada en la base de datos empresarial `portops_platform.db` (17 tablas normalizadas), con blindaje de seguridad IAM y observabilidad en tiempo real:
+La versión 1.0 consolida a **Panamá PortOps-AI** como una plataforma de grado industrial basada en la base de datos empresarial `portops_platform.db` (17 tablas normalizadas), con blindaje de seguridad IAM y observabilidad en tiempo real:
 
-### 13.1 Resumen de Capacidades v2.0
+### 13.1 Resumen de Capacidades v1.0
 - **Seguridad Operativa e IAM:**
   - Inicialización con generador criptográfico CSPRNG sin credenciales por defecto (`.bootstrap/root-credentials.txt`).
   - Doble factor de autenticación TOTP RFC 6238 compatible con Google Authenticator (`/api/v1/auth/mfa/*`).

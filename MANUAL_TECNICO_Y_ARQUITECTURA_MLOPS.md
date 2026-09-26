@@ -17,7 +17,7 @@
 6. [Motor de Simulación Estocástica de Monte Carlo y Pruebas de Estrés](#6-motor-de-simulación-estocástica-de-monte-carlo-y-pruebas-de-estrés)
 7. [Guía Maestra de Extensibilidad: Ingesta de Nuevas APIs y Datos Internacionales](#7-guía-maestra-de-extensibilidad-ingesta-de-nuevas-apis-y-datos-internacionales)
 8. [Despliegue, Microservicio y Configuración en Caliente](#8-despliegue-microservicio-y-configuración-en-caliente)
-9. [Arquitectura v2.0 Enterprise: IAM, Plataforma de Datos (5 Gates), Model Registry y WORM Ledger](#9-arquitectura-v20-enterprise-iam-plataforma-de-datos-5-gates-model-registry-y-worm-ledger)
+9. [Arquitectura v1.0 Enterprise: IAM, Plataforma de Datos (5 Gates), Model Registry y WORM Ledger](#9-arquitectura-v10-enterprise-iam-plataforma-de-datos-5-gates-model-registry-y-worm-ledger)
 10. [Ecosistema Agéntico Industrial, Flutter Multiplataforma, Inferencia y Aranceles Aduaneros](#10-ecosistema-agéntico-industrial-flutter-multiplataforma-inferencia-y-aranceles-aduaneros)
 11. [Términos Legales y Atribución Obligatoria](#11-términos-legales-y-atribución-obligatoria)
 
@@ -449,9 +449,9 @@ python scripts/quickstart_pipeline.py
 
 ---
 
-## 9. Arquitectura v2.0 Enterprise: IAM, Plataforma de Datos (5 Gates), Model Registry y WORM Ledger
+## 9. Arquitectura v1.0 Enterprise: IAM, Plataforma de Datos (5 Gates), Model Registry y WORM Ledger
 
-La versión 2.0 de **Panamá PortOps-AI** eleva el proyecto de un pipeline de entrenamiento a una **plataforma empresarial integral de MLOps y gobernanza portuaria**, incorporando un núcleo relacional de seguridad y trazabilidad sobre `data/enterprise_db/portops_platform.db` (17 tablas normalizadas) y exponiendo una API unificada bajo `/api/v1/*` y `/health/*`.
+La versión 1.0 de **Panamá PortOps-AI** eleva el proyecto de un pipeline de entrenamiento a una **plataforma empresarial integral de MLOps y gobernanza portuaria**, incorporando un núcleo relacional de seguridad y trazabilidad sobre `data/enterprise_db/portops_platform.db` (17 tablas normalizadas) y exponiendo una API unificada bajo `/api/v1/*` y `/health/*`.
 
 ### 9.1 Bootstrap Criptográfico y Gestión de Identidades (IAM)
 - **CSPRNG Zero-Default Bootstrap:** El sistema rechaza cualquier par de credenciales fijas o inseguras como `root/root` o `admin/admin`. Durante el arranque (`scripts/bootstrap_root.py`), genera un usuario root determinista pero seguro con entropía de grado criptográfico (`root_<hex>`) y contraseña aleatoria de 24 caracteres en `.bootstrap/root-credentials.txt`.
@@ -481,13 +481,13 @@ El flujo de datos implementa 5 puertas de calidad automatizadas en `src/data/qua
   $$\text{Block\_Hash}_n = \text{SHA256}\left(\text{Block\_Hash}_{n-1} \parallel \text{Actor} \parallel \text{Payload\_JSON} \parallel \text{Timestamp}\right)$$
 - **Auditoría Forense en Tiempo Real:** El endpoint `/api/v1/audit/worm/verify` audita el 100% de la cadena desde el Bloque Génesis hasta la cabeza actual, certificando la ausencia total de mutaciones o manipulaciones externas según los estándares ISO/IEC 27001.
 
-### 9.5 Catálogo Oficial de Endpoints Autorizados (v2.0)
+### 9.5 Catálogo Oficial de Endpoints Autorizados (v1.0)
 | Endpoint | Método | Función Principal |
 | :--- | :---: | :--- |
 | `/health/live` | `GET` | Probe de liveness para orquestadores y balanceadores. |
 | `/health/ready` | `GET` | Probe de readiness verificando DB, Feature Store y Champion Model. |
 | `/health/dependencies` | `GET` | Estado de dependencias críticas (SQLite, Parquet, Modelos, Config). |
-| `/health/version` | `GET` | Versión v2.0, commit, timestamp y firma de autoría. |
+| `/health/version` | `GET` | Versión v1.0, commit, timestamp y firma de autoría. |
 | `/api/v1/auth/login` | `POST` | Autenticación con usuario/contraseña y emisión de sesión/cookie. |
 | `/api/v1/auth/mfa/verify` | `POST` | Desafío de segundo factor TOTP (RFC 6238). |
 | `/api/v1/auth/simulate-role` | `POST` | Sandbox RBAC para simular y auditar permisos de los 12 roles. |
@@ -507,6 +507,7 @@ El flujo de datos implementa 5 puertas de calidad automatizadas en `src/data/qua
 | `/api/v1/audit/events` | `GET` | Registro de eventos de seguridad y accesos del sistema. |
 | `/api/v1/agents/list` | `GET` | Catálogo de los 4 agentes especializados del enjambre. |
 | `/api/v1/agents/chat` | `POST` | Interacción y enrutamiento semántico con el enjambre de agentes. |
+| `/api/v1/agents/reasoning-chat` | `POST` | Inferencia interactiva con visualización explícita de Cadena de Razonamiento (CoT). |
 | `/api/v1/agents/llm-health` | `GET` | Estado de salud de los motores vLLM y Ollama locales. |
 | `/api/v1/mcp/tools` | `GET` | Esquemas estándar JSON-RPC de herramientas MCP marítimas. |
 | `/api/v1/mcp/execute` | `POST` | Ejecución segura de herramientas MCP con control RBAC. |

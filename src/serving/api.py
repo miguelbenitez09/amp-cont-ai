@@ -212,7 +212,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Panamá PortOps-AI Platform",
     description=API_DESCRIPTION,
-    version="2.0.0",
+    version="1.0.0",
     openapi_tags=tags_metadata,
     lifespan=lifespan
 )
