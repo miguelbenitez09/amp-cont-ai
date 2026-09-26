@@ -41,6 +41,9 @@ venv.bak/
 *.swo
 *~
 .DS_Store
+~$*
+*.tmp
+*.docx
 
 # Testing and Coverage
 .pytest_cache/
