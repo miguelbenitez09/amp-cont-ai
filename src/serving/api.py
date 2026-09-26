@@ -1130,6 +1130,34 @@ def get_enterprise_infrastructure_status():
     }
 
 
+class DatabaseConnectionTestRequest(BaseModel):
+    engine: str = Field("duckdb", description="Motor a diagnosticar: 'duckdb', 'timescaledb', o 'redis'")
+    custom_query: Optional[str] = Field(None, description="Consulta SQL o comando opcional")
+
+
+@app.post("/api/infrastructure/database/test-connection", tags=["System Health & Infrastructure"])
+def test_database_connection_endpoint(req: DatabaseConnectionTestRequest):
+    """
+    Ejecuta un diagnóstico real de latencia, pooling y query testing en vivo
+    para el motor de persistencia seleccionado (DuckDB, TimescaleDB, Redis).
+    """
+    try:
+        result = DatabaseFactory.test_adapter_connection(req.engine, req.custom_query)
+        return {
+            "status": "success",
+            "engine": req.engine,
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "latency_ms": result.get("latency_ms", 0.0),
+            "data": result,
+            **result
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Fallo en la prueba de conexión a {req.engine}: {str(e)}"
+        )
+
+
 @app.post("/api/rag/query", tags=["Methodology & Data Governance"])
 def query_maritime_legal_rag(req: RAGQueryRequest):
     """
@@ -1611,8 +1639,57 @@ def list_training_presets():
     return {
         "status": "success",
         "author": "Desarrollado v1.0 Miguel Benítez",
-        "total_presets": len(TrainingPresetManager.PRESETS),
+        "total_presets": len(TrainingPresetManager.list_presets()),
         "presets": TrainingPresetManager.list_presets()
+    }
+
+
+class CustomPresetCreateRequest(BaseModel):
+    id: str = Field(..., description="Identificador único del preset (ej: mi_preset_alpha)")
+    name: str = Field(..., description="Nombre descriptivo del preset")
+    badge: Optional[str] = Field("⭐ Personalizado", description="Etiqueta visual")
+    target_objective: Optional[str] = Field("Objetivo personalizado de predicción", description="Meta del entrenamiento")
+    pace_description: Optional[str] = Field("Configuración personalizada", description="Ritmo de aprendizaje")
+    recommended_use_case: Optional[str] = Field("Operación portuaria personalizada", description="Caso de uso recomendado")
+    hyperparameters: Dict[str, Any] = Field(..., description="Diccionario de hiperparámetros")
+    math_formula: Optional[str] = None
+    math_explanation: Optional[str] = None
+    python_snippet: Optional[str] = None
+
+
+@app.post("/api/models/presets", tags=["Model Serving & Forecasting"])
+def create_custom_training_preset(req: CustomPresetCreateRequest):
+    """Permite a ingenieros MLOps registrar un nuevo preset de hiperparámetros personalizado en caliente."""
+    from src.models.training_presets import TrainingPresetManager
+    preset = TrainingPresetManager.register_custom_preset(
+        preset_id=req.id,
+        name=req.name,
+        badge=req.badge or "⭐ Personalizado",
+        target_objective=req.target_objective or "Objetivo personalizado",
+        pace_description=req.pace_description or "Configuración personalizada",
+        recommended_use_case=req.recommended_use_case or "Entorno de experimentación",
+        hyperparameters=req.hyperparameters,
+        math_formula=req.math_formula,
+        math_explanation=req.math_explanation,
+        python_snippet=req.python_snippet
+    )
+    return {
+        "status": "success",
+        "message": f"Preset '{preset['name']}' registrado exitosamente en caliente.",
+        "preset": preset
+    }
+
+
+@app.get("/api/models/presets/{preset_id}", tags=["Model Serving & Forecasting"])
+def get_training_preset_detail(preset_id: str):
+    """Retorna la especificación completa, bases matemáticas y código Python del preset seleccionado."""
+    from src.models.training_presets import TrainingPresetManager
+    preset = TrainingPresetManager.get_preset(preset_id)
+    if not preset:
+        raise HTTPException(status_code=404, detail=f"Preset '{preset_id}' no encontrado.")
+    return {
+        "status": "success",
+        "preset": preset
     }
 
 
@@ -1708,6 +1785,55 @@ def revoke_active_sessions(req: RevokeSessionsRequest):
     return PanamaSecurityGovernancePanel.revoke_all_sessions(reason=req.reason)
 
 
+class VerifyPermissionRequest(BaseModel):
+    user_or_role: Optional[str] = None
+    username: Optional[str] = None
+    action: Optional[str] = None
+    permission: Optional[str] = None
+
+
+@app.post("/api/admin/verify-permission", tags=["System Health & Infrastructure"])
+def verify_user_action_permission(req: VerifyPermissionRequest):
+    """Verifica si un usuario o rol cuenta con autorización para ejecutar una acción."""
+    from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
+    target_user = req.user_or_role or req.username or "root"
+    target_action = req.action or req.permission or "retrain_model"
+    allowed = PanamaSecurityGovernancePanel.verify_action_permission(target_user, target_action)
+    role = PanamaSecurityGovernancePanel.get_user_role(target_user)
+    return {
+        "user_or_role": target_user,
+        "username": target_user,
+        "action": target_action,
+        "permission_tested": target_action,
+        "role": role,
+        "allowed": allowed,
+        "status": "authorized" if allowed else "forbidden",
+        "reason": "Permiso concedido bajo RBAC" if allowed else f"El rol '{role}' no tiene autorización para '{target_action}'.",
+        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S UTC")
+    }
+
+
+class DeleteUserRequest(BaseModel):
+    username: str
+
+
+@app.post("/api/admin/delete-user", tags=["System Health & Infrastructure"])
+def delete_enterprise_user(req: DeleteUserRequest):
+    """Elimina un usuario del clúster (protegiendo la cuenta root)."""
+    from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
+    success = PanamaSecurityGovernancePanel.delete_user(req.username)
+    if not success:
+        raise HTTPException(status_code=400, detail="No se pudo eliminar el usuario (usuario protegido o no existe).")
+    return {"status": "success", "message": f"Usuario '{req.username}' eliminado exitosamente."}
+
+
+@app.get("/api/admin/first-run-status", tags=["System Health & Infrastructure"])
+def get_system_first_run_status():
+    """Consulta si la plataforma requiere configuración de arranque o ya fue inicializada."""
+    from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
+    return PanamaSecurityGovernancePanel.check_first_run_status()
+
+
 # ==============================================================================
 # MCP (MODEL CONTEXT PROTOCOL) SOULS & TOOL RUNNER ENDPOINTS
 # ==============================================================================
@@ -1747,6 +1873,36 @@ def execute_mcp_tool_visual_runner(req: MCPExecuteToolRequest):
         tool_name=req.tool_name,
         arguments=req.arguments,
         soul_id=req.soul_id
+    )
+
+
+class LangGraphRouteRequest(BaseModel):
+    query: str = Field(..., description="Consulta del usuario en lenguaje natural para enrutamiento multi-agente")
+
+
+@app.post("/api/mcp/langgraph-route", tags=["Methodology & Data Governance"])
+def route_query_via_langgraph(req: LangGraphRouteRequest):
+    """Enruta una consulta en lenguaje natural mediante el orquestador Multi-Agente LangGraph."""
+    from src.mcp.soul_manager import LangGraphAgentRouter
+    return LangGraphAgentRouter.route_query(req.query)
+
+
+class SyntheticDataRequest(BaseModel):
+    n_months: int = Field(12, ge=1, le=60, description="Número de meses sintéticos a proyectar")
+    seed: int = Field(42, description="Semilla pseudoaleatoria para reproducibilidad estocástica")
+    shock_probability: float = Field(0.10, ge=0.0, le=0.50, description="Probabilidad de saltos de Poisson (Merton)")
+    volatility_multiplier: float = Field(1.0, ge=0.5, le=3.0, description="Multiplicador de volatilidad de patio")
+
+
+@app.post("/api/simulation/synthetic-dataset", tags=["Simulation & Risk Management"])
+def generate_synthetic_port_dataset(req: SyntheticDataRequest):
+    """Genera series de tiempo multivariadas sintéticas con cópula de Cholesky y saltos de Merton."""
+    from src.models.synthetic_generator import SyntheticPortDataGenerator
+    return SyntheticPortDataGenerator.generate_synthetic_series(
+        n_months=req.n_months,
+        seed=req.seed,
+        shock_probability=req.shock_probability,
+        volatility_multiplier=req.volatility_multiplier
     )
 
 

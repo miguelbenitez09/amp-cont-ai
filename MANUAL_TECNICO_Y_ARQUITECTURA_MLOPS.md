@@ -333,7 +333,7 @@ Todo el código generado se actualiza de manera reactiva en cURL, Python y JavaS
 ### 8.7 Gobernanza Estatal, Anonimización Ley 81 de 2019 y Replicación Determinista:
 
 #### 1. Procedencia de Datos de Entidades Gubernamentales de Panamá:
-- **Autoridad Marítima de Panamá (AMP):** Dataset oficial `https://datosabiertos.gob.pa/dataset/movimiento-de-carga-en-contenedores`. 140 meses continuos (2015-01 a 2026-05) de movimiento de contenedores y bunker.
+- **Autoridad Marítima de Panamá (AMP):** Dataset oficial `https://www.datosabiertos.gob.pa/dataset/?organization=autoridad-maritima-de-panama-amp`. 140 meses continuos (2015-01 a 2026-05) de movimiento de contenedores y bunker.
 - **Autoridad del Canal de Panamá (ACP):** `https://pancanal.com/es/informacion-operativa/`. Tránsitos y calado dinámico.
 - **Ministerio de Comercio e Industrias (MICI):** `https://mici.gob.pa/comercio-exterior/`. Balanza comercial exterior.
 - **Ministerio de Economía y Finanzas (MEF / INEC):** `https://mef.gob.pa/estadisticas-economicas/`. IMAE de transporte marítimo.
@@ -356,14 +356,61 @@ El módulo `src/data/privacy/anonymizer.py` implementa el pipeline de 5 fases pa
 - **Generalización Diferencial:** Agrupa importes monetarios individuales en cubos deciles (`$100K - $500K USD`).
 - **Certificado Criptográfico:** Emite un certificado digital con firma inmutable para auditorías de la ANTAI.
 
-#### 4. Consola de Gobernanza RBAC y Protección Anti-Ransomware:
-- **Matriz de 4 Roles Estatales:** SuperAdmin Ministerial, Auditor Contraloría, Operador Portuario, Investigador UTP/UMIP.
-- **Endurecimiento de Sesiones:** Cookies `HttpOnly=True; Secure=True; SameSite=Strict` y revocación masiva de sesiones en caliente.
+#### 4. Consola de Gobernanza RBAC y Control de Acceso Estandarizado (6 Roles):
+- **Matriz de 6 Roles Industriales:** `root_owner` (Propietario Raíz Ministerial), `platform_admin` (Administrador de Plataforma), `mlops_engineer` (Ingeniero MLOps de Modelos), `port_operator` (Operador Portuario de Muelle), `compliance_auditor` (Auditor de Cumplimiento ANTAI/Contraloría), `readonly_viewer` (Visualizador de Solo Lectura).
+- **Verificación Activa en Tiempo Real:** Endpoint `POST /api/admin/verify-permission` que audita cada acción crítica (reentrenamiento con Seed 42, alteración de hiperparámetros o baja de funcionarios) antes de conceder ejecución, bajo el principio de mínimo privilegio (*Least Privilege*).
+- **Endurecimiento de Sesiones:** Cookies `HttpOnly=True; Secure=True; SameSite=Strict`, tokens cifrados y revocación masiva de sesiones en caliente.
 - **Protección Anti-Ransomware WORM:** Almacenamiento inmutable Write-Once-Read-Many con RPO < 1 hora y RTO < 15 minutos.
 
-#### 5. Servidor MCP y Gestor de Almas/Personalidades IA:
-- **Almas:** `auditor_maritimo` (Auditoría legal y WAPE), `operador_muelle` (Operación de patios y grúas), `cientifico_causal` (Inferencia causal y do-calculus).
-- **Ejecución MCP Visual:** Runner interactivo para ejecutar herramientas bajo el protocolo estándar JSON-RPC 2.0.
+#### 5. Adaptadores Universales de Base de Datos y Caché (Live Telemetry):
+Módulos de persistencia desacoplados probados con telemetría en tiempo real (`POST /api/infrastructure/database/test-connection`):
+- **DuckDB Columnar (OLAP Zero-Copy):** Escaneo vectorial en memoria de 140 meses de microdatos Parquet con latencia < 0.5 ms y 4 hilos de ejecución paralela.
+- **PostgreSQL / TimescaleDB (Time-Series Hypertables):** Particionamiento mensual nativo para telemetría continua de buques y puertos con compresión columnar por chunks.
+- **Redis In-Memory Cache (Sub-Millisecond Inference):** Capa de cacheo predictivo para inferencias de cuantiles $P_{10}, P_{50}, P_{90}$ en < 0.1 ms con fallback automático en memoria local si no hay clúster externo.
+
+#### 6. Arquitectura Multi-Agente LangGraph & Servidor MCP:
+- **Agentes Especializados:**
+  - `auditor_maritimo`: Audita el cumplimiento de la Ley 56 de Puertos, Ley 6 de Transparencia y valida el WAPE 9.11%.
+  - `operador_muelle`: Gestiona la asignación de grúas STS, ratios de vacíos y semáforos de patio.
+  - `cientifico_causal`: Evalúa efectos de confusión mediante *do-calculus* y corre correlaciones espurias.
+  - `ingesta_master`: Verifica Data Quality Gates y normalización Hampel MAD sobre nuevas APIs satelitales.
+- **Router DAG LangGraph:** El enrutador `LangGraphAgentRouter` en `src/mcp/soul_manager.py` analiza semánticamente las consultas (`POST /api/mcp/langgraph-route`) y traza un grafo acíclico dirigido ejecutando al agente óptimo con contexto compartido.
+
+#### 7. Análisis de Modelos Google Gemma Open Source frente a Modelos Propios:
+En entornos de producción MLOps para puertos soberanos, surge la disyuntiva entre desplegar un modelo tabulado propio o servir un Large Language Model (LLM) de pesos abiertos como la familia **Google Gemma 2** (2B, 9B y 27B) servido mediante el runtime de inferencia **vLLM**:
+
+##### A. Arquitectura y Optimización de Gemma 2 en vLLM:
+- **Sliding Window Attention (SWA):** Alternancia entre capas de atención global y ventanas locales de 4096 tokens, reduciendo la complejidad cuadrática a lineal.
+- **PagedAttention & KV-Cache Cuantizado (FP8 / INT8):** Gestión de memoria de claves y valores inspirada en la memoria virtual de sistemas operativos, eliminando la fragmentación y permitiendo *continuous batching* con rendimiento hasta 4x superior a Transformers convencionales.
+- **Grouped-Query Attention (GQA):** Gemma 2 (9B y 27B) utiliza 8 pares de cabezales Key-Value para 32 cabezales de consulta, minimizando drásticamente la huella en memoria VRAM durante la generación autorregresiva.
+
+##### B. Cuadro Comparativo de Arquitecturas:
+| Dimensión de Ingeniería | Modelo Propio Tabular (LightGBM Champion) | Google Gemma 2 (9B / 27B) con vLLM |
+| :--- | :--- | :--- |
+| **Latencia de Inferencia** | **0.8 a 2.0 milisegundos** en CPU estándar | **80 a 350 milisegundos** por token en GPU NVIDIA |
+| **Consumo de Hardware** | **< 200 MB RAM**, 0 GPUs requeridas | **16 a 48 GB VRAM** (GPUs Tensor Core A100/H100) |
+| **Determinismo Criptográfico** | **100% Determinista** (Seed 42 produce hash idéntico) | Estocástico (depende de Temperature, Top-P y GPU kernels) |
+| **Precisión Numérica en TEUs** | **WAPE 9.11% / R² 0.9594** en series temporales | Propenso a alucinaciones aritméticas en series crudas |
+| **Inferencia Cuantílica** | $P_{10}, P_{50}, P_{90}$ garantizados con Pinball Loss | Requiere prompts complejos sin garantías matemáticas |
+| **Capacidad de Explicabilidad** | Gain por variable, valores SHAP exactos y VIF | Explicaciones en lenguaje natural intuitivas |
+| **Razonamiento Jurídico / RAG** | No aplica (modelo estrictamente matemático) | **Sobresaliente** para síntesis de leyes marítimas |
+
+##### C. Conclusión Arquitectónica e Integración Sinérgica:
+La estrategia ganadora implementada en **Panamá PortOps-AI** es un **diseño híbrido desacoplado**:
+1. **Núcleo Numérico Operacional:** Los pronósticos de TEUs, el semáforo de vacíos y la simulación Monte Carlo se ejecutan exclusivamente sobre **LightGBM / HistGB** en sub-milisegundos, garantizando cero alucinación, costo cero de GPU y reproducibilidad matemática auditada con Semilla 42.
+2. **Capa Cognitiva de Síntesis y RAG:** **Google Gemma 2 (vLLM)** actúa como orquestador en el Servidor MCP y asistente RAG, consumiendo las salidas estructuradas del modelo tabular para redactar informes ejecutivos para directores ministeriales y responder consultas jurídicas sobre la Ley 56 de 2008.
+
+#### 8. Ejecución Automatizada para Primera Puesta en Marcha (Quickstart):
+El repositorio incluye el pipeline maestro `scripts/quickstart_pipeline.py` que automatiza de forma determinista la inicialización del sistema desde cero:
+```bash
+python scripts/quickstart_pipeline.py
+```
+**Fases automáticas ejecutadas:**
+1. **Validación de Datos:** Verifica la existencia de `data/gold/container_features.parquet` y valida su integridad SHA-256.
+2. **Entrenamiento Determinista:** Entrena el modelo Champion fijando la Semilla 42 y emite el certificado criptográfico.
+3. **Verificación de Puertos:** Comprueba la disponibilidad del puerto 8000 y rutas de red.
+4. **Pruebas de Humo (Smoke Tests):** Ejecuta 74+ tests unitarios y de integración con pytest.
+5. **Reporte de Despliegue:** Genera el estado operacional listo para Docker y Kubernetes.
 
 ---
 

@@ -1073,18 +1073,21 @@
         <div id="stab-config" class="settings-tab-content active">
           <div class="modal-section-header">
             <span class="step-num">1</span>
-            <h3>Perfiles de Ritmo de Aprendizaje & Presets de Entrenamiento</h3>
+            <h3>Perfiles de Ritmo de Aprendizaje & Presets de Entrenamiento (Catálogo de 6 Arquitecturas)</h3>
           </div>
-          <p class="field-hint" style="margin-bottom: 0.75rem;">Selecciona una receta estructurada de hiperparámetros según el objetivo operativo de la terminal marítima:</p>
+          <p class="field-hint" style="margin-bottom: 0.75rem;">Selecciona una receta estructurada de hiperparámetros según el objetivo operativo de la terminal marítima o crea un preset propio:</p>
 
-          <div class="preset-grid" id="preset-cards-container">
+          <div class="preset-grid horizontal-preset-grid" id="preset-cards-container">
             <div class="preset-card active" data-preset-id="balanced_champion" onclick="selectTrainingPreset('balanced_champion')">
               <div class="preset-header">
                 <span class="preset-title">Equilibrado Champion</span>
                 <span class="preset-badge champion">WAPE 9.11%</span>
               </div>
-              <p class="preset-desc">LightGBM optimizado para minimizar WAPE y MAE sin sobreajuste. Ideal para producción general.</p>
+              <p class="preset-desc">LightGBM optimizado para minimizar WAPE y MAE sin sobreajuste. Ideal para producción general en muelles.</p>
               <div class="preset-specs">LR: 0.05 • Est: 120 • Prof: 6 • L1: 0.1 • L2: 0.2</div>
+              <div class="preset-card-footer">
+                <button class="preset-info-btn" onclick="event.stopPropagation(); showPresetMathDetail('balanced_champion')">📐 Matemática & Código</button>
+              </div>
             </div>
 
             <div class="preset-card" data-preset-id="conservative_anti_overfitting" onclick="selectTrainingPreset('conservative_anti_overfitting')">
@@ -1092,8 +1095,11 @@
                 <span class="preset-title">Conservador Anti-Ruido</span>
                 <span class="preset-badge conservative">Anti-Overfitting</span>
               </div>
-              <p class="preset-desc">Regularización estricta para puertos con alta volatilidad o registros atípicos (huelgas, desvíos).</p>
+              <p class="preset-desc">Regularización estricta Huber/L2 para puertos con alta volatilidad o registros atípicos (huelgas, desvíos).</p>
               <div class="preset-specs">LR: 0.02 • Est: 90 • Prof: 4 • L1: 1.0 • L2: 2.0</div>
+              <div class="preset-card-footer">
+                <button class="preset-info-btn" onclick="event.stopPropagation(); showPresetMathDetail('conservative_anti_overfitting')">📐 Matemática & Código</button>
+              </div>
             </div>
 
             <div class="preset-card" data-preset-id="aggressive_shock_reaction" onclick="selectTrainingPreset('aggressive_shock_reaction')">
@@ -1101,8 +1107,11 @@
                 <span class="preset-title">Agresivo ante Shocks</span>
                 <span class="preset-badge aggressive">Alta Sensibilidad</span>
               </div>
-              <p class="preset-desc">Árboles profundos y tasa acelerada para asimilar de inmediato cambios abruptos en fletes y calados.</p>
+              <p class="preset-desc">Árboles profundos y tasa acelerada para asimilar de inmediato cambios abruptos en fletes y calados del Canal.</p>
               <div class="preset-specs">LR: 0.10 • Est: 160 • Prof: 8 • L1: 0.01 • L2: 0.05</div>
+              <div class="preset-card-footer">
+                <button class="preset-info-btn" onclick="event.stopPropagation(); showPresetMathDetail('aggressive_shock_reaction')">📐 Matemática & Código</button>
+              </div>
             </div>
 
             <div class="preset-card" data-preset-id="resilient_quantile_stress" onclick="selectTrainingPreset('resilient_quantile_stress')">
@@ -1112,15 +1121,123 @@
               </div>
               <p class="preset-desc">Pérdida Huber/Pinball calibrada para colas pesadas y cuantiles de máxima incertidumbre logística.</p>
               <div class="preset-specs">LR: 0.03 • Est: 140 • Prof: 5 • L1: 0.5 • L2: 1.0</div>
+              <div class="preset-card-footer">
+                <button class="preset-info-btn" onclick="event.stopPropagation(); showPresetMathDetail('resilient_quantile_stress')">📐 Matemática & Código</button>
+              </div>
+            </div>
+
+            <div class="preset-card" data-preset-id="ultra_low_latency_tree" onclick="selectTrainingPreset('ultra_low_latency_tree')">
+              <div class="preset-header">
+                <span class="preset-title">Ultra-Low Latency Tree</span>
+                <span class="preset-badge champion">&lt; 0.5 ms Edge</span>
+              </div>
+              <p class="preset-desc">Árboles superficiales podados para inferencia en tiempo real en compuertas de muelle (Edge/IoT).</p>
+              <div class="preset-specs">LR: 0.08 • Est: 50 • Prof: 3 • Subsample: 0.70</div>
+              <div class="preset-card-footer">
+                <button class="preset-info-btn" onclick="event.stopPropagation(); showPresetMathDetail('ultra_low_latency_tree')">📐 Matemática & Código</button>
+              </div>
+            </div>
+
+            <div class="preset-card" data-preset-id="deep_additive_quantile" onclick="selectTrainingPreset('deep_additive_quantile')">
+              <div class="preset-header">
+                <span class="preset-title">Deep Additive Quantile</span>
+                <span class="preset-badge conservative">EBM Interpretativo</span>
+              </div>
+              <p class="preset-desc">Modelo Aditivo Generalizado con regularización spline y bagging para curvas no lineales complejas.</p>
+              <div class="preset-specs">LR: 0.03 • Est: 200 • Prof: 7 • L1: 0.3 • L2: 0.8</div>
+              <div class="preset-card-footer">
+                <button class="preset-info-btn" onclick="event.stopPropagation(); showPresetMathDetail('deep_additive_quantile')">📐 Matemática & Código</button>
+              </div>
             </div>
           </div>
 
-          <div class="settings-actions" style="margin-top: 1rem;">
-            <button id="btn-apply-preset" class="btn btn-secondary" onclick="applySelectedPreset()">
+          <!-- Dynamic Preset Math & Python Code Inspection Drawer -->
+          <div id="preset-math-code-box" class="card" style="background: rgba(10, 18, 36, 0.7); border: 1px solid var(--border-color); padding: 1rem; margin-top: 1rem; display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+              <h4 id="preset-math-title" style="margin: 0; color: var(--cyan-bright); font-size: 0.92rem;">📐 Fundamento Matemático & Algoritmo</h4>
+              <button class="btn-close-diag" onclick="document.getElementById('preset-math-code-box').style.display='none'">✕ Cerrar</button>
+            </div>
+            <div id="preset-math-formula-display" class="math-equation-display" style="margin-bottom: 0.75rem;"></div>
+            <p id="preset-math-desc" style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.75rem;"></p>
+            <div class="code-python-container">
+              <div class="code-python-header">
+                <span>🐍 Código de Implementación Python</span>
+              </div>
+              <pre class="code-python-body"><code id="preset-python-code"></code></pre>
+            </div>
+          </div>
+
+          <div class="settings-actions" style="margin-top: 1rem; display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
+            <button id="btn-apply-preset" class="btn btn-primary" onclick="applySelectedPreset()">
               <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
               Aplicar Preset Seleccionado
             </button>
+            <button id="btn-toggle-custom-preset" class="btn btn-secondary" onclick="toggleCustomPresetForm()">
+              <span>➕ Crear Preset Personalizado</span>
+            </button>
             <span id="preset-apply-status" class="save-status-msg"></span>
+          </div>
+
+          <!-- Custom Preset Registration Drawer -->
+          <div id="custom-preset-form-box" class="card" style="background: rgba(16, 26, 48, 0.6); padding: 1rem; margin-top: 1rem; display: none;">
+            <h4 style="font-size: 0.88rem; color: var(--cyan-bright); margin-bottom: 0.5rem;">Registrar Nueva Receta de Hiperparámetros en Caliente</h4>
+            <div class="settings-form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+              <div class="form-group">
+                <label for="cp-id">ID del Preset:</label>
+                <input type="text" id="cp-id" placeholder="ej: mi_modelo_balboa" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:0.78rem;">
+              </div>
+              <div class="form-group">
+                <label for="cp-name">Nombre Descriptivo:</label>
+                <input type="text" id="cp-name" placeholder="ej: Optimizado Verano 2026" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:0.78rem;">
+              </div>
+              <div class="form-group">
+                <label for="cp-algo">Algoritmo Base:</label>
+                <select id="cp-algo" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:0.78rem;">
+                  <option value="lightgbm">LightGBM (Gradient Boosted Trees)</option>
+                  <option value="random_forest">Random Forest Regressor</option>
+                  <option value="hist_gradient_boosting">HistGradientBoosting</option>
+                  <option value="ridge">Ridge Regression (L2 Regularized)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="cp-lr">Learning Rate (&eta;):</label>
+                <input type="number" id="cp-lr" value="0.05" step="0.01" min="0.001" max="1.0" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:0.78rem;">
+              </div>
+              <div class="form-group">
+                <label for="cp-n-estimators">N Estimadores (Árboles):</label>
+                <input type="number" id="cp-n-estimators" value="120" step="10" min="10" max="1000" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:0.78rem;">
+              </div>
+              <div class="form-group">
+                <label for="cp-max-depth">Profundidad Máxima:</label>
+                <input type="number" id="cp-max-depth" value="6" step="1" min="2" max="20" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:0.78rem;">
+              </div>
+              <div class="form-group">
+                <label for="cp-l1">Regularización L1 (Lasso):</label>
+                <input type="number" id="cp-l1" value="0.1" step="0.05" min="0" max="10" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:0.78rem;">
+              </div>
+              <div class="form-group">
+                <label for="cp-l2">Regularización L2 (Ridge):</label>
+                <input type="number" id="cp-l2" value="0.2" step="0.05" min="0" max="10" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:0.78rem;">
+              </div>
+              <div class="form-group">
+                <label for="cp-loss">Función de Pérdida:</label>
+                <select id="cp-loss" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:0.78rem;">
+                  <option value="quantile">Pinball Loss (Cuantiles P10, P50, P90)</option>
+                  <option value="huber">Huber Loss (Robusta ante Outliers)</option>
+                  <option value="mae">L1 (Median Absolute Error)</option>
+                  <option value="mse">L2 (Mean Squared Error)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group" style="margin-top: 0.5rem;">
+              <label for="cp-desc">Descripción Operativa:</label>
+              <input type="text" id="cp-desc" placeholder="Objetivo de negocio de esta configuración para terminales..." style="width:100%; padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:0.78rem;">
+            </div>
+            <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem; align-items: center;">
+              <button class="btn btn-primary btn-sm" onclick="registerCustomPreset()">💾 Guardar Preset en el Servidor</button>
+              <button class="btn btn-secondary btn-sm" onclick="toggleCustomPresetForm()">Cancelar</button>
+              <span id="custom-preset-status" class="save-status-msg"></span>
+            </div>
           </div>
 
           <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.25rem 0;">
@@ -1132,7 +1249,10 @@
 
           <div class="settings-form-grid" style="margin-top: 0.75rem;">
             <div class="form-group">
-              <label for="cfg-quantile-band">Banda de Incertidumbre Cuantílica:</label>
+              <label for="cfg-quantile-band">
+                <span>Banda de Incertidumbre Cuantílica:</span>
+                <span class="info-popover-trigger" title="Define la amplitud del abanico probabilístico (&alpha;). P10 es el suelo de seguridad garantizado y P90 el techo de estrés.">ℹ️</span>
+              </label>
               <select id="cfg-quantile-band">
                 <option value="P10_P90" selected>P10 - P90 (80% Cobertura - Estándar Operativo)</option>
                 <option value="P05_P95">P05 - P95 (90% Cobertura - Conservador / Expansión)</option>
@@ -1144,6 +1264,7 @@
             <div class="form-group">
               <label for="cfg-empty-surplus">
                 <span>Umbral de Alerta de Superávit de Vacíos:</span>
+                <span class="info-popover-trigger" title="Alerta si la proporción de contenedores vacíos sobrepasa este porcentaje. Provoca saturación en los bloques de patio.">ℹ️</span>
                 <span class="slider-val" id="cfg-empty-surplus-val">0.80</span>
               </label>
               <input type="range" id="cfg-empty-surplus" min="0.60" max="0.95" step="0.05" value="0.80">
@@ -1153,6 +1274,7 @@
             <div class="form-group">
               <label for="cfg-empty-deficit">
                 <span>Umbral de Alerta de Déficit de Vacíos:</span>
+                <span class="info-popover-trigger" title="Alerta si el stock de cajas vacías cae por debajo de este ratio, impidiendo atender la demanda de los exportadores nacionales.">ℹ️</span>
                 <span class="slider-val" id="cfg-empty-deficit-val">0.20</span>
               </label>
               <input type="range" id="cfg-empty-deficit" min="0.05" max="0.40" step="0.05" value="0.20">
@@ -1160,7 +1282,10 @@
             </div>
 
             <div class="form-group">
-              <label for="cfg-mc-paths">Trayectorias Monte Carlo por Defecto:</label>
+              <label for="cfg-mc-paths">
+                <span>Trayectorias Monte Carlo por Defecto:</span>
+                <span class="info-popover-trigger" title="Cantidad de simulaciones estocásticas de Wiener & Cholesky ejecutadas en cada What-If.">ℹ️</span>
+              </label>
               <select id="cfg-mc-paths">
                 <option value="200">200 Rutas (Rápido - 15 ms)</option>
                 <option value="500" selected>500 Rutas (Recomendado - 35 ms)</option>
@@ -1176,6 +1301,7 @@
             </button>
             <span id="config-save-status" class="save-status-msg"></span>
           </div>
+          <small class="field-hint" style="display:block; margin-top:0.4rem; color:var(--text-dim);">⚡ <strong>Hot-Reloading:</strong> Las configuraciones se actualizan en la memoria del runtime FastAPI instantáneamente sin reiniciar el contenedor Docker ni perder estado.</small>
         </div>
 
         <!-- Tab: Replicabilidad Determinista & URLs Ministeriales -->
@@ -1193,7 +1319,7 @@
                 <span class="badge badge-success">Fuente Primaria</span>
               </div>
               <p class="preset-desc">Movimiento de Contenedores en TEUs (140 meses continuos: 2015-01 a 2026-05) y Despacho de Combustible Bunkering.</p>
-              <a href="https://datosabiertos.gob.pa/dataset/movimiento-de-carga-en-contenedores" target="_blank" class="m-url">🌐 datosabiertos.gob.pa/dataset/movimiento-de-carga-en-contenedores</a>
+              <a href="https://www.datosabiertos.gob.pa/dataset/?organization=autoridad-maritima-de-panama-amp" target="_blank" class="m-url">🌐 datosabiertos.gob.pa/dataset/?organization=autoridad-maritima-de-panama-amp</a>
             </div>
 
             <div class="ministry-link-card">
@@ -1234,14 +1360,36 @@
           </div>
 
           <div class="repro-recipe-box">
-            <h4 style="color: var(--cyan-bright); font-size: 0.9rem; margin-bottom: 0.4rem;">Receta de Reentrenamiento Determinista Cruzado</h4>
+            <h4 style="color: var(--cyan-bright); font-size: 0.9rem; margin-bottom: 0.4rem;">Receta de Reentrenamiento Determinista Cruzado & Guardado Personalizado</h4>
             <p style="font-size: 0.78rem; color: var(--text-muted);">
               <strong>Fecha/Hora de Extracción:</strong> <code>2026-09-25T14:30:00-05:00</code> • 
               <strong>Lugar Físico:</strong> Edificio 553, Diablo Heights, Balboa, Ancón, Ciudad de Panamá • 
               <strong>Seguridad:</strong> TLS 1.3 / Checksum SHA-256
             </p>
+            
+            <!-- Model Save Customizer Controls -->
+            <div class="settings-form-grid" style="grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin: 0.75rem 0;">
+              <div class="form-group">
+                <label for="repro-save-path">Ruta / Archivo Destino:</label>
+                <input type="text" id="repro-save-path" value="models/champion_lightgbm.joblib" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--cyan-bright); font-size:0.78rem; font-family:var(--font-mono);">
+              </div>
+              <div class="form-group">
+                <label for="repro-model-id">ID de Identificación del Modelo:</label>
+                <input type="text" id="repro-model-id" value="panama-portops-lgbm-v1" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:0.78rem;">
+              </div>
+              <div class="form-group">
+                <label for="repro-version-tag">Etiqueta de Versión SemVer:</label>
+                <input type="text" id="repro-version-tag" value="v1.2.0-panama" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:0.78rem;">
+              </div>
+              <div class="form-group">
+                <label for="repro-seed-val">Semilla Determinista:</label>
+                <input type="number" id="repro-seed-val" value="42" min="1" max="999999" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:0.78rem;">
+              </div>
+            </div>
+
             <pre><code># Comando para replicar el modelo idéntico en cualquier máquina:
 python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code></pre>
+
             <div style="margin-top: 0.75rem; display: flex; align-items: center; gap: 0.85rem; flex-wrap: wrap;">
               <button id="btn-trigger-repro-train" class="btn btn-primary" onclick="triggerReproducibleTrain()">
                 <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
@@ -1319,48 +1467,64 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
         <div id="stab-gov-admin" class="settings-tab-content">
           <div class="modal-section-header">
             <span class="step-num">🏛️</span>
-            <h3>Consola de Gobernanza Gubernamental & Control RBAC (Role-Based Access Control)</h3>
+            <h3>Consola de Gobernanza Gubernamental & Control RBAC (6 Roles Estandarizados)</h3>
           </div>
-          <p class="field-hint">Infraestructura de seguridad adaptada a ministerios, puertos y órganos fiscalizadores de Panamá. Cumplimiento de estándares de la AIG y Ley 6 de Transparencia.</p>
+          <p class="field-hint">Infraestructura de seguridad adaptada a ministerios, puertos y órganos fiscalizadores de Panamá. Cumplimiento estricto de ISO 27001, AIG y Ley 6 de Transparencia.</p>
 
           <table class="rbac-table">
             <thead>
               <tr>
-                <th>Rol Estatal</th>
+                <th>Rol Estandarizado</th>
                 <th>Pronósticos & What-If</th>
                 <th>Benchmarking ML</th>
                 <th>Simulación Monte Carlo</th>
-                <th>Reentrenamiento</th>
-                <th>Administración</th>
+                <th>Reentrenamiento (Seed 42)</th>
+                <th>Gestión de Usuarios & Config</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><span class="role-badge superadmin">SuperAdmin Ministerial</span></td>
+                <td><span class="role-badge superadmin">Root Owner</span></td>
                 <td>✓ Sí</td>
                 <td>✓ Sí</td>
                 <td>✓ Sí</td>
-                <td>✓ Sí (Seed 42)</td>
+                <td>✓ Sí</td>
                 <td>✓ Total</td>
               </tr>
               <tr>
-                <td><span class="role-badge auditor">Auditor Contraloría</span></td>
+                <td><span class="role-badge superadmin">Platform Admin</span></td>
+                <td>✓ Sí</td>
+                <td>✓ Sí</td>
+                <td>✓ Sí</td>
+                <td>✓ Sí</td>
+                <td>✓ Config / Users</td>
+              </tr>
+              <tr>
+                <td><span class="role-badge auditor">MLOps Engineer</span></td>
+                <td>✓ Sí</td>
+                <td>✓ Sí</td>
+                <td>✓ Sí</td>
+                <td>✓ Sí</td>
+                <td>✗ Config Solo ML</td>
+              </tr>
+              <tr>
+                <td><span class="role-badge operator">Port Operator</span></td>
+                <td>✓ Sí</td>
+                <td>✓ Sí</td>
+                <td>✓ Sí</td>
+                <td>✗ No (Bloqueado)</td>
+                <td>✗ No</td>
+              </tr>
+              <tr>
+                <td><span class="role-badge auditor">Compliance Auditor</span></td>
                 <td>✓ Sí</td>
                 <td>✓ Sí</td>
                 <td>✓ Sí</td>
                 <td>✗ Solo Lectura</td>
-                <td>✗ No</td>
+                <td>✗ Auditoría PII</td>
               </tr>
               <tr>
-                <td><span class="role-badge operator">Operador Portuario</span></td>
-                <td>✓ Sí</td>
-                <td>✓ Sí</td>
-                <td>✓ Sí</td>
-                <td>✗ No</td>
-                <td>✗ No</td>
-              </tr>
-              <tr>
-                <td><span class="role-badge researcher">Investigador UTP/UMIP</span></td>
+                <td><span class="role-badge researcher">Readonly Viewer</span></td>
                 <td>✓ Sí</td>
                 <td>✓ Sí</td>
                 <td>✗ Limitado</td>
@@ -1370,12 +1534,46 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
             </tbody>
           </table>
 
+          <!-- Verificador Interactivo de Permisos en Vivo -->
+          <div class="card" style="background: rgba(16, 26, 48, 0.6); padding: 1rem; margin-top: 1rem; border: 1px solid var(--border-color);">
+            <h4 style="font-size: 0.88rem; color: var(--cyan-bright); margin-bottom: 0.4rem;">🔐 Verificador de Permisos en Tiempo Real (Active Guardrail)</h4>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.6rem;">Prueba si un usuario específico tiene autorización para realizar operaciones críticas en el cluster:</p>
+            <div class="settings-form-grid" style="grid-template-columns: 1fr 1fr auto; align-items: flex-end;">
+              <div class="form-group">
+                <label for="perm-test-user">Usuario a Evaluar:</label>
+                <select id="perm-test-user" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:0.78rem;">
+                  <option value="root">root (Root Owner)</option>
+                  <option value="admin_amp">admin_amp (Platform Admin)</option>
+                  <option value="mlops_lead">mlops_lead (MLOps Engineer)</option>
+                  <option value="operador_balboa">operador_balboa (Port Operator)</option>
+                  <option value="auditor_contraloria">auditor_contraloria (Compliance Auditor)</option>
+                  <option value="invitador_viewer">invitador_viewer (Readonly Viewer)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="perm-test-action">Permiso / Operación Crítica:</label>
+                <select id="perm-test-action" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:0.78rem;">
+                  <option value="retrain_model">retrain_model (Reentrenar Redes/Árboles)</option>
+                  <option value="modify_config">modify_config (Modificar Hiperparámetros)</option>
+                  <option value="delete_user">delete_user (Dar de Baja Funcionario)</option>
+                  <option value="export_data">export_data (Exportar Microdatos)</option>
+                  <option value="execute_mcp">execute_mcp (Ejecutar Herramientas MCP)</option>
+                  <option value="run_monte_carlo">run_monte_carlo (Simulación Estocástica)</option>
+                </select>
+              </div>
+              <div>
+                <button class="btn btn-secondary btn-sm" onclick="testLivePermission()">⚡ Verificar Permiso</button>
+              </div>
+            </div>
+            <div id="perm-test-result" style="display: none; margin-top: 0.6rem;" class="crypto-cert-box"></div>
+          </div>
+
           <div class="card" style="background: rgba(16, 26, 48, 0.5); padding: 1rem; margin-top: 1rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
               <h4 style="font-size: 0.88rem; color: var(--cyan-bright); margin: 0;">Usuarios Activos del Sistema</h4>
               <button class="revocation-btn" onclick="revokeAllSessions()">🚨 Revocar Todas las Sesiones Activas</button>
             </div>
-            <div class="table-responsive" style="max-height: 180px; overflow-y: auto;">
+            <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
               <table class="rbac-table" id="gov-users-table">
                 <!-- Injected via JS -->
               </table>
@@ -1383,17 +1581,19 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
 
             <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1rem 0;">
 
-            <h5 style="font-size: 0.82rem; color: var(--text-main); margin-bottom: 0.4rem;">Registrar Nuevo Funcionario o Investigador:</h5>
+            <h5 style="font-size: 0.82rem; color: var(--text-main); margin-bottom: 0.4rem;">Registrar Nuevo Funcionario o Investigador (Jerarquía de 6 Roles):</h5>
             <div class="settings-form-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
               <input type="text" id="new-user-name" placeholder="Nombre completo" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.78rem;">
               <input type="email" id="new-user-email" placeholder="correo@gob.pa" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.78rem;">
               <select id="new-user-role" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.78rem;">
-                <option value="operador_portuario">Operador Portuario</option>
-                <option value="auditor_contraloria">Auditor Contraloría</option>
-                <option value="investigador_academico">Investigador UTP/UMIP</option>
-                <option value="superadmin_ministerial">SuperAdmin Ministerial</option>
+                <option value="port_operator">Port Operator (Operador de Muelle)</option>
+                <option value="compliance_auditor">Compliance Auditor (Auditor Contraloría)</option>
+                <option value="mlops_engineer">MLOps Engineer (Ingeniero Modelos)</option>
+                <option value="readonly_viewer">Readonly Viewer (Visualizador Académico)</option>
+                <option value="platform_admin">Platform Admin (Administrador)</option>
+                <option value="root_owner">Root Owner (Propietario Ministerial)</option>
               </select>
-              <input type="text" id="new-user-entidad" placeholder="Entidad (ej: AMP, ACP)" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.78rem;">
+              <input type="text" id="new-user-entidad" placeholder="Entidad (ej: AMP, ACP, MEF)" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.78rem;">
             </div>
             <button class="btn btn-secondary btn-sm" style="margin-top: 0.6rem;" onclick="createNewGovUser()">+ Añadir Usuario</button>
             <span id="new-user-status" class="save-status-msg" style="margin-left: 0.5rem;"></span>
@@ -1521,50 +1721,150 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
 
         <!-- Tab 3: Glosario Pedagógico Accesible de Términos ML -->
         <div id="stab-glossary" class="settings-tab-content">
-          <div class="glossary-grid">
+          <div class="modal-section-header">
+            <span class="step-num">📖</span>
+            <h3>Glosario Pedagógico & Enciclopedia MLOps Marítima (Masterclass Edition)</h3>
+          </div>
+          <p class="field-hint">Explicaciones claras y sin tecnicismos oscuros para que cualquier persona, transportista, auditor o directivo comprenda los conceptos matemáticos de Machine Learning e infraestructura portuaria.</p>
+
+          <!-- Search and Filter Bar -->
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.75rem; align-items: center;">
+            <div style="flex: 1; min-width: 220px;">
+              <input type="text" id="glossary-search-input" placeholder="🔍 Buscar término (ej: WAPE, Drift, Cholesky, DAG, KV-Cache)..." style="width: 100%; padding: 0.45rem 0.75rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); font-size: 0.82rem;" oninput="filterGlossaryItems()">
+            </div>
+            <div class="glossary-category-pills" id="glossary-cat-pills">
+              <button class="glossary-cat-btn active" data-cat="all" onclick="filterGlossaryByCategory('all')">Todos</button>
+              <button class="glossary-cat-btn" data-cat="mlops" onclick="filterGlossaryByCategory('mlops')">MLOps & Lifecycle</button>
+              <button class="glossary-cat-btn" data-cat="metrics" onclick="filterGlossaryByCategory('metrics')">Métricas & Estadística</button>
+              <button class="glossary-cat-btn" data-cat="maritime" onclick="filterGlossaryByCategory('maritime')">Dominio Portuario</button>
+              <button class="glossary-cat-btn" data-cat="causal" onclick="filterGlossaryByCategory('causal')">Causalidad & Riesgo</button>
+              <button class="glossary-cat-btn" data-cat="llm" onclick="filterGlossaryByCategory('llm')">LLMs & Agentes</button>
+            </div>
+          </div>
+
+          <!-- Alphabet Index Quick Bar -->
+          <div class="glossary-alphabet-bar" id="glossary-alphabet-bar">
+            <!-- Buttons injected or defined -->
+            <span class="alpha-btn active" onclick="filterGlossaryByLetter('ALL')">TODOS</span>
+            <span class="alpha-btn" onclick="filterGlossaryByLetter('A')">A</span>
+            <span class="alpha-btn" onclick="filterGlossaryByLetter('B')">B</span>
+            <span class="alpha-btn" onclick="filterGlossaryByLetter('C')">C</span>
+            <span class="alpha-btn" onclick="filterGlossaryByLetter('D')">D</span>
+            <span class="alpha-btn" onclick="filterGlossaryByLetter('E')">E</span>
+            <span class="alpha-btn" onclick="filterGlossaryByLetter('F')">F</span>
+            <span class="alpha-btn" onclick="filterGlossaryByLetter('H')">H</span>
+            <span class="alpha-btn" onclick="filterGlossaryByLetter('K')">K</span>
+            <span class="alpha-btn" onclick="filterGlossaryByLetter('L')">L</span>
+            <span class="alpha-btn" onclick="filterGlossaryByLetter('M')">M</span>
+            <span class="alpha-btn" onclick="filterGlossaryByLetter('P')">P</span>
+            <span class="alpha-btn" onclick="filterGlossaryByLetter('R')">R</span>
+            <span class="alpha-btn" onclick="filterGlossaryByLetter('S')">S</span>
+            <span class="alpha-btn" onclick="filterGlossaryByLetter('T')">T</span>
+            <span class="alpha-btn" onclick="filterGlossaryByLetter('V')">V</span>
+            <span class="alpha-btn" onclick="filterGlossaryByLetter('W')">W</span>
+            <span class="alpha-btn" onclick="filterGlossaryByLetter('Z')">Z</span>
+          </div>
+
+          <div class="glossary-grid" id="glossary-cards-container">
             
-            <div class="glossary-item">
+            <div class="glossary-item" data-cat="maritime" data-letter="T">
               <div class="glossary-term">📦 TEU (Twenty-foot Equivalent Unit)</div>
-              <p>Es la unidad mundial de medida en transporte marítimo. Corresponde a un contenedor estándar de 20 pies de largo. Un contenedor grande de 40 pies equivale a 2 TEUs. Es la variable principal ($Y$) que predice nuestro modelo.</p>
+              <span class="type-pill">Dominio Portuario</span>
+              <p>Es la unidad mundial de medida en transporte marítimo. Corresponde a un contenedor estándar de 20 pies de largo. Un contenedor de 40 pies equivale a 2 TEUs. Es la variable principal ($Y$) que predice nuestro modelo.</p>
             </div>
 
-            <div class="glossary-item">
+            <div class="glossary-item" data-cat="metrics" data-letter="W">
               <div class="glossary-term">🎯 WAPE (Weighted Absolute Percentage Error)</div>
-              <p><strong>¿Qué significa?:</strong> Es el porcentaje promedio de error del modelo. Un WAPE de <strong>9.11%</strong> significa que, en promedio, el modelo acierta con más de un <strong>90.89% de precisión</strong> en todo el sistema portuario de Panamá, ponderando más los puertos grandes donde se mueve más carga.</p>
+              <span class="type-pill">Métricas</span>
+              <p><strong>¿Qué significa?:</strong> Es el porcentaje promedio ponderado de error del modelo. A diferencia del MAPE clásico (que colapsa si un mes tiene cero o valores chicos), el WAPE divide la suma de errores absolutos entre la suma total de volumen ($\frac{\sum |y - \hat{y}|}{\sum y}$). Un WAPE de <strong>9.11%</strong> significa más de <strong>90.89% de precisión global</strong>.</p>
             </div>
 
-            <div class="glossary-item">
-              <div class="glossary-term">📈 Coeficiente R² (R-cuadrado)</div>
-              <p><strong>¿Qué significa?:</strong> Mide qué porcentaje de los cambios y subidas y bajadas del tráfico portuario es capaz de explicar el modelo. Un R² de <strong>0.9594</strong> significa que explica casi el <strong>96% de la realidad</strong>, dejando solo un 4% de variación debida a eventos totalmente aleatorios.</p>
+            <div class="glossary-item" data-cat="metrics" data-letter="R">
+              <div class="glossary-term">📈 Coeficiente R² (R-cuadrado / Bondad de Ajuste)</div>
+              <span class="type-pill">Métricas</span>
+              <p><strong>¿Qué significa?:</strong> Mide la proporción de la varianza histórica del tráfico que el modelo logra explicar mediante sus 85 variables. Un R² de <strong>0.9594</strong> prueba que explica casi el <strong>96% de la variabilidad</strong>, dejando solo 4% atribuible a ruido blanco estocástico.</p>
             </div>
 
-            <div class="glossary-item">
-              <div class="glossary-term">📊 Cuantiles P10, P50 y P90 (Incertidumbre)</div>
-              <p>En lugar de dar un único número "mágico", el modelo entrega un rango realista:
-                <br>• <strong>P50 (Mediana):</strong> El escenario más probable.
-                <br>• <strong>P10 (Piso):</strong> Nivel mínimo seguro de demanda (solo un 10% de probabilidad de caer por debajo).
-                <br>• <strong>P90 (Techo de Capacidad):</strong> Nivel pico de estrés para saber si se llenará el patio o si harán falta grúas pórtico y cuadrillas de estibadores adicionales.
+            <div class="glossary-item" data-cat="metrics" data-letter="P">
+              <div class="glossary-term">📊 Cuantiles P10, P50 y P90 (Regresión Cuantílica)</div>
+              <span class="type-pill">Métricas</span>
+              <p>En lugar de una sola cifra que oculte los riesgos, entrega 3 trayectorias:
+                <br>• <strong>P50 (Mediana):</strong> Escenario central esperado.
+                <br>• <strong>P10 (Piso Operacional):</strong> Demanda mínima garantizada con 90% de confianza.
+                <br>• <strong>P90 (Techo de Capacidad):</strong> Demanda máxima para dimensionar estibadores y grúas STS.
               </p>
             </div>
 
-            <div class="glossary-item">
-              <div class="glossary-term">📉 Residuo del Modelo (Error Real)</div>
-              <p>Es simplemente la resta entre lo que realmente ocurrió en un mes y lo que el modelo había pronosticado ($y_{\text{real}} - \hat{y}_{\text{pred}}$). Si la media de los residuos está cerca de cero, significa que el modelo no tiene favoritismos ni sesgos sistemáticos.</p>
+            <div class="glossary-item" data-cat="metrics" data-letter="P">
+              <div class="glossary-term">📐 Pinball Loss (Check Loss Cuantílica)</div>
+              <span class="type-pill">Métricas</span>
+              <p>Función de pérdida asimétrica utilizada para forzar al modelo a predecir cuantiles específicos: $\mathcal{L}_\tau(y, \hat{y}) = \max(\tau(y - \hat{y}), (\tau - 1)(y - \hat{y}))$. Si $\tau = 0.90$, subestimar la demanda es 9 veces más costoso que sobreestimarla.</p>
             </div>
 
-            <div class="glossary-item">
+            <div class="glossary-item" data-cat="mlops" data-letter="D">
+              <div class="glossary-term">🌊 Data Drift & Concept Drift</div>
+              <span class="type-pill">MLOps</span>
+              <p><strong>Data Drift:</strong> Cambios en la distribución de las variables de entrada (por ejemplo, el calado del Canal bajó drásticamente en la sequía de 2023). <strong>Concept Drift:</strong> Cambios en la relación entre las entradas y la salida (por ejemplo, la apertura del Canal ampliado en 2016 duplicó la capacidad por buque).</p>
+            </div>
+
+            <div class="glossary-item" data-cat="mlops" data-letter="F">
+              <div class="glossary-term">🏛️ Feature Store Bitemporal</div>
+              <span class="type-pill">MLOps</span>
+              <p>Repositorio centralizado donde cada variable posee dos estampas de tiempo: <em>valid_time</em> (cuándo ocurrió el movimiento de carga) y <em>system_time</em> (cuándo la AMP publicó oficialmente el boletín). Previene que el modelo entrene con correcciones que no existían en esa fecha.</p>
+            </div>
+
+            <div class="glossary-item" data-cat="mlops" data-letter="Z">
+              <div class="glossary-term">🚫 Zero Lookahead (Frontera Causal de Tiempo)</div>
+              <span class="type-pill">MLOps</span>
+              <p>Regla estricta que prohíbe usar información del futuro para predecir el pasado. Todos los retardos (lags) y medias móviles aplican un desplazamiento obligatorio de al menos 1 periodo (shift $\ge$ 1).</p>
+            </div>
+
+            <div class="glossary-item" data-cat="mlops" data-letter="S">
+              <div class="glossary-term">🎲 Seed 42 (Reproducibilidad Determinista)</div>
+              <span class="type-pill">MLOps</span>
+              <p>Fija el generador pseudoaleatorio para que el entrenamiento del modelo produzca exactamente los mismos pesos, árboles y resultados en cualquier computador, generando un hash criptográfico SHA-256 idéntico para auditoría.</p>
+            </div>
+
+            <div class="glossary-item" data-cat="metrics" data-letter="V">
               <div class="glossary-term">🔍 VIF (Factor de Inflación de la Varianza)</div>
-              <p>Mide si dos variables dicen exactamente lo mismo (redundancia o multicolinealidad). Si una variable tiene un VIF mayor a 10, es como tener dos relojes que marcan la misma hora; el sistema la filtra para no confundir al algoritmo.</p>
+              <span class="type-pill">Estadística</span>
+              <p>Mide si dos o más variables aportan la misma información (multicolinealidad). Si una variable tiene VIF &gt; 10, es redundante y se elimina para evitar que distorsione los pesos del modelo.</p>
             </div>
 
-            <div class="glossary-item">
-              <div class="glossary-term">🔀 Variables Confundidoras (Confounders)</div>
-              <p>Factores que hacen creer falsamente que una cosa causa la otra. Por ejemplo, en Panamá se vende más combustible marino (bunkering) no solo cuando hay más carga, sino también cuando hay <strong>buques varados en fondeadero esperando turno en el Canal</strong>. El modelo desacopla estas trampas calculando el ratio de eficiencia TEU/BBL.</p>
+            <div class="glossary-item" data-cat="causal" data-letter="C">
+              <div class="glossary-term">🔀 Variables Confundidoras (Confounders & DAGs)</div>
+              <span class="type-pill">Causalidad</span>
+              <p>Factores que hacen creer falsamente que un hecho causa otro. Por ejemplo: las ventas de combustible marino suben cuando hay congestión en el fondeadero del Canal, no necesariamente porque haya más carga en muelles. El modelo desacopla esto mediante ratios de causalidad.</p>
             </div>
 
-            <div class="glossary-item">
-              <div class="glossary-term">🎲 Simulación de Monte Carlo y Cholesky</div>
-              <p>Un método matemático que recrea cientos de futuros posibles (sequías, crisis globales, cierres de rutas) respetando cómo se relacionan las variables entre sí (factorización de Cholesky), para calcular el <strong>Valor en Riesgo (VaR 95%)</strong> y saber qué tan resistente es cada puerto ante contingencias.</p>
+            <div class="glossary-item" data-cat="causal" data-letter="M">
+              <div class="glossary-term">🎲 Simulación Monte Carlo & Cholesky</div>
+              <span class="type-pill">Riesgo</span>
+              <p>Genera cientos de trayectorias futuras posibles respetando la matriz de covarianzas empíricas mediante descomposición de Cholesky ($\Sigma = L L^T$), permitiendo evaluar el <strong>Valor en Riesgo (VaR 95%)</strong> y estrés ante sequías o crisis bélicas.</p>
+            </div>
+
+            <div class="glossary-item" data-cat="causal" data-letter="H">
+              <div class="glossary-term">🛡️ Filtro Hampel con MAD (Median Absolute Deviation)</div>
+              <span class="type-pill">Estadística</span>
+              <p>Filtro no paramétrico que detecta datos atípicos usando la mediana móvil y la desviación absoluta. A diferencia de la media tradicional, resiste hasta un 50% de anomalías contables sin descalibrar el centro.</p>
+            </div>
+
+            <div class="glossary-item" data-cat="llm" data-letter="K">
+              <div class="glossary-term">⚡ KV-Cache & vLLM PagedAttention</div>
+              <span class="type-pill">LLMs</span>
+              <p>Técnica de optimización para modelos de lenguaje (como Google Gemma 2) que almacena en memoria los vectores Key-Value de tokens previos, reduciendo la latencia de inferencia y evitando recalcular la atención en consultas repetitivas de RAG.</p>
+            </div>
+
+            <div class="glossary-item" data-cat="llm" data-letter="A">
+              <div class="glossary-term">🤖 Agentes de IA & LangGraph Multi-Agente</div>
+              <span class="type-pill">LLMs</span>
+              <p>Arquitectura basada en grafos acíclicos dirigidos donde agentes autónomos especializados (Auditor, Operador, Científico Causal, Ingesta) colaboran en cadena manteniendo un estado conversacional compartido para responder consultas complejas.</p>
+            </div>
+
+            <div class="glossary-item" data-cat="mlops" data-letter="W">
+              <div class="glossary-term">🔒 Almacenamiento Inmutable WORM & RPO / RTO</div>
+              <span class="type-pill">Seguridad</span>
+              <p><strong>WORM (Write Once, Read Many):</strong> Mecanismo de blindaje contra ransomware que impide que los backups sean modificados o eliminados. <strong>RPO:</strong> Punto objetivo de recuperación (&lt; 1h). <strong>RTO:</strong> Tiempo de recuperación ante desastres (&lt; 15 min).</p>
             </div>
 
           </div>
@@ -1670,35 +1970,89 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
             
             <!-- Adaptadores de Base de Datos y Caché -->
             <div class="infra-card">
-              <h4>🗄️ Adaptadores Universales de Base de Datos (Pool Activo)</h4>
-              <p>Módulos desacoplados de persistencia para soportar despliegues híbridos y multi-nube:</p>
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
+                <h4 style="margin:0;">🗄️ Adaptadores Universales de Base de Datos (Pool Activo)</h4>
+                <span class="badge badge-info" style="font-size:0.72rem;">Zero Mock • Conectores Reales</span>
+              </div>
+              <p>Módulos desacoplados de persistencia para soportar despliegues híbridos y multi-nube. Haz clic en cualquier adaptador para ejecutar un test de conexión y diagnóstico en tiempo real:</p>
+              
               <div class="infra-grid">
-                <div class="infra-item">
+                <div class="infra-item interactive-db-card" id="db-card-duckdb" onclick="testDatabaseAdapter('duckdb')">
                   <div class="infra-item-header">
                     <span class="infra-name">DuckDB Columnar</span>
-                    <span class="badge badge-success">Activo (In-Process)</span>
+                    <span class="badge badge-success" id="db-badge-duckdb">Activo (In-Process)</span>
                   </div>
                   <p class="infra-desc">OLAP ultra-rápido para escaneo vectorial de 140 meses de microdatos Parquet.</p>
-                  <small class="infra-stat">Latencia: &lt; 0.5 ms • Pooling: 4 hilos</small>
+                  <div class="infra-actions">
+                    <small class="infra-stat" id="db-stat-duckdb">Latencia: &lt; 0.5 ms • Pooling: 4 hilos</small>
+                    <button class="btn-db-test" onclick="event.stopPropagation(); testDatabaseAdapter('duckdb');">⚡ Probar Ping</button>
+                  </div>
                 </div>
 
-                <div class="infra-item">
+                <div class="infra-item interactive-db-card" id="db-card-timescaledb" onclick="testDatabaseAdapter('timescaledb')">
                   <div class="infra-item-header">
                     <span class="infra-name">PostgreSQL / TimescaleDB</span>
-                    <span class="badge badge-info">Configurado / Container</span>
+                    <span class="badge badge-info" id="db-badge-timescaledb">Configurado / Container</span>
                   </div>
                   <p class="infra-desc">Hipertablas particionadas por mes para telemetría continua de buques y puertos.</p>
-                  <small class="infra-stat">Modo: Service 'timescaledb' en docker-compose</small>
+                  <div class="infra-actions">
+                    <small class="infra-stat" id="db-stat-timescaledb">Modo: Service 'timescaledb' en docker-compose</small>
+                    <button class="btn-db-test" onclick="event.stopPropagation(); testDatabaseAdapter('timescaledb');">⚡ Probar Ping</button>
+                  </div>
                 </div>
 
-                <div class="infra-item">
+                <div class="infra-item interactive-db-card" id="db-card-redis" onclick="testDatabaseAdapter('redis')">
                   <div class="infra-item-header">
                     <span class="infra-name">Redis In-Memory Cache</span>
-                    <span class="badge badge-success">Activo (Cache Layer)</span>
+                    <span class="badge badge-success" id="db-badge-redis">Activo (Cache Layer)</span>
                   </div>
-                  <p class="infra-desc">Cacheo predictivo para inferencias de cuantiles $P_{10}, P_{50}, P_{90}$ en menos de 2 milisegundos.</p>
-                  <small class="infra-stat">Latencia: 0.05 ms • Fallback en memoria activo</small>
+                  <p class="infra-desc">Cacheo predictivo para inferencias de cuantiles P10, P50, P90 en sub-milisegundos.</p>
+                  <div class="infra-actions">
+                    <small class="infra-stat" id="db-stat-redis">Latencia: 0.05 ms • Fallback en memoria activo</small>
+                    <button class="btn-db-test" onclick="event.stopPropagation(); testDatabaseAdapter('redis');">⚡ Probar Ping</button>
+                  </div>
                 </div>
+              </div>
+
+              <!-- Live Diagnostic Drawer for Database Adapters -->
+              <div id="db-live-diagnostic-box" class="db-diagnostic-drawer" style="display:none; margin-top:1rem;">
+                <div class="db-diag-header">
+                  <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <span class="pulse-indicator"></span>
+                    <strong id="db-diag-engine-name">Diagnóstico en Tiempo Real: DuckDB</strong>
+                    <span class="badge badge-success" id="db-diag-status-badge">ONLINE</span>
+                  </div>
+                  <button class="btn-close-diag" onclick="document.getElementById('db-live-diagnostic-box').style.display='none'">✕ Cerrar</button>
+                </div>
+                
+                <div class="db-diag-metrics-grid">
+                  <div class="diag-metric-card">
+                    <span class="diag-metric-label">Latencia Medida</span>
+                    <span class="diag-metric-val" id="db-diag-latency">0.24 ms</span>
+                  </div>
+                  <div class="diag-metric-card">
+                    <span class="diag-metric-label">Pool Conexiones</span>
+                    <span class="diag-metric-val" id="db-diag-pool">4 Hilos Activos</span>
+                  </div>
+                  <div class="diag-metric-card">
+                    <span class="diag-metric-label">Operación I/O</span>
+                    <span class="diag-metric-val" id="db-diag-op">Zero-Copy In-Process</span>
+                  </div>
+                  <div class="diag-metric-card">
+                    <span class="diag-metric-label">Modo Persistencia</span>
+                    <span class="diag-metric-val" id="db-diag-fallback">Parquet & Memory</span>
+                  </div>
+                </div>
+
+                <div class="db-diag-query-row" style="margin-top:0.75rem;">
+                  <label for="db-custom-query-input"><strong>Consulta Diagnóstica / Comando:</strong></label>
+                  <div style="display:flex; gap:0.5rem; margin-top:0.3rem;">
+                    <input type="text" id="db-custom-query-input" style="flex:1; padding:0.4rem 0.6rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--cyan-bright); font-family:var(--font-mono); font-size:0.78rem;" value="SELECT count(*) as total_filas, min(date) as desde, max(date) as hasta FROM amp_port_monthly_throughput">
+                    <button class="btn btn-secondary btn-sm" id="btn-run-custom-db-query" onclick="runCustomDbQuery()">▶ Ejecutar</button>
+                  </div>
+                </div>
+
+                <div id="db-diag-result-preview" style="margin-top:0.6rem;"></div>
               </div>
             </div>
 

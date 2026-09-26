@@ -106,6 +106,10 @@ body.theme-tactical-mono {
   --shadow-glow: 0 0 25px rgba(56, 189, 248, 0.2);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -3162,6 +3166,249 @@ footer {
   display: inline-block;
 }
 
+/* ========================================================================= */
+/* HORIZONTAL PRESETS & ADVANCED HYPERPARAMETERS STYLING                    */
+/* ========================================================================= */
+.preset-grid.horizontal-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  gap: 0.85rem;
+}
 
+.preset-card {
+  background: rgba(14, 23, 42, 0.7);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.95rem;
+  cursor: pointer;
+  transition: all 0.22s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
+.preset-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--cyan-bright);
+  box-shadow: 0 4px 18px rgba(6, 182, 212, 0.15);
+}
 
+.preset-card.active {
+  border-color: var(--cyan-bright);
+  background: rgba(6, 182, 212, 0.08);
+  box-shadow: 0 0 0 1px var(--cyan-bright), 0 4px 16px rgba(6, 182, 212, 0.18);
+}
+
+.preset-card-footer {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.preset-info-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--cyan-bright);
+  padding: 0.22rem 0.55rem;
+  font-size: 0.72rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.preset-info-btn:hover {
+  background: rgba(6, 182, 212, 0.15);
+  border-color: var(--cyan-bright);
+}
+
+.info-popover-trigger {
+  cursor: help;
+  font-size: 0.78rem;
+  margin-left: 0.25rem;
+  opacity: 0.8;
+  transition: opacity 0.15s;
+}
+
+.info-popover-trigger:hover {
+  opacity: 1;
+}
+
+/* ========================================================================= */
+/* INTERACTIVE DATABASE ADAPTERS & LIVE DIAGNOSTIC DRAWER                    */
+/* ========================================================================= */
+.interactive-db-card {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+}
+
+.interactive-db-card:hover {
+  border-color: var(--cyan-bright) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(6, 182, 212, 0.12);
+}
+
+.infra-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  gap: 0.5rem;
+}
+
+.btn-db-test {
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  color: var(--cyan-bright);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-db-test:hover {
+  background: var(--cyan-bright);
+  color: #060913;
+}
+
+.db-diagnostic-drawer {
+  background: rgba(8, 14, 28, 0.95);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  border-radius: 10px;
+  padding: 1.1rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  animation: fadeInDown 0.25s ease-out;
+}
+
+.db-diag-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+
+.btn-close-diag {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.btn-close-diag:hover {
+  color: var(--text-main);
+}
+
+.pulse-indicator {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: pulse-ring 1.6s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+
+@keyframes pulse-ring {
+  to {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+}
+
+.db-diag-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.65rem;
+}
+
+.diag-metric-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 0.6rem;
+}
+
+.diag-metric-label {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.diag-metric-val {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--emerald-success);
+  margin-top: 0.2rem;
+  font-family: var(--font-mono);
+}
+
+/* ========================================================================= */
+/* GLOSSARY FILTER PILLS & ALPHABET BAR                                      */
+/* ========================================================================= */
+.glossary-category-pills {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.glossary-cat-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-dim);
+  font-size: 0.74rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.glossary-cat-btn:hover {
+  border-color: var(--cyan-bright);
+  color: var(--cyan-bright);
+}
+
+.glossary-cat-btn.active {
+  background: rgba(6, 182, 212, 0.15);
+  border-color: var(--cyan-bright);
+  color: var(--cyan-bright);
+  font-weight: 600;
+}
+
+.glossary-alphabet-bar {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+  padding: 0.4rem 0.6rem;
+  background: rgba(10, 16, 30, 0.6);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+}
+
+.alpha-btn {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: all 0.15s;
+}
+
+.alpha-btn:hover {
+  background: rgba(6, 182, 212, 0.2);
+  color: var(--cyan-bright);
+}
+
+.alpha-btn.active {
+  background: var(--cyan-bright);
+  color: #060913;
+  font-weight: 700;
+}

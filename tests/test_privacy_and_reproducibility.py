@@ -57,12 +57,14 @@ class TestPanamaPrivacyAndAnonymization:
 class TestModelPresetsAndReproducibility:
     def test_presets_catalog(self):
         presets = TrainingPresetManager.list_presets()
-        assert len(presets) == 4
+        assert len(presets) == 6
         preset_ids = {p["id"] for p in presets}
         assert "balanced_production" in preset_ids
         assert "conservative_anti_overfitting" in preset_ids
         assert "aggressive_shock_reaction" in preset_ids
         assert "resilient_quantile_stress" in preset_ids
+        assert "ultra_low_latency_tree" in preset_ids
+        assert "deep_additive_quantile" in preset_ids
 
     def test_deterministic_reproducibility_verification(self):
         cert = DeterministicModelReplicator.verify_reproducibility(seed=42)
@@ -87,7 +89,7 @@ class TestGovernmentSecurityAndMCPSouls:
             username="test_auditor_user",
             full_name="Auditor de Prueba",
             entity="Contraloría",
-            role_id="auditor_contraloria"
+            role_id="compliance_auditor"
         )
         assert reg["status"] == "success"
         assert reg["user"]["username"] == "test_auditor_user"
@@ -124,7 +126,62 @@ class TestNewServingApiEndpoints:
         res = client.get("/api/models/presets")
         assert res.status_code == 200
         d = res.json()
-        assert d["total_presets"] == 4
+        assert d["total_presets"] >= 6
+
+    def test_post_custom_preset_and_fetch(self):
+        payload = {
+            "id": "unit_test_preset",
+            "name": "Unit Test Custom Preset",
+            "description": "Preset creado para pruebas automatizadas",
+            "base_algorithm": "lightgbm",
+            "hyperparameters": {
+                "learning_rate": 0.04,
+                "n_estimators": 100,
+                "max_depth": 5
+            },
+            "target_application": "Pruebas unitarias de extensibilidad"
+        }
+        res = client.post("/api/models/presets", json=payload)
+        assert res.status_code == 200
+        d = res.json()
+        assert d["status"] == "success"
+
+        res_fetch = client.get("/api/models/presets/unit_test_preset")
+        assert res_fetch.status_code == 200
+        assert res_fetch.json()["preset"]["name"] == "Unit Test Custom Preset"
+
+    def test_database_test_connection(self):
+        res = client.post("/api/infrastructure/database/test-connection", json={"engine": "duckdb"})
+        assert res.status_code == 200
+        d = res.json()
+        assert "duckdb" in d["engine"].lower()
+        assert d["status"] in ["online", "success", "container_configured"]
+        assert d["latency_ms"] >= 0.0
+
+    def test_langgraph_route(self):
+        res = client.post("/api/mcp/langgraph-route", json={"query": "¿Qué exige la Ley 56 sobre concesiones de muelles?"})
+        assert res.status_code == 200
+        d = res.json()
+        assert d["selected_soul"]["id"] in ["auditor_maritimo", "operador_muelle", "cientifico_causal", "ingesta_master"]
+        assert len(d["langgraph_dag_trace"]) >= 2
+
+    def test_verify_permission(self):
+        # root has all permissions
+        res = client.post("/api/admin/verify-permission", json={"username": "root", "permission": "retrain_model"})
+        assert res.status_code == 200
+        assert res.json()["allowed"] is True
+
+        # port_operator cannot retrain model
+        res2 = client.post("/api/admin/verify-permission", json={"username": "operador_balboa", "permission": "retrain_model"})
+        assert res2.status_code == 200
+        assert res2.json()["allowed"] is False
+
+    def test_first_run_status(self):
+        res = client.get("/api/admin/first-run-status")
+        assert res.status_code == 200
+        d = res.json()
+        assert "is_first_run" in d
+        assert "cluster_state" in d
 
     def test_post_reproducible_train(self):
         res = client.post("/api/models/reproducible-train", json={"seed": 42, "preset_id": "balanced_production"})
@@ -159,7 +216,7 @@ class TestNewServingApiEndpoints:
             "username": "portal_admin_unit",
             "full_name": "Administrador de Portal",
             "entity": "AMP",
-            "role_id": "superadmin_ministerial"
+            "role_id": "platform_admin"
         }
         res = client.post("/api/admin/users", json=payload)
         assert res.status_code == 200

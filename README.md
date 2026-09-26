@@ -455,7 +455,7 @@ El microservicio expone en `/api/governance/iso-compliance` la declaración form
 Todos los datos utilizados en el ecosistema son reales, empíricos y auditables:
 
 1. **Autoridad Marítima de Panamá (AMP):**  
-   - Enlace directo al dataset: [`https://datosabiertos.gob.pa/dataset/movimiento-de-carga-en-contenedores`](https://datosabiertos.gob.pa/dataset/movimiento-de-carga-en-contenedores)  
+   - Enlace directo al dataset: [`https://www.datosabiertos.gob.pa/dataset/?organization=autoridad-maritima-de-panama-amp`](https://www.datosabiertos.gob.pa/dataset/?organization=autoridad-maritima-de-panama-amp)  
    - Fecha y Momento de Extracción: `2026-09-25T14:30:00-05:00`  
    - Lugar Físico de Extracción: Edificio 553, Diablo Heights, Balboa, Corregimiento de Ancón, Ciudad de Panamá  
    - Tipo de Datos: 140 meses continuos de movimiento de contenedores TEUs (locales, trasbordo, vacíos y llenos) y despacho de combustible búnker VLSFO/MGO.

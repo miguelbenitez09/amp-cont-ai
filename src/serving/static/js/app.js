@@ -1608,6 +1608,130 @@ executePortForecast();`;
     });
   };
 
+  window.showPresetMathDetail = async function(presetId) {
+    const box = document.getElementById("preset-math-code-box");
+    const title = document.getElementById("preset-math-title");
+    const formulaDisplay = document.getElementById("preset-math-formula-display");
+    const desc = document.getElementById("preset-math-desc");
+    const code = document.getElementById("preset-python-code");
+
+    if (!box) return;
+    box.style.display = "block";
+    title.textContent = `Cargando detalles de preset: ${presetId}...`;
+
+    try {
+      const res = await fetch(`/api/models/presets/${presetId}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Error al cargar preset");
+
+      title.innerHTML = `📐 ${data.name} — Fundamento & Arquitectura`;
+      formulaDisplay.textContent = data.loss_formula || "L(y, y_hat) = |y - y_hat|";
+      desc.innerHTML = `<strong>Aplicación Operativa:</strong> ${data.target_application}<br><strong>Hiperparámetros Clave:</strong> Learning Rate: <code>${data.hyperparameters.learning_rate}</code>, Estimadores: <code>${data.hyperparameters.n_estimators}</code>, Profundidad: <code>${data.hyperparameters.max_depth}</code>, Regularización L1: <code>${data.hyperparameters.reg_alpha || 0}</code>, L2: <code>${data.hyperparameters.reg_lambda || 0}</code>.`;
+      code.textContent = data.code_snippet || "# Código fuente no disponible";
+      box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    } catch (err) {
+      title.textContent = `Error al consultar preset: ${err.message}`;
+    }
+  };
+
+  window.toggleCustomPresetForm = function() {
+    const f = document.getElementById("custom-preset-form-box");
+    if (!f) return;
+    f.style.display = (f.style.display === "none" || !f.style.display) ? "block" : "none";
+  };
+
+  window.registerCustomPreset = async function() {
+    const idEl = document.getElementById("cp-id");
+    const nameEl = document.getElementById("cp-name");
+    const algoEl = document.getElementById("cp-algo");
+    const lrEl = document.getElementById("cp-lr");
+    const estEl = document.getElementById("cp-n-estimators");
+    const depthEl = document.getElementById("cp-max-depth");
+    const l1El = document.getElementById("cp-l1");
+    const l2El = document.getElementById("cp-l2");
+    const lossEl = document.getElementById("cp-loss");
+    const descEl = document.getElementById("cp-desc");
+    const statusEl = document.getElementById("custom-preset-status");
+
+    const presetId = (idEl ? idEl.value.trim() : "").toLowerCase().replace(/[^a-z0-9_]/g, "_");
+    const name = nameEl ? nameEl.value.trim() : "";
+    if (!presetId || !name) {
+      if (statusEl) {
+        statusEl.textContent = "Ingresa ID y Nombre del preset.";
+        statusEl.style.color = "var(--rose-danger)";
+      }
+      return;
+    }
+
+    if (statusEl) {
+      statusEl.textContent = "Registrando preset en caliente...";
+      statusEl.style.color = "var(--cyan-bright)";
+    }
+
+    try {
+      const payload = {
+        id: presetId,
+        name: name,
+        description: descEl ? descEl.value.trim() : "Preset personalizado de usuario",
+        base_algorithm: algoEl ? algoEl.value : "lightgbm",
+        hyperparameters: {
+          learning_rate: parseFloat(lrEl.value),
+          n_estimators: parseInt(estEl.value, 10),
+          max_depth: parseInt(depthEl.value, 10),
+          reg_alpha: parseFloat(l1El.value),
+          reg_lambda: parseFloat(l2El.value),
+          objective: lossEl ? lossEl.value : "quantile"
+        },
+        target_application: descEl ? descEl.value.trim() : "Optimización personalizada en caliente",
+        loss_formula: "\\mathcal{L}_{\\text{custom}}(\\theta) = \\sum_{i=1}^N \\ell(y_i, f(x_i)) + \\lambda_1 |\\theta| + \\lambda_2 ||\\theta||_2^2"
+      };
+
+      const res = await fetch("/api/models/presets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Error al registrar preset");
+
+      if (statusEl) {
+        statusEl.textContent = `✓ Preset "${name}" registrado exitosamente.`;
+        statusEl.style.color = "var(--emerald-success)";
+      }
+
+      // Append card dynamically to grid if not exists
+      const container = document.getElementById("preset-cards-container");
+      if (container && !document.querySelector(`[data-preset-id="${presetId}"]`)) {
+        const newCard = document.createElement("div");
+        newCard.className = "preset-card";
+        newCard.setAttribute("data-preset-id", presetId);
+        newCard.onclick = () => window.selectTrainingPreset(presetId);
+        newCard.innerHTML = `
+          <div class="preset-header">
+            <span class="preset-title">${name}</span>
+            <span class="preset-badge champion">Custom</span>
+          </div>
+          <p class="preset-desc">${payload.description}</p>
+          <div class="preset-specs">LR: ${payload.hyperparameters.learning_rate} • Est: ${payload.hyperparameters.n_estimators} • Prof: ${payload.hyperparameters.max_depth}</div>
+          <div class="preset-card-footer">
+            <button class="preset-info-btn" onclick="event.stopPropagation(); showPresetMathDetail('${presetId}')">📐 Matemática & Código</button>
+          </div>
+        `;
+        container.appendChild(newCard);
+      }
+
+      setTimeout(() => {
+        window.toggleCustomPresetForm();
+        if (statusEl) statusEl.textContent = "";
+      }, 2000);
+    } catch (err) {
+      if (statusEl) {
+        statusEl.textContent = `Error: ${err.message}`;
+        statusEl.style.color = "var(--rose-danger)";
+      }
+    }
+  };
+
   window.applySelectedPreset = async function() {
     const statusEl = document.getElementById("preset-apply-status");
     if (!statusEl) return;
@@ -1631,9 +1755,20 @@ executePortForecast();`;
     const btn = document.getElementById("btn-trigger-repro-train");
     const status = document.getElementById("repro-train-status");
     const resultBox = document.getElementById("repro-train-result");
+
+    const savePathInput = document.getElementById("repro-save-path");
+    const modelIdInput = document.getElementById("repro-model-id");
+    const versionTagInput = document.getElementById("repro-version-tag");
+    const seedInput = document.getElementById("repro-seed-val");
+
+    const savePath = savePathInput ? savePathInput.value.trim() : "models/champion_lightgbm.joblib";
+    const modelId = modelIdInput ? modelIdInput.value.trim() : "panama-portops-lgbm-v1";
+    const versionTag = versionTagInput ? versionTagInput.value.trim() : "v1.2.0-panama";
+    const seed = seedInput ? parseInt(seedInput.value, 10) : 42;
+
     if (btn) btn.disabled = true;
     if (status) {
-      status.textContent = "Ejecutando reentrenamiento determinista con Seed 42...";
+      status.textContent = `Ejecutando reentrenamiento determinista (Seed ${seed})...`;
       status.style.color = "var(--cyan-bright)";
     }
     if (resultBox) resultBox.style.display = "none";
@@ -1642,13 +1777,19 @@ executePortForecast();`;
       const res = await fetch("/api/models/reproducible-train", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ seed: 42, preset: window.selectedPresetId || "balanced_champion" })
+        body: JSON.stringify({
+          seed: seed,
+          preset: window.selectedPresetId || "balanced_champion",
+          save_path: savePath,
+          model_id: modelId,
+          version_tag: versionTag
+        })
       });
       const d = await res.json();
       if (!res.ok) throw new Error(d.detail || "Error en reentrenamiento determinista");
 
       if (status) {
-        status.textContent = `✓ Modelo reentrenado con éxito en ${d.training_time_seconds.toFixed(2)}s con Semilla 42.`;
+        status.textContent = `✓ Modelo guardado en ${savePath} (${d.training_time_seconds.toFixed(2)}s, Semilla ${seed}).`;
         status.style.color = "var(--emerald-success)";
       }
       if (resultBox) {
@@ -1656,6 +1797,7 @@ executePortForecast();`;
         resultBox.innerHTML = `
           <strong style="color:var(--cyan-bright); font-size:0.85rem;">Certificado de Determinismo & Huella Criptográfica SHA-256:</strong><br>
           • <strong>Algoritmo:</strong> ${d.algorithm} (Preset: <code>${d.preset}</code>)<br>
+          • <strong>Ruta en Disco:</strong> <code>${d.save_path || savePath}</code> (ID: <code>${d.model_id || modelId}</code> @ <code>${d.version_tag || versionTag}</code>)<br>
           • <strong>Registros Auditados:</strong> ${d.dataset_records} meses empíricos<br>
           • <strong>SHA-256 Model Hash:</strong> <code style="color:var(--cyan-bright);">${d.model_sha256}</code><br>
           • <strong>Métricas Empíricas:</strong> WAPE: ${(d.metrics.wape * 100).toFixed(2)}% | R²: ${d.metrics.r2.toFixed(4)} | MAE: ${d.metrics.mae.toLocaleString()} TEUs<br>
@@ -1773,34 +1915,101 @@ executePortForecast();`;
         <thead>
           <tr>
             <th>Funcionario / Usuario</th>
-            <th>Rol Estatal</th>
+            <th>Rol Estandarizado</th>
             <th>Entidad</th>
             <th>Estado</th>
             <th>Último Acceso</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
       `;
       (d.active_users || []).forEach(u => {
-        let roleClass = "superadmin";
-        const role = u.role_id || "operador_portuario";
-        if (role.includes("auditor")) roleClass = "auditor";
-        if (role.includes("operador")) roleClass = "operator";
-        if (role.includes("investigador")) roleClass = "researcher";
+        let roleClass = "operator";
+        const role = u.role_id || "port_operator";
+        if (role === "root_owner" || role.includes("superadmin")) roleClass = "superadmin";
+        else if (role === "platform_admin") roleClass = "superadmin";
+        else if (role === "mlops_engineer") roleClass = "auditor";
+        else if (role === "compliance_auditor") roleClass = "auditor";
+        else if (role === "readonly_viewer") roleClass = "researcher";
 
+        const isRoot = (u.username === "root" || role === "root_owner");
         rowsHtml += `
           <tr>
-            <td><strong>${u.full_name || u.username}</strong><br><small style="color:var(--text-muted);">${u.username} (${u.auth_method || 'SSO'})</small></td>
+            <td><strong>${u.full_name || u.username}</strong><br><small style="color:var(--text-muted); font-family:var(--font-mono);">${u.username} (${u.auth_method || 'SSO'})</small></td>
             <td><span class="role-badge ${roleClass}">${role.replace(/_/g, ' ').toUpperCase()}</span></td>
             <td>${u.entity || 'Gobierno de Panamá'}</td>
             <td><span class="badge ${u.status === 'ACTIVO' ? 'badge-success' : 'badge-danger'}">● ${u.status || 'ACTIVO'}</span></td>
             <td><small>${u.last_login || '2026-09-25 UTC'}</small></td>
+            <td>
+              ${isRoot ? '<small style="color:var(--text-dim);">Protegido</small>' : `<button class="btn btn-secondary btn-sm" style="padding:0.15rem 0.45rem; font-size:0.7rem; color:var(--rose-alert);" onclick="deleteGovUser('${u.username}')">🗑️ Baja</button>`}
+            </td>
           </tr>
         `;
       });
       rowsHtml += "</tbody>";
       table.innerHTML = rowsHtml;
     } catch (_) {}
+  };
+
+  window.deleteGovUser = async function(username) {
+    if (!confirm(`¿Estás seguro de revocar y eliminar de forma permanente al usuario "${username}"?`)) return;
+    try {
+      const res = await fetch("/api/admin/delete-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: username })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Error al eliminar usuario");
+      alert(`✓ ${data.message}`);
+      window.loadGovAdminData();
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
+  window.testLivePermission = async function() {
+    const userSelect = document.getElementById("perm-test-user");
+    const permSelect = document.getElementById("perm-test-action");
+    const resultBox = document.getElementById("perm-test-result");
+    if (!userSelect || !permSelect || !resultBox) return;
+
+    const username = userSelect.value;
+    const permission = permSelect.value;
+
+    resultBox.style.display = "block";
+    resultBox.innerHTML = `<em>Verificando permisos criptográficos contra la matriz RBAC ministerial...</em>`;
+
+    try {
+      const res = await fetch("/api/admin/verify-permission", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, permission })
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.detail || "Error en verificación de permisos");
+
+      if (d.allowed) {
+        resultBox.innerHTML = `
+          <strong style="color:var(--emerald-success); font-size:0.85rem;">✅ ACCESO CONCEDIDO (Permiso Aprobado):</strong><br>
+          • <strong>Usuario Auditado:</strong> <code>${d.username}</code> (Rol: <span class="role-badge superadmin">${d.role.toUpperCase()}</span>)<br>
+          • <strong>Operación:</strong> <code>${d.permission_tested}</code><br>
+          • <strong>Dictamen de Seguridad:</strong> Operación autorizada bajo el principio de mínimo privilegio (Least Privilege).<br>
+          • <strong>Timestamp de Auditoría:</strong> <em>${d.timestamp}</em>
+        `;
+      } else {
+        resultBox.innerHTML = `
+          <strong style="color:var(--rose-alert); font-size:0.85rem;">🚫 ACCESO DENEGADO (Violación de Seguridad RBAC):</strong><br>
+          • <strong>Usuario Auditado:</strong> <code>${d.username}</code> (Rol: <span class="role-badge operator">${d.role.toUpperCase()}</span>)<br>
+          • <strong>Operación Solicitada:</strong> <code>${d.permission_tested}</code><br>
+          • <strong>Motivo de Bloqueo:</strong> ${d.reason}<br>
+          • <strong>Registro Forense:</strong> Incidente notificado a la bitácora de auditoría inmutable de la Contraloría General.
+        `;
+      }
+    } catch (err) {
+      resultBox.innerHTML = `<span style="color:var(--rose-alert);">Error en verificación: ${err.message}</span>`;
+    }
   };
 
   window.createNewGovUser = async function() {
@@ -1812,7 +2021,7 @@ executePortForecast();`;
 
     const name = nameEl ? nameEl.value.trim() : "";
     const email = emailEl ? emailEl.value.trim() : "";
-    const role = roleEl ? roleEl.value : "operador_portuario";
+    const role = roleEl ? roleEl.value : "port_operator";
     const entity = entityEl && entityEl.value.trim() ? entityEl.value.trim() : "Autoridad Marítima de Panamá";
 
     if (!name || !email) {
@@ -1855,6 +2064,137 @@ executePortForecast();`;
         status.style.color = "var(--rose-danger)";
       }
     }
+  };
+
+  // --- Universal Database Adapters Testing Engine ---
+  window.currentSelectedDbEngine = "duckdb";
+
+  window.testDatabaseAdapter = async function(engine, customQuery = null) {
+    window.currentSelectedDbEngine = engine;
+    const box = document.getElementById("db-live-diagnostic-box");
+    const nameEl = document.getElementById("db-diag-engine-name");
+    const statusBadge = document.getElementById("db-diag-status-badge");
+    const latencyEl = document.getElementById("db-diag-latency");
+    const poolEl = document.getElementById("db-diag-pool");
+    const opEl = document.getElementById("db-diag-op");
+    const fallbackEl = document.getElementById("db-diag-fallback");
+    const queryInput = document.getElementById("db-custom-query-input");
+    const previewEl = document.getElementById("db-diag-result-preview");
+
+    if (!box) return;
+    box.style.display = "block";
+    if (queryInput && !customQuery) {
+      if (engine === "duckdb") queryInput.value = "SELECT count(*) as total_filas, min(date) as desde, max(date) as hasta FROM amp_port_monthly_throughput";
+      else if (engine === "timescaledb") queryInput.value = "SELECT hypertable_name, num_chunks FROM timescaledb_information.hypertables LIMIT 5";
+      else if (engine === "redis") queryInput.value = "PING";
+    }
+
+    const titles = {
+      duckdb: "DuckDB Columnar (OLAP Zero-Copy)",
+      timescaledb: "PostgreSQL / TimescaleDB (Time-Series Hypertables)",
+      redis: "Redis In-Memory Cache (Sub-Millisecond Inference Layer)"
+    };
+    if (nameEl) nameEl.textContent = `Diagnóstico en Tiempo Real: ${titles[engine] || engine}`;
+    if (statusBadge) {
+      statusBadge.textContent = "PROBANDO...";
+      statusBadge.className = "badge badge-info";
+    }
+    if (previewEl) previewEl.innerHTML = "<em>Ejecutando ping y query diagnóstica...</em>";
+
+    try {
+      const payload = {
+        engine: engine,
+        custom_query: customQuery || (queryInput ? queryInput.value : null)
+      };
+      const res = await fetch("/api/infrastructure/database/test-connection", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Error al probar conector");
+
+      if (statusBadge) {
+        statusBadge.textContent = data.status.toUpperCase();
+        statusBadge.className = data.status === "online" ? "badge badge-success" : (data.status === "degraded" ? "badge badge-warn" : "badge badge-danger");
+      }
+      if (latencyEl) latencyEl.textContent = `${data.latency_ms.toFixed(3)} ms`;
+      if (poolEl) poolEl.textContent = `${data.connection_pool.active_connections} / ${data.connection_pool.max_pool_size} Conexiones`;
+      if (opEl) opEl.textContent = data.read_write_verification ? "Read/Write OK" : "Read Only";
+      if (fallbackEl) fallbackEl.textContent = data.details.mode || data.engine;
+
+      // Update card stat badge
+      const statEl = document.getElementById(`db-stat-${engine}`);
+      if (statEl) statEl.textContent = `Latencia: ${data.latency_ms.toFixed(2)} ms • Pool: ${data.connection_pool.active_connections}/${data.connection_pool.max_pool_size}`;
+
+      if (previewEl) {
+        if (data.diagnostic_query_result && Array.isArray(data.diagnostic_query_result) && data.diagnostic_query_result.length > 0) {
+          const sample = data.diagnostic_query_result.slice(0, 4);
+          const cols = Object.keys(sample[0]);
+          let tableHtml = `<div class="table-responsive" style="max-height:160px; overflow-y:auto; margin-top:0.4rem;"><table class="api-spec-table"><thead><tr>` + cols.map(c => `<th>${c}</th>`).join("") + `</tr></thead><tbody>`;
+          sample.forEach(row => {
+            tableHtml += `<tr>` + cols.map(c => `<td><code>${row[c] !== null ? row[c] : "-"}</code></td>`).join("") + `</tr>`;
+          });
+          tableHtml += `</tbody></table></div>`;
+          previewEl.innerHTML = tableHtml;
+        } else {
+          previewEl.innerHTML = `<pre class="json-rpc-viewer" style="margin-top:0.4rem; max-height:140px;">${JSON.stringify(data.diagnostic_query_result || data.details, null, 2)}</pre>`;
+        }
+      }
+    } catch (err) {
+      if (statusBadge) {
+        statusBadge.textContent = "ERROR";
+        statusBadge.className = "badge badge-danger";
+      }
+      if (previewEl) previewEl.innerHTML = `<span style="color:var(--rose-alert);">Error en diagnóstico: ${err.message}</span>`;
+    }
+  };
+
+  window.runCustomDbQuery = function() {
+    const input = document.getElementById("db-custom-query-input");
+    const query = input ? input.value.trim() : null;
+    window.testDatabaseAdapter(window.currentSelectedDbEngine, query);
+  };
+
+  // --- Glossary Filter Engine ---
+  window.currentGlossaryCat = "all";
+  window.currentGlossaryLetter = "ALL";
+
+  window.filterGlossaryItems = function() {
+    const searchVal = (document.getElementById("glossary-search-input") ? document.getElementById("glossary-search-input").value : "").toLowerCase().trim();
+    const items = document.querySelectorAll(".glossary-item");
+
+    items.forEach(item => {
+      const text = item.textContent.toLowerCase();
+      const cat = item.getAttribute("data-cat") || "";
+      const letter = item.getAttribute("data-letter") || "";
+
+      const matchesSearch = !searchVal || text.includes(searchVal);
+      const matchesCat = (window.currentGlossaryCat === "all" || cat === window.currentGlossaryCat);
+      const matchesLetter = (window.currentGlossaryLetter === "ALL" || letter.toUpperCase() === window.currentGlossaryLetter);
+
+      if (matchesSearch && matchesCat && matchesLetter) {
+        item.style.display = "block";
+      } else {
+        item.style.display = "none";
+      }
+    });
+  };
+
+  window.filterGlossaryByCategory = function(cat) {
+    window.currentGlossaryCat = cat;
+    document.querySelectorAll(".glossary-cat-btn").forEach(btn => {
+      btn.classList.toggle("active", btn.getAttribute("data-cat") === cat);
+    });
+    window.filterGlossaryItems();
+  };
+
+  window.filterGlossaryByLetter = function(letter) {
+    window.currentGlossaryLetter = letter;
+    document.querySelectorAll(".alpha-btn").forEach(btn => {
+      btn.classList.toggle("active", btn.textContent.trim().toUpperCase() === letter.toUpperCase());
+    });
+    window.filterGlossaryItems();
   };
 
   window.revokeAllSessions = async function() {
@@ -2057,7 +2397,7 @@ executePortForecast();`;
     },
     "source": {
       "provenance": "Portal Oficial de Datos Abiertos de la República de Panamá & AMP",
-      "url": "https://datosabiertos.gob.pa/dataset/movimiento-de-contenedores-teu-en-el-sistema-portuario-nacional",
+      "url": "https://www.datosabiertos.gob.pa/dataset/?organization=autoridad-maritima-de-panama-amp",
       "coverage": "140 meses continuos (Enero 2014 – Febrero 2026)",
       "format": "Apache Parquet comprimido con Snappy, particionado por año y litoral",
       "hash": "SHA-256 Manifest: 9e3f1b4a... (Inmutable en almacenamiento WORM)"
@@ -2097,7 +2437,7 @@ executePortForecast();`;
     },
     "source": {
       "provenance": "Motor de Limpieza Silver MLOps (src/data/cleaner.py)",
-      "url": "https://datosabiertos.gob.pa/dataset/movimiento-de-contenedores-teu-en-el-sistema-portuario-nacional",
+      "url": "https://www.datosabiertos.gob.pa/dataset/?organization=autoridad-maritima-de-panama-amp",
       "coverage": "140 periodos mensuales validados (2014-01 a 2026-02)",
       "format": "Dataframe Silver validado contra esquema Pydantic v2",
       "hash": "Auditoría de integridad con cero duplicados bitemporales"
@@ -2137,7 +2477,7 @@ executePortForecast();`;
     },
     "source": {
       "provenance": "Gold Feature Store (src/features/feature_store.py)",
-      "url": "https://datosabiertos.gob.pa/dataset/movimiento-de-contenedores-teu-en-el-sistema-portuario-nacional",
+      "url": "https://www.datosabiertos.gob.pa/dataset/?organization=autoridad-maritima-de-panama-amp",
       "coverage": "85 columnas dimensionales auditadas y validadas con Great Expectations",
       "format": "Gold Table Parquet (Apache Arrow 14.0)",
       "hash": "Schema Hash Validado: Cero fuga temporal demostrada matemáticamente"
@@ -2177,7 +2517,7 @@ executePortForecast();`;
     },
     "source": {
       "provenance": "Módulo de Causalidad y Diagnóstico de Residuos (src/models/trainer.py)",
-      "url": "https://datosabiertos.gob.pa/dataset/movimiento-de-contenedores-teu-en-el-sistema-portuario-nacional",
+      "url": "https://www.datosabiertos.gob.pa/dataset/?organization=autoridad-maritima-de-panama-amp",
       "coverage": "Auditoría de VIF sobre las 85 variables numéricas del Feature Store Gold",
       "format": "Matriz de Covarianza & Grafo Causal DAG Validado",
       "hash": "Reporte VIF < 2.5 certificado para todas las variables retenidas"
@@ -2217,7 +2557,7 @@ executePortForecast();`;
     },
     "source": {
       "provenance": "Motor de Entrenamiento y Torneo MLOps (src/models/trainer.py)",
-      "url": "https://datosabiertos.gob.pa/dataset/movimiento-de-contenedores-teu-en-el-sistema-portuario-nacional",
+      "url": "https://www.datosabiertos.gob.pa/dataset/?organization=autoridad-maritima-de-panama-amp",
       "coverage": "Evaluación empírica sobre 4 particiones temporales (2022–2026)",
       "format": "Modelos serializados con Joblib y metadatos JSON de reproducibilidad",
       "hash": "Champion Verificado: WAPE 9.11% | R² 0.9594 | Latencia 9.8 ms"
@@ -2257,7 +2597,7 @@ executePortForecast();`;
     },
     "source": {
       "provenance": "Motor Estocástico y Estrés Inverso (src/models/monte_carlo.py)",
-      "url": "https://datosabiertos.gob.pa/dataset/movimiento-de-contenedores-teu-en-el-sistema-portuario-nacional",
+      "url": "https://www.datosabiertos.gob.pa/dataset/?organization=autoridad-maritima-de-panama-amp",
       "coverage": "Generación en tiempo real de 1,000 a 10,000 trayectorias sintéticas auditadas",
       "format": "Arreglos multidimensionales NumPy con semilla criptográfica PRNG",
       "hash": "Garantía de reproducibilidad estocástica vía Mersenne Twister controlado"
@@ -2297,7 +2637,7 @@ executePortForecast();`;
     },
     "source": {
       "provenance": "Módulo de Sanitización y Ley 81 (src/data/anonymizer.py)",
-      "url": "https://datosabiertos.gob.pa/dataset/movimiento-de-contenedores-teu-en-el-sistema-portuario-nacional",
+      "url": "https://www.datosabiertos.gob.pa/dataset/?organization=autoridad-maritima-de-panama-amp",
       "coverage": "Cero campos sensibles expuestos en tablas públicas y endpoints REST",
       "format": "Datasets agregados Macro-Terminal con hash HMAC de 16 caracteres",
       "hash": "Certificado de cumplimiento con Ley 81 de 2019 e ISO/IEC 27701:2019"
@@ -2337,7 +2677,7 @@ executePortForecast();`;
     },
     "source": {
       "provenance": "Servidor MCP & Capa de Gobernanza Estatal (src/mcp/server.py)",
-      "url": "https://datosabiertos.gob.pa/dataset/movimiento-de-contenedores-teu-en-el-sistema-portuario-nacional",
+      "url": "https://www.datosabiertos.gob.pa/dataset/?organization=autoridad-maritima-de-panama-amp",
       "coverage": "5 herramientas analíticas MCP expuestas con tipado JSON Schema",
       "format": "JSON-RPC 2.0 estándar / Claude Desktop Config",
       "hash": "Protocolo WORM con Hash Chaining validado para auditoría pública"
