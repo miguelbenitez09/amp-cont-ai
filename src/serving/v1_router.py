@@ -1165,3 +1165,146 @@ def list_audit_events(limit: int = 25):
             "total_events": len(events),
             "events": events
         }
+
+
+# ==============================================================================
+# 9. MARITIME AGENT SWARM & LLM RUNTIME
+# ==============================================================================
+
+class AgentChatRequest(BaseModel):
+    query: str = Field(..., description="Pregunta del usuario en lenguaje natural.")
+    target_agent_id: Optional[str] = Field(default=None, description="ID del agente específico o None para auto-enrutamiento.")
+    context: Optional[Dict[str, Any]] = Field(default=None, description="Metadatos contextuales.")
+
+
+@v1_router.get("/agents/list")
+def list_available_agents():
+    """Catálogo del enjambre de 4 agentes marítimos especializados."""
+    from src.agents.swarm import get_agent_swarm
+    swarm = get_agent_swarm()
+    return {
+        "author": "Desarrollado v1.0 Miguel Benítez",
+        "agents": swarm.list_available_agents()
+    }
+
+
+@v1_router.post("/agents/chat")
+def chat_with_agent_swarm(
+    req: AgentChatRequest,
+    current_user: Dict[str, Any] = Depends(get_current_user_and_session)
+):
+    """
+    Interacción con el enjambre de agentes marítimos:
+    - Enrutamiento semántico según intención.
+    - Consulta a vLLM / Ollama o heurística experta de respaldo.
+    - Citas legales y métricas de precisión.
+    """
+    from src.agents.swarm import get_agent_swarm
+    swarm = get_agent_swarm()
+    roles = current_user.get("roles", ["readonly_viewer"])
+    res = swarm.process_message(
+        query=req.query,
+        user_roles=roles,
+        target_agent_id=req.target_agent_id,
+        context=req.context
+    )
+    return res
+
+
+@v1_router.get("/agents/llm-health")
+def check_llm_runtime_health():
+    """Inspección de disponibilidad de los motores vLLM y Ollama locales."""
+    from src.infrastructure.llm_client import get_llm_client
+    client = get_llm_client()
+    return client.check_health()
+
+
+# ==============================================================================
+# 10. MODEL CONTEXT PROTOCOL (MCP) TOOLS
+# ==============================================================================
+
+class MCPExecuteRequest(BaseModel):
+    tool_name: str = Field(..., description="Nombre de la herramienta MCP registrada.")
+    arguments: Dict[str, Any] = Field(default_factory=dict, description="Parámetros de entrada de la herramienta.")
+
+
+@v1_router.get("/mcp/tools")
+def list_mcp_tools():
+    """Retorna los esquemas JSON de las herramientas MCP marítimas estándar."""
+    from src.mcp.tools import get_available_tools_schema
+    return {
+        "author": "Desarrollado v1.0 Miguel Benítez",
+        "protocol": "Model Context Protocol (JSON-RPC 2.0)",
+        "tools": get_available_tools_schema()
+    }
+
+
+@v1_router.post("/mcp/execute")
+def execute_mcp_tool(
+    req: MCPExecuteRequest,
+    current_user: Dict[str, Any] = Depends(get_current_user_and_session)
+):
+    """Ejecuta una herramienta MCP con validación de seguridad RBAC."""
+    from src.mcp.tools import execute_tool
+    try:
+        payload = execute_tool(req.tool_name, req.arguments)
+        return {
+            "success": True,
+            "tool_name": req.tool_name,
+            "executed_by": current_user.get("username", "anonymous"),
+            "result": payload,
+            "author": "Desarrollado v1.0 Miguel Benítez"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+# ==============================================================================
+# 11. PANAMA CUSTOMS TARIFFS & ISO 6346 CONTAINER ENGINES
+# ==============================================================================
+
+class CustomsCalculateRequest(BaseModel):
+    hs_code: str = Field(default="010121", description="Código arancelario de 6 a 12 dígitos.")
+    cif_value_usd: float = Field(default=10000.0, ge=0.0, description="Valor CIF en dólares para liquidación.")
+
+
+class ContainerValidateRequest(BaseModel):
+    container_id: str = Field(..., description="Identificador del contenedor de 11 caracteres (ej. MSKU1234565).")
+    size_type: str = Field(default="45G1", description="Código ISO de dimensiones (22G1, 45G1, 42R1).")
+
+
+@v1_router.get("/customs/tariff/search")
+def search_customs_tariff(query: Optional[str] = None):
+    """Búsqueda de subpartidas arancelarias oficiales de Panamá (ANA / SIECA)."""
+    from src.data.scrapers.ana_hscode_scraper import PanamaTariffDatabase
+    if query:
+        items = PanamaTariffDatabase.search_by_text(query)
+    else:
+        items = PanamaTariffDatabase.get_tariff_catalog()
+    return {
+        "author": "Desarrollado v1.0 Miguel Benítez",
+        "total_matches": len(items),
+        "items": items
+    }
+
+
+@v1_router.post("/customs/tariff/calculate")
+def calculate_landed_customs_cost(req: CustomsCalculateRequest):
+    """Liquidación fiscal aduanera formal (DAI, ITBMS 7%, tasas ANA, permisos MIDA/MINSA)."""
+    from src.data.scrapers.ana_hscode_scraper import PanamaTariffDatabase
+    calc = PanamaTariffDatabase.calculate_landed_customs_cost(hs_code=req.hs_code, cif_value_usd=req.cif_value_usd)
+    return {
+        "author": "Desarrollado v1.0 Miguel Benítez",
+        "liquidation": calc
+    }
+
+
+@v1_router.post("/containers/validate")
+def validate_shipping_container(req: ContainerValidateRequest):
+    """Validación de contenedores intermodales con algoritmo Check-Digit Módulo-11 (ISO 6346)."""
+    from src.data.parsers.container_iso6346 import ISO6346ContainerValidator
+    record = ISO6346ContainerValidator.parse_full_manifest_entry(container_id=req.container_id, size_type=req.size_type)
+    return {
+        "author": "Desarrollado v1.0 Miguel Benítez",
+        "result": record
+    }

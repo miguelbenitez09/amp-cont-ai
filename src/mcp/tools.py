@@ -99,6 +99,44 @@ def get_available_tools_schema() -> List[Dict[str, Any]]:
                 },
                 "required": ["query"]
             }
+        },
+        {
+            "name": "lookup_panama_customs_tariff",
+            "description": "Looks up Panama customs tariff subheadings (8, 10, 12 digits ANA/SIECA), calculates import DAI% and ITBMS (7%), and lists required permits (MIDA, MINSA, APA, MiAmbiente, DIASP).",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "hs_code": {
+                        "type": "string",
+                        "description": "HS code prefix or full Panama tariff code, e.g. '010121', '020130', '080390', '271019', '847130'."
+                    },
+                    "cif_value_usd": {
+                        "type": "number",
+                        "description": "CIF value in USD for tax liquidation. Default is 10000.0.",
+                        "default": 10000.0
+                    }
+                },
+                "required": ["hs_code"]
+            }
+        },
+        {
+            "name": "validate_iso6346_container",
+            "description": "Validates shipping container ID against ISO 6346 Modulo-11 Check-Digit algorithm and decodes size/type specs.",
+            "inputSchema": {
+                "type": "object",
+                "properties": {
+                    "container_id": {
+                        "type": "string",
+                        "description": "11-character container number, e.g. 'MSKU1234565' or 'MSCU9876543'."
+                    },
+                    "size_type": {
+                        "type": "string",
+                        "description": "ISO size/type code, e.g. '22G1', '45G1', '42R1'. Default is '45G1'.",
+                        "default": "45G1"
+                    }
+                },
+                "required": ["container_id"]
+            }
         }
     ]
 
@@ -108,7 +146,19 @@ def execute_tool(name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
     from src.models.champion_suite import get_champion_suite
     from src.simulation.monte_carlo_engine import MonteCarloEngine
 
-    if name == "get_port_forecast":
+    if name == "lookup_panama_customs_tariff":
+        from src.data.scrapers.ana_hscode_scraper import PanamaTariffDatabase
+        hs = arguments.get("hs_code", "010121")
+        cif = float(arguments.get("cif_value_usd", 10000.0))
+        return PanamaTariffDatabase.calculate_landed_customs_cost(hs_code=hs, cif_value_usd=cif)
+
+    elif name == "validate_iso6346_container":
+        from src.data.parsers.container_iso6346 import ISO6346ContainerValidator
+        cid = arguments.get("container_id", "MSKU1234565")
+        st = arguments.get("size_type", "45G1")
+        return ISO6346ContainerValidator.parse_full_manifest_entry(container_id=cid, size_type=st)
+
+    elif name == "get_port_forecast":
         port = arguments.get("port_name", "Balboa")
         horizon = arguments.get("horizon_months", 6)
         suite = get_champion_suite()

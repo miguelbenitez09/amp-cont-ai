@@ -226,6 +226,11 @@ app.include_router(v1_router)
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
+# Mount Flutter multiplatform web app if built
+FLUTTER_WEB_DIR = PROJECT_ROOT / "apps" / "portops_desktop" / "build" / "web"
+if FLUTTER_WEB_DIR.exists():
+    app.mount("/app", StaticFiles(directory=str(FLUTTER_WEB_DIR), html=True), name="flutter_app")
+
 
 def wants_html(request: Request) -> bool:
     """Helper to detect if request comes from a human web browser rather than an API client."""

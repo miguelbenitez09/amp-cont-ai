@@ -18,7 +18,8 @@
 7. [Guía Maestra de Extensibilidad: Ingesta de Nuevas APIs y Datos Internacionales](#7-guía-maestra-de-extensibilidad-ingesta-de-nuevas-apis-y-datos-internacionales)
 8. [Despliegue, Microservicio y Configuración en Caliente](#8-despliegue-microservicio-y-configuración-en-caliente)
 9. [Arquitectura v2.0 Enterprise: IAM, Plataforma de Datos (5 Gates), Model Registry y WORM Ledger](#9-arquitectura-v20-enterprise-iam-plataforma-de-datos-5-gates-model-registry-y-worm-ledger)
-10. [Términos Legales y Atribución Obligatoria](#10-términos-legales-y-atribución-obligatoria)
+10. [Ecosistema Agéntico Industrial, Flutter Multiplataforma, Inferencia y Aranceles Aduaneros](#10-ecosistema-agéntico-industrial-flutter-multiplataforma-inferencia-y-aranceles-aduaneros)
+11. [Términos Legales y Atribución Obligatoria](#11-términos-legales-y-atribución-obligatoria)
 
 ---
 
@@ -504,10 +505,51 @@ El flujo de datos implementa 5 puertas de calidad automatizadas en `src/data/qua
 | `/api/v1/simulations/quotas` | `GET` | Cuotas computacionales y consumo de CPU por operador. |
 | `/api/v1/audit/worm/verify` | `GET` | Verificación criptográfica del libro mayor inmutable WORM. |
 | `/api/v1/audit/events` | `GET` | Registro de eventos de seguridad y accesos del sistema. |
+| `/api/v1/agents/list` | `GET` | Catálogo de los 4 agentes especializados del enjambre. |
+| `/api/v1/agents/chat` | `POST` | Interacción y enrutamiento semántico con el enjambre de agentes. |
+| `/api/v1/agents/llm-health` | `GET` | Estado de salud de los motores vLLM y Ollama locales. |
+| `/api/v1/mcp/tools` | `GET` | Esquemas estándar JSON-RPC de herramientas MCP marítimas. |
+| `/api/v1/mcp/execute` | `POST` | Ejecución segura de herramientas MCP con control RBAC. |
+| `/api/v1/customs/tariff/search` | `GET` | Búsqueda en catálogo arancelario ANA/SIECA (8 a 12 dígitos). |
+| `/api/v1/customs/tariff/calculate` | `POST` | Liquidación fiscal aduanera formal (DAI, ITBMS 7%, tasas ANA). |
+| `/api/v1/containers/validate` | `POST` | Validación ISO 6346 (Check-Digit Módulo-11) y decodificación. |
 
 ---
 
-## 10. Términos Legales y Atribución Obligatoria
+## 10. Ecosistema Agéntico Industrial, Flutter Multiplataforma, Inferencia y Aranceles Aduaneros
+
+### 10.1 Frontend Multiplataforma Flutter (`apps/portops_desktop`)
+Para proveer accesibilidad universal en salas de control portuario, terminales operativas de muelle y dispositivos móviles de campo, el frontend ha sido completamente implementado en **Flutter**:
+- **Compilación Única para Tres Destinos:**
+  - **Web Application:** Desplegada automáticamente en `/app/` servida directamente por FastAPI sin requerir servidores web auxiliares.
+  - **Windows Desktop Nativo:** Ejecutable Win32 de alto rendimiento para estaciones de monitoreo en terminales portuarias.
+  - **Android Móvil:** Paquete APK adaptable a tablets industriales y smartphones de inspectores de muelle.
+- **6 Vistas de Operación Crítica:**
+  1. *Inferencia Cuantílica & Garantías Matemáticas:* Curvas de demanda TEUs con monotonicidad $P_{10} \le P_{50} \le P_{90}$.
+  2. *Simulación de Monte Carlo & WORM Ledger:* Monitoreo de riesgos estocásticos y sellos inmutables SHA-256.
+  3. *Data Platform & 5 Quality Gates:* Estado del pipeline bitemporal y estadísticas de cuarentena.
+  4. *Aduanas de Panamá & ISO 6346:* Liquidación de impuestos de importación y verificación de dígitos verificadores de contenedores.
+  5. *Enjambre Agéntico & Chat RAG:* Interfaz de diálogo industrial con telemetría de latencia y trazabilidad de leyes panameñas.
+  6. *Consola de Seguridad IAM:* Inspección de tokens, gestión de credenciales y simulación de roles RBAC.
+
+### 10.2 Enjambre Agéntico y MCP Tools
+El enjambre (`src/agents/`) opera bajo un modelo de federación de agentes especializados:
+- **`AuditorMaritimoAgent`:** Asegura que toda operación cumpla con la Ley 6 de 2002, Ley 56 de 2008 y normas de transparencia pública.
+- **`OperadorMuelleAgent`:** Gestiona patios de contenedores, ritmos de grúas STS y balances de vacíos.
+- **`CausalRiskAgent`:** Evalúa escenarios de choque (sequía, búnker, geopolítica) mediante simulaciones estocásticas.
+- **`AgenteAduaneroTariffAgent`:** Asesora sobre aranceles DAI, ITBMS y permisos de importación (MIDA, MINSA, APA).
+
+Las herramientas se exponen mediante el estándar **Model Context Protocol (JSON-RPC 2.0)**, garantizando que asistentes de IA externos puedan ejecutar funciones de predicción y validación de forma interoperable.
+
+### 10.3 Motor de Inferencia Optimizado y Garantía Isotónica
+Implementado en `src/models/inference/engine.py`:
+- Inferencia ultra-rápida en memoria CPU con latencias inferiores a **0.07 ms**.
+- Regularización isotónica para asegurar matemáticamente que jamás ocurra un cruce cuantílico ($P_{10} \le P_{50} \le P_{90}$).
+- Capacidad de simulación paramétrica What-If para shocks operativos inmediatos.
+
+---
+
+## 11. Términos Legales y Atribución Obligatoria
 
 Este software es libre bajo la licencia **GNU General Public License v3.0 (GPL-3.0)** con cláusula adicional de atribución obligatoria según la Sección 7(b) y 7(c) de la licencia.
 

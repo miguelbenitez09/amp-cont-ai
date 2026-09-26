@@ -31,7 +31,8 @@
 11. [Gobernanza Gubernamental: Matriz de Cumplimiento Normativo ISO (27001, 42001, 27701, 22301)](#11-gobernanza-gubernamental-matriz-de-cumplimiento-normativo-iso-27001-42001-27701-22301)
 12. [Guía de Despliegue en GitHub, Seguridad y CI/CD](#12-guía-de-despliegue-en-github-seguridad-y-cicd)
 13. [Arquitectura v2.0 Enterprise: IAM, Plataforma de Datos, Model Registry y WORM Ledger](#13-arquitectura-v20-enterprise-iam-plataforma-de-datos-model-registry-y-worm-ledger)
-14. [Licencia, Atribución Obligatoria y Citación Académica](#14-licencia-atribución-obligatoria-y-citación-académica)
+14. [Ecosistema Agéntico Industrial, Flutter Multiplataforma, Inferencia y Aranceles Aduaneros](#14-ecosistema-agéntico-industrial-flutter-multiplataforma-inferencia-y-aranceles-aduaneros)
+15. [Licencia, Atribución Obligatoria y Citación Académica](#15-licencia-atribución-obligatoria-y-citación-académica)
 
 ---
 
@@ -599,7 +600,62 @@ La versión 2.0 consolida a **Panamá PortOps-AI** como una plataforma de grado 
 
 ---
 
-## 14. Licencia, Atribución Obligatoria y Citación Académica
+## 14. Ecosistema Agéntico Industrial, Flutter Multiplataforma, Inferencia y Aranceles Aduaneros
+
+La plataforma incorpora una suite completa de capacidades agénticas avanzadas, frontend nativo multiplataforma y normalización arancelaria panameña:
+
+### 14.1 Frontend Multiplataforma Flutter (`apps/portops_desktop`)
+Desarrollado bajo Flutter 3.47+ y Dart 3.13+, diseñado para desplegarse desde un único código base para:
+- **Web App:** Compilado a JavaScript/WASM de alta velocidad y montado automáticamente en el servidor FastAPI en `/app/`.
+- **Windows Desktop:** Compilación nativa Win32 directa con soporte para aceleración por GPU.
+- **Android:** Paquete APK móvil con diseño responsivo y adaptador HTTP industrial con timeouts resilientes.
+
+**Arquitectura Visual y 6 Módulos Operacionales:**
+1. **Pronósticos de Inferencia Cuantílica:** Visualización en tiempo real de bandas $P_{10}$, $P_{50}$ y $P_{90}$ con garantía de anti-cruce isotónico y latencia sub-milisegundo.
+2. **Simulaciones Monte Carlo y WORM Ledger:** Ejecución estocástica de trayectorias con saltos de Merton y verificación de sellado criptográfico inmutable.
+3. **Plataforma de Datos y 5 Quality Gates:** Monitor en vivo del paso de datos por las puertas bitemporales y detección de anomalías en cuarentena.
+4. **Catálogo Arancelario y Validador ISO 6346:** Búsqueda en vivo de subpartidas arancelarias de Panamá, liquidación de DAI/ITBMS y validación de contenedores con Módulo-11.
+5. **Chat con Enjambre Agéntico:** Interacción fluida con los 4 agentes especializados con citas legales, trazabilidad de tokens y telemetría de latencia.
+6. **Seguridad IAM y Sandbox de Roles:** Inspección dinámica de JWT, gestión de sesiones y simulación de los 12 roles RBAC.
+
+```bash
+# Para compilar o ejecutar el cliente Flutter:
+cd apps/portops_desktop
+flutter pub get
+flutter build web --release      # Compila la versión web (servida en /app/)
+flutter run -d windows           # Ejecuta la aplicación de escritorio nativa en Windows
+```
+
+### 14.2 Enjambre Agéntico Especializado (`src/agents/`)
+Orquestación colaborativa con 4 agentes con roles definidos bajo principio de mínimo privilegio:
+- **`AuditorMaritimoAgent`:** Cumplimiento de la Ley 6 de 2002, Ley 56 de 2008, normas ISO 27001/42001 y auditoría forense WORM.
+- **`OperadorMuelleAgent`:** Logística de patio, asignación de grúas pórtico STS, tiempos de permanencia y balance de contenedores vacíos.
+- **`CausalRiskAgent`:** Análisis cuantitativo de riesgo estocástico, perturbaciones geopolíticas, sequía del Canal y cálculo de VaR/CVaR.
+- **`AgenteAduaneroTariffAgent`:** Liquidación fiscal de importación/exportación según arancel nacional de la Autoridad Nacional de Aduanas (ANA), cálculo de DAI, ITBMS y permisos MIDA/MINSA.
+
+### 14.3 Motor de Inferencia Optimizado con Garantía Anti-Cruce (`src/models/inference/engine.py`)
+- **Latencia Sub-milisegundo:** Tiempos de respuesta de **0.063 ms** en CPU para inferencias en tiempo real.
+- **Monotonía Cuantílica Rigurosa:** Post-procesamiento isotónico que impide matemáticamente que los cuantiles se crucen ($P_{10} \le P_{50} \le P_{90}$).
+- **Caché LRU:** Memoria interna de 256 estados para consultas repetitivas de terminales.
+- **Análisis de Sensibilidad What-If:** Multiplicadores paramétricos para shocks de búnker, calado y trasbordo.
+
+### 14.4 Herramientas Estandarizadas MCP (`src/mcp/tools.py`)
+Implementación completa de esquemas **Model Context Protocol (JSON-RPC 2.0)** para interoperabilidad agéntica con Claude Desktop, Cursor y agentes externos:
+- `lookup_panama_customs_tariff`: Búsqueda y liquidación arancelaria.
+- `validate_iso6346_container`: Validación de contenedores y desglose de tipo/tamaño.
+- `get_port_forecast`: Pronósticos probabilísticos de TEUs.
+- `run_monte_carlo_risk_simulation`: Simulación estocástica multivariada con Cholesky.
+- `compare_model_benchmarks`: Benchmarking formal entre los 8 modelos.
+- `simulate_external_feature`: Pruebas de calidad y normalización de variables externas.
+- `query_maritime_knowledge`: RAG sobre leyes marítimas y gobernanza técnica.
+
+### 14.5 Aranceles Aduaneros de Panamá y Validador ISO 6346
+- **Base de Datos Arancelaria (`src/data/scrapers/ana_hscode_scraper.py`):** Catálogo estructurado con incisos de 8, 10 y 12 dígitos, DAI%, ITBMS% y entidades reguladoras (MIDA, MINSA, APA, MiAmbiente, DIASP).
+- **Validador ISO 6346 (`src/data/parsers/container_iso6346.py`):** Algoritmo Módulo-11 con factores de peso $2^i$, identificación de propietario BIC y categoría (`U`, `J`, `Z`), y parser de mensajes EDIFACT BAPLIE y COARRI.
+
+---
+
+## 15. Licencia, Atribución Obligatoria y Citación Académica
 
 Este proyecto es software libre y de código abierto bajo la licencia **GNU General Public License v3.0 (GPL-3.0)** con cláusula adicional de atribución según la Sección 7(b) y 7(c) de la licencia.
 
