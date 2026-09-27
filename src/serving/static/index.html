@@ -69,7 +69,7 @@
         <button class="badge btn-security-hud" id="btn-auth-iam" title="Centro de Autenticación, MFA RFC 6238 y Seguridad Operativa">
           <span class="status-dot green"></span> <span id="nav-user-label" data-i18n="nav.login_iam">Iniciar Sesión | Login In</span>
         </button>
-        <span class="badge role-pill" id="hud-active-role" title="Rol RBAC activo en el sistema">Rol: root</span>
+        <span class="badge role-pill" id="hud-active-role" title="Rol RBAC activo en el sistema">Modo: Invitado</span>
         <button class="badge worm-badge" id="hud-worm-status" title="Auditoría WORM Criptográfica SHA-256">
           <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> <span data-i18n="nav.worm_valid">WORM: Válido</span>
         </button>
@@ -2735,7 +2735,7 @@
               </div>
               <div class="form-group">
                 <label for="repro-version-tag">Etiqueta de Versión SemVer:</label>
-                <input type="text" id="repro-version-tag" value="v1.2.0-panama" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:0.78rem;">
+                <input type="text" id="repro-version-tag" value="v1.0.0-panama" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--text-main); font-size:0.78rem;">
               </div>
               <div class="form-group">
                 <label for="repro-seed-val">Semilla Determinista:</label>
@@ -2937,22 +2937,63 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
 
             <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1rem 0;">
 
-            <h5 style="font-size: 0.82rem; color: var(--text-main); margin-bottom: 0.4rem;">Registrar Nuevo Funcionario o Investigador (Jerarquía de 6 Roles):</h5>
-            <div class="settings-form-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
-              <input type="text" id="new-user-name" placeholder="Nombre completo" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.78rem;">
-              <input type="email" id="new-user-email" placeholder="correo@gob.pa" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.78rem;">
-              <select id="new-user-role" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.78rem;">
-                <option value="port_operator">Port Operator (Operador de Muelle)</option>
-                <option value="compliance_auditor">Compliance Auditor (Auditor Contraloría)</option>
-                <option value="mlops_engineer">MLOps Engineer (Ingeniero Modelos)</option>
-                <option value="readonly_viewer">Readonly Viewer (Visualizador Académico)</option>
-                <option value="platform_admin">Platform Admin (Administrador)</option>
-                <option value="root_owner">Root Owner (Propietario Ministerial)</option>
-              </select>
-              <input type="text" id="new-user-entidad" placeholder="Entidad (ej: AMP, ACP, MEF)" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.78rem;">
+            <h5 style="font-size: 0.85rem; color: var(--cyan-bright); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+              <span>👤</span> <span>Registrar Nuevo Funcionario o Investigador (NIST SP 800-63B):</span>
+            </h5>
+            <div class="settings-form-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.6rem;">
+              <div>
+                <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 0.2rem;">Usuario (Username):</label>
+                <input type="text" id="new-user-username" placeholder="ej: jsmith_ops" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.8rem;">
+              </div>
+              <div>
+                <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 0.2rem;">Nombre Completo:</label>
+                <input type="text" id="new-user-name" placeholder="Nombre y apellido" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.8rem;">
+              </div>
+              <div>
+                <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 0.2rem;">Correo Electrónico:</label>
+                <input type="email" id="new-user-email" placeholder="correo@gob.pa" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.8rem;">
+              </div>
+              <div>
+                <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 0.2rem;">Rol Estandarizado:</label>
+                <select id="new-user-role" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.8rem;">
+                  <option value="port_operator">Port Operator (Operador de Muelle)</option>
+                  <option value="compliance_auditor">Compliance Auditor (Auditor Contraloría)</option>
+                  <option value="mlops_engineer">MLOps Engineer (Ingeniero Modelos)</option>
+                  <option value="readonly_viewer">Readonly Viewer (Visualizador Académico)</option>
+                  <option value="platform_admin">Platform Admin (Administrador Clúster)</option>
+                  <option value="root_owner">Root Owner (Propietario Ministerial)</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 0.2rem;">Entidad u Órgano:</label>
+                <input type="text" id="new-user-entidad" value="Autoridad Marítima de Panamá (AMP)" placeholder="Entidad (ej: AMP, ACP, MEF)" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); font-size: 0.8rem;">
+              </div>
             </div>
-            <button class="btn btn-secondary btn-sm" style="margin-top: 0.6rem;" onclick="createNewGovUser()">+ Añadir Usuario</button>
-            <span id="new-user-status" class="save-status-msg" style="margin-left: 0.5rem;"></span>
+
+            <!-- Password Fields with Eye Toggle, Anti-Paste & Live Match -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem;">
+              <div>
+                <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 0.2rem;">Contraseña de Acceso (Mínimo 8 caracteres):</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="new-user-password" placeholder="Escriba la clave..." style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #F8FAFC; font-size: 0.8rem;">
+                  <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('new-user-password')" title="Mostrar/Ocultar contraseña">👁️</button>
+                </div>
+              </div>
+              <div>
+                <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 0.2rem;">Confirmar Contraseña:</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="new-user-confirm-password" placeholder="Confirme tecleando la clave..." style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #F8FAFC; font-size: 0.8rem;">
+                  <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('new-user-confirm-password')" title="Mostrar/Ocultar contraseña">👁️</button>
+                </div>
+                <div id="new-user-match-indicator" class="password-match-indicator"></div>
+                <div id="new-user-paste-warning" class="paste-warning-box" style="display: none;"></div>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-top: 0.75rem;">
+              <button class="btn btn-secondary btn-sm" style="padding: 0.45rem 1.2rem; font-weight: 600;" onclick="createNewGovUser()">+ Registrar Usuario en SQLite</button>
+              <span id="new-user-status" class="save-status-msg"></span>
+            </div>
           </div>
 
           <div class="crypto-cert-box" style="margin-top: 1rem;">
@@ -3633,7 +3674,7 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
                   <button type="button" class="btn-subtle" onclick="window.testModelProvider('openai')" style="padding: 2px 8px; font-size: 0.72rem;">⚡ Test Conexión</button>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(3, 7, 18, 0.5); padding: 0.45rem 0.7rem; border-radius: 6px;">
-                  <span style="font-size: 0.8rem; font-weight: 600;">Google Gemini (2.0 Flash)</span>
+                  <span style="font-size: 0.8rem; font-weight: 600;">Google Gemini (Flash Open API)</span>
                   <button type="button" class="btn-subtle" onclick="window.testModelProvider('gemini')" style="padding: 2px 8px; font-size: 0.72rem;">⚡ Test Conexión</button>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(3, 7, 18, 0.5); padding: 0.45rem 0.7rem; border-radius: 6px;">
@@ -3807,7 +3848,10 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
 
             <div class="auth-input-group">
               <label for="auth-input-password">Contraseña:</label>
-              <input type="password" id="auth-input-password" placeholder="••••••••••••••••">
+              <div class="password-input-wrapper">
+                <input type="password" id="auth-input-password" placeholder="••••••••••••••••">
+                <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('auth-input-password')" title="Mostrar/Ocultar contraseña">👁️</button>
+              </div>
             </div>
 
             <div style="display: flex; gap: 0.75rem; align-items: center; margin-top: 1.25rem;">
@@ -3844,17 +3888,28 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
 
           <div class="auth-input-group">
             <label for="pwd-input-old">Contraseña Actual:</label>
-            <input type="password" id="pwd-input-old" placeholder="Contraseña temporal o actual">
+            <div class="password-input-wrapper">
+              <input type="password" id="pwd-input-old" placeholder="Contraseña temporal o actual">
+              <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('pwd-input-old')" title="Mostrar/Ocultar contraseña">👁️</button>
+            </div>
           </div>
 
           <div class="auth-input-group">
             <label for="pwd-input-new">Nueva Contraseña Segura:</label>
-            <input type="password" id="pwd-input-new" placeholder="Mínimo 12 caracteres con entropía">
+            <div class="password-input-wrapper">
+              <input type="password" id="pwd-input-new" placeholder="Mínimo 12 caracteres con entropía">
+              <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('pwd-input-new')" title="Mostrar/Ocultar contraseña">👁️</button>
+            </div>
           </div>
 
           <div class="auth-input-group">
             <label for="pwd-input-confirm">Confirmar Nueva Contraseña:</label>
-            <input type="password" id="pwd-input-confirm" placeholder="Repita la nueva contraseña">
+            <div class="password-input-wrapper">
+              <input type="password" id="pwd-input-confirm" placeholder="Repita la nueva contraseña">
+              <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('pwd-input-confirm')" title="Mostrar/Ocultar contraseña">👁️</button>
+            </div>
+            <div id="pwd-match-indicator" class="password-match-indicator"></div>
+            <div id="pwd-paste-warning" class="paste-warning-box" style="display: none;"></div>
           </div>
 
           <div style="display: flex; gap: 0.75rem; align-items: center; margin-top: 1.25rem;">
@@ -3917,97 +3972,172 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
   <!-- ========================================================================= -->
   <!-- MODAL DE CONFIGURACIÓN INICIAL OBLIGATORIA (FIRST-RUN SETUP WIZARD)      -->
   <!-- ========================================================================= -->
-  <div id="first-run-setup-modal" class="modal-backdrop" style="z-index: 10000; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(10px);">
-    <div class="modal-dialog" style="max-width: 680px; border: 2px solid #00E5FF; box-shadow: 0 0 40px rgba(0, 229, 255, 0.35);">
-      <div class="modal-header" style="background: rgba(0, 229, 255, 0.08); border-bottom: 1px solid rgba(0, 229, 255, 0.3); padding: 1.25rem 1.5rem;">
+  <div id="first-run-setup-modal" class="modal-backdrop" style="z-index: 10000; background: rgba(2, 6, 23, 0.96); backdrop-filter: blur(12px);">
+    <div class="modal-dialog" style="max-width: 980px; width: 95%; border: 1px solid #00E5FF; box-shadow: 0 0 50px rgba(0, 229, 255, 0.25); border-radius: 16px;">
+      <div class="modal-header" style="background: rgba(0, 229, 255, 0.08); border-bottom: 1px solid rgba(0, 229, 255, 0.25); padding: 1.25rem 1.75rem;">
         <div class="modal-title-group">
-          <span class="modal-badge" style="background: rgba(0, 245, 212, 0.2); color: #00F5D4; border: 1px solid rgba(0, 245, 212, 0.4);">
-            DESPLIEGUE INICIAL • PROTOCOLO NIST SP 800-63B • GOBERNANZA SOBERANA
+          <span class="modal-badge" style="background: rgba(0, 245, 212, 0.15); color: #00F5D4; border: 1px solid rgba(0, 245, 212, 0.4); font-size: 0.75rem; letter-spacing: 1px;">
+            DESPLIEGUE SOBERANO • PROTOCOLO NIST SP 800-63B • ZERO TRUST MLOPS
           </span>
-          <h2 style="font-size: 1.35rem; color: #F8FAFC; margin: 0.4rem 0 0.2rem 0;" id="fr-wizard-title">🔐 Configuración Inicial Obligatoria</h2>
-          <p class="settings-subtitle" id="fr-wizard-sub" style="font-size: 0.84rem; color: #94A3B8;">Para garantizar la seguridad de la infraestructura y el cumplimiento de gobernanza, complete los pasos de inicialización.</p>
+          <h2 style="font-size: 1.4rem; color: #F8FAFC; margin: 0.4rem 0 0.2rem 0;" id="fr-wizard-title">🔐 Inicialización de Seguridad & Creación de Roles Administrativos</h2>
+          <p class="settings-subtitle" id="fr-wizard-sub" style="font-size: 0.85rem; color: #94A3B8; margin: 0;">
+            Cumplimiento obligatorio de gobernanza para habilitar el Framework MLOps y las capacidades operativas en producción.
+          </p>
         </div>
       </div>
 
-      <div class="modal-body" style="padding: 1.5rem;">
-        <!-- STEP 1: Root Password Change -->
-        <div id="fr-step-1">
-          <div style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid #EF4444; border-radius: 6px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
-            <div style="font-weight: 700; color: #FCA5A5; font-size: 0.9rem;">⚠️ Paso 1 de 2: Cambio Obligatorio de Contraseña de Root</div>
-            <p style="font-size: 0.8rem; color: #E2E8F0; margin: 0.3rem 0 0 0; line-height: 1.45;">
-              La contraseña temporal predeterminada (<code>admin_portops_2026!</code>) debe ser sustituida obligatoriamente antes de poder acceder a las funciones administrativas del sistema. Escriba la nueva contraseña dos veces para confirmar coincidencia.
-            </p>
+      <div class="modal-body" style="padding: 1.75rem;">
+        <div class="fr-split-layout">
+          
+          <!-- Left Column: Security Briefing & Architecture Context -->
+          <div class="fr-briefing-panel">
+            <h3 style="font-size: 0.95rem; color: #00E5FF; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.4rem;">
+              <span>🛡️</span> <span>Gobernanza & Criterios NIST</span>
+            </h3>
+
+            <div class="fr-briefing-item">
+              <div class="fr-briefing-icon">⌨️</div>
+              <div class="fr-briefing-text">
+                <h4>Ingreso Manual Obligatorio (Anti-Paste)</h4>
+                <p>Por norma NIST SP 800-63B, la contraseña debe teclearse de forma manual. No se permite pegar desde el portapapeles para evitar inyecciones automáticas.</p>
+              </div>
+            </div>
+
+            <div class="fr-briefing-item">
+              <div class="fr-briefing-icon">👁️</div>
+              <div class="fr-briefing-text">
+                <h4>Control de Visibilidad</h4>
+                <p>Utilice el icono de ojo para alternar la visualización y confirmar visualmente los caracteres especiales antes de registrar.</p>
+              </div>
+            </div>
+
+            <div class="fr-briefing-item">
+              <div class="fr-briefing-icon">👥</div>
+              <div class="fr-briefing-text">
+                <h4>Segregación de 3 Administradores</h4>
+                <p>El sistema requiere 3 roles segregados: <strong>SysAdmin</strong> (Infraestructura), <strong>SecOpsAdmin</strong> (Seguridad), y <strong>MlopsAdmin</strong> (Modelos MLOps).</p>
+              </div>
+            </div>
+
+            <div class="fr-briefing-item">
+              <div class="fr-briefing-icon">⚡</div>
+              <div class="fr-briefing-text">
+                <h4>Hardware Host Detectado</h4>
+                <p>NVIDIA GeForce RTX 3050 Laptop (4GB VRAM) • Presupuesto de contexto: 2048 tokens por inferencia.</p>
+              </div>
+            </div>
           </div>
 
-          <div class="auth-input-group" style="margin-bottom: 0.85rem;">
-            <label for="fr-old-password" style="font-size: 0.8rem; color: #94A3B8;">Contraseña Actual / Inicial (README):</label>
-            <input type="password" id="fr-old-password" value="admin_portops_2026!" style="width: 100%; padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #F8FAFC; font-size: 0.9rem;">
-          </div>
+          <!-- Right Column: Interactive Setup Wizard -->
+          <div class="fr-form-panel">
+            
+            <!-- STEP 1: Root Password Change -->
+            <div id="fr-step-1">
+              <div style="background: rgba(239, 68, 68, 0.12); border-left: 4px solid #EF4444; border-radius: 6px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
+                <div style="font-weight: 700; color: #FCA5A5; font-size: 0.88rem;">⚠️ Paso 1 de 2: Cambio Obligatorio de Contraseña de Root</div>
+                <p style="font-size: 0.8rem; color: #E2E8F0; margin: 0.3rem 0 0 0; line-height: 1.45;">
+                  La clave temporal por defecto (<code>admin_portops_2026!</code>) debe ser sustituida. Ingrese la nueva clave manualmente en ambos campos.
+                </p>
+              </div>
 
-          <div class="auth-input-group" style="margin-bottom: 0.85rem;">
-            <label for="fr-new-password" style="font-size: 0.8rem; color: #94A3B8;">Nueva Contraseña (Mínimo 10 caracteres con alta entropía):</label>
-            <input type="password" id="fr-new-password" placeholder="••••••••••••••••" style="width: 100%; padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #F8FAFC; font-size: 0.9rem;">
-          </div>
+              <!-- Old Password -->
+              <div class="auth-input-group" style="margin-bottom: 0.9rem;">
+                <label for="fr-old-password" style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 0.3rem;">Contraseña Actual / Inicial:</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="fr-old-password" value="admin_portops_2026!" style="padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #F8FAFC; font-size: 0.88rem;">
+                  <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('fr-old-password')" title="Mostrar/Ocultar contraseña">👁️</button>
+                </div>
+              </div>
 
-          <div class="auth-input-group" style="margin-bottom: 1.25rem;">
-            <label for="fr-confirm-password" style="font-size: 0.8rem; color: #94A3B8;">Confirmar Nueva Contraseña (Debe coincidir exactamente):</label>
-            <input type="password" id="fr-confirm-password" placeholder="••••••••••••••••" style="width: 100%; padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #F8FAFC; font-size: 0.9rem;">
-          </div>
+              <!-- New Password -->
+              <div class="auth-input-group" style="margin-bottom: 0.9rem;">
+                <label for="fr-new-password" style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 0.3rem;">Nueva Contraseña (Mínimo 10 caracteres con alta entropía):</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="fr-new-password" placeholder="Escriba su nueva clave..." style="padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #F8FAFC; font-size: 0.88rem;">
+                  <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('fr-new-password')" title="Mostrar/Ocultar contraseña">👁️</button>
+                </div>
+              </div>
 
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span id="fr-step1-status" style="font-size: 0.82rem; color: #FCA5A5;"></span>
-            <button type="button" class="btn btn-primary" onclick="window.submitFirstRunPasswordChange()" style="padding: 0.6rem 1.6rem; font-weight: 700; background: linear-gradient(135deg, #0284C7 0%, #00E5FF 100%); color: #020617; border: none; border-radius: 6px; cursor: pointer;">
-              Guardar Contraseña y Avanzar al Paso 2 →
-            </button>
+              <!-- Confirm Password -->
+              <div class="auth-input-group" style="margin-bottom: 0.9rem;">
+                <label for="fr-confirm-password" style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 0.3rem;">Confirmar Nueva Contraseña (Debe coincidir):</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="fr-confirm-password" placeholder="Confirme la clave tecleando..." style="padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #F8FAFC; font-size: 0.88rem;">
+                  <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('fr-confirm-password')" title="Mostrar/Ocultar contraseña">👁️</button>
+                </div>
+                <div id="fr-password-match-indicator" class="password-match-indicator"></div>
+                <div id="fr-paste-warning" class="paste-warning-box" style="display: none;"></div>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem;">
+                <span id="fr-step1-status" style="font-size: 0.82rem; color: #FCA5A5;"></span>
+                <button type="button" class="btn btn-primary" onclick="window.submitFirstRunPasswordChange()" style="padding: 0.65rem 1.6rem; font-weight: 700; background: linear-gradient(135deg, #0284C7 0%, #00E5FF 100%); color: #020617; border: none; border-radius: 6px; cursor: pointer;">
+                  Guardar Contraseña y Avanzar al Paso 2 →
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 2: 3 Mandatory Admins Setup -->
+            <div id="fr-step-2" style="display: none;">
+              <div style="background: rgba(0, 229, 255, 0.1); border-left: 4px solid #00E5FF; border-radius: 6px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
+                <div style="font-weight: 700; color: #00E5FF; font-size: 0.88rem;">👥 Paso 2 de 2: Creación Obligatoria de los 3 Administradores</div>
+                <p style="font-size: 0.8rem; color: #E2E8F0; margin: 0.3rem 0 0 0; line-height: 1.45;">
+                  Configure las credenciales de los 3 operadores del sistema con responsabilidades segregadas.
+                </p>
+              </div>
+
+              <!-- SysAdmin -->
+              <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.75rem;">
+                <div style="font-weight: bold; color: #38BDF8; font-size: 0.82rem; margin-bottom: 0.4rem;">1. SysAdmin (Infraestructura, Clúster & Servidores)</div>
+                <div style="display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 0.5rem; align-items: center;">
+                  <input type="text" id="fr-sys-user" value="SysAdmin" placeholder="Usuario" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
+                  <div class="password-input-wrapper">
+                    <input type="password" id="fr-sys-pass" placeholder="Contraseña segura" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
+                    <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('fr-sys-pass')">👁️</button>
+                  </div>
+                  <input type="email" id="fr-sys-email" value="sysadmin@portops.pa" placeholder="Email" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
+                </div>
+              </div>
+
+              <!-- SecOpsAdmin -->
+              <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.75rem;">
+                <div style="font-weight: bold; color: #F59E0B; font-size: 0.82rem; margin-bottom: 0.4rem;">2. SecOpsAdmin (Ciberseguridad, Wazuh SIEM & Agentes)</div>
+                <div style="display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 0.5rem; align-items: center;">
+                  <input type="text" id="fr-sec-user" value="SecOpsAdmin" placeholder="Usuario" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
+                  <div class="password-input-wrapper">
+                    <input type="password" id="fr-sec-pass" placeholder="Contraseña segura" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
+                    <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('fr-sec-pass')">👁️</button>
+                  </div>
+                  <input type="email" id="fr-sec-email" value="secops@portops.pa" placeholder="Email" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
+                </div>
+              </div>
+
+              <!-- MlopsAdmin -->
+              <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.1rem;">
+                <div style="font-weight: bold; color: #10B981; font-size: 0.82rem; margin-bottom: 0.4rem;">3. MlopsAdmin (Ciclo de Vida de Modelos & Runtimes vLLM)</div>
+                <div style="display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 0.5rem; align-items: center;">
+                  <input type="text" id="fr-ml-user" value="MlopsAdmin" placeholder="Usuario" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
+                  <div class="password-input-wrapper">
+                    <input type="password" id="fr-ml-pass" placeholder="Contraseña segura" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
+                    <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('fr-ml-pass')">👁️</button>
+                  </div>
+                  <input type="email" id="fr-ml-email" value="mlops@portops.pa" placeholder="Email" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span id="fr-step2-status" style="font-size: 0.82rem; color: #FCA5A5;"></span>
+                <button type="button" class="btn btn-primary" onclick="window.submitFirstRunAdminsSetup()" style="padding: 0.7rem 2rem; font-weight: 700; background: linear-gradient(135deg, #059669 0%, #10B981 100%); color: #FFFFFF; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.35);">
+                  🚀 Completar Inicialización y Desbloquear Plataforma
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
-
-        <!-- STEP 2: 3 Mandatory Admins Setup -->
-        <div id="fr-step-2" style="display: none;">
-          <div style="background: rgba(0, 229, 255, 0.1); border-left: 4px solid #00E5FF; border-radius: 6px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
-            <div style="font-weight: 700; color: #00E5FF; font-size: 0.9rem;">👥 Paso 2 de 2: Creación Obligatoria de los 3 Administradores del Sistema</div>
-            <p style="font-size: 0.8rem; color: #E2E8F0; margin: 0.3rem 0 0 0; line-height: 1.45;">
-              La gobernanza del ecosistema exige la existencia de 3 roles administrativos no-nulos con responsabilidades segregadas: <strong>SysAdmin</strong> (Infraestructura), <strong>SecOpsAdmin</strong> (Ciberseguridad y Agentes), y <strong>MlopsAdmin</strong> (Ciclo de Vida de Modelos).
-            </p>
-          </div>
-
-          <!-- SysAdmin -->
-          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 0.75rem;">
-            <div style="font-weight: bold; color: #38BDF8; font-size: 0.84rem; margin-bottom: 0.4rem;">1. SysAdmin (Administrador de Infraestructura & Sistema)</div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;">
-              <input type="text" id="fr-sys-user" value="SysAdmin" placeholder="Usuario" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
-              <input type="password" id="fr-sys-pass" placeholder="Contraseña segura" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
-              <input type="email" id="fr-sys-email" value="sysadmin@portops.pa" placeholder="Email" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
-            </div>
-          </div>
-
-          <!-- SecOpsAdmin -->
-          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 0.75rem;">
-            <div style="font-weight: bold; color: #F59E0B; font-size: 0.84rem; margin-bottom: 0.4rem;">2. SecOpsAdmin (Seguridad, SIEM Wazuh & Aprobación de Agentes)</div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;">
-              <input type="text" id="fr-sec-user" value="SecOpsAdmin" placeholder="Usuario" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
-              <input type="password" id="fr-sec-pass" placeholder="Contraseña segura" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
-              <input type="email" id="fr-sec-email" value="secops@portops.pa" placeholder="Email" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
-            </div>
-          </div>
-
-          <!-- MlopsAdmin -->
-          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 1.1rem;">
-            <div style="font-weight: bold; color: #10B981; font-size: 0.84rem; margin-bottom: 0.4rem;">3. MlopsAdmin (Gestión de Modelos, vLLM & Pipelines de Inferencia)</div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem;">
-              <input type="text" id="fr-ml-user" value="MlopsAdmin" placeholder="Usuario" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
-              <input type="password" id="fr-ml-pass" placeholder="Contraseña segura" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
-              <input type="email" id="fr-ml-email" value="mlops@portops.pa" placeholder="Email" style="padding: 0.4rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
-            </div>
-          </div>
-
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span id="fr-step2-status" style="font-size: 0.82rem; color: #FCA5A5;"></span>
-            <button type="button" class="btn btn-primary" onclick="window.submitFirstRunAdminsSetup()" style="padding: 0.65rem 1.8rem; font-weight: 700; background: linear-gradient(135deg, #059669 0%, #10B981 100%); color: #FFFFFF; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.3);">
-              🚀 Completar Inicialización y Acceder a la Plataforma
-            </button>
-          </div>
-        </div>
+      </div>
+    </div>
+  </div>
       </div>
     </div>
   </div>
@@ -4046,13 +4176,13 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
   </footer>
 
   <!-- Modular i18n Localization Engine -->
-  <script src="/static/js/i18n/es.js?v=2.0.0"></script>
-  <script src="/static/js/i18n/en.js?v=2.0.0"></script>
-  <script src="/static/js/i18n/pt.js?v=2.0.0"></script>
-  <script src="/static/js/i18n/i18n.js?v=2.0.0"></script>
+  <script src="/static/js/i18n/es.js?v=1.0.0"></script>
+  <script src="/static/js/i18n/en.js?v=1.0.0"></script>
+  <script src="/static/js/i18n/pt.js?v=1.0.0"></script>
+  <script src="/static/js/i18n/i18n.js?v=1.0.0"></script>
   <!-- Customs RAG, Tariff Explorer & Container Validator -->
-  <script src="/static/js/customs_rag.js?v=2.0.0"></script>
+  <script src="/static/js/customs_rag.js?v=1.0.0"></script>
   <!-- Application Logic -->
-  <script src="/static/js/app.js?v=2.0.0"></script>
+  <script src="/static/js/app.js?v=1.0.0"></script>
 </body>
 </html>

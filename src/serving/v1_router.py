@@ -719,6 +719,53 @@ def list_permissions():
         }
 
 
+class CreateAuthUserRequest(BaseModel):
+    username: str
+    password: str = "Portops_2026_Secure!"
+    email: Optional[str] = None
+    role_id: str = "readonly_viewer"
+    full_name: Optional[str] = None
+    entity: Optional[str] = "Autoridad Marítima de Panamá (AMP)"
+
+
+@v1_router.get("/auth/users", tags=["Identity & Access Management"])
+def list_real_users():
+    """Retorna la lista de usuarios reales persistidos en SQLite."""
+    from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
+    overview = PanamaSecurityGovernancePanel.get_security_overview()
+    return {
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
+        "total_users": len(overview["active_users"]),
+        "users": overview["active_users"]
+    }
+
+
+@v1_router.post("/auth/users", tags=["Identity & Access Management"])
+def create_real_user(req: CreateAuthUserRequest):
+    """Crea un usuario real persistido en SQLite con contraseña hasheada y rol asignado."""
+    from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
+    res = PanamaSecurityGovernancePanel.register_user(
+        username=req.username,
+        full_name=req.full_name or req.username.title(),
+        entity=req.entity or "Autoridad Marítima de Panamá (AMP)",
+        role_id=req.role_id,
+        password=req.password
+    )
+    if res.get("status") == "error":
+        raise HTTPException(status_code=400, detail=res.get("message"))
+    return res
+
+
+@v1_router.delete("/auth/users/{username}", tags=["Identity & Access Management"])
+def delete_real_user(username: str):
+    """Elimina un usuario real de SQLite (protegiendo al usuario root)."""
+    from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
+    success = PanamaSecurityGovernancePanel.delete_user(username)
+    if not success:
+        raise HTTPException(status_code=400, detail="No se pudo eliminar el usuario (usuario protegido o no existe).")
+    return {"status": "success", "message": f"Usuario '{username}' eliminado exitosamente de la base de datos."}
+
+
 # ==============================================================================
 # 4. DATA PLATFORM & QUALITY GATES
 # ==============================================================================

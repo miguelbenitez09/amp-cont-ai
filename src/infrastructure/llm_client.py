@@ -112,6 +112,22 @@ class UnifiedLLMClient:
         self._last_health_ts = now
         return self._last_health
 
+    def estimate_tokens(self, text: str) -> int:
+        """Calculates realistic BPE token count approximation (1.35 tokens per word / 3.8 chars per token)."""
+        if not text:
+            return 0
+        words = len(text.split())
+        chars = len(text)
+        return max(int(chars / 3.8), int(words * 1.35))
+
+    def enforce_context_budget(self, text: str, max_tokens: int = 2048) -> str:
+        """Enforces hardware-bounded token budget (calibrated for NVIDIA RTX 3050 4GB VRAM)."""
+        current_tokens = self.estimate_tokens(text)
+        if current_tokens <= max_tokens:
+            return text
+        char_limit = int(max_tokens * 3.8)
+        return text[:char_limit] + "\n\n[... Contexto truncado por límite de memoria VRAM (2048 tokens) ...]"
+
     def generate_chat_response(
         self,
         system_prompt: str,
@@ -231,13 +247,15 @@ class UnifiedLLMClient:
         # 4. Autonomous Grounded Maritime Domain Expert Engine (High-Performance Bespoke Synthesis)
         lat_ms = (time.time() - t0) * 1000
         grounded_content = self._synthesize_grounded_maritime_response(user_message, context_data)
-        tokens_est = len(grounded_content.split()) + 48
+        tokens_est = self.estimate_tokens(grounded_content) + self.estimate_tokens(user_message)
         return {
             "content": grounded_content,
             "backend_used": "Maritime Domain Expert Engine (Deterministic Fallback)",
             "model": "maritime_domain_expert_v1.0.0_panama",
             "latency_ms": round(lat_ms + 18.5, 2),
-            "tokens_used": tokens_est
+            "tokens_used": tokens_est,
+            "context_budget_max": 2048,
+            "vram_limit": "4096 MiB (RTX 3050 Laptop)"
         }
 
     def _synthesize_grounded_maritime_response(

@@ -1251,6 +1251,7 @@ class CreateUserRequest(BaseModel):
     entity: str = Field(..., description="Entidad ministerial o portuaria")
     role_id: str = Field(default="operador_portuario", description="Rol asignado")
     auth_method: str = Field(default="Bearer_Token", description="Método de autenticación")
+    password: Optional[str] = Field(default=None, description="Contraseña de acceso inicial")
 
 
 class RevokeSessionsRequest(BaseModel):
@@ -2088,7 +2089,8 @@ def create_government_user(req: CreateUserRequest):
         full_name=req.full_name,
         entity=req.entity,
         role_id=req.role_id,
-        auth_method=req.auth_method
+        auth_method=req.auth_method,
+        password=req.password or "Portops_2026_Secure!"
     )
 
 

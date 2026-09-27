@@ -2169,8 +2169,21 @@ executePortForecast();`;
     const table = document.getElementById("gov-users-table");
     if (!table) return;
     try {
-      const res = await fetch("/api/admin/governance");
-      const d = await res.json();
+      let users = [];
+      try {
+        const res1 = await fetch("/api/v1/auth/users");
+        if (res1.ok) {
+          const d1 = await res1.json();
+          users = d1.users || [];
+        }
+      } catch (_) {}
+
+      if (!users.length) {
+        const res2 = await fetch("/api/admin/governance");
+        const d2 = await res2.json();
+        users = d2.active_users || [];
+      }
+
       let rowsHtml = `
         <thead>
           <tr>
@@ -2184,23 +2197,23 @@ executePortForecast();`;
         </thead>
         <tbody>
       `;
-      (d.active_users || []).forEach(u => {
+      users.forEach(u => {
         let roleClass = "operator";
         const role = u.role_id || "port_operator";
-        if (role === "root_owner" || role.includes("superadmin")) roleClass = "superadmin";
+        if (role === "root_owner" || role.includes("superadmin") || role === "root") roleClass = "superadmin";
         else if (role === "platform_admin") roleClass = "superadmin";
         else if (role === "mlops_engineer") roleClass = "auditor";
         else if (role === "compliance_auditor") roleClass = "auditor";
         else if (role === "readonly_viewer") roleClass = "researcher";
 
-        const isRoot = (u.username === "root" || role === "root_owner");
+        const isRoot = (u.username === "root" || role === "root_owner" || role === "root");
         rowsHtml += `
           <tr>
             <td><strong>${u.full_name || u.username}</strong><br><small style="color:var(--text-muted); font-family:var(--font-mono);">${u.username} (${u.auth_method || 'SSO'})</small></td>
             <td><span class="role-badge ${roleClass}">${role.replace(/_/g, ' ').toUpperCase()}</span></td>
             <td>${u.entity || 'Gobierno de Panamá'}</td>
             <td><span class="badge ${u.status === 'ACTIVO' ? 'badge-success' : 'badge-danger'}">● ${u.status || 'ACTIVO'}</span></td>
-            <td><small>${u.last_login || '2026-09-25 UTC'}</small></td>
+            <td><small>${u.last_login || u.created_at || '2026-09-26 UTC'}</small></td>
             <td>
               ${isRoot ? '<small style="color:var(--text-dim);">Protegido</small>' : `<button class="btn btn-secondary btn-sm" style="padding:0.15rem 0.45rem; font-size:0.7rem; color:var(--rose-alert);" onclick="deleteGovUser('${u.username}')">🗑️ Baja</button>`}
             </td>
@@ -2213,16 +2226,21 @@ executePortForecast();`;
   };
 
   window.deleteGovUser = async function(username) {
-    if (!confirm(`¿Estás seguro de revocar y eliminar de forma permanente al usuario "${username}"?`)) return;
+    if (!confirm(`¿Estás seguro de revocar y eliminar de forma permanente al usuario "${username}" de la base de datos?`)) return;
     try {
-      const res = await fetch("/api/admin/delete-user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: username })
+      let res = await fetch(`/api/v1/auth/users/${encodeURIComponent(username)}`, {
+        method: "DELETE"
       });
+      if (!res.ok) {
+        res = await fetch("/api/admin/delete-user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: username })
+        });
+      }
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Error al eliminar usuario");
-      alert(`✓ ${data.message}`);
+      alert(`✓ ${data.message || 'Usuario eliminado'}`);
       window.loadGovAdminData();
     } catch (err) {
       alert(`Error: ${err.message}`);
@@ -2273,51 +2291,111 @@ executePortForecast();`;
   };
 
   window.createNewGovUser = async function() {
+    const userEl = document.getElementById("new-user-username");
     const nameEl = document.getElementById("new-user-name");
     const emailEl = document.getElementById("new-user-email");
     const roleEl = document.getElementById("new-user-role");
     const entityEl = document.getElementById("new-user-entidad");
+    const passEl = document.getElementById("new-user-password");
+    const confirmPassEl = document.getElementById("new-user-confirm-password");
     const status = document.getElementById("new-user-status");
 
+    const usernameInput = userEl ? userEl.value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_') : "";
     const name = nameEl ? nameEl.value.trim() : "";
     const email = emailEl ? emailEl.value.trim() : "";
     const role = roleEl ? roleEl.value : "port_operator";
     const entity = entityEl && entityEl.value.trim() ? entityEl.value.trim() : "Autoridad Marítima de Panamá";
+    const password = passEl ? passEl.value : "";
+    const confirmPass = confirmPassEl ? confirmPassEl.value : "";
 
-    if (!name || !email) {
+    const username = usernameInput || (email ? email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '_') : "");
+
+    if (!username || !name || !email) {
       if (status) {
-        status.textContent = "Ingresa nombre y correo electrónico.";
+        status.textContent = "Complete el usuario, nombre completo y correo electrónico.";
         status.style.color = "var(--rose-danger)";
       }
       return;
     }
 
-    if (status) status.textContent = "Registrando en servidor...";
+    if (!password || !confirmPass) {
+      if (status) {
+        status.textContent = "Ingrese y confirme la contraseña manualmente (NIST SP 800-63B).";
+        status.style.color = "var(--rose-danger)";
+      }
+      return;
+    }
+
+    if (password !== confirmPass) {
+      if (status) {
+        status.textContent = "Las contraseñas no coinciden. Verifique ambos campos.";
+        status.style.color = "var(--rose-danger)";
+      }
+      return;
+    }
+
+    if (password.length < 8) {
+      if (status) {
+        status.textContent = "La contraseña debe tener al menos 8 caracteres.";
+        status.style.color = "var(--rose-danger)";
+      }
+      return;
+    }
+
+    if (status) {
+      status.textContent = "Persistiendo usuario en SQLite con hash PBKDF2-SHA256...";
+      status.style.color = "var(--cyan-bright)";
+    }
+
     try {
-      const username = email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '_');
-      const res = await fetch("/api/admin/users", {
+      let res = await fetch("/api/v1/auth/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username: username,
           full_name: name,
+          email: email,
           entity: entity,
           role_id: role,
+          password: password,
           auth_method: "Bearer_Token"
         })
       });
+
+      if (!res.ok) {
+        // Fallback to /api/admin/users
+        res = await fetch("/api/admin/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: username,
+            full_name: name,
+            entity: entity,
+            role_id: role,
+            password: password,
+            auth_method: "Bearer_Token"
+          })
+        });
+      }
+
       const d = await res.json();
-      if (!res.ok) throw new Error(d.detail || "Error al crear usuario");
+      if (!res.ok) throw new Error(d.detail || d.message || "Error al registrar usuario");
 
       if (status) {
-        const uName = (d.user && d.user.full_name) || (d.registered_user && d.registered_user.full_name) || name;
-        status.textContent = `✓ Funcionario "${uName}" registrado exitosamente.`;
+        const uName = (d.user && d.user.full_name) || name;
+        status.textContent = `✓ Usuario "${uName}" registrado y persistido en SQLite exitosamente.`;
         status.style.color = "var(--emerald-success)";
       }
+      if (userEl) userEl.value = "";
       if (nameEl) nameEl.value = "";
       if (emailEl) emailEl.value = "";
+      if (passEl) passEl.value = "";
+      if (confirmPassEl) confirmPassEl.value = "";
+      const matchEl = document.getElementById("new-user-match-indicator");
+      if (matchEl) matchEl.innerHTML = "";
+
       window.loadGovAdminData();
-      setTimeout(() => { if (status) status.textContent = ""; }, 4000);
+      setTimeout(() => { if (status) status.textContent = ""; }, 5000);
     } catch (err) {
       if (status) {
         status.textContent = `Error: ${err.message}`;
@@ -4162,16 +4240,217 @@ executePortForecast();`;
   });
 
   // =========================================================================
-  // V1.0.0 IAM, SECURITY HUD, RBAC SIMULATOR & WORM LEDGER HANDLERS
+  // V1.0.0 IAM, SECURITY HUD, NIST ANTI-PASTE & SESSION SYNC ENGINE
   // =========================================================================
 
   window.activeSession = {
     token: localStorage.getItem("portops_token") || null,
     user: null,
-    roles: ["root"],
+    roles: ["readonly_viewer"],
     permissions: []
   };
   window.tempMfaToken = null;
+
+  /**
+   * Eye Toggle for Password Visibility
+   */
+  window.togglePasswordEye = function(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const btn = input.parentElement ? input.parentElement.querySelector(".btn-toggle-eye") : null;
+    if (input.type === "password") {
+      input.type = "text";
+      if (btn) btn.textContent = "🔒";
+    } else {
+      input.type = "password";
+      if (btn) btn.textContent = "👁️";
+    }
+  };
+
+  /**
+   * Display NIST Anti-Paste Warning Box
+   */
+  window.showPasteWarning = function(boxEl, message) {
+    if (!boxEl) return;
+    boxEl.innerHTML = `<span style="font-size:0.76rem; color:#FCA5A5;">⚠️ ${message || "Por seguridad criptográfica (NIST SP 800-63B), debe ingresar la contraseña manualmente. La función de pegado está deshabilitada en este campo sensible."}</span>`;
+    boxEl.style.display = "block";
+    if (boxEl._timer) clearTimeout(boxEl._timer);
+    boxEl._timer = setTimeout(() => {
+      boxEl.style.display = "none";
+    }, 4500);
+  };
+
+  /**
+   * Initialize Anti-Paste, Eye Toggles, and Live Password Match Listeners
+   */
+  window.initPasswordFieldsEnhancements = function() {
+    function setupPasswordPair(newId, confirmId, matchId, pasteWarnId) {
+      const newEl = document.getElementById(newId);
+      const confirmEl = document.getElementById(confirmId);
+      const matchEl = document.getElementById(matchId);
+      const pasteWarnEl = document.getElementById(pasteWarnId);
+
+      const checkMatch = () => {
+        if (!matchEl) return;
+        const v1 = newEl ? newEl.value : "";
+        const v2 = confirmEl ? confirmEl.value : "";
+        if (!v1 && !v2) {
+          matchEl.innerHTML = "";
+          return;
+        }
+        if (!v2) {
+          matchEl.innerHTML = `<span style="color:#94A3B8; font-size:0.75rem;">Confirme la clave en el siguiente campo.</span>`;
+          return;
+        }
+        if (v1 === v2) {
+          matchEl.innerHTML = `<span style="color:#10B981; font-weight:700; font-size:0.78rem;">✓ Las contraseñas coinciden</span>`;
+        } else {
+          matchEl.innerHTML = `<span style="color:#EF4444; font-weight:700; font-size:0.78rem;">✗ Las contraseñas no coinciden</span>`;
+        }
+      };
+
+      if (newEl) {
+        newEl.addEventListener("input", checkMatch);
+        newEl.addEventListener("paste", (e) => {
+          e.preventDefault();
+          window.showPasteWarning(pasteWarnEl);
+        });
+      }
+      if (confirmEl) {
+        confirmEl.addEventListener("input", checkMatch);
+        confirmEl.addEventListener("paste", (e) => {
+          e.preventDefault();
+          window.showPasteWarning(pasteWarnEl);
+        });
+      }
+    }
+
+    // 1. First-Run Wizard
+    setupPasswordPair("fr-new-password", "fr-confirm-password", "fr-password-match-indicator", "fr-paste-warning");
+
+    // 2. IAM Password Change Tab
+    setupPasswordPair("pwd-input-new", "pwd-input-confirm", "pwd-match-indicator", "pwd-paste-warning");
+
+    // 3. User Registration Form in Settings
+    setupPasswordPair("new-user-password", "new-user-confirm-password", "new-user-match-indicator", "new-user-paste-warning");
+
+    // 4. Standalone Password Inputs (Old Passwords, Admin Passwords, Login)
+    const standaloneIds = ["fr-old-password", "fr-sys-pass", "fr-sec-pass", "fr-ml-pass", "pwd-input-old", "auth-input-password"];
+    standaloneIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("paste", (e) => {
+          e.preventDefault();
+          const p = el.closest(".auth-input-group, .fr-form-panel, .password-input-wrapper")?.querySelector(".paste-warning-box");
+          if (p) {
+            window.showPasteWarning(p);
+          } else {
+            alert("⚠️ Alerta NIST SP 800-63B: El pegado automático está deshabilitado en este campo de credenciales. Por favor escríbala manualmente.");
+          }
+        });
+      }
+    });
+  };
+
+  /**
+   * Synchronize UI Elements Across Guest vs Authenticated Mode
+   */
+  window.syncSessionUI = function() {
+    const isAuth = !!(window.activeSession && window.activeSession.token && window.activeSession.user);
+    const user = isAuth ? window.activeSession.user : null;
+    const role = isAuth ? (window.activeSession.roles[0] || "admin") : "Invitado";
+
+    // Nav HUD Role Pill
+    const hudActiveRole = document.getElementById("hud-active-role");
+    if (hudActiveRole) {
+      if (isAuth) {
+        hudActiveRole.textContent = `Rol: ${role}`;
+        hudActiveRole.style.background = "rgba(16, 185, 129, 0.2)";
+        hudActiveRole.style.color = "#10B981";
+        hudActiveRole.style.borderColor = "rgba(16, 185, 129, 0.4)";
+      } else {
+        hudActiveRole.textContent = "Modo: Invitado";
+        hudActiveRole.style.background = "rgba(148, 163, 184, 0.15)";
+        hudActiveRole.style.color = "#94A3B8";
+        hudActiveRole.style.borderColor = "rgba(148, 163, 184, 0.3)";
+      }
+    }
+
+    // Nav User Button
+    const navUserLabel = document.getElementById("nav-user-label");
+    if (navUserLabel) {
+      if (isAuth) {
+        navUserLabel.textContent = `👤 ${user.username} (Salir)`;
+      } else {
+        navUserLabel.textContent = "Iniciar Sesión | Login In";
+      }
+    }
+
+    // IAM Panel KPIs
+    const iamUserKpi = document.getElementById("iam-user-kpi");
+    if (iamUserKpi) iamUserKpi.textContent = isAuth ? user.username : "Invitado";
+    const iamRoleKpi = document.getElementById("iam-role-kpi");
+    if (iamRoleKpi) iamRoleKpi.textContent = isAuth ? role : "readonly_viewer";
+
+    // Lock Banners in Settings & Admin Areas
+    const lockBanners = document.querySelectorAll(".admin-lock-card, #admin-guest-lock-banner");
+    lockBanners.forEach(b => {
+      b.style.display = isAuth ? "none" : "block";
+    });
+
+    // Sensitivity of Administrative Mutation Controls
+    const adminControls = document.querySelectorAll(".admin-requires-auth");
+    adminControls.forEach(el => {
+      if (isAuth) {
+        el.removeAttribute("disabled");
+        el.style.opacity = "1";
+        el.style.pointerEvents = "auto";
+      } else {
+        el.setAttribute("disabled", "true");
+        el.style.opacity = "0.65";
+      }
+    });
+  };
+
+  /**
+   * Restore Session State from Local Storage / Backend Session Probe
+   */
+  window.restoreSessionState = async function() {
+    const token = localStorage.getItem("portops_token");
+    if (!token) {
+      window.activeSession = { token: null, user: null, roles: ["readonly_viewer"], permissions: [] };
+      window.syncSessionUI();
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/v1/auth/me", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.is_authenticated) {
+          window.activeSession.token = token;
+          window.activeSession.user = {
+            user_id: data.user_id,
+            username: data.username,
+            email: data.email
+          };
+          window.activeSession.roles = data.roles || ["root"];
+          window.activeSession.permissions = data.permissions || [];
+          window.syncSessionUI();
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn("Restoring session error:", e);
+    }
+
+    // Token invalid or expired
+    window.activeSession = { token: null, user: null, roles: ["readonly_viewer"], permissions: [] };
+    localStorage.removeItem("portops_token");
+    window.syncSessionUI();
+  };
 
   window.openAuthModal = async function(initialTab = "atab-login") {
     try {
@@ -4249,15 +4528,7 @@ executePortForecast();`;
       window.activeSession.permissions = data.permissions || [];
       localStorage.setItem("portops_token", data.session_token);
 
-      // Update Top Nav & HUD
-      const navUserLabel = document.getElementById("nav-user-label");
-      if (navUserLabel) navUserLabel.textContent = data.user.username;
-      const hudActiveRole = document.getElementById("hud-active-role");
-      if (hudActiveRole) hudActiveRole.textContent = `Rol: ${data.roles[0] || 'root'}`;
-      const iamUserKpi = document.getElementById("iam-user-kpi");
-      if (iamUserKpi) iamUserKpi.textContent = data.user.username;
-      const iamRoleKpi = document.getElementById("iam-role-kpi");
-      if (iamRoleKpi) iamRoleKpi.textContent = data.roles[0] || 'root';
+      window.syncSessionUI();
 
       // Update Inspector Tab
       const rawEl = document.getElementById("inspector-token-raw");
@@ -4265,13 +4536,21 @@ executePortForecast();`;
       const claimsEl = document.getElementById("inspector-token-claims");
       if (claimsEl) claimsEl.textContent = JSON.stringify({ user: data.user, roles: data.roles, exp: "12 Horas" }, null, 2);
 
-      if (statusEl) statusEl.innerHTML = `<span style="color:#10b981;">✓ Sesión iniciada con éxito.</span>`;
+      if (statusEl) statusEl.innerHTML = `<span style="color:#10b981;">✓ Sesión iniciada con éxito. Bienvenido ${data.user.username}.</span>`;
+
+      // Reload real governance users and administrative views
+      if (window.loadGovAdminData) window.loadGovAdminData();
+      if (window.loadDynamicModelCatalog) window.loadDynamicModelCatalog();
+
+      setTimeout(() => {
+        window.closeAuthModal();
+      }, 1000);
 
       if (data.must_change_password) {
         setTimeout(() => {
           alert("Aviso de Seguridad NIST SP 800-63B: Se requiere cambio obligatorio de contraseña en el primer acceso.");
-          window.switchAuthTab("atab-password");
-        }, 600);
+          window.openAuthModal("atab-password");
+        }, 1200);
       }
     } catch (err) {
       if (statusEl) statusEl.innerHTML = `<span style="color:#f43f5e;">Error: ${err.message}</span>`;
@@ -4303,12 +4582,10 @@ executePortForecast();`;
       window.activeSession.permissions = data.permissions || [];
       localStorage.setItem("portops_token", data.session_token);
 
-      const navUserLabel = document.getElementById("nav-user-label");
-      if (navUserLabel) navUserLabel.textContent = data.user.username;
-      const hudActiveRole = document.getElementById("hud-active-role");
-      if (hudActiveRole) hudActiveRole.textContent = `Rol: ${data.roles[0] || 'root'}`;
+      window.syncSessionUI();
 
       if (statusEl) statusEl.innerHTML = `<span style="color:#10b981;">✓ MFA Verificado. Sesión otorgada.</span>`;
+      setTimeout(() => window.closeAuthModal(), 1000);
     } catch (err) {
       if (statusEl) statusEl.innerHTML = `<span style="color:#f43f5e;">Error: ${err.message}</span>`;
     }
@@ -4343,6 +4620,8 @@ executePortForecast();`;
       oldInput.value = "";
       newInput.value = "";
       confirmInput.value = "";
+      const matchEl = document.getElementById("pwd-match-indicator");
+      if (matchEl) matchEl.innerHTML = "";
     } catch (err) {
       if (statusEl) statusEl.innerHTML = `<span style="color:#f43f5e;">Error: ${err.message}</span>`;
     }
@@ -4378,20 +4657,14 @@ executePortForecast();`;
     window.activeSession = { token: null, user: null, roles: ["readonly_viewer"], permissions: [] };
     localStorage.removeItem("portops_token");
 
-    const navUserLabel = document.getElementById("nav-user-label");
-    if (navUserLabel) navUserLabel.textContent = "Iniciar Sesión / IAM";
-    const hudActiveRole = document.getElementById("hud-active-role");
-    if (hudActiveRole) hudActiveRole.textContent = "Rol: Invitado";
-    const iamUserKpi = document.getElementById("iam-user-kpi");
-    if (iamUserKpi) iamUserKpi.textContent = "Invitado";
-    const iamRoleKpi = document.getElementById("iam-role-kpi");
-    if (iamRoleKpi) iamRoleKpi.textContent = "readonly_viewer";
+    window.syncSessionUI();
+
     const rawEl = document.getElementById("inspector-token-raw");
     if (rawEl) rawEl.textContent = "No hay sesión activa autenticada.";
     const claimsEl = document.getElementById("inspector-token-claims");
     if (claimsEl) claimsEl.textContent = "{}";
 
-    alert("Sesión finalizada exitosamente.");
+    alert("Sesión finalizada exitosamente. Ha regresado a Modo Invitado.");
   };
 
   window.selectRbacRoleSimulation = async function(roleId) {
@@ -4544,7 +4817,17 @@ executePortForecast();`;
   // Wire Top Nav IAM and WORM buttons
   const btnAuthIam = document.getElementById("btn-auth-iam");
   if (btnAuthIam) {
-    btnAuthIam.addEventListener("click", () => window.openAuthModal("atab-login"));
+    btnAuthIam.addEventListener("click", () => {
+      if (window.activeSession && window.activeSession.token && window.activeSession.user) {
+        if (confirm(`Sesión activa de "${window.activeSession.user.username}" (Rol: ${window.activeSession.roles[0] || 'root'}).\n\n¿Deseas cerrar la sesión activa? Presione Aceptar para Salir o Cancelar para ver el Centro IAM.`)) {
+          window.executeLogout();
+        } else {
+          window.openAuthModal("atab-inspector");
+        }
+      } else {
+        window.openAuthModal("atab-login");
+      }
+    });
   }
   const hudWormBtn = document.getElementById("hud-worm-status");
   if (hudWormBtn) {
@@ -5493,11 +5776,17 @@ executePortForecast();`;
           modal.classList.remove("open");
           modal.style.display = "none";
         }
-        const iamUserKpi = document.getElementById("iam-user-kpi");
-        if (iamUserKpi) iamUserKpi.textContent = "Root (Configurado)";
-        const iamRoleKpi = document.getElementById("iam-role-kpi");
-        if (iamRoleKpi) iamRoleKpi.textContent = "root";
-        alert("✓ Despliegue inicial completado con éxito. Los roles SysAdmin, SecOpsAdmin y MlopsAdmin han sido activados en el sistema.");
+        window.activeSession = {
+          token: (data.session && data.session.token) || "session-root-bootstrapped",
+          user: { username: "root", email: "root@portops.pa" },
+          roles: ["root"],
+          permissions: ["*"]
+        };
+        localStorage.setItem("portops_token", window.activeSession.token);
+        if (window.syncSessionUI) window.syncSessionUI();
+        if (window.loadGovAdminData) window.loadGovAdminData();
+        if (window.loadDynamicModelCatalog) window.loadDynamicModelCatalog();
+        alert("✓ Despliegue inicial completado con éxito. Se han configurado los 3 administradores y desbloqueado el framework administrativo completo.");
       }, 900);
     } catch (err) {
       if (statusEl) {
@@ -5553,6 +5842,8 @@ executePortForecast();`;
 
   // --- Bootstrapping ---
   initThemeSwitcher();
+  window.initPasswordFieldsEnhancements();
+  window.restoreSessionState();
   window.loadDynamicModelCatalog();
   window.selectMethodologyPhase("phase_1", false); // false = no initial scroll jump on page load
   window.loadSimulationHistory();
@@ -5560,6 +5851,7 @@ executePortForecast();`;
   window.loadDataPlatformManifest();
   window.fetchAuditSecurityEvents();
   window.loadTelemetryExplorer();
+  if (window.loadGovAdminData) window.loadGovAdminData();
   if (window.updateSoulBadgeView) window.updateSoulBadgeView();
   window.checkFirstRunStatus();
 
