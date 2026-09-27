@@ -1,0 +1,13 @@
+name: "portops"
+version: "1.0.0"
+description: "Panama Maritime & Port Operations Domain Intelligence Plugin"
+author: "Desarrollado v1.0.0 Miguel Benitez"
+license: "GNU GPL-3.0"
+jurisdiction: "Republic of Panama - AMP / ANA / ACP"
+components:
+  - datasets
+  - features
+  - models
+  - tools
+  - rag
+  - regulations

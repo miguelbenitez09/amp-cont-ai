@@ -5507,8 +5507,53 @@ executePortForecast();`;
     }
   };
 
+  // --- Dynamic Model Catalog Loader ---
+  window.loadDynamicModelCatalog = async function() {
+    try {
+      const res = await fetch("/api/v1/models/catalog");
+      if (!res.ok) return;
+      const data = await res.json();
+      const models = data.models || [];
+      if (!models.length) return;
+
+      const algoSelectEl = document.getElementById("algo-select");
+      const apiCtrlAlgoEl = document.getElementById("api-ctrl-algo");
+
+      let html = "";
+      models.forEach(m => {
+        const isServing = m.status === "SERVING" || (m.runtime_health && m.runtime_health.status === "SERVING");
+        const isHealthy = isServing || m.status === "READY" || m.status === "APPROVED";
+        const championBadge = m.is_champion ? "🏆 " : "";
+        const statusDot = isServing ? "🟢 " : (isHealthy ? "🟡 " : "🔴 ");
+        const statusLabel = isServing ? "[SERVING]" : (isHealthy ? "[READY]" : "[NOT LOADED]");
+        
+        let val = m.model_id;
+        if (m.model_id.includes("lgbm") || m.name.toLowerCase().includes("lightgbm")) val = "ensemble";
+        else if (m.model_id.includes("xgboost")) val = "gradient_boosting";
+        else if (m.model_id.includes("random-forest") || m.model_id.includes("rf")) val = "random_forest";
+        
+        const disabledAttr = (!isHealthy && !isServing) ? "disabled" : "";
+        const selectedAttr = m.is_champion ? "selected" : "";
+        
+        html += `<option value="${val}" ${selectedAttr} ${disabledAttr}>${championBadge}${statusDot}${m.name} — ${m.runtime} ${statusLabel}</option>`;
+      });
+
+      if (algoSelectEl) algoSelectEl.innerHTML = html;
+      if (apiCtrlAlgoEl) apiCtrlAlgoEl.innerHTML = html;
+
+      const selectedModel = models.find(m => m.is_champion) || models[0];
+      const algoBadgeEl = document.getElementById("algo-badge");
+      if (algoBadgeEl && selectedModel) {
+        algoBadgeEl.innerHTML = `<svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle></svg> ${selectedModel.name}`;
+      }
+    } catch (err) {
+      console.warn("Dynamic model catalog load failed:", err);
+    }
+  };
+
   // --- Bootstrapping ---
   initThemeSwitcher();
+  window.loadDynamicModelCatalog();
   window.selectMethodologyPhase("phase_1", false); // false = no initial scroll jump on page load
   window.loadSimulationHistory();
   window.verifyWormAuditChainLive();

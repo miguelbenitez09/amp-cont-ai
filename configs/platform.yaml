@@ -1,0 +1,35 @@
+# Platform Declarative Configuration — amp-cont-ai
+version: "1.0.0"
+platform:
+  name: "Panamá PortOps-AI MLOps Platform"
+  id: "amp-cont-ai"
+  environment: "production"
+  base_url: "http://127.0.0.1:8000"
+  api_prefix: "/api/v1"
+  docs_url: "/docs"
+  openapi_url: "/openapi.json"
+
+server:
+  host: "127.0.0.1"
+  port: 8000
+  workers: 1
+  reload: false
+
+storage:
+  type: "local"  # "local", "minio", "s3"
+  artifacts_dir: "artifacts"
+  models_dir: "models"
+  data_dir: "data"
+  database_url: "sqlite:///data/enterprise_db/portops_platform.db"
+
+governance:
+  audit_logging: true
+  audit_retention_days: 365
+  enforce_nist_auth: true
+  allow_guest_inference: true
+  require_tool_approval_for_guests: true
+
+plugins:
+  enabled:
+    - "portops"
+  plugins_dir: "plugins"

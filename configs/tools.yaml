@@ -1,0 +1,65 @@
+# Tools Declarative Definitions & Execution Policies — amp-cont-ai
+version: "1.0.0"
+
+tools:
+  - id: "tool-teu-predictor"
+    name: "teu_predict"
+    description: "Calculates forecasted TEU container throughput using quantile models"
+    risk_level: "LOW"
+    requires_approval: false
+    allowed_roles: ["*"]
+    input_schema:
+      type: "object"
+      properties:
+        horizon_months:
+          type: "integer"
+          default: 6
+        port_name:
+          type: "string"
+
+  - id: "tool-hs-code-lookup"
+    name: "hs_code_lookup"
+    description: "Retrieves official customs tariffs, DAI, and regulations for HS subheadings"
+    risk_level: "LOW"
+    requires_approval: false
+    allowed_roles: ["*"]
+    input_schema:
+      type: "object"
+      properties:
+        query:
+          type: "string"
+
+  - id: "tool-container-iso-validate"
+    name: "container_iso_validate"
+    description: "Validates ISO 6346 container check digit and owner code"
+    risk_level: "LOW"
+    requires_approval: false
+    allowed_roles: ["*"]
+    input_schema:
+      type: "object"
+      properties:
+        container_number:
+          type: "string"
+
+  - id: "tool-model-deployer"
+    name: "deploy_model"
+    description: "Triggers deployment of a model version to a target runtime"
+    risk_level: "HIGH"
+    requires_approval: true
+    approval_role: "MlopsAdmin"
+    allowed_roles: ["root", "MlopsAdmin"]
+    input_schema:
+      type: "object"
+      properties:
+        model_id:
+          type: "string"
+        runtime_id:
+          type: "string"
+
+  - id: "tool-audit-exporter"
+    name: "export_audit_log"
+    description: "Generates signed WORM-compliant security audit report"
+    risk_level: "HIGH"
+    requires_approval: true
+    approval_role: "SecOpsAdmin"
+    allowed_roles: ["root", "SecOpsAdmin"]

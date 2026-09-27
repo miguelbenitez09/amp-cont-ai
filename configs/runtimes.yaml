@@ -1,0 +1,60 @@
+# Runtimes Configuration — amp-cont-ai
+version: "1.0.0"
+
+runtimes:
+  vllm:
+    id: "runtime-vllm-primary"
+    name: "vLLM High-Throughput Engine"
+    type: "vllm"
+    enabled: true
+    endpoint: "http://127.0.0.1:8001/v1"
+    health_endpoint: "http://127.0.0.1:8001/health"
+    timeout_seconds: 30
+    gpu_profile:
+      device: "cuda"
+      gpu_memory_utilization: 0.85
+      max_model_len: 2048
+      enforce_eager: true
+    capabilities:
+      streaming: true
+      tool_calling: true
+      json_mode: true
+      chat_completions: true
+
+  ollama:
+    id: "runtime-ollama-local"
+    name: "Ollama Local Runtime"
+    type: "ollama"
+    enabled: true
+    endpoint: "http://127.0.0.1:11434"
+    health_endpoint: "http://127.0.0.1:11434/api/version"
+    timeout_seconds: 20
+    capabilities:
+      streaming: true
+      tool_calling: false
+      chat_completions: true
+
+  local_tabular:
+    id: "runtime-local-tabular"
+    name: "Local Tabular Engine (LightGBM/XGBoost/Joblib)"
+    type: "in_process"
+    enabled: true
+    supported_frameworks:
+      - "lightgbm"
+      - "xgboost"
+      - "scikit-learn"
+      - "catboost"
+    capabilities:
+      quantile_regression: true
+      batch_inference: true
+
+  openai_compatible:
+    id: "runtime-openai-external"
+    name: "External OpenAI-Compatible Gateway"
+    type: "external_api"
+    enabled: false
+    endpoint: "https://api.openai.com/v1"
+    auth_header_env: "OPENAI_API_KEY"
+    capabilities:
+      streaming: true
+      tool_calling: true

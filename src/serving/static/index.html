@@ -283,10 +283,7 @@
             <div class="api-param-item">
               <label for="api-ctrl-algo">Algoritmo Predictivo:</label>
               <select id="api-ctrl-algo">
-                <option value="ensemble" selected>LightGBM Cuantiles P10/P50/P90 (Champion)</option>
-                <option value="random_forest">Random Forest Regressor (Challenger)</option>
-                <option value="gradient_boosting">HistGradientBoosting (Challenger)</option>
-                <option value="ridge_elasticnet">Ridge / ElasticNet Pipeline (Baseline)</option>
+                <option value="ensemble" selected>⏳ Cargando catálogo dinámico...</option>
               </select>
             </div>
 
@@ -964,14 +961,7 @@
           <div class="form-group">
             <label for="algo-select">Motor de Inferencia:</label>
             <select id="algo-select">
-              <option value="ensemble">🏆 Ensamble Champion (LightGBM Cuantiles P10/P50/P90 - WAPE 9.11%)</option>
-              <option value="random_forest">🥈 Random Forest Ensembled (100 Árboles - Latencia 4.58 ms)</option>
-              <option value="gradient_boosting">🥉 HistGradientBoosting Regressor (256 Bins Histogram)</option>
-              <option value="catboost_gbdt">🐱 CatBoost GBDT (Árboles Simétricos Oblivious - WAPE 9.18%)</option>
-              <option value="extra_trees">🌳 Extra Trees Regressor (Particiones Extremadamente Aleatorias)</option>
-              <option value="neural_mlp_quantile">🧠 Quantile Neural MLP (Perceptrón Multicapa Tabular)</option>
-              <option value="bayesian_ridge">📐 Bayesian Ridge Probabilistic (Inferencia Analítica)</option>
-              <option value="ridge_elasticnet">📏 Ridge / ElasticNet (Línea Base Lineal Regularizada)</option>
+              <option value="ensemble" selected>⏳ Cargando modelos activos desde el Catálogo MLOps...</option>
             </select>
           </div>
 

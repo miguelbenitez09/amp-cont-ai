@@ -1,0 +1,86 @@
+# Access Policies (RBAC + ABAC) — amp-cont-ai
+version: "1.0.0"
+
+roles:
+  root:
+    description: "System Root Owner with unrestricted authority"
+    tier: 0
+    permissions: ["*"]
+
+  SysAdmin:
+    description: "System Administrator managing infrastructure, storage and users"
+    tier: 1
+    permissions:
+      - "system:read"
+      - "system:write"
+      - "users:manage"
+      - "runtimes:manage"
+      - "deployments:manage"
+      - "audit:read"
+
+  SecOpsAdmin:
+    description: "Security Operations Admin managing auth, MFA, tokens, and audit policies"
+    tier: 1
+    permissions:
+      - "security:manage"
+      - "auth:manage"
+      - "mfa:enforce"
+      - "tools:approve"
+      - "mcp:authorize"
+      - "audit:read"
+      - "audit:export"
+
+  MlopsAdmin:
+    description: "MLOps Engineer managing pipelines, models, registry, and evaluations"
+    tier: 1
+    permissions:
+      - "models:register"
+      - "models:evaluate"
+      - "models:promote"
+      - "models:deploy"
+      - "models:rollback"
+      - "catalog:sync"
+      - "datasets:manage"
+
+  Analyst:
+    description: "Data Analyst executing verified models and inspecting telemetry"
+    tier: 2
+    permissions:
+      - "models:infer"
+      - "models:read"
+      - "catalog:read"
+      - "benchmarks:read"
+      - "tools:request"
+
+  Guest:
+    description: "Unauthenticated visitor with public read and rate-limited inference"
+    tier: 3
+    permissions:
+      - "models:public_infer"
+      - "catalog:public_read"
+
+access_policies:
+  PUBLIC:
+    allowed_roles: ["*"]
+    description: "Unauthenticated and public usage allowed."
+
+  AUTHENTICATED:
+    allowed_roles: ["root", "SysAdmin", "SecOpsAdmin", "MlopsAdmin", "Analyst"]
+    description: "Requires valid active JWT session."
+
+  VERIFIED_USER:
+    allowed_roles: ["root", "SysAdmin", "SecOpsAdmin", "MlopsAdmin", "Analyst"]
+    require_mfa: true
+    description: "Requires verified account with MFA enabled."
+
+  ROLE_RESTRICTED:
+    allowed_roles: ["root", "MlopsAdmin"]
+    description: "Restricted strictly to MLOps engineering and root."
+
+  ADMIN_ONLY:
+    allowed_roles: ["root", "SysAdmin", "SecOpsAdmin", "MlopsAdmin"]
+    description: "Reserved for platform administrators."
+
+  ROOT_ONLY:
+    allowed_roles: ["root"]
+    description: "Restricted exclusively to root owner."

@@ -1,0 +1,78 @@
+# Models Declarative Definitions — amp-cont-ai
+version: "1.0.0"
+
+models:
+  - id: "portops-teu-quantile-lgbm"
+    name: "LightGBM Quantile TEU Forecaster"
+    family: "gradient_boosting"
+    type: "tabular_regression"
+    version: "1.0.0"
+    task: "time_series_forecasting"
+    runtime_target: "runtime-local-tabular"
+    status: "APPROVED"
+    alias: "champion"
+    artifact_path: "models/champion_lgbm.joblib"
+    quantiles: [0.10, 0.50, 0.90]
+    metrics:
+      wape: 0.0842
+      r2: 0.9615
+      mae: 1420.5
+    access_policy: "PUBLIC"
+
+  - id: "portops-xgboost-regressor"
+    name: "XGBoost TEU Regressor"
+    family: "gradient_boosting"
+    type: "tabular_regression"
+    version: "1.0.0"
+    task: "time_series_forecasting"
+    runtime_target: "runtime-local-tabular"
+    status: "APPROVED"
+    alias: "challenger_1"
+    artifact_path: "models/xgboost_regressor.joblib"
+    metrics:
+      wape: 0.0912
+      r2: 0.9480
+    access_policy: "PUBLIC"
+
+  - id: "portops-random-forest-regressor"
+    name: "Random Forest Regressor"
+    family: "ensemble_trees"
+    type: "tabular_regression"
+    version: "1.0.0"
+    task: "time_series_forecasting"
+    runtime_target: "runtime-local-tabular"
+    status: "APPROVED"
+    alias: "candidate"
+    artifact_path: "models/rf_regressor.joblib"
+    metrics:
+      wape: 0.1024
+      r2: 0.9321
+    access_policy: "PUBLIC"
+
+  - id: "gemma-2-2b-it-q4"
+    name: "Gemma 2 2B Instruct (Q4_K_M)"
+    family: "gemma"
+    type: "llm"
+    version: "1.0.0"
+    task: "text_generation"
+    runtime_target: "runtime-vllm-primary"
+    source: "huggingface"
+    repo_id: "google/gemma-2-2b-it"
+    format: "gguf"
+    quantization: "Q4_K_M"
+    status: "STAGED"
+    context_length: 2048
+    access_policy: "AUTHENTICATED"
+
+  - id: "bge-small-en-v1.5"
+    name: "BAAI BGE Small En v1.5 Embeddings"
+    family: "bert"
+    type: "embedding"
+    version: "1.0.0"
+    task: "feature_extraction"
+    runtime_target: "runtime-local-tabular"
+    source: "huggingface"
+    repo_id: "BAAI/bge-small-en-v1.5"
+    status: "APPROVED"
+    dimension: 384
+    access_policy: "PUBLIC"
