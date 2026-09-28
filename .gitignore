@@ -111,3 +111,5 @@ models/*.png
 # Reports and temporary images
 reports/figures/*
 !reports/figures/.gitkeep
+
+scratch/
