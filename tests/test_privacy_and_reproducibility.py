@@ -85,6 +85,7 @@ class TestGovernmentSecurityAndMCPSouls:
         assert len(overview["roles_matrix"]) >= 4
 
     def test_user_registration_and_session_revocation(self):
+        PanamaSecurityGovernancePanel.delete_user("test_auditor_user")
         reg = PanamaSecurityGovernancePanel.register_user(
             username="test_auditor_user",
             full_name="Auditor de Prueba",
@@ -93,6 +94,7 @@ class TestGovernmentSecurityAndMCPSouls:
         )
         assert reg["status"] == "success"
         assert reg["user"]["username"] == "test_auditor_user"
+
 
         rev = PanamaSecurityGovernancePanel.revoke_all_sessions(reason="Prueba Unitaria")
         assert rev["status"] == "revoked"
@@ -212,6 +214,7 @@ class TestNewServingApiEndpoints:
         assert d["status"] == "operational"
 
     def test_post_admin_users(self):
+        PanamaSecurityGovernancePanel.delete_user("portal_admin_unit")
         payload = {
             "username": "portal_admin_unit",
             "full_name": "Administrador de Portal",
@@ -221,6 +224,7 @@ class TestNewServingApiEndpoints:
         res = client.post("/api/admin/users", json=payload)
         assert res.status_code == 200
         assert res.json()["status"] == "success"
+
 
     def test_post_revoke_sessions(self):
         res = client.post("/api/admin/revoke-sessions", json={"reason": "Auditoría Regular"})
