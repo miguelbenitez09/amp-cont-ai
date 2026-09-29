@@ -43,9 +43,6 @@ class EnterpriseUser:
     created_at: str = "2026-09-25 12:00 UTC"
 
 
-# Alias for backwards compatibility
-GovernmentUser = EnterpriseUser
-
 
 class PanamaSecurityGovernancePanel:
     """

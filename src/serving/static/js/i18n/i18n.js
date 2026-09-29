@@ -79,6 +79,10 @@
     },
 
     translateDOM() {
+      // 0. Update document title
+      const appTitle = this.t("nav.app_title", "Panamá PortOps-AI");
+      document.title = `${appTitle} v1.0.0 | developed by Miguel Benítez`;
+
       // 1. Text elements with data-i18n
       const elements = document.querySelectorAll("[data-i18n]");
       elements.forEach(el => {
@@ -120,6 +124,10 @@
       const select = document.getElementById("nav-lang-select");
       if (select) {
         select.value = this.currentLang;
+        if (!select.dataset.bound) {
+          select.dataset.bound = "true";
+          select.addEventListener("change", (e) => this.setLanguage(e.target.value));
+        }
       }
       const toggleBtn = document.getElementById("btn-lang-toggle");
       if (toggleBtn) {
@@ -134,7 +142,9 @@
     return I18nManager.t(key, fallback);
   };
 
-  document.addEventListener("DOMContentLoaded", () => {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => I18nManager.init());
+  } else {
     I18nManager.init();
-  });
+  }
 })();

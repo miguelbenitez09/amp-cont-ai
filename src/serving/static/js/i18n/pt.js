@@ -7,6 +7,7 @@ window.I18N_PT = {
     app_title: "Panamá PortOps-AI",
     version: "v1.0.0",
     author: "Desenvolvido v1.0.0 Miguel Benítez",
+    developed_by: "developed by Miguel Benítez",
     theme_atlantic: "Atlântico Night (Ciano)",
     theme_amber: "Radar Balboa (Âmbar)",
     theme_emerald: "Bacia Canal (Esmeralda)",

@@ -208,9 +208,9 @@ header {
 }
 
 .nav-svg-icon {
-  width: 24px;
-  height: 24px;
-  color: var(--cyan-bright);
+  width: 30px;
+  height: 30px;
+  filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.45));
 }
 
 .logo-text h1 {
