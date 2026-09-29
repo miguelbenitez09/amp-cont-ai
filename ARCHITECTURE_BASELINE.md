@@ -4,7 +4,7 @@
 **Baseline Date:** September 2026  
 **Version:** v1.0.0 (Strictly enforced)  
 **License:** GNU General Public License v3.0 with Mandatory Attribution (Section 7)  
-**Maintainer:** Ing. Miguel Benítez — Universidad Tecnológica de Panamá  
+**Maintainer:** developed by Miguel Benítez  
 
 ---
 

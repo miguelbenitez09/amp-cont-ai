@@ -1,7 +1,7 @@
 # Pipeline Pedagógico de Ingesta, Scraping, Depuración y Anonimización (v1.0.0)
 
 **Plataforma:** Panamá PortOps-AI / amp-cont-ai  
-**Autor:** Ing. Miguel Benítez — Universidad Tecnológica de Panamá  
+**Autor:** developed by Miguel Benítez  
 **Licencia:** GNU General Public License v3.0 (GPL-3.0) con Atribución Obligatoria  
 **Versión:** v1.0.0  
 

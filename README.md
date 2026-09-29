@@ -6,10 +6,10 @@
 [![LightGBM](https://img.shields.io/badge/LightGBM-Champion_Quantiles-green.svg)](https://lightgbm.readthedocs.io/)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0--or--later-orange.svg)](LICENSE)
 [![Datos Abiertos Panamá](https://img.shields.io/badge/Datos_Abiertos-AMP_2015--2026-blueviolet.svg)](https://www.datosabiertos.gob.pa)
-[![Autor](https://img.shields.io/badge/Autor-Ing._Miguel_Benítez_(UTP)-informational.svg)](https://github.com/miguelbenitez09)
+[![Autor](https://img.shields.io/badge/Autor-developed_by_Miguel_Benítez-informational.svg)](https://github.com/miguelbenitez09)
 
-> **Firma Oficial del Proyecto:** **`Panamá PortOps-AI v1.0.0 • Ing. Miguel Benítez • UTP`**  
-> **Autor Principal:** **Ing. Miguel Benítez** (`miguelbenitez09`) — Universidad Tecnológica de Panamá (UTP) (<https://github.com/miguelbenitez09>)  
+> **Firma Oficial del Proyecto:** **`Panamá PortOps-AI v1.0.0 • developed by Miguel Benítez`**  
+> **Autor Principal:** **Miguel Benítez** (`miguelbenitez09`) (<https://github.com/miguelbenitez09>)  
 > **Licencia:** GNU General Public License v3.0 (GPL-3.0) con Atribución Obligatoria (Sección 7)  
 > **Arquitectura:** **100% Código Abierto Soberano (Zero Closed-Source / Zero Microsoft Fabric)**  
 > **Marco Legal:** **Ley 6 de 22 de enero de 2002 de la República de Panamá** (Normas para la transparencia en la gestión pública y datos abiertos).  
@@ -667,7 +667,7 @@ Desarrollada para ofrecer una interfaz unificada y resiliente de monitoreo, simu
 - **Estética Deep Marine:** Diseño visual de alta legibilidad y contraste, tarjetas métricas y soporte multi-idioma (Español / Inglés / Portugués).
 
 **Arquitectura Visual y 8 Módulos Operacionales:**
-1. **Misión Cívica & Ley 6 de 2002:** Declaración de soberanía de datos, 140 meses de microdatos AMP sin mocks y licencia GPL-3.0 con atribución obligatoria al Ing. Miguel Benítez (UTP).
+1. **Misión Cívica & Ley 6 de 2002:** Declaración de soberanía de datos, 140 meses de microdatos AMP sin mocks y licencia GPL-3.0 con atribución obligatoria (developed by Miguel Benítez).
 2. **Razonamiento CoT & Agentes:** Inspección de agentes especializados, telemetría de latencias y tokens, y formulario de retroalimentación cualitativa (`model_interaction_feedback`).
 3. **Catálogo Arancelario y Validador ISO 6346:** Búsqueda en vivo de subpartidas arancelarias de Panamá (ANA), calculadora fiscal de Landed Cost (DAI, ITBMS 7%, tasas) y validación de contenedores con Módulo-11.
 4. **Pronósticos de Inferencia Cuantílica:** Visualización en tiempo real de bandas $P_{10}$, $P_{50}$ y $P_{90}$ con garantía de anti-cruce isotónico, semáforo de balance de vacíos e inyección de shocks What-If.
@@ -728,8 +728,8 @@ Este proyecto es software libre y de código abierto bajo la licencia **GNU Gene
 2. **Atribución Obligatoria al Autor Original:** Cualquier uso educativo, académico, institucional o comercial debe mantener de forma clara, visible e inalterada la siguiente mención y enlace:
 
 ```text
-Panamá PortOps-AI v1.0.0 • Ing. Miguel Benítez • Universidad Tecnológica de Panamá (UTP)
-Basado en Panamá PortOps-AI por Ing. Miguel Benítez (https://github.com/miguelbenitez09/amp-cont-ai)
+Panamá PortOps-AI v1.0.0 • developed by Miguel Benítez
+Basado en Panamá PortOps-AI developed by Miguel Benítez (https://github.com/miguelbenitez09/amp-cont-ai)
 ```
 
 ### Formato de Citación Académica / Técnica (BibTeX):
@@ -741,12 +741,12 @@ Basado en Panamá PortOps-AI por Ing. Miguel Benítez (https://github.com/miguel
   publisher    = {GitHub},
   journal      = {GitHub repository},
   howpublished = {\url{https://github.com/miguelbenitez09/amp-cont-ai}},
-  note         = {Ing. Miguel Benítez • Universidad Tecnológica de Panamá (UTP). Fines Cívicos y Educativos (Ley 6 de 2002). Licensed under GNU GPL v3.0 with mandatory attribution}
+  note         = {developed by Miguel Benítez. Fines Cívicos y Educativos (Ley 6 de 2002). Licensed under GNU GPL v3.0 with mandatory attribution}
 }
 ```
 
 ---
 **Firma Oficial del Proyecto:**  
-`Panamá PortOps-AI v1.0.0 • Ing. Miguel Benítez • UTP`  
+`Panamá PortOps-AI v1.0.0 • developed by Miguel Benítez`  
 República de Panamá, 2026.
 

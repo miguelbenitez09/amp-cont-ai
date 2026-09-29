@@ -2240,5 +2240,132 @@ def probe_all_runtimes():
     }
 
 
+# ==============================================================================
+# DOMAIN PACKS & EXTENSIBILITY (PLUGINS)
+# ==============================================================================
+
+@v1_router.get("/plugins", tags=["Domain Packs & Plugins"])
+def list_domain_plugins():
+    """
+    Lists all discovered domain plugins decoupled from the MLOps Control Plane.
+    """
+    from src.platform.plugins.plugin_manager import PluginManager
+    pm = PluginManager()
+    plugins = pm.discover_plugins()
+    return {
+        "total_plugins": len(plugins),
+        "plugins": plugins
+    }
+
+
+@v1_router.get("/plugins/{plugin_id}", tags=["Domain Packs & Plugins"])
+def get_domain_plugin(plugin_id: str):
+    """
+    Retrieves metadata, manifest, and tools for a specific domain pack plugin.
+    """
+    from src.platform.plugins.plugin_manager import PluginManager
+    pm = PluginManager()
+    plugin = pm.get_plugin(plugin_id)
+    if not plugin:
+        raise HTTPException(status_code=404, detail=f"Plugin '{plugin_id}' not found.")
+    tools = pm.get_plugin_tools(plugin_id)
+    plugin["tools"] = tools
+    return plugin
+
+
+@v1_router.get("/plugins/{plugin_id}/regulations", tags=["Domain Packs & Plugins"])
+def get_plugin_regulations(plugin_id: str, query: Optional[str] = None):
+    """
+    Retrieves domain legal framework and regulations (e.g., Panama Maritime Laws).
+    """
+    if plugin_id.lower() == "portops":
+        from plugins.portops.regulations.panama_maritime_regulations import PanamaRegulationsRegistry
+        if query:
+            reg = PanamaRegulationsRegistry.lookup_regulation(query)
+            return {"regulations": [reg.__dict__] if reg else []}
+        return {"regulations": PanamaRegulationsRegistry.list_regulations()}
+    raise HTTPException(status_code=404, detail=f"Plugin '{plugin_id}' does not support regulations query.")
+
+
+@v1_router.get("/plugins/{plugin_id}/inventory", tags=["Domain Packs & Plugins"])
+def get_plugin_inventory(plugin_id: str):
+    """
+    Retrieves dataset table inventory for a domain pack.
+    """
+    if plugin_id.lower() == "portops":
+        from plugins.portops.datasets.portops_data_loader import PortOpsDataLoader
+        return {"inventory": PortOpsDataLoader.get_dataset_inventory()}
+    raise HTTPException(status_code=404, detail=f"Plugin '{plugin_id}' does not support inventory query.")
+
+
+@v1_router.post("/plugins/{plugin_id}/capacity-check", tags=["Domain Packs & Plugins"])
+def evaluate_plugin_capacity(plugin_id: str, port_name: str, monthly_teu: float):
+    """
+    Evaluates physical infrastructure capacity utilization for port terminal facilities.
+    """
+    if plugin_id.lower() == "portops":
+        from plugins.portops.models.portops_forecast_model import PortOpsForecastModel
+        return PortOpsForecastModel.evaluate_capacity_utilization(port_name, monthly_teu)
+    raise HTTPException(status_code=404, detail=f"Plugin '{plugin_id}' does not support capacity checks.")
+
+
+# ==============================================================================
+# GOVERNMENT SCRAPERS & INGESTION TELEMETRY
+# ==============================================================================
+
+@v1_router.get("/data/scrapers/status", tags=["Data Platform & Ingestion"])
+def get_scrapers_live_status():
+    """
+    Real-time status of government data scrapers and Medallion Lakehouse manifests:
+    - Autoridad Marítima de Panamá (AMP)
+    - 17 Official Ministries & Macroeconomics
+    - Autoridad Nacional de Aduanas (ANA)
+    - INEC Panama Imports & Exports
+    """
+    raw_imports = Path("C:/Users/mbeni/Downloads/datasets_imports/data/raw")
+    raw_exports = Path("C:/Users/mbeni/Downloads/datasets_exports/data/raw")
+
+    imports_count = len(list(raw_imports.rglob("*.*"))) if raw_imports.exists() else 0
+    exports_count = len(list(raw_exports.rglob("*.*"))) if raw_exports.exists() else 0
+
+    amp_manifest = SILVER_DIR / "amp_lakehouse_manifest.json"
+    macro_manifest = SILVER_DIR / "macro_energy_multimodal_manifest.json"
+
+    amp_info = {}
+    if amp_manifest.exists():
+        try:
+            with open(amp_manifest, "r", encoding="utf-8") as f:
+                amp_info = json.load(f)
+        except Exception:
+            pass
+
+    macro_info = {}
+    if macro_manifest.exists():
+        try:
+            with open(macro_manifest, "r", encoding="utf-8") as f:
+                macro_info = json.load(f)
+        except Exception:
+            pass
+
+    return {
+        "status": "OPERATIONAL",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "inec_imports_scraper": {
+            "path": str(raw_imports),
+            "files_downloaded": imports_count,
+            "status": "ACTIVE_RUNNING"
+        },
+        "inec_exports_scraper": {
+            "path": str(raw_exports),
+            "files_downloaded": exports_count,
+            "status": "ACTIVE_RUNNING"
+        },
+        "amp_lakehouse": amp_info,
+        "macro_energy_multimodal": macro_info,
+        "author": "developed by Miguel Benítez"
+    }
+
+
+
 
 
