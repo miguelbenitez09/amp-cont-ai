@@ -4,6 +4,7 @@ function save(theme){document.documentElement.dataset.theme=theme;try{localStora
 export function initializeTheme(){
   if(!document.querySelector('#themes-style')){const style=document.createElement('link');style.id='themes-style';style.rel='stylesheet';style.href='/static/framework/themes.css';document.head.appendChild(style)}
   if(!document.querySelector('#workspace-style')){const style=document.createElement('link');style.id='workspace-style';style.rel='stylesheet';style.href='/static/framework/workspace.css';document.head.appendChild(style)}
+  if(!document.querySelector('#logo-style')){const style=document.createElement('link');style.id='logo-style';style.rel='stylesheet';style.href='/static/framework/logo.css';document.head.appendChild(style)}
   let preference='ocean';
   try{preference=localStorage.getItem('amp-theme')||'ocean'}catch{}
   if(!themes.includes(preference))preference='ocean'; save(preference);
