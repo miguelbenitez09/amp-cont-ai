@@ -2322,8 +2322,10 @@ def get_scrapers_live_status():
     - Autoridad Nacional de Aduanas (ANA)
     - INEC Panama Imports & Exports
     """
-    raw_imports = Path("C:/Users/mbeni/Downloads/datasets_imports/data/raw")
-    raw_exports = Path("C:/Users/mbeni/Downloads/datasets_exports/data/raw")
+    # Public instances never assume a maintainer's Windows paths. A missing
+    # directory is UNKNOWN, not evidence that a scraper is running.
+    raw_imports = Path(os.getenv("INEC_IMPORTS_RAW_DIR", str(PROJECT_ROOT / "data" / "raw" / "inec" / "imports")))
+    raw_exports = Path(os.getenv("INEC_EXPORTS_RAW_DIR", str(PROJECT_ROOT / "data" / "raw" / "inec" / "exports")))
 
     imports_count = len(list(raw_imports.rglob("*.*"))) if raw_imports.exists() else 0
     exports_count = len(list(raw_exports.rglob("*.*"))) if raw_exports.exists() else 0
@@ -2348,17 +2350,17 @@ def get_scrapers_live_status():
             pass
 
     return {
-        "status": "OPERATIONAL",
+        "status": "DEGRADED" if not (raw_imports.exists() and raw_exports.exists()) else "UNKNOWN",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "inec_imports_scraper": {
             "path": str(raw_imports),
             "files_downloaded": imports_count,
-            "status": "ACTIVE_RUNNING"
+            "status": "UNKNOWN" if not raw_imports.exists() else "INVENTORY_ONLY"
         },
         "inec_exports_scraper": {
             "path": str(raw_exports),
             "files_downloaded": exports_count,
-            "status": "ACTIVE_RUNNING"
+            "status": "UNKNOWN" if not raw_exports.exists() else "INVENTORY_ONLY"
         },
         "amp_lakehouse": amp_info,
         "macro_energy_multimodal": macro_info,

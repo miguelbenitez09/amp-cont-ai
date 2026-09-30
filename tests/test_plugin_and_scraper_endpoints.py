@@ -71,7 +71,8 @@ def test_scrapers_live_status_endpoint():
     res = client.get("/api/v1/data/scrapers/status")
     assert res.status_code == 200
     data = res.json()
-    assert data["status"] == "OPERATIONAL"
+    assert data["status"] in {"OPERATIONAL", "DEGRADED", "UNKNOWN"}
+    assert data["inec_imports_scraper"]["status"] != "ACTIVE_RUNNING"
     assert "inec_imports_scraper" in data
     assert "inec_exports_scraper" in data
     assert "amp_lakehouse" in data

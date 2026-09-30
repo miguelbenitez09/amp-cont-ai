@@ -134,7 +134,7 @@ def run_bootstrap() -> bool:
     import json
     report = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "platform_version": "2.0.0",
+        "platform_version": "1.0.0",
         "author": "Desarrollado v1.0.0 Miguel Benítez",
         "database": str(DB_PATH.relative_to(ROOT_DIR)),
         "root_username": root_result.get("root_username"),

@@ -391,16 +391,25 @@ class HealthResponse(BaseModel):
 # --- Web UI Route ---
 @app.get("/", include_in_schema=False)
 def serve_web_ui(request: Request):
-    """Serves the modern, minimalist static web user interface with zero-cache guarantees."""
+    """Public project landing page; the operational application lives at /app."""
     no_cache_headers = {
         "Cache-Control": "no-cache, no-store, must-revalidate",
         "Pragma": "no-cache",
         "Expires": "0"
     }
-    index_file = STATIC_DIR / "index.html"
+    index_file = STATIC_DIR / "landing.html"
     if index_file.exists():
         return FileResponse(index_file, headers=no_cache_headers)
     return {"message": "Panamá PortOps-AI API is running. Visit /docs for OpenAPI specs."}
+
+
+@app.get("/app", include_in_schema=False)
+def serve_control_plane(request: Request):
+    """Serves the operational control plane separately from the public landing page."""
+    index_file = STATIC_DIR / "index.html"
+    if index_file.exists():
+        return FileResponse(index_file, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
+    return {"message": "Control plane unavailable. Visit /docs for OpenAPI specs."}
 
 
 # --- API Endpoints ---

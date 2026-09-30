@@ -52,7 +52,7 @@ def ingest_source(source_id: str) -> bool:
         "retrieved_at": now_str,
         "files_indexed": len(existing_files),
         "status": "COMPLETED",
-        "pipeline_version": "2.0.0"
+        "pipeline_version": "1.0.0"
     }
     print(f"  Ingestion status: {manifest_info['status']} ({manifest_info['files_indexed']} bulletins available for Bronze stage).")
     return True

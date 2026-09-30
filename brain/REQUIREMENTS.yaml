@@ -1,0 +1,20 @@
+schema_version: "1.0"
+product:
+  id: amp-cont-ai
+  distribution: panamanian_public_framework
+  public_installation_must_work_without_private_connectors: true
+privacy:
+  original_bronze_private: true
+  publish_bronze_2: true
+  direct_identifiers: [person_name, company_name, ruc, bank_account, phone, email, passport, identity_number]
+  require_reidentification_review: true
+  hmac_is_pseudonymization_by_default: true
+publication:
+  require_allowlist: true
+  require_manifest_and_sha256: true
+  require_model_card: true
+  require_dataset_card: true
+  exclude_private_scrapers: true
+evidence:
+  no_unverified_success_claims: true
+  skipped_tests_are_not_pass: true

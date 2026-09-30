@@ -28,7 +28,7 @@ class DatasetManifest(BaseModel):
     content_hash: str
     quality_score: float = 1.0
     classification: str = "FACT"  # 'FACT', 'MEASURED', 'DERIVED', 'ESTIMATED', 'SIMULATED', 'DEMO'
-    pipeline_version: str = "2.0.0"
+    pipeline_version: str = "1.0.0"
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     @classmethod

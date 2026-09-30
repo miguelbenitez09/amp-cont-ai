@@ -1,0 +1,17 @@
+# Deny by default: only the canonical framework enters the context.
+**
+!Dockerfile
+!requirements-framework.txt
+!src/
+!src/framework/
+!src/framework/**
+!src/serving/
+!src/serving/static/
+!src/serving/static/framework/
+!src/serving/static/framework/**
+!src/serving/static/landing.html
+**/__pycache__/**
+**/*.pyc
+**/.env*
+**/*.db
+**/*.sqlite*

@@ -113,3 +113,33 @@ reports/figures/*
 !reports/figures/.gitkeep
 
 scratch/
+
+# Public/private distribution boundary: private acquisition must live outside this repo.
+# These patterns do not erase files already tracked; audit history before publication.
+src/data/scrapers/
+src/data_acquisition/private/
+private/
+data/bronze_original/
+data/bronze_private/
+data/raw_private/
+datasets/bronze_original/
+datasets/bronze_private/
+secrets/
+sessions/
+cookies/
+artifacts/private/
+reports/private/
+**/*scraper*.py
+**/*scraper*.json
+**/*browser*session*
+**/*cookies*
+**/*credentials*
+
+# Public releases are allowlisted from reviewed paths; local state remains untracked.
+brain/state/
+brain/evidence/private/
+models/weights/
+datasets/bronze_2/data/
+.local/
+.artifacts/
+!brain/TRACEABILITY.csv

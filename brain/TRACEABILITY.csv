@@ -1,0 +1,7 @@
+requirement_id,source,visibility,phase,acceptance,status
+PUB-001,user-request,public,F2,"Instalación pública funciona sin scrapers privados",PLANNED
+PUB-002,user-request,public,F4,"Pesos abiertos con card, hash y evaluación",PLANNED
+PRIV-001,user-request,private,F3,"Scrapers y credenciales fuera de distribución",PLANNED
+DATA-001,user-request,reviewed_public,F1,"Bronce 2.0 elimina o generaliza identificadores y cuasiidentificadores",PLANNED
+UI-001,user-request,public,F2,"Landing del proyecto es la primera ruta",PLANNED
+GIT-001,user-request,public,F0,"CI y allowlist bloquean archivos privados y pesados",IN_PROGRESS

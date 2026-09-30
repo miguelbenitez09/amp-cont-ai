@@ -12,6 +12,8 @@ import hmac
 import hashlib
 import json
 import time
+import os
+import secrets
 from dataclasses import dataclass, asdict
 from typing import Dict, List, Optional, Any, Tuple
 import pandas as pd
@@ -33,8 +35,21 @@ class PanamaDataAnonymizerEngine:
     anonymization engine for Panamanian public domain and inter-institutional datasets.
     """
 
-    # Secret salt for HMAC hashing (in production, loaded from SecretManager / Vault)
-    DEFAULT_SALT = b"AMP_PANAMA_PORTOPS_SALT_SECURE_2026_GOV"
+    # Never embed a production key in source control. A configured key must come
+    # from the environment/secret manager; the ephemeral fallback is only useful
+    # for an isolated process and is explicitly reported in the audit output.
+    _EPHEMERAL_SALT: Optional[bytes] = None
+
+    @classmethod
+    def _active_salt(cls, salt: Optional[bytes] = None) -> Tuple[bytes, str]:
+        if salt:
+            return salt, "caller_supplied"
+        configured = os.getenv("PANAMA_ANONYMIZATION_KEY")
+        if configured:
+            return configured.encode("utf-8"), "environment_secret"
+        if cls._EPHEMERAL_SALT is None:
+            cls._EPHEMERAL_SALT = secrets.token_bytes(32)
+        return cls._EPHEMERAL_SALT, "ephemeral_process_only"
 
     # Dataset name keywords that trigger mandatory sensitive data pipeline
     SENSITIVE_DATASET_TRIGGERS: List[Dict[str, Any]] = [
@@ -187,7 +202,7 @@ class PanamaDataAnonymizerEngine:
         if pd.isna(raw_value) or raw_value is None or raw_value == "":
             return "ANON_NULL"
         
-        active_salt = salt or cls.DEFAULT_SALT
+        active_salt, _ = cls._active_salt(salt)
         val_bytes = str(raw_value).strip().encode("utf-8")
         h = hmac.new(active_salt, val_bytes, hashlib.sha256).hexdigest()
         return f"ANON_{h[:16].upper()}"
@@ -255,13 +270,13 @@ class PanamaDataAnonymizerEngine:
                 # Task 3 & 4: Apply transformations
                 if matched_rule.action_type == "HMAC_SHA256_SALT":
                     transformed_df[col] = transformed_df[col].apply(cls.hash_token)
-                    executed_actions.append(f"Columna '{col}': anonimizada con HMAC-SHA256 + Salt secreta.")
+                    executed_actions.append(f"Columna '{col}': pseudonimizada con HMAC-SHA256; requiere revisión de reidentificación.")
                 elif matched_rule.action_type == "REDACT_NULLIFY":
                     transformed_df[col] = "[REDACTADO_LEY_81]"
                     executed_actions.append(f"Columna '{col}': purgada y redactada según normativa de privacidad.")
                 elif matched_rule.action_type == "DIFFERENTIAL_BUCKETING":
                     transformed_df[col] = transformed_df[col].apply(cls.bucket_amount)
-                    executed_actions.append(f"Columna '{col}': agrupada en rangos de privacidad diferencial.")
+                    executed_actions.append(f"Columna '{col}': agrupada en rangos; no constituye privacidad diferencial por sí sola.")
                 elif matched_rule.action_type == "GENERALIZE_MONTH":
                     transformed_df[col] = pd.to_datetime(transformed_df[col], errors="coerce").dt.strftime("%Y-%m").fillna("2026-01")
                     executed_actions.append(f"Columna '{col}': generalizada a corte mensual.")
@@ -292,7 +307,13 @@ class PanamaDataAnonymizerEngine:
             "fields_anonymized_detail": fields_anonymized,
             "executed_task_sequence": task_sequence,
             "action_logs": executed_actions,
-            "security_clearance": "APTO PARA PUBLICACIÓN EN LAKEHOUSE NACIONAL Y CONSUMO POR MODELOS ML"
+            "security_clearance": "REVIEW_REQUIRED",
+            "publication_status": "REVIEW_REQUIRED",
+            "pseudonymization": {
+                "classification": "PSEUDONYMIZATION_NOT_ANONYMIZATION",
+                "salt_source": cls._active_salt()[1],
+                "reidentification_review_required": True
+            }
         }
 
         return {

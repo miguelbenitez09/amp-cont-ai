@@ -2,7 +2,7 @@
 # Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 system:
   name: "Panamá PortOps-AI"
-  version: "2.0.0"
+  version: "1.0.0"
   environment: "development"
   organization: "Autoridad Marítima de Panamá (AMP) / Ecosistema Cívico"
   license: "GNU GPL-3.0 with Section 7 Mandatory Attribution"

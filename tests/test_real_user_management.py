@@ -93,7 +93,7 @@ def test_root_user_is_protected_from_deletion():
 
 def test_ui_contains_anti_paste_eye_and_matching_elements():
     """Verify index.html contains anti-paste warnings, eye buttons, and matching indicators."""
-    resp = client.get("/")
+    resp = client.get("/app")
     assert resp.status_code == 200
     html = resp.text
 
@@ -119,7 +119,7 @@ def test_ui_contains_anti_paste_eye_and_matching_elements():
 
 def test_no_v2_string_in_scripts():
     """Verify all script tags and versions are standardized to v1.0.0."""
-    resp = client.get("/")
+    resp = client.get("/app")
     assert resp.status_code == 200
     html = resp.text
 

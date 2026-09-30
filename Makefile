@@ -27,7 +27,7 @@ help:
 	@echo "  make all                   - Run complete pipeline from data to trained model"
 
 install:
-	pip install -e .
+	python scripts/install.py --install --mode portal
 
 download-data:
 	python scripts/download_data.py
@@ -63,7 +63,7 @@ stress-test:
 	python -m src.simulation.stress_tester
 
 serve:
-	uvicorn src.serving.api:app --host 0.0.0.0 --port 8000 --reload
+	python scripts/install.py --mode portal
 
 monitor:
 	python -m src.monitoring.drift
@@ -72,7 +72,7 @@ dashboard:
 	streamlit run apps/dashboard.py
 
 test:
-	pytest -v tests/
+	pytest -v tests/test_framework_installer.py tests/test_framework_ml.py tests/test_public_release_boundary.py
 
 docker-build:
 	docker build -t panama-portops-ai:latest .

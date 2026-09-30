@@ -1,0 +1,18 @@
+version: "1.0.0"
+distribution:
+  name: "AMP-CONT-AI Public Framework"
+  landing_path: "/"
+  control_plane_path: "/app"
+  private_connectors_enabled: false
+  allow_remote_scraping: false
+  allow_public_uploads: false
+  model_source: "approved_release"
+  dataset_source: "bronze_2_release"
+privacy:
+  require_publication_gate: true
+  reject_unreviewed_data: true
+  reject_direct_identifiers: true
+  pseudonymization_requires_reidentification_review: true
+runtime:
+  bind_host: "127.0.0.1"
+  require_explicit_public_exposure: true
