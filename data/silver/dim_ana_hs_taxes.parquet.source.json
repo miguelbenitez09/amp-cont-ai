@@ -1,0 +1,21 @@
+{
+  "entity": "dim_ana_hs_taxes",
+  "file_path": "C:\\Users\\mbeni\\Downloads\\amp-cont-ai\\data\\silver\\dim_ana_hs_taxes.parquet",
+  "records_count": 86,
+  "columns": [
+    "hs12",
+    "regimen",
+    "dai_pct",
+    "itbms_pct",
+    "isc_pct",
+    "iccdp_usd_gal",
+    "arancel_legal_url",
+    "isc_legal_url",
+    "updated_at"
+  ],
+  "sha256": "4c133041ef2ba3d82ce3f231cf165471d942874b65ee508601e7717b61ed3e0e",
+  "created_at": "2026-10-07T20:38:14.027447+00:00",
+  "author": "Desarrollado v1.0.0 Miguel Benítez / Ing. Miguel Antonio Benítez González (UTP) - GNU GPL-3.0",
+  "source_origin": "https://aranceles-api.ana.gob.pa/v1/consulta",
+  "portal_reference": "https://aranceles.ana.gob.pa"
+}

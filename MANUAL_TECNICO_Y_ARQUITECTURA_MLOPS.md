@@ -575,6 +575,57 @@ Implementado en `src/models/inference/engine.py`:
   - Módulos desacoplados para `docker_stack`, `monitoring` y `security`.
   - Entornos reproducibles `local` y `production` con versiones fijadas de proveedores y exclusión estricta de archivos de estado (`.tfstate`) en el control de versiones.
 
+### 10.7 Motor de Extracción y Consulta del Arancel Interactivo de Aduanas de Panamá (ANA)
+Para garantizar la soberanía de la información arancelaria y el cumplimiento de los regímenes de importación/exportación de la República de Panamá, el sistema integra el motor industrial de extracción aduanera en [`src/data/scrapers/ana_interactive_tariff_scraper.py`](file:///c:/Users/mbeni/Downloads/amp-cont-ai/src/data/scrapers/ana_interactive_tariff_scraper.py):
+
+#### 1. Análisis Arquitectónico del Front-End y Árbol DOM del Portal Aduanero
+- **Plataforma Web:** `https://aranceles.ana.gob.pa` (Single Page Application desarrollada sobre Ionic Framework v5 / Angular v10+ y Bootstrap 3.4.1).
+- **Componentes Estructurales del DOM:**
+  * `<app-root>`: Contenedor SPA principal.
+  * `<ion-grid>`, `<ion-row>`, `<ion-col>`: Cuadrícula responsiva que organiza las fichas arancelarias.
+  * **Controles de Formulario Interactivos:**
+    - `rbtn_codehs_word`: Selector de modalidad de búsqueda (`code` para código numérico HS; `word` para búsqueda léxica/semántica).
+    - `rbtn_imp_exp`: Selector de régimen aduanero (`imp` para Arancel de Importación con DAI/ITBMS/ISC; `exp` para Arancel de Exportación).
+    - `searchbar`: Barra de entrada de texto reactiva vinculada al ciclo de autocompletado.
+  * **Secciones Analíticas Extraídas:**
+    - `family.codeHS`: Taxonomía jerárquica del Sistema Armonizado (Sección, Capítulo 2 dígitos, Partida 4 dígitos, Subpartida OMA 6 dígitos, Subpartida Regional SAC 8 dígitos y Fracción Nacional Panameña de 10 a 12 dígitos).
+    - `detalle.tributos`: Régimen tributario fiscal aduanero:
+      * **DAI:** Derecho Arancelario a la Importación (ad-valorem %).
+      * **ITBMS:** Impuesto de Transferencia de Bienes Muebles y Servicios (0% o 7%).
+      * **ISC:** Impuesto Selectivo al Consumo (específico para licores, tabaco y automotriz).
+      * **ICCDP:** Impuesto al Consumo de Combustible y Derivados del Petróleo.
+      * Vínculos a decretos ejecutivos oficiales (`arancel_url`, `isc_archivo`).
+    - `OGA (Other Government Agencies)`: Órganos Anuentes y Entidades Regulatorias de Panamá:
+      * Institución reguladora: MIDA (DNSA/DNSV/DECA), MINSA (DNFD/Saneamiento), APA (Agencia Panameña de Alimentos), Secretaría de Energía, MiAmbiente, DIASP-MINSEG, MICI.
+      * Tipo de Permiso y Requisito: Licencias sanitarias, fitosanitarias, registros y permisos de importación.
+      * Canal de tramitación: "Manual" (gestión física) vs "Electrónica" (aprobación automática en la ventanilla digital SIGA).
+    - `tratados`: Tratados de Libre Comercio (TLCs) y Acuerdos de Alcance Parcial:
+      * Socio comercial (EE. UU., Centroamérica, Canadá, UE, Taiwán, Singapur, ALADI, etc.).
+      * Año fiscal y calendario de desgravación arancelaria (`degravamen %`).
+    - `notas_legales`: Documentos oficiales en PDF de las Notas Aclaratorias del Sistema Armonizado (Capítulos 1 al 98).
+    - `fallos_resoluciones`: Resoluciones anticipadas vinculantes de clasificación arancelaria emitidas por la Dirección de Gestión Técnica de la ANA.
+
+#### 2. Especificación de la API REST Oficial de Aduanas
+- **Endpoint Principal:** `https://aranceles-api.ana.gob.pa/v1/consulta`
+- **Contrato de Petición:** `GET /v1/consulta?rbtn_codehs_word={code|word}&rbtn_imp_exp={imp|exp}&searchbar={hs_code}`
+- **Gobernanza Medallion Silver:**
+  * [`dim_ana_hs_catalog.parquet`](file:///c:/Users/mbeni/Downloads/amp-cont-ai/data/silver/dim_ana_hs_catalog.parquet): Catálogo maestro y jerarquías arancelarias.
+  * [`dim_ana_hs_taxes.parquet`](file:///c:/Users/mbeni/Downloads/amp-cont-ai/data/silver/dim_ana_hs_taxes.parquet): Tasas e impuestos aplicables.
+  * [`dim_ana_hs_permits_oga.parquet`](file:///c:/Users/mbeni/Downloads/amp-cont-ai/data/silver/dim_ana_hs_permits_oga.parquet): Entidades reguladoras y canales SIGA.
+  * [`dim_ana_hs_trade_agreements.parquet`](file:///c:/Users/mbeni/Downloads/amp-cont-ai/data/silver/dim_ana_hs_trade_agreements.parquet): TLCs y preferencias comerciales.
+  * [`dim_ana_hs_legal_notes.parquet`](file:///c:/Users/mbeni/Downloads/amp-cont-ai/data/silver/dim_ana_hs_legal_notes.parquet): Documentos legales asociados.
+  * Manifiestos criptográficos SHA-256 (`*.parquet.source.json`) garantizan la inmutabilidad y procedencia de la fuente de la verdad.
+
+#### 3. Estrategia de Extracción de Datos de Comercio Exterior Multi-Parámetro (INEC R3 y R4)
+- **Ecosistema Tecnológico:** SQL Server Reporting Services (SSRS) sobre ASP.NET WebForms (`ReportViewer.aspx`).
+- **Defensas Perimetrales WAF (Fortinet):** Detección de bots por tasa de llamadas a `ReportViewer.aspx` (`Attack ID: Web Page Blocked`).
+- **Solución y Mitigación Industrial:**
+  1. *Sesión y Cookies:* Inicialización de sesión en el portal base (`https://www.inec.gob.pa/`) para obtención legítima de `cookiesession1` y `ASP.NET_SessionId`.
+  2. *Pacing y Jitter de Cortesía:* Retardo aleatorio de **1.8 a 3.5 segundos** entre descargas con pausas de reciclaje de conexiones cada 25 peticiones continuas.
+  3. *Checkpointing Estricto a Nivel de Inciso:* Validación previa en disco por existencia de archivo y tamaño $>1\text{ KB}$, evitando 100% de consultas redundantes.
+  4. *Detección Reactiva de Datos Vacíos:* Verificación del estado de deshabilitación del botón de exportación en el DOM (`aspNetDisabled`) para no consumir tiempos de espera en incisos sin movimientos comerciales registrados.
+  5. *Unificación Medallion Silver:* Transformación directa a Apache Parquet Snappy con tipado seguro en `clean_dataframe` resolviendo incompatibilidades de esquemas heterogéneos.
+
 ---
 
 ## 11. Términos Legales y Atribución Obligatoria

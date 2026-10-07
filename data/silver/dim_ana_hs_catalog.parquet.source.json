@@ -1,0 +1,22 @@
+{
+  "entity": "dim_ana_hs_catalog",
+  "file_path": "C:\\Users\\mbeni\\Downloads\\amp-cont-ai\\data\\silver\\dim_ana_hs_catalog.parquet",
+  "records_count": 86,
+  "columns": [
+    "hs_code_query",
+    "hs12",
+    "sac_8",
+    "subpartida_6",
+    "partida_4",
+    "capitulo_2",
+    "seccion",
+    "descripcion_oficial",
+    "regimen",
+    "updated_at"
+  ],
+  "sha256": "9c3f12f4c46806172c3d300ab89aafbce4755e7eda6ccf4a92c266fb3da5686f",
+  "created_at": "2026-10-07T20:38:14.010141+00:00",
+  "author": "Desarrollado v1.0.0 Miguel Benítez / Ing. Miguel Antonio Benítez González (UTP) - GNU GPL-3.0",
+  "source_origin": "https://aranceles-api.ana.gob.pa/v1/consulta",
+  "portal_reference": "https://aranceles.ana.gob.pa"
+}

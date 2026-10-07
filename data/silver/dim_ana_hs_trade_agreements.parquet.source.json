@@ -1,0 +1,18 @@
+{
+  "entity": "dim_ana_hs_trade_agreements",
+  "file_path": "C:\\Users\\mbeni\\Downloads\\amp-cont-ai\\data\\silver\\dim_ana_hs_trade_agreements.parquet",
+  "records_count": 1066,
+  "columns": [
+    "hs12",
+    "pais_socio",
+    "acuerdo_tratado",
+    "anio_aplicacion",
+    "tasa_degravamen",
+    "updated_at"
+  ],
+  "sha256": "8eb73cc67cec637a1203ca1ed8cacfa461416e57577743cb187a6c2f83a37d54",
+  "created_at": "2026-10-07T20:38:14.060011+00:00",
+  "author": "Desarrollado v1.0.0 Miguel Benítez / Ing. Miguel Antonio Benítez González (UTP) - GNU GPL-3.0",
+  "source_origin": "https://aranceles-api.ana.gob.pa/v1/consulta",
+  "portal_reference": "https://aranceles.ana.gob.pa"
+}

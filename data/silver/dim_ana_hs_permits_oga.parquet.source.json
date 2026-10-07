@@ -1,0 +1,18 @@
+{
+  "entity": "dim_ana_hs_permits_oga",
+  "file_path": "C:\\Users\\mbeni\\Downloads\\amp-cont-ai\\data\\silver\\dim_ana_hs_permits_oga.parquet",
+  "records_count": 194,
+  "columns": [
+    "hs12",
+    "institucion",
+    "permiso_requisito",
+    "tipo_tramitacion",
+    "canal_siga",
+    "updated_at"
+  ],
+  "sha256": "4a7d973e04396afcc3081ea0d1538594f684d6f6ffe35aa97ab0d9c93dffa98a",
+  "created_at": "2026-10-07T20:38:14.040913+00:00",
+  "author": "Desarrollado v1.0.0 Miguel Benítez / Ing. Miguel Antonio Benítez González (UTP) - GNU GPL-3.0",
+  "source_origin": "https://aranceles-api.ana.gob.pa/v1/consulta",
+  "portal_reference": "https://aranceles.ana.gob.pa"
+}

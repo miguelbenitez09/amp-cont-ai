@@ -114,14 +114,31 @@ amp-cont-ai/
 ---
 
 ### 3.4 Plataforma de Datos, Lakehouse Medallion y Aranceles (`src/data/`)
-- **Arquitectura de Tres Capas:**
-  1. **Capa Bronze (`data/raw/`):** 353 datasets oficiales descargados desde `datosabiertos.gob.pa`.
-  2. **Capa Silver (`data/silver/`):** Deduplicación bitemporal y tablas estructuradas en Parquet (`fact_containers.parquet`, `fact_bunkering.parquet`).
-  3. **Capa Gold (`data/gold/`):** Feature Store consolidado (`panama_national_lakehouse.parquet`) con 85 variables y cero lookahead bias.
+- **Arquitectura Medallion Multi-Fuente:**
+  1. **Capa Bronze (`data/bronze/` y `data/raw/`):**
+     - Datasets de comercio exterior INEC (`datasets_imports/data/raw/` y `datasets_exports/data/raw/`) con más de 14,500 archivos brutos.
+     - Extracciones aduaneras interactivas en `data/bronze/ana_tariff/*.json` con sumas de verificación criptográfica.
+     - 353 datasets portuarios oficiales descargados desde `datosabiertos.gob.pa`.
+  2. **Capa Silver (`data/silver/`):**
+     - Tablas estructuradas Parquet deduplicadas bitemporalmente: `fact_containers.parquet`, `fact_bunkering.parquet`.
+     - Series temporales macroeconómicas y energéticas: `fact_macro_energy_multimodal.parquet` (140 meses continuos, telemetría ACP, búnker Platts, tarifas ETESA).
+     - Dimensiones aduaneras normalizadas ANA:
+       * `dim_ana_hs_catalog.parquet`: Taxonomía y fracciones del Sistema Armonizado.
+       * `dim_ana_hs_taxes.parquet`: DAI, ITBMS, ISC e ICCDP.
+       * `dim_ana_hs_permits_oga.parquet`: Órganos anuentes (MIDA, MINSA, APA, Energía) y canal SIGA.
+       * `dim_ana_hs_trade_agreements.parquet`: TLCs y acuerdos bilaterales con tasas preferenciales.
+       * `dim_ana_hs_legal_notes.parquet`: Documentos y notas legales aclaratorias del arancel.
+     - Manifiestos criptográficos SHA-256 (`*.parquet.source.json`) garantizan la inmutabilidad de cada tabla Silver.
+  3. **Capa Gold (`data/gold/`):** Feature Store consolidado (`panama_national_lakehouse.parquet` y `container_features.parquet`) con 85 variables y cero lookahead bias.
+- **`ana_interactive_tariff_scraper.py`:**
+  - Motor de extracción contra la API oficial de la ANA (`https://aranceles-api.ana.gob.pa/v1/consulta`).
+  - Mapeo completo del DOM de `https://aranceles.ana.gob.pa` (Ionic/Angular SPA), soporte para búsqueda por código HS o término semántico, y normalización relacional hacia las 5 tablas Silver de aranceles.
+- **`run_comext_batch_extractor.py`:**
+  - Orquestador industrial de comercio exterior para INEC Panamá.
+  - Implementa checkpointing estricto (0% redundancia), pacing de cortesía anti-WAF (1.8-3.5s jitter) y detección en DOM de incisos sin movimiento comercial para prevenir timeouts.
 - **`ana_hscode_scraper.py` (`PanamaTariffDatabase`):**
-  - Base de datos estructurada con 27,764 subpartidas arancelarias oficiales de la Autoridad Nacional de Aduanas (ANA).
-  - Índices de liquidación: DAI (Derechos Arancelarios de Importación), ITBMS (7%), Tasa Administrativa e impuestos específicos.
-  - Desglose por tratados comerciales (TPC Panamá-EE.UU., Centroamérica, Unión Europea).
+  - Base de datos estructurada de subpartidas arancelarias oficiales de la Autoridad Nacional de Aduanas (ANA).
+  - Índices de liquidación: DAI, ITBMS (7%), Tasa Administrativa e impuestos específicos.
 - **`container_iso6346.py`:**
   - Validador formal de matrículas de contenedores marítimos bajo estándar ISO 6346 utilizando el algoritmo de suma ponderada Módulo-11 con factores de peso $2^i$.
 
