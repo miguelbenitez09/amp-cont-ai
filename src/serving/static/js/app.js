@@ -329,10 +329,130 @@ document.addEventListener("DOMContentLoaded", () => {
   measureLiveLatency();
   window.setInterval(measureLiveLatency, 15000);
 
+  // =========================================================================
+  // SKELETON LOADING & SHIMMER SYSTEM
+  // Rounded symmetrical solid blocks representing architecture pre-load state
+  // =========================================================================
+
+  function showForecastSkeleton() {
+    if (kpiP50) kpiP50.innerHTML = '<span class="skeleton-metric"></span>';
+    if (kpiP10) kpiP10.innerHTML = '<span class="skeleton-metric"></span>';
+    if (kpiP90) kpiP90.innerHTML = '<span class="skeleton-metric"></span>';
+    if (kpiImbalance) kpiImbalance.innerHTML = '<span class="skeleton-pill"></span>';
+
+    const chartContainer = document.getElementById("forecastChart")?.parentElement;
+    if (chartContainer) {
+      let existingSkeleton = chartContainer.querySelector(".skeleton-chart");
+      if (!existingSkeleton) {
+        const skeletonEl = document.createElement("div");
+        skeletonEl.className = "skeleton-chart";
+        skeletonEl.id = "forecast-chart-skeleton";
+        skeletonEl.innerHTML = `
+          <div class="skeleton-notice">
+            <svg class="badge-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Iniciando Motor Cuantílico y Extrayendo Series de Tiempo...
+          </div>
+          <div class="skeleton-chart-bars">
+            <div class="skeleton-bar"></div>
+            <div class="skeleton-bar"></div>
+            <div class="skeleton-bar"></div>
+            <div class="skeleton-bar"></div>
+            <div class="skeleton-bar"></div>
+            <div class="skeleton-bar"></div>
+            <div class="skeleton-bar"></div>
+            <div class="skeleton-bar"></div>
+          </div>
+        `;
+        chartContainer.style.position = "relative";
+        skeletonEl.style.position = "absolute";
+        skeletonEl.style.inset = "0";
+        skeletonEl.style.zIndex = "10";
+        chartContainer.appendChild(skeletonEl);
+      }
+    }
+
+    if (forecastTbody) {
+      forecastTbody.innerHTML = `
+        <tr class="skeleton-table-row-item"><td colspan="7"><div class="skeleton-table-row"><div class="skeleton-table-cell" style="flex:1.2;"></div><div class="skeleton-table-cell"></div><div class="skeleton-table-cell"></div><div class="skeleton-table-cell"></div><div class="skeleton-table-cell"></div><div class="skeleton-table-cell"></div><div class="skeleton-table-cell" style="flex:0.8;"></div></div></td></tr>
+        <tr class="skeleton-table-row-item"><td colspan="7"><div class="skeleton-table-row"><div class="skeleton-table-cell" style="flex:1.2;"></div><div class="skeleton-table-cell"></div><div class="skeleton-table-cell"></div><div class="skeleton-table-cell"></div><div class="skeleton-table-cell"></div><div class="skeleton-table-cell"></div><div class="skeleton-table-cell" style="flex:0.8;"></div></div></td></tr>
+        <tr class="skeleton-table-row-item"><td colspan="7"><div class="skeleton-table-row"><div class="skeleton-table-cell" style="flex:1.2;"></div><div class="skeleton-table-cell"></div><div class="skeleton-table-cell"></div><div class="skeleton-table-cell"></div><div class="skeleton-table-cell"></div><div class="skeleton-table-cell"></div><div class="skeleton-table-cell" style="flex:0.8;"></div></div></td></tr>
+      `;
+    }
+  }
+
+  function hideForecastSkeleton() {
+    const skeletonEl = document.getElementById("forecast-chart-skeleton");
+    if (skeletonEl) skeletonEl.remove();
+  }
+
+  function showSimulationSkeleton() {
+    if (simKpiExpected) simKpiExpected.innerHTML = '<span class="skeleton-metric"></span>';
+    if (simKpiVar95) simKpiVar95.innerHTML = '<span class="skeleton-metric"></span>';
+    if (simKpiCvar) simKpiCvar.innerHTML = '<span class="skeleton-metric"></span>';
+    if (simKpiProb) simKpiProb.innerHTML = '<span class="skeleton-pill"></span>';
+
+    const simChartContainer = document.getElementById("simChart")?.parentElement;
+    if (simChartContainer) {
+      let existingSkeleton = simChartContainer.querySelector(".skeleton-chart");
+      if (!existingSkeleton) {
+        const skeletonEl = document.createElement("div");
+        skeletonEl.className = "skeleton-chart";
+        skeletonEl.id = "sim-chart-skeleton";
+        skeletonEl.innerHTML = `
+          <div class="skeleton-notice">
+            <svg class="badge-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Generando Caminos Brownianos y Saltos Poisson Merton...
+          </div>
+          <div class="skeleton-chart-bars">
+            <div class="skeleton-bar"></div>
+            <div class="skeleton-bar"></div>
+            <div class="skeleton-bar"></div>
+            <div class="skeleton-bar"></div>
+            <div class="skeleton-bar"></div>
+            <div class="skeleton-bar"></div>
+            <div class="skeleton-bar"></div>
+            <div class="skeleton-bar"></div>
+          </div>
+        `;
+        simChartContainer.style.position = "relative";
+        skeletonEl.style.position = "absolute";
+        skeletonEl.style.inset = "0";
+        skeletonEl.style.zIndex = "10";
+        simChartContainer.appendChild(skeletonEl);
+      }
+    }
+  }
+
+  function hideSimulationSkeleton() {
+    const skeletonEl = document.getElementById("sim-chart-skeleton");
+    if (skeletonEl) skeletonEl.remove();
+  }
+
+  function showBenchmarkSkeleton() {
+    const container = document.getElementById("benchmark-cards");
+    if (container) {
+      container.innerHTML = "";
+      for (let i = 0; i < 4; i++) {
+        const card = document.createElement("div");
+        card.className = "skeleton-card";
+        card.innerHTML = `
+          <span class="skeleton-pill"></span>
+          <div class="skeleton-title"></div>
+          <div class="skeleton-text short"></div>
+          <div class="skeleton-text medium"></div>
+        `;
+        container.appendChild(card);
+      }
+    }
+  }
+
   // --- Forecast & What-If ---
   async function runForecast() {
     btnPredict.disabled = true;
     btnPredict.innerHTML = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle></svg> Calculando...`;
+
+    // Tactile Skeleton Feedback before network round-trip completes
+    showForecastSkeleton();
 
     const port = portSelect.value;
     const algorithm = algoSelect.value;
@@ -356,10 +476,15 @@ document.addEventListener("DOMContentLoaded", () => {
         })
       });
 
+      // Subtle, moderate delay (180ms) for smooth visual transition before revealing final data
+      await new Promise(r => setTimeout(r, 180));
+
       const predData = await predRes.json();
       if (!predRes.ok) {
         throw new Error(predData.detail || "Error en la predicción");
       }
+
+      hideForecastSkeleton();
 
       latencyBadge.innerHTML = `<svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> ${predData.latency_ms} ms`;
 
@@ -530,9 +655,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Multi-Algorithm Benchmarking Tab ---
   async function fetchModelBenchmark() {
+    showBenchmarkSkeleton();
     try {
       const res = await fetch("/api/models/compare?format=json");
       const data = await res.json();
+      await new Promise(r => setTimeout(r, 160));
       cachedBenchmark = data;
       const comp = data.benchmark_comparison || {};
       const splits = data.splits_summary || [];
@@ -1124,6 +1251,8 @@ document.addEventListener("DOMContentLoaded", () => {
     btnSimulate.disabled = true;
     btnSimulate.innerHTML = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle></svg> Simulando Caminos...`;
 
+    showSimulationSkeleton();
+
     const port = simPortSelect.value;
     const scenario = simScenarioSelect.value;
     const pathsInput = document.getElementById("sim-paths-val");
@@ -1147,10 +1276,14 @@ document.addEventListener("DOMContentLoaded", () => {
         })
       });
 
+      await new Promise(r => setTimeout(r, 180));
+
       const simData = await res.json();
       if (!res.ok) {
         throw new Error(simData.detail || "Error en la simulación");
       }
+
+      hideSimulationSkeleton();
 
       simKpiExpected.textContent = `${Math.round(simData.expected_volume || 0).toLocaleString()} TEUs`;
       simKpiVar95.textContent = `${Math.round(simData.var_95_volume || 0).toLocaleString()} TEUs`;
@@ -1172,8 +1305,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
     } catch (err) {
+      hideSimulationSkeleton();
       alert(`Error en simulación Monte Carlo: ${err.message}`);
     } finally {
+      hideSimulationSkeleton();
       btnSimulate.disabled = false;
       btnSimulate.innerHTML = `
         <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
@@ -4067,8 +4202,47 @@ executePortForecast();`;
   }
 
   // =========================================================================
-  // CAMERA AUTO-SCROLL & WORKSTATION SELECTION
+  // CAMERA AUTO-SCROLL & WORKSTATION SELECTION WITH STEPPER SYNC
   // =========================================================================
+  const METHOD_PHASE_KEYS = ["phase_1", "phase_2", "phase_3", "phase_4", "phase_5", "phase_6", "phase_7", "phase_8"];
+
+  function updatePhaseIndicators(idx) {
+    if (idx < 0 || idx >= METHOD_PHASE_KEYS.length) return;
+    const num = idx + 1;
+    const phaseKey = METHOD_PHASE_KEYS[idx];
+    const phase = window.methodologyCatalog ? window.methodologyCatalog[phaseKey] : null;
+
+    const counterWorkstation = document.getElementById("workstation-phase-counter");
+    if (counterWorkstation) counterWorkstation.textContent = `${num} / 8`;
+
+    const counterModal = document.getElementById("mmodal-phase-counter");
+    if (counterModal) counterModal.textContent = `Fase ${num} / 8`;
+
+    const counterCarousel = document.getElementById("method-carousel-counter");
+    if (counterCarousel) {
+      const pTitle = phase ? phase.title : "";
+      counterCarousel.textContent = `Fase ${num} de 8: ${pTitle}`;
+    }
+
+    // Sync all toolbar step pills
+    document.querySelectorAll(".method-step-pill").forEach((pill, i) => {
+      pill.classList.toggle("active", i === idx);
+    });
+
+    // Screen reader announcer for WCAG AA
+    let announcer = document.getElementById("a11y-announcer");
+    if (!announcer) {
+      announcer = document.createElement("div");
+      announcer.id = "a11y-announcer";
+      announcer.setAttribute("aria-live", "polite");
+      announcer.style.cssText = "position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0;";
+      document.body.appendChild(announcer);
+    }
+    if (phase) {
+      announcer.textContent = `Fase ${num} de 8: ${phase.title}`;
+    }
+  }
+
   window.selectMethodologyPhase = function(phaseId, autoScroll = true) {
     if (!window.methodologyCatalog[phaseId]) return;
     currentSelectedPhase = phaseId;
@@ -4084,6 +4258,9 @@ executePortForecast();`;
     if (badge) badge.textContent = phase.badge;
     if (title) title.textContent = phase.title;
     if (sub) sub.textContent = phase.sub;
+
+    const pIdx = METHOD_PHASE_KEYS.indexOf(phaseId);
+    if (pIdx !== -1) updatePhaseIndicators(pIdx);
 
     renderDimensionContent();
 
@@ -4121,6 +4298,9 @@ executePortForecast();`;
     const modal = document.getElementById("methodology-centered-modal");
     if (!modal) return;
 
+    // Freeze background scroll
+    document.body.style.overflow = "hidden";
+
     // Sync phase tabs in modal
     document.querySelectorAll(".mmodal-phase-tab").forEach(tab => {
       tab.classList.toggle("active", tab.getAttribute("data-phase") === currentSelectedPhase);
@@ -4132,12 +4312,18 @@ executePortForecast();`;
     });
 
     updateModalHeaderAndContent();
+    const pIdx = METHOD_PHASE_KEYS.indexOf(currentSelectedPhase);
+    if (pIdx !== -1) updatePhaseIndicators(pIdx);
+
     modal.classList.add("open");
   };
 
   window.closeCenteredMethodologyModal = function() {
     const modal = document.getElementById("methodology-centered-modal");
-    if (modal) modal.classList.remove("open");
+    if (modal) {
+      modal.classList.remove("open");
+      document.body.style.overflow = "";
+    }
   };
 
   window.switchModalPhase = function(phaseId) {
@@ -4163,6 +4349,9 @@ executePortForecast();`;
     if (title) title.textContent = phase.title;
     if (sub) sub.textContent = phase.sub;
 
+    const pIdx = METHOD_PHASE_KEYS.indexOf(phaseId);
+    if (pIdx !== -1) updatePhaseIndicators(pIdx);
+
     renderDimensionContent();
     updateModalHeaderAndContent();
   };
@@ -4179,7 +4368,7 @@ executePortForecast();`;
     window.openCenteredMethodologyModal(currentSelectedPhase);
   };
 
-  // Keyboard and click outside listeners for modal
+  // Keyboard and click outside listeners for modal and phase slides
   const centeredModalEl = document.getElementById("methodology-centered-modal");
   if (centeredModalEl) {
     centeredModalEl.addEventListener("click", (e) => {
@@ -4190,21 +4379,27 @@ executePortForecast();`;
     if (e.key === "Escape") {
       window.closeCenteredMethodologyModal();
     }
+    // Keyboard navigation (ArrowLeft / ArrowRight) for methodology carousel
+    const methTab = document.getElementById("tab-methodology");
+    const isMethodologyTabActive = methTab && methTab.classList.contains("active");
+    const isModalOpen = centeredModalEl && centeredModalEl.classList.contains("open");
+    if (isMethodologyTabActive || isModalOpen) {
+      const tag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
+      if (tag === "input" || tag === "textarea" || tag === "select") return;
+
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        window.goToPreviousPhase();
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        window.goToNextPhase();
+      }
+    }
   });
 
   // =========================================================================
   // SUBTLE PHASE PREVIOUS / NEXT CONTROLS
   // =========================================================================
-  const METHOD_PHASE_KEYS = ["phase_1", "phase_2", "phase_3", "phase_4", "phase_5", "phase_6", "phase_7", "phase_8"];
-
-  function updatePhaseIndicators(idx) {
-    const num = idx + 1;
-    const counterWorkstation = document.getElementById("workstation-phase-counter");
-    if (counterWorkstation) counterWorkstation.textContent = `${num} / 8`;
-    const counterModal = document.getElementById("mmodal-phase-counter");
-    if (counterModal) counterModal.textContent = `Fase ${num} / 8`;
-  }
-
   window.goToPreviousPhase = function() {
     const idx = METHOD_PHASE_KEYS.indexOf(currentSelectedPhase);
     const newIdx = (idx - 1 + METHOD_PHASE_KEYS.length) % METHOD_PHASE_KEYS.length;

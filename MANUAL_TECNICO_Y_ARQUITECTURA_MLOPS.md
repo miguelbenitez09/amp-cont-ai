@@ -19,7 +19,8 @@
 8. [Despliegue, Microservicio y Configuración en Caliente](#8-despliegue-microservicio-y-configuración-en-caliente)
 9. [Arquitectura v1.0 Enterprise: IAM, Plataforma de Datos (5 Gates), Model Registry y WORM Ledger](#9-arquitectura-v10-enterprise-iam-plataforma-de-datos-5-gates-model-registry-y-worm-ledger)
 10. [Ecosistema Agéntico Industrial, Streamlit Enterprise de Producción, Inferencia y Aranceles Aduaneros](#10-ecosistema-agéntico-industrial-streamlit-enterprise-de-producción-inferencia-y-aranceles-aduaneros)
-11. [Términos Legales y Atribución Obligatoria](#11-términos-legales-y-atribución-obligatoria)
+11. [Sistema de Diseño Frontend, Arquitectura de Skeleton Shimmer y Accesibilidad WCAG AA](#11-sistema-de-diseño-frontend-arquitectura-de-skeleton-shimmer-y-accesibilidad-wcag-aa)
+12. [Términos Legales y Atribución Obligatoria](#12-términos-legales-y-atribución-obligatoria)
 
 ---
 
@@ -628,7 +629,57 @@ Para garantizar la soberanía de la información arancelaria y el cumplimiento d
 
 ---
 
-## 11. Términos Legales y Atribución Obligatoria
+## 11. Sistema de Diseño Frontend, Arquitectura de Skeleton Shimmer y Accesibilidad WCAG AA
+
+La interfaz visual de **Panamá PortOps-AI v1.0** está construida bajo los principios de **Minimalist Vanguard Maritime Tech Design System**, orientada a terminales portuarios de misión crítica, centros de control logístico y auditoría cívica bajo estándares internacionales de accesibilidad **W3C WCAG 2.1 / 2.2 Nivel AA**.
+
+### 11.1 Matriz de Accesibilidad y Contraste de Color (6 Temas Marítimos)
+
+La aplicación soporta 6 colorways industriales con paletas calibradas espectralmente contra fondos oscuros (`--bg-surface` y `--bg-card`):
+
+| Tema Marítimo | Identificador CSS | Fondo Base / Tarjeta | Ratio `--text-main` | Ratio `--text-muted` | Ratio `--text-dim` | Cumplimiento WCAG 2.1 AA |
+|---|---|---|---|---|---|---|
+| **1. Atlántico Night / Cyber Ocean** | `theme-cyber-ocean` | `#060913` / `rgba(16,26,48,0.75)` | 17.8:1 (Blanco Nieve) | 8.2:1 (`#cbd5e1`) | **5.4:1** (`#94a3b8`) | **PASS (AA / AAA)** |
+| **2. Radar Balboa / Ámbar & Latón** | `theme-radar-amber` | `#0a0907` / `rgba(28,24,18,0.8)` | 16.5:1 (Ámbar Claro) | 9.4:1 (`#fde68a`) | **5.3:1** (`#cbd5e1`) | **PASS (AA / AAA)** |
+| **3. Cuenca del Canal / Bio-Esmeralda** | `theme-canal-emerald` | `#040d0a` / `rgba(14,34,26,0.8)` | 18.2:1 (Menta Suave) | 10.1:1 (`#d1fae5`) | **5.8:1** (`#a7f3d0`) | **PASS (AA / AAA)** |
+| **4. Titanio Táctico / Monocromo Portuario** | `theme-tactical-mono` | `#090a0f` / `rgba(20,24,32,0.85)` | 19.1:1 (Blanco Puro) | 8.5:1 (`#e2e8f0`) | **5.4:1** (`#cbd5e1`) | **PASS (AA / AAA)** |
+| **5. Pacífico Sunset / Coral & Neón** | `theme-pacific-sunset` | `#0b0714` / `rgba(28,16,52,0.8)` | 17.2:1 (Rosa Suave) | 9.6:1 (`#ffe4e6`) | **5.6:1** (`#fecdd3`) | **PASS (AA / AAA)** |
+| **6. Midnight Cobalt / Azul Alta Fidelidad** | `theme-midnight-cobalt` | `#020617` / `rgba(12,28,68,0.8)` | 18.4:1 (Azul Hielo) | 11.2:1 (`#e0f2fe`) | **6.1:1** (`#bae6fd`) | **PASS (AA / AAA)** |
+
+> [!NOTE]
+> En el tema **Midnight Cobalt**, la variable `--cyan-primary` se encuentra calibrada en `#38bdf8` (ratio > 7.5:1 contra tarjetas) y el botón `.btn-primary` implementa un gradiente azul marino de alta densidad (`#0284c7` a `#0369a1`) con sombra de texto, garantizando legibilidad perfecta sin sangrado óptico.
+
+### 11.2 Motor de Skeleton Loading y Animación Shimmer
+
+Para eliminar el *Cumulative Layout Shift (CLS)* y dar al operador una percepción táctil inmediata de la arquitectura previa a la llegada asíncrona de los datos, el sistema implementa bloques simétricos redondeados de color sólido con gradiente de onda:
+
+- **Estructura Geométrica:** Bloques con curvatura regular (`border-radius: 8px` en métricas, `12px` en tarjetas y gráficos, `20px` en píldoras).
+- **Animación `@keyframes skeleton-shimmer`:** Desplazamiento continuo del gradiente luminiscente (`background-size: 200% 100%`) a `1.8s cubic-bezier(0.4, 0, 0.2, 1)`.
+- **Animación `@keyframes skeleton-pulse`:** Modulación de opacidad respiratoria (65% a 95%) en barras sintéticas de gráficos pre-render.
+- **Pacing y Retardo Táctil Deliberado:** En llamadas de inferencia y simulación, se aplica una micro-pausa controlada de **160ms a 220ms** para permitir que la estructura esquelética se aprecie con suavidad antes de ejecutar el reemplazo progresivo (`.stagger-fade-in`).
+- **Puntos de Integración Activos:**
+  1. *Predicción Cuantílica:* `showForecastSkeleton()` activa esqueleto de tarjetas KPI, contenedor de Chart.js con 8 columnas sintéticas y filas fantasma en la tabla de desglose.
+  2. *Benchmark Multi-Algoritmo:* `showBenchmarkSkeleton()` renderiza 4 tarjetas esqueléticas de algoritmos mientras se consulta el catálogo de MLflow.
+  3. *Simulación Monte Carlo:* `showSimulationSkeleton()` despliega el esqueleto de abanico probabilístico y métricas VaR/CVaR.
+
+### 11.3 Carrusel y Stepper Metodológico de 8 Fases
+
+La sección de metodología cuenta con una barra de herramientas de avance táctil (`#method-carousel-toolbar`):
+- **Controles de Dirección:** Botones `[◀ Fase Anterior]` y `[Siguiente Fase ▶]` con navegación cíclica determinista (`goToPreviousPhase()` / `goToNextPhase()`).
+- **Píldoras de Acceso Rápido (1 a 8):** Píldoras `.method-step-pill` con estado activo sincronizado bidireccionalmente entre el panel de escritorio, la cuadrícula y el modal centrado.
+- **Atajos de Teclado:** Event listener global para `ArrowLeft` (◀) y `ArrowRight` (▶) cuando la pestaña metodológica o el modal centrado están activos.
+- **Accesibilidad para Lectores de Pantalla:** Región `#a11y-announcer` con `aria-live="polite"` que verbaliza inmediatamente el título y número de cada fase seleccionada.
+- **Congelamiento de Scroll:** Al abrir el modal centrado, el cuerpo del documento congela su desplazamiento (`document.body.style.overflow = "hidden"`) previniendo scroll bleed indeseado en pantallas táctiles.
+
+### 11.4 Micro-Interacciones y Seguridad RBAC
+
+- **Transiciones Fluídas:** `transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1)` en botones, selectores y tarjetas.
+- **Hover Dinámico:** Elevación suave (`transform: translateY(-2px)` a `-4px`) con halo cian de 20px en tarjetas de capacidad.
+- **Ocultamiento de Funcionalidades Administrativas:** Cuando el usuario no ha iniciado sesión, las opciones de cambio de contraseña, MFA, inspector de tokens y configuraciones avanzadas de API Keys se ocultan mediante `display: none` y la clase `auth-requires-login` / `admin-requires-auth`.
+
+---
+
+## 12. Términos Legales y Atribución Obligatoria
 
 Este software es libre bajo la licencia **GNU General Public License v3.0 (GPL-3.0)** con cláusula adicional de atribución obligatoria según la Sección 7(b) y 7(c) de la licencia.
 

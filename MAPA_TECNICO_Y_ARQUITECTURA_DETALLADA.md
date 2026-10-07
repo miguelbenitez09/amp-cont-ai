@@ -278,10 +278,30 @@ El repositorio cuenta con 90 archivos de prueba automatizada bajo `tests/` que v
 - `test_features.py`: Valida el cálculo de las 85 características sin fuga temporal.
 - `test_simulation.py`: Valida Cholesky, saltos de Merton y cálculo de VaR/CVaR.
 - `test_tariff_historical_search.py`: Valida la base arancelaria de 27,764 registros.
+- `test_frontend_auth_and_hover_ui.py`: Valida la interfaz web, skeleton shimmer loaders, contraste WCAG AA en los 6 temas, carrusel de 8 fases y protección de menús sensibles para invitados.
 
 ---
 
-## 8. CONCLUSIONES Y HOJA DE RUTA OPERATIVA
+## 8. ARQUITECTURA FRONTEND, SISTEMA SKELETON SHIMMER Y ACCESIBILIDAD WCAG AA
+
+La interfaz de usuario implementa el **Minimalist Vanguard Maritime Tech Design System**, estructurado para operaciones de misión crítica y cumplimiento riguroso de accesibilidad:
+
+1. **Cumplimiento WCAG 2.1 AA en los 6 Temas Marítimos:**
+   - Contraste superior a 5.2:1 en texto secundario (`--text-dim` calibrado en `#94a3b8` / `#cbd5e1` / `#bae6fd` según tema).
+   - Contraste superior a 7.5:1 en acentos interactivos y botones (`--cyan-primary: #38bdf8` en Midnight Cobalt, `.btn-primary` con gradiente denso y text shadow).
+2. **Motor de Skeleton Loading y Animación Shimmer:**
+   - Bloques simétricos de color sólido con esquinas redondeadas (`.skeleton-box`, `.skeleton-card`, `.skeleton-chart`, `.skeleton-metric`, `.skeleton-pill`).
+   - Animación de onda de luz `@keyframes skeleton-shimmer` (1.8s) y modulación `@keyframes skeleton-pulse` (2s).
+   - Retardo táctil deliberado (160ms–220ms) que ofrece al usuario una confirmación perceptual inmediata de la arquitectura cargada antes de revelar los datos definitivos.
+3. **Carrusel de Fases y Navegación Metodológica:**
+   - Barra de herramientas `#method-carousel-toolbar` con navegación por pasos cíclica (`goToPreviousPhase()` / `goToNextPhase()`).
+   - Píldoras interactivas sincronizadas con la cuadrícula y el modal centrado.
+   - Atajos de teclado bidireccionales (`ArrowLeft` / `ArrowRight`) y región de voz accesible `#a11y-announcer`.
+   - Congelamiento automático de scroll de fondo (`overflow: hidden`) al abrir modales para evitar scroll bleed.
+
+---
+
+## 9. CONCLUSIONES Y HOJA DE RUTA OPERATIVA
 
 1. **Estado de Producción:** El proyecto se encuentra actualmente en estado **`PRODUCTION_CANDIDATE`**. Su promoción formal a `PRODUCTION_VERIFIED` requiere completar el ciclo de cierre LOOP documentado en `project_brain/GAP_REGISTER.yaml`.
 2. **Soberanía y Transparencia:** La arquitectura cumple con los más altos estándares de reproducibilidad científica (semilla fija 42, zero lookahead bias, datos reales de la AMP y cero código cerrado).

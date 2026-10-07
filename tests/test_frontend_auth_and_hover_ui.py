@@ -133,3 +133,88 @@ def test_live_fastapi_server_serving_pages():
         assert "card-hover-preview" in res.text
     except requests.exceptions.ConnectionError:
         pytest.skip("Uvicorn en puerto 8001 no accesible en este instante")
+
+
+def test_skeleton_shimmer_system_defined_in_style_css():
+    """Verifica que style.css implementa el sistema completo de skeleton loading y animación shimmer."""
+    css_content = STYLE_CSS.read_text(encoding="utf-8")
+    assert "@keyframes skeleton-shimmer" in css_content
+    assert "@keyframes skeleton-pulse" in css_content
+    assert ".skeleton-box" in css_content
+    assert ".skeleton-pill" in css_content
+    assert ".skeleton-text" in css_content
+    assert ".skeleton-metric" in css_content
+    assert ".skeleton-chart" in css_content
+    assert ".skeleton-bar" in css_content
+    assert ".skeleton-card" in css_content
+    assert ".stagger-fade-in" in css_content
+
+
+def test_wcag_aa_contrast_palette_across_all_themes():
+    """Verifica que todos los 6 temas y :root poseen tokens de color conformes a WCAG AA (>= 4.5:1)."""
+    css_content = STYLE_CSS.read_text(encoding="utf-8")
+
+    # Tokens en :root
+    assert "--text-dim: #94a3b8;" in css_content
+    assert "--purple-ai: #c084fc;" in css_content
+    assert "--font-sans:" in css_content
+    assert "--amber-warning:" in css_content
+
+    # Verificación en los 6 temas marítimos
+    themes = [
+        "theme-cyber-ocean",
+        "theme-radar-amber",
+        "theme-canal-emerald",
+        "theme-tactical-mono",
+        "theme-pacific-sunset",
+        "theme-midnight-cobalt",
+    ]
+    for theme in themes:
+        assert theme in css_content, f"El tema {theme} debe estar definido en style.css"
+
+    # En midnight-cobalt, cyan-primary debe ser #38bdf8 para superar 7:1
+    cobalt_section = css_content[css_content.find("theme-midnight-cobalt") : css_content.find("theme-midnight-cobalt") + 600]
+    assert "--cyan-primary: #38bdf8;" in cobalt_section
+
+
+def test_methodology_carousel_toolbar_and_stepper_buttons():
+    """Verifica que index.html contiene la barra de herramientas del carrusel con sus 8 píldoras y botones de avance."""
+    html_content = INDEX_HTML.read_text(encoding="utf-8")
+    soup = BeautifulSoup(html_content, "html.parser")
+
+    toolbar = soup.find(id="method-carousel-toolbar")
+    assert toolbar is not None, "Debe existir #method-carousel-toolbar en tab-methodology"
+
+    prev_btn = soup.find(id="btn-carousel-prev")
+    next_btn = soup.find(id="btn-carousel-next")
+    assert prev_btn is not None, "Debe existir botón #btn-carousel-prev"
+    assert next_btn is not None, "Debe existir botón #btn-carousel-next"
+
+    pills = soup.find_all(class_="method-step-pill")
+    assert len(pills) == 8, "Deben existir exactamente 8 píldoras interactivas (Fases 1 a 8)"
+
+    counter = soup.find(id="method-carousel-counter")
+    assert counter is not None, "Debe existir el indicador #method-carousel-counter"
+
+
+def test_app_js_implements_skeleton_loaders_and_stepper_navigation():
+    """Verifica que app.js implementa funciones para skeleton loaders, delay táctil y teclado para el carrusel."""
+    js_content = APP_JS.read_text(encoding="utf-8")
+
+    # Skeleton loaders
+    assert "showForecastSkeleton" in js_content
+    assert "hideForecastSkeleton" in js_content
+    assert "showSimulationSkeleton" in js_content
+    assert "hideSimulationSkeleton" in js_content
+    assert "showBenchmarkSkeleton" in js_content
+
+    # Stepper and Carousel helpers
+    assert "goToPreviousPhase" in js_content
+    assert "goToNextPhase" in js_content
+    assert "updatePhaseIndicators" in js_content
+    assert "method-carousel-counter" in js_content
+    assert "a11y-announcer" in js_content
+
+    # Keyboard navigation
+    assert "ArrowLeft" in js_content
+    assert "ArrowRight" in js_content

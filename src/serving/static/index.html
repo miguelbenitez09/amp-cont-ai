@@ -1787,6 +1787,50 @@
           Explora cada fase del ciclo de vida de la solución. Haz clic en cualquiera de las 8 fases para desplegar en tiempo real en la consola interactiva inferior el <strong>contexto real sin pelos en la lengua</strong>, los <strong>obstáculos de ingeniería reales y cómo se resolvieron</strong>, las <strong>ecuaciones matemáticas completas</strong>, la <strong>sintaxis exacta de código Python</strong> y la <strong>trazabilidad de datos</strong>.
         </p>
 
+        <!-- Methodology Carousel & Stepper Controls -->
+        <div class="methodology-carousel-toolbar" id="method-carousel-toolbar" role="region" aria-label="Navegador de Fases Metodológicas">
+          <div class="methodology-carousel-controls">
+            <button type="button" class="btn-carousel-nav" id="btn-carousel-prev" onclick="window.goToPreviousPhase()" title="Fase anterior (Flecha Izquierda ◀)">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              <span>Fase Anterior</span>
+            </button>
+            <div class="methodology-step-pills" id="methodology-step-pills">
+              <button type="button" class="method-step-pill active" data-phase-idx="0" onclick="window.selectMethodologyPhase('phase_1')" title="Fase 1: Ingesta Cruda">
+                <span class="step-pill-num">1</span><span class="step-pill-label">Ingesta</span>
+              </button>
+              <button type="button" class="method-step-pill" data-phase-idx="1" onclick="window.selectMethodologyPhase('phase_2')" title="Fase 2: Silver Cleaning">
+                <span class="step-pill-num">2</span><span class="step-pill-label">Limpieza</span>
+              </button>
+              <button type="button" class="method-step-pill" data-phase-idx="2" onclick="window.selectMethodologyPhase('phase_3')" title="Fase 3: Gold Features">
+                <span class="step-pill-num">3</span><span class="step-pill-label">Features</span>
+              </button>
+              <button type="button" class="method-step-pill" data-phase-idx="3" onclick="window.selectMethodologyPhase('phase_4')" title="Fase 4: Inferencia Causal & VIF">
+                <span class="step-pill-num">4</span><span class="step-pill-label">Causalidad</span>
+              </button>
+              <button type="button" class="method-step-pill" data-phase-idx="4" onclick="window.selectMethodologyPhase('phase_5')" title="Fase 5: Torneo ML Multi-Algoritmo">
+                <span class="step-pill-num">5</span><span class="step-pill-label">Torneo ML</span>
+              </button>
+              <button type="button" class="method-step-pill" data-phase-idx="5" onclick="window.selectMethodologyPhase('phase_6')" title="Fase 6: Simulación Monte Carlo">
+                <span class="step-pill-num">6</span><span class="step-pill-label">Monte Carlo</span>
+              </button>
+              <button type="button" class="method-step-pill" data-phase-idx="6" onclick="window.selectMethodologyPhase('phase_7')" title="Fase 7: ISO & Ley 81 Privacidad">
+                <span class="step-pill-num">7</span><span class="step-pill-label">Privacidad</span>
+              </button>
+              <button type="button" class="method-step-pill" data-phase-idx="7" onclick="window.selectMethodologyPhase('phase_8')" title="Fase 8: Gobernanza Estatal & MCP">
+                <span class="step-pill-num">8</span><span class="step-pill-label">Gobernanza</span>
+              </button>
+            </div>
+            <button type="button" class="btn-carousel-nav" id="btn-carousel-next" onclick="window.goToNextPhase()" title="Siguiente fase (Flecha Derecha ▶)">
+              <span>Siguiente Fase</span>
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+          </div>
+          <div class="carousel-meta-bar">
+            <span class="carousel-counter-tag" id="method-carousel-counter">Fase 1 de 8: Ingesta Cruda & Extracción</span>
+            <span class="carousel-kbd-hint"><kbd>◀</kbd> <kbd>▶</kbd> Teclas de cursor para transicionar</span>
+          </div>
+        </div>
+
         <!-- 8-Phase Methodology Interactive Grid -->
         <div class="methodology-grid">
           
