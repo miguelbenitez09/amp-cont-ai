@@ -2909,7 +2909,7 @@ class ProposalEvaluationRequest(BaseModel):
 @v1_router.post("/brain/evaluate-proposal")
 async def evaluate_brain_proposal(req: ProposalEvaluationRequest):
     """Evaluates an architectural change proposal against the 5-criterion matrix."""
-    return brain_service.evaluate_proposal(req.dict())
+    return brain_service.evaluate_proposal(req.model_dump())
 
 
 

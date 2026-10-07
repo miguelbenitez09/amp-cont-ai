@@ -26,8 +26,8 @@
 4. [Benchmarking Multi-Algoritmo y Optimización Cuantílica](#4-benchmarking-multi-algoritmo-y-optimización-cuantílica)
 5. [Motor de Simulación Estocástica de Monte Carlo y Stress Testing](#5-motor-de-simulación-estocástica-de-monte-carlo-y-stress-testing)
 6. [Hoja de Ruta para Integración de Datos No Publicados (AIS, El Niño)](#6-hoja-de-ruta-para-integración-de-datos-no-publicados-ais-el-niño)
-7. [Guía de Inicio Rápido: Descarga, Entrenamiento y Ejecución](#7-guía-de-inicio-rápido-descarga-entrenamiento-y-ejecución)
-8. [Consola Interactiva de Integración API y Manejo de Secretos](#8-consola-interactiva-de-integración-api-y-manejo-de-secretos)
+7. [Requisitos del Sistema, Puertos y Guía de Instalación (Host vs Docker)](#7-requisitos-del-sistema-y-arquitectura-de-puertos)
+8. [Uso de la Interfaz Web Responsive, Microservicio REST y Manejo de Secretos](#8-uso-de-la-interfaz-web-responsive-y-microservicio-rest)
 9. [Infraestructura Empresarial: Go Gateway, Adaptadores DB, Servidor MCP, RAG y Kubernetes](#9-infraestructura-empresarial-adaptadores-db-servidor-mcp-rag-y-kubernetes)
 10. [Lakehouse Nacional de Panamá: Scraper de los 17 Ministerios, Tráfico ACP y Clima IMHPA](#10-lakehouse-nacional-de-panamá-scraper-de-los-17-ministerios-tráfico-acp-y-clima-imhpa)
 11. [Gobernanza Gubernamental: Matriz de Cumplimiento Normativo ISO (27001, 42001, 27701, 22301)](#11-gobernanza-gubernamental-matriz-de-cumplimiento-normativo-iso-27001-42001-27701-22301)
@@ -125,7 +125,7 @@ $$P(Y \mid do(B = b)) = \sum_{z_2, l} P(Y \mid B = b, Z_2 = z_2, L = l) P(Z_2 = 
    Los contratos de concesión de grúas y servicios navieros operan anualmente. El volumen de hace 12 meses condiciona la capacidad de muelle y el volumen actual. El modelo aísla esta inercia mediante tasas de variación interanual ($\Delta \text{TEU}_{t, t-12}$), evitando confundir estacionalidad con cambios reales de demanda.
 2. **Confusor de Bunkering como Proxy de Congestión en Fondeadero:**  
    Un alza en las ventas de combustible marino (*bunkering*) puede reflejar mayor actividad de carga, o por el contrario, **buques varados en fondeadero esperando tránsito por el Canal de Panamá** (consumiendo combustible auxiliar sin transferir contenedores en muelle). Para desacoplar este efecto, el Feature Store genera el ratio de productividad activa:
-   $$\text{Ratio TEU/BBL} = \frac{\text{TEU}_t}{\text{Bunkering\_BBL}_t + \epsilon}$$
+    $$\text{Ratio TEU/BBL} = \frac{\text{TEU}_t}{\text{Bunkering BBL}_t + \epsilon}$$
 
 ### 3.3 Detección de Anomalías: Estimador Hampel y MAD vs. Z-Score
 Los datos de cadenas de suministro sufren de eventos con colas pesadas de tipo Fréchet/Pareto. El estimador Z-score tradicional colapsa ante outliers extremos porque su punto de ruptura es $\varepsilon^* = 1/n \to 0$.
@@ -139,7 +139,7 @@ El estimador $(\tilde{x}, \text{MAD})$ posee un **punto de ruptura del 50% ($\va
 - **Árboles de Decisión (LightGBM, Random Forest):** Son invariantes ante cualquier transformación monótona creciente $g(x_j)$. La normalización no altera los splits óptimos ni la ganancia de impureza.
 - **Modelos Regularizados (Ridge / ElasticNet):** La función de costo castiga la norma $\|\boldsymbol{\beta}\|_2^2$ y $\|\boldsymbol{\beta}\|_1$. Si las variables no están estandarizadas a $\mu=0, \sigma=1$, las columnas con magnitudes grandes distorsionan la penalización, colapsando el desempeño del modelo.
 - **Factor de Inflación de la Varianza (VIF):**
-  $$\operatorname{Var}(\hat{\beta}_j) = \frac{\sigma^2}{n (1 - R_j^2)} \equiv \frac{\sigma^2}{n} \text{VIF}_j$$
+  $$\mathrm{Var}(\hat{\beta}_j) = \frac{\sigma^2}{n (1 - R_j^2)} \equiv \frac{\sigma^2}{n} \text{VIF}_j$$
   Cualquier variable con $\text{VIF}_j \ge 10$ es purgada o proyectada trigonométricamente para preservar la estabilidad de la matriz hessiana del optimizador.
 
 ---
@@ -192,7 +192,7 @@ El motor estocástico ha sido rediseñado como una suite interactiva de alta fid
 Para preservar la correlación histórica multivariada entre variables logísticas concurrentes ($\mathbf{\Sigma} \in \mathbb{R}^{k \times k}$):
 1. Se descompone la matriz de covarianza definida positiva: $\mathbf{\Sigma} = \mathbf{L} \mathbf{L}^T$.
 2. Se generan choques gaussianos independientes: $\mathbf{Z} \sim \mathcal{N}(\mathbf{0}, \mathbf{I}_k)$.
-3. Se proyectan los choques correlacionados: $\mathbf{X} = \boldsymbol{\mu} + \mathbf{L} \mathbf{Z}$, cumpliendo $\operatorname{Cov}(\mathbf{X}) = \mathbf{\Sigma}$.
+3. Se proyectan los choques correlacionados: $\mathbf{X} = \boldsymbol{\mu} + \mathbf{L} \mathbf{Z}$, cumpliendo $\mathrm{Cov}(\mathbf{X}) = \mathbf{\Sigma}$.
 
 ### 5.2 Modelo de Salto-Difusión de Merton (Poisson Jumps)
 Modelado de disrupciones catastróficas (sequías extremas, cierres de rutas, huelgas portuarias):
@@ -220,46 +220,164 @@ El ecosistema está diseñado modularmente para incorporar datos satelitales y m
 
 ---
 
-## 7. Guía de Inicio Rápido: Descarga, Entrenamiento y Ejecución
+---
 
-El repositorio se mantiene limpio excluyendo datasets masivos y binarios de modelos de Git. Cualquier usuario puede reconstruir y entrenar el modelo idéntico desde cero.
+## 7. Requisitos del Sistema y Arquitectura de Puertos
 
-### Paso 1: Clonar el Repositorio e Instalar Dependencias
+### 7.1 Puertos y Enrutamiento (Dual-Port Gateway Architecture)
+
+El framework opera con una arquitectura desacoplada de alto rendimiento mediante un **Reverse Proxy Gateway en Go** frente al backend analítico **FastAPI**:
+
+```
+                       Navegador / Cliente API / Agente
+                                      │
+                                      ▼
+                        ┌───────────────────────────┐
+                        │   Go Gateway (Port 8000)  │  <-- PUERTO PÚBLICO OFICIAL
+                        │   - HTTP Security Headers │
+                        │   - Reverse Proxy a 8001  │
+                        │   - Static Web UI Serving │
+                        │   - /app, /docs, /api/*   │
+                        └─────────────┬─────────────┘
+                                      │ Proxy HTTP
+                                      ▼
+                        ┌───────────────────────────┐
+                        │  FastAPI Backend (8001)   │  <-- PUERTO INTERNO ANALÍTICO
+                        │   - Uvicorn ASGI Worker   │
+                        │   - Motor MLOps / Cuantil │
+                        │   - WORM Ledger & RAG     │
+                        │   - IAM & Project Brain   │
+                        └───────────────────────────┘
+```
+
+| Puerto | Componente | Acceso | Propósito |
+| :---: | :--- | :---: | :--- |
+| **`8000`** | **Go Gateway** | **Público / Host** | **Punto de entrada único oficial.** Entrega la interfaz web corporativa (`/`), el portal de la aplicación (`/app`), la documentación interactiva Swagger (`/docs`) y enruta las llamadas `/api/*` y `/predict` con inyección de cabeceras de seguridad HSTS y aislamiento de cookies. |
+| **`8001`** | **FastAPI Backend** | **Interno / Loopback** | Worker de cómputo analítico y serving de inferencia. En producción y en el contenedor Docker está restringido al loopback local o red interna (`framework:8000`). |
+
+> [!TIP]
+> **¿A cuál puerto ingresar?**  
+> Ingrese siempre a **`http://127.0.0.1:8000/`** (Go Gateway). Desde allí tiene acceso tanto al landing de bienvenida como al portal del sistema (`/app`) y a la API (`/docs`).
+
+### 7.2 Requisitos Mínimos y Recomendados de Hardware
+
+| Recurso | Mínimo (Host Local) | Recomendado (Producción / Docker) |
+| :--- | :--- | :--- |
+| **Sistema Operativo** | Windows 10/11, Ubuntu 22.04+, Debian 12, macOS 13+ | Linux (Ubuntu Server / Debian) con Docker Engine |
+| **Procesador (CPU)** | 4 Núcleos (x86_64 o ARM64) con soporte AVX2 | 8+ Núcleos con soporte AVX-512 |
+| **Memoria RAM** | 8 GB RAM | 16 GB - 32 GB RAM |
+| **Almacenamiento** | 5 GB libres en disco SSD | 20 GB+ libres en disco NVMe SSD |
+| **GPU (Opcional)** | No requerida (CPU SIMD optimizado) | NVIDIA con 8GB+ VRAM (CUDA 12+) para vLLM/RAG |
+| **Software Base** | Python 3.12+, Go 1.22+ (para compilar Gateway) | Docker 24.0+ y Docker Compose v2.20+ |
+
+---
+
+## 7.3 Guía de Instalación: Host Local vs Contenedores Docker
+
+El framework se adapta automáticamente al entorno donde se ejecute:
+
+### Opción A: Despliegue en Máquina Host (Windows / Linux / macOS)
+
+#### 1. Clonar el Repositorio
 ```bash
 git clone https://github.com/miguelbenitez09/amp-cont-ai.git
 cd amp-cont-ai
+```
 
-# Crear y activar entorno virtual (opcional pero recomendado):
+#### 2. Entorno Virtual Python
+```bash
+# Windows:
 python -m venv .venv
-.venv\Scripts\activate  # En Windows
-# source .venv/bin/activate  # En Linux/macOS
+.venv\Scripts\activate
 
-# Instalar dependencias del proyecto:
+# Linux / macOS:
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+#### 3. Instalación de Dependencias
+```bash
+pip install --upgrade pip
 pip install -r requirements.txt
 pip install -e .
 ```
 
-### Paso 2: Descargar Datos Oficiales Abiertos de la AMP
-Descarga directa de los 353 datasets oficiales desde el portal gubernamental:
+#### 4. Compilar el Gateway en Go (Opcional si usa el binario precompilado)
 ```bash
-make download-data
-# o alternativamente:
+# Si tiene Go instalado:
+go build -o bin/gateway.exe cmd/gateway/main.go   # En Windows
+# go build -o bin/gateway cmd/gateway/main.go      # En Linux/macOS
+```
+
+#### 5. Puesta en Marcha Rápida
+Ejecute el script de arranque multiplataforma:
+```bash
+# En Windows:
+.\setup_platform.bat
+
+# O iniciar los servicios manualmente en terminales separadas:
+# Terminal 1 (Backend FastAPI en 8001):
+python -m uvicorn src.serving.api:app --host 127.0.0.1 --port 8001
+
+# Terminal 2 (Go Gateway en 8000):
+.\bin\gateway.exe
+```
+
+---
+
+### Opción B: Despliegue con Docker y Docker Compose
+
+Despliegue contenerizado estandarizado sin necesidad de instalar Python o Go en la máquina anfitriona:
+
+#### 1. Iniciar el Ecosistema Completo
+```bash
+# Levanta el Go Gateway (8000) y el backend analítico (8001):
+docker compose up -d --build
+```
+
+#### 2. Verificar Estado de los Contenedores
+```bash
+docker compose ps
+```
+Los contenedores `amp-cont-ai-gateway-1` y `amp-cont-ai-framework-1` estarán en estado `healthy`.
+
+#### 3. Perfil de Producción con TLS / HTTPS (Opcional)
+```bash
+docker compose --profile prod-tls up -d
+```
+
+#### 4. Detener los Servicios
+```bash
+docker compose down
+```
+
+---
+
+## 7.4 Flujo de Datos, Descarga y Entrenamiento del Modelo
+
+### Paso 1: Descargar Microdatos Oficiales de la AMP
+Descarga directa de los 353 datasets oficiales desde el portal nacional `datosabiertos.gob.pa`:
+```bash
 python scripts/download_data.py
+# o mediante make:
+# make download-data
 ```
 
-### Paso 3: Ejecutar Pipeline y Reentrenar el Benchmark Multi-Algoritmo
-Entrenamiento con semilla determinista (`seed=42`) para garantizar reproducibilidad exacta:
+### Paso 2: Ejecutar el Pipeline Medallion Completo
+Normaliza datos (Silver), computa las 85 características sin fuga (Gold) y ejecuta el benchmark de 8 algoritmos:
 ```bash
-make train
-# o ejecutar todo el pipeline Medallion secuencial:
-make all
+python -m src.data.normalizer
+python -m src.features.feature_store
+python -m src.models.train
+# o todo en una sola orden:
+# make all
 ```
 
-### Paso 4: Ejecutar la Suite de Pruebas Automatizadas (25 Tests)
+### Paso 3: Ejecución de la Suite de Pruebas Automatizadas
 ```bash
-make test
-# o directamente:
 pytest -v tests/
+# o mediante make:
+# make test
 ```
 
 ---

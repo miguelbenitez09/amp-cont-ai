@@ -130,7 +130,7 @@ Este estimador tiene un **punto de ruptura del 50% ($\varepsilon^* = 0.50$)**, g
 
 ### 4.4 Factor de Inflación de la Varianza (VIF)
 Para la matriz de covarianza estandarizada $\mathbf{R} = \frac{1}{n} \mathbf{Z}^T \mathbf{Z}$:
-$$\operatorname{Var}(\hat{\beta}_j) = \frac{\sigma^2}{n (1 - R_j^2)} \equiv \frac{\sigma^2}{n} \text{VIF}_j$$
+$$\mathrm{Var}(\hat{\beta}_j) = \frac{\sigma^2}{n (1 - R_j^2)} \equiv \frac{\sigma^2}{n} \text{VIF}_j$$
 Cualquier variable con $\text{VIF}_j \ge 10$ se elimina o se sustituye por armónicos continuos ($\sin/\cos$) para preservar la estabilidad numérica del algoritmo.
 
 ---
@@ -191,7 +191,7 @@ El ecosistema implementa el esquema enterprise DDL en [`src/infrastructure/db/sc
 Dada la matriz de covarianza empírica $\mathbf{\Sigma} \in \mathbb{R}^{k \times k}$ calculada sobre los retornos históricos de variables logísticas:
 1. Se descompone la matriz: $\mathbf{\Sigma} = \mathbf{L} \mathbf{L}^T$.
 2. Se generan números aleatorios gaussianos independientes: $\mathbf{Z} \sim \mathcal{N}(\mathbf{0}, \mathbf{I}_k)$.
-3. Se proyectan los choques estocásticos correlacionados: $\mathbf{X} = \boldsymbol{\mu} + \mathbf{L} \mathbf{Z}$, garantizando $\operatorname{Cov}(\mathbf{X}) = \mathbf{\Sigma}$.
+3. Se proyectan los choques estocásticos correlacionados: $\mathbf{X} = \boldsymbol{\mu} + \mathbf{L} \mathbf{Z}$, garantizando $\mathrm{Cov}(\mathbf{X}) = \mathbf{\Sigma}$.
 
 ### 6.4 Proceso de Salto-Difusión de Merton (Poisson Jumps)
 Modelado matemático de eventos catastróficos discretos:
