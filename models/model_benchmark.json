@@ -6,7 +6,7 @@
       "avg_mae": 11550.65,
       "avg_rmse": 15180.35,
       "avg_r2": 0.9588,
-      "avg_latency_ms": 20.03,
+      "avg_latency_ms": 3.228,
       "status": "Challenger",
       "promotion_gate": {
         "wape_lte": 0.15,
@@ -20,7 +20,7 @@
       "avg_mae": 11662.09,
       "avg_rmse": 15842.89,
       "avg_r2": 0.9549,
-      "avg_latency_ms": 4.13,
+      "avg_latency_ms": 2.092,
       "status": "Challenger",
       "promotion_gate": {
         "wape_lte": 0.15,
@@ -34,7 +34,7 @@
       "avg_mae": 12670.69,
       "avg_rmse": 16566.97,
       "avg_r2": 0.9507,
-      "avg_latency_ms": 32.183,
+      "avg_latency_ms": 5.039,
       "status": "Challenger",
       "promotion_gate": {
         "wape_lte": 0.15,
@@ -48,7 +48,7 @@
       "avg_mae": 9984.46,
       "avg_rmse": 12654.19,
       "avg_r2": 0.9715,
-      "avg_latency_ms": 0.285,
+      "avg_latency_ms": 0.22,
       "status": "Champion",
       "promotion_gate": {
         "wape_lte": 0.15,

@@ -851,12 +851,14 @@ def predict_container_throughput(req: PredictionRequest):
 
     # Map model selection
     primary_model = models.get("p50")
-    if selected_algo == "random_forest" and "random_forest" in models:
+    if selected_algo in ["random_forest", "portops-random-forest-regressor", "rf"] and "random_forest" in models:
         primary_model = models["random_forest"]
-    elif selected_algo == "gradient_boosting" and "gradient_boosting" in models:
+    elif selected_algo in ["gradient_boosting", "portops-xgboost-regressor", "xgboost", "hist_gradient_boosting"] and "gradient_boosting" in models:
         primary_model = models["gradient_boosting"]
-    elif selected_algo in ["ridge", "elasticnet", "ridge_elasticnet"] and "ridge_elasticnet" in models:
+    elif selected_algo in ["ridge", "elasticnet", "ridge_elasticnet", "portops-ridge-elasticnet"] and "ridge_elasticnet" in models:
         primary_model = models["ridge_elasticnet"]
+    elif selected_algo in ["baseline"] and "baseline" in models:
+        primary_model = models["baseline"]
 
     for step in range(1, req.horizon_months + 1):
         target_dt = latest_date + pd.DateOffset(months=step)

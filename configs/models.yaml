@@ -49,6 +49,22 @@ models:
       r2: 0.9321
     access_policy: "PUBLIC"
 
+  - id: "portops-ridge-elasticnet"
+    name: "Ridge / ElasticNet Regularizado"
+    family: "linear_model"
+    type: "tabular_regression"
+    version: "1.0.0"
+    task: "time_series_forecasting"
+    runtime_target: "runtime-local-tabular"
+    status: "APPROVED"
+    alias: "champion_benchmark"
+    artifact_path: "models/champion_models.joblib"
+    metrics:
+      wape: 0.0808
+      r2: 0.9715
+      mae: 9984.46
+    access_policy: "PUBLIC"
+
   - id: "gemma-2-2b-it-q4"
     name: "Gemma 2 2B Instruct (Q4_K_M)"
     family: "gemma"

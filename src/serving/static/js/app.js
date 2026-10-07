@@ -6815,8 +6815,9 @@ executePortForecast();`;
         
         let val = m.model_id;
         if (m.model_id.includes("lgbm") || m.name.toLowerCase().includes("lightgbm")) val = "ensemble";
-        else if (m.model_id.includes("xgboost")) val = "gradient_boosting";
+        else if (m.model_id.includes("xgboost") || m.name.toLowerCase().includes("histgradient") || m.name.toLowerCase().includes("gradient")) val = "gradient_boosting";
         else if (m.model_id.includes("random-forest") || m.model_id.includes("rf")) val = "random_forest";
+        else if (m.model_id.includes("ridge") || m.name.toLowerCase().includes("elasticnet")) val = "ridge_elasticnet";
         
         const disabledAttr = (!isHealthy && !isServing) ? "disabled" : "";
         const selectedAttr = m.is_champion ? "selected" : "";
