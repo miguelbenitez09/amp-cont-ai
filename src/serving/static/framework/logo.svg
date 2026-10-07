@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="292" height="259" viewBox="0 0 292 259" role="img" aria-labelledby="title desc">
+<title id="title">AMP-CONT-AI — símbolo portuario</title>
+<desc id="desc">Grúa blanca sobre contenedores cian y azules, con dos olas cian sobre fondo azul oscuro. Recreación vectorial de la imagen proporcionada.</desc>
+<defs>
+ <radialGradient id="background"><stop stop-color="#061425"/><stop offset="1" stop-color="#020a16"/></radialGradient>
+ <linearGradient id="cyan" x2="0.8" y2="1"><stop stop-color="#00e6f2"/><stop offset="1" stop-color="#00b8d4"/></linearGradient>
+ <linearGradient id="blue" x2="1" y2="1"><stop stop-color="#006ef0"/><stop offset="1" stop-color="#0045bc"/></linearGradient>
+ <linearGradient id="white" x2="0" y2="1"><stop stop-color="#f5ffff"/><stop offset="1" stop-color="#c5eaf0"/></linearGradient>
+ <filter id="glow" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="2"/></filter>
+ <g id="containers" stroke-width="2">
+  <rect x="80" y="78" width="48" height="43" fill="url(#cyan)" stroke="#008ca9"/>
+  <rect x="139" y="78" width="21" height="43" fill="url(#blue)" stroke="#003f9a"/>
+  <rect x="34" y="134" width="35" height="48" fill="url(#cyan)" stroke="#008ca9"/>
+  <rect x="81" y="134" width="27" height="48" fill="url(#blue)" stroke="#003f9a"/>
+  <rect x="120" y="134" width="31" height="48" fill="url(#cyan)" stroke="#008ca9"/>
+  <rect x="163" y="134" width="27" height="48" fill="url(#blue)" stroke="#003f9a"/>
+  <rect x="202" y="134" width="34" height="48" fill="url(#white)" stroke="#8dbcc7"/>
+ </g>
+ <path id="crane" d="M124 44H163V33H179V60L226 96H244V118H234V108H215V112H203V102H213V99L179 73V121H169V64L158 54H124Z"/>
+ <path id="waves" d="M20 203C43 201 50 215 69 215S94 203 106 203S126 215 143 215S166 203 180 203S202 215 220 215S241 203 254 211 M43 228C53 232 59 240 73 240S97 228 110 228S132 240 149 240S173 228 186 228S209 240 225 240S244 231 254 237"/>
+</defs>
+<g opacity=".3" filter="url(#glow)"><use href="#containers"/><use href="#crane" fill="#bbf5ff"/><use href="#waves" fill="none" stroke="#00e5f5" stroke-width="12"/></g>
+<use href="#containers"/>
+<g stroke="#4af0ff" opacity=".3" fill="none"><path d="M84 82H124V117H84ZM38 138H65V178H38ZM124 138H147V178H124"/></g>
+<g stroke="#65a5ff" opacity=".25" fill="none"><path d="M143 82H156V117H143ZM85 138H104V178H85ZM167 138H186V178H167"/></g>
+<use href="#crane" fill="url(#white)" stroke="#93b7c3" stroke-width="2" stroke-linejoin="miter"/>
+<use href="#waves" fill="none" stroke="#007eac" stroke-width="12" stroke-linecap="square"/>
+<use href="#waves" fill="none" stroke="#00d7e8" stroke-width="8" stroke-linecap="square"/>
+</svg>

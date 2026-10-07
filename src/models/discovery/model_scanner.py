@@ -9,9 +9,12 @@ License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 
 import os
 import glob
+import json
+import hashlib
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timezone
+import requests
 
 from src.infrastructure.secrets.manager import SecretManager
 from src.infrastructure.hardware.profiler import HardwareProfiler
@@ -111,9 +114,38 @@ class ModelDirectoryScanner:
                             "vram_compatible": (size_mb * 1.25) <= vram_mb
                         })
 
-        # Add reference architecture entries if catalog is empty or only joblib
-        has_llm = any(m["format"] in ["GGUF", "SAFETENSORS", "BIN"] for m in models_found)
+        # Ollama stores weights as extensionless content-addressed blobs, so
+        # filesystem extension scanning alone misses valid installed models.
+        ollama_root = Path.home() / ".ollama" / "models"
+        manifest_root = ollama_root / "manifests"
+        if manifest_root.exists():
+            for manifest in manifest_root.rglob("*"):
+                if not manifest.is_file():
+                    continue
+                try:
+                    payload = json.loads(manifest.read_text(encoding="utf-8"))
+                    digest = next((layer.get("digest", "") for layer in payload.get("layers", [])
+                                   if layer.get("mediaType", "").endswith(".model")), "")
+                    size = next((int(layer.get("size", 0)) for layer in payload.get("layers", [])
+                                 if layer.get("digest") == digest), 0)
+                    rel = manifest.relative_to(manifest_root).as_posix()
+                    if digest and not any(m.get("digest") == digest for m in models_found):
+                        models_found.append({"name": rel, "filename": manifest.name,
+                            "path": str(manifest), "format": "OLLAMA", "size_mb": round(size / 1048576, 2),
+                            "size_human": f"{size / 1073741824:.2f} GB", "quantization": "Ollama managed",
+                            "model_type": "LLM / Transformer", "digest": digest,
+                            "modified_at": datetime.fromtimestamp(manifest.stat().st_mtime, timezone.utc).isoformat(),
+                            "vram_compatible": (size / 1048576 * 1.25) <= vram_mb})
+                except (OSError, ValueError, json.JSONDecodeError, StopIteration):
+                    continue
 
+        # Ollama manifests are valid local LLM evidence even though their
+        # content-addressed blobs have no model-file extension.
+        has_llm = any(m["format"] in ["GGUF", "SAFETENSORS", "BIN", "OLLAMA"] for m in models_found)
+        total_storage_mb = sum(float(m.get("size_mb", 0)) for m in models_found)
+
+        # Keep candidates separate from installed artifacts. A name in a
+        # recommendation catalog is never evidence that weights exist locally.
         return {
             "author": "Desarrollado v1.0.0 Miguel Benítez (UTP)",
             "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -122,20 +154,20 @@ class ModelDirectoryScanner:
             "total_storage_mb": round(total_size_bytes / (1024 * 1024), 2),
             "has_local_llm": has_llm,
             "hardware_context": {
-                "gpu_detected": gpu_info.get("name", "NVIDIA RTX 3050"),
+                "gpu_detected": gpu_info.get("device_name") or gpu_info.get("name") or "NOT_DETECTED",
                 "vram_available_mb": vram_mb,
                 "ram_total_gb": ram_gb,
                 "recommended_quantization": "AWQ 4-bit / GGUF Q4_K_M (Máx. 3.2 GB en VRAM)"
             },
             "models": models_found,
-            "recommended_catalog": [
+            "candidate_catalog": [
                 {
-                    "id": "gemma-4-customs-distilled",
-                    "name": "Gemma4 Distilled (Panama Customs & HS Codes)",
-                    "description": "Modelo optimizado y destilado para nomenclatura arancelaria ANA/SIECA, cálculo DUA y tratados bilaterales de Panamá.",
-                    "size_estimated": "2.1 GB",
-                    "quantization": "Q4_K_M",
-                    "status": "CONFIGURED_ACTIVE" if has_llm else "READY_FOR_LOCAL_WEIGHTS"
+                    "id": "qwen2.5-3b-instruct",
+                    "name": "Qwen2.5 3B Instruct",
+                    "description": "Candidato abierto para consultas con RAG; debe descargarse, verificarse y evaluarse antes de activarlo.",
+                    "size_estimated": "2-3 GB cuantizado",
+                    "quantization": "GGUF Q4_K_M / AWQ",
+                    "status": "CANDIDATE_ONLY"
                 },
                 {
                     "id": "lightgbm-quantile-champion",
@@ -143,15 +175,15 @@ class ModelDirectoryScanner:
                     "description": "Modelo campeón para predicción de demanda de TEUs a 1-6 meses con garantía anti-cruce.",
                     "size_estimated": "18.2 MB",
                     "quantization": "FP32 Vectorizado",
-                    "status": "COMPILED_AND_ACTIVE"
+                    "status": "INSTALLED_ONLY_IF_FOUND_IN_MODELS"
                 },
                 {
-                    "id": "qwen2.5-maritime-reasoner",
-                    "name": "Qwen 2.5 7B Maritime Chain-of-Thought",
-                    "description": "Razonador agentico para análisis de congestión portuaria, calado del Canal y tiempos de fondeo.",
-                    "size_estimated": "4.2 GB",
-                    "quantization": "AWQ 4-bit",
-                    "status": "OLLAMA_COMPATIBLE"
+                    "id": "qwen2.5-7b-instruct",
+                    "name": "Qwen2.5 7B Instruct",
+                    "description": "Candidato para análisis documental complejo si la memoria disponible lo permite; requiere benchmark reproducible.",
+                    "size_estimated": "5-6 GB cuantizado",
+                    "quantization": "GGUF Q4_K_M / AWQ",
+                    "status": "CANDIDATE_ONLY"
                 }
             ]
         }

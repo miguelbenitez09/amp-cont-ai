@@ -1,0 +1,41 @@
+# AMP-CONT-AI DATA CATALOG
+# Catálogo Oficial de Fuentes de Datos, Capas Medallion y Esquemas
+medallion_architecture:
+  bronze:
+    description: "Datos crudos ingestados en formato nativo con hash SHA-256 inmutable"
+    sources:
+      - name: "amp_port_statistics_raw"
+        origin: "Autoridad Marítima de Panamá (AMP)"
+        format: "Parquet / CSV"
+        cadence: "Mensual"
+      - name: "acp_canal_transits_raw"
+        origin: "Autoridad del Canal de Panamá (ACP)"
+        format: "Parquet / CSV"
+        cadence: "Mensual"
+      - name: "ana_tariff_sac_raw"
+        origin: "Autoridad Nacional de Aduanas (ANA)"
+        format: "Parquet / JSON"
+        records: 27764
+        description: "Nomenclatura arancelaria del Sistema Arancelario Centroamericano (SAC) de Panamá"
+
+  silver:
+    description: "Tablas normalizadas, enriquecidas, con tipado estricto e imputación de outliers"
+    tables:
+      - name: "silver_monthly_port_teus"
+        primary_key: ["year", "month", "port"]
+        features: ["teu_total", "teu_import", "teu_export", "teu_transshipment"]
+      - name: "silver_ana_tariff_search_index"
+        primary_key: ["hs_code"]
+        total_codes: 27764
+        features: ["hs_code", "description", "dai_rate", "itbms_rate", "notes", "agreement_rules"]
+
+  gold:
+    description: "Feature Store analítico optimizado para DuckDB y entrenamiento de modelos cuantílicos"
+    path: "data/gold/panama_national_lakehouse.parquet"
+    target_variables:
+      - "teu_balboa_lead_1m"
+      - "teu_cristobal_lead_1m"
+      - "acp_transits_lead_1m"
+    feature_dimensions:
+      time_series: ["lags_1m", "lags_3m", "lags_12m", "rolling_mean_3m", "rolling_std_3m"]
+      macro: ["bunker_fuel_price_index", "enso_water_level_index", "us_china_trade_ratio"]

@@ -8,6 +8,7 @@ Adheres to MLOps Masterclass Section 17, 18 & 50:
 
 from pathlib import Path
 import json
+import hashlib
 import pandas as pd
 from src.utils.logger import logger
 from src.features.temporal import TemporalFeatureExtractor
@@ -80,13 +81,28 @@ class FeatureStorePipeline:
         logger.info(f"Container Feature Store persisted: {df_featured.shape} -> {out_path}")
         
         # Save Feature Catalog Metadata
+        def sha256(path: Path) -> str:
+            digest = hashlib.sha256()
+            with path.open("rb") as handle:
+                for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                    digest.update(chunk)
+            return digest.hexdigest()
+
+        source_files = [path for path in (cont_path, bunk_path, roro_path) if path.exists()]
         feature_metadata = {
+            "schema_version": "2.0",
             "table_name": "container_features",
             "primary_keys": ["date", "port"],
             "total_records": len(df_featured),
             "total_features": len(df_featured.columns),
             "date_range": [str(df_featured["date"].min()), str(df_featured["date"].max())],
-            "feature_columns": df_featured.columns.tolist()
+            "feature_columns": df_featured.columns.tolist(),
+            "provenance": {
+                "sources": [{"path": str(path.relative_to(PROJECT_ROOT)), "sha256": sha256(path)} for path in source_files],
+                "transform": "FeatureStorePipeline.build_container_feature_store",
+                "synthetic_rows_allowed": False,
+                "missing_value_policy": "domain-absent category values are encoded as zero; lag and rolling unknowns are imputed by training medians within each temporal split",
+            },
         }
         with open(METADATA_DIR / "container_feature_catalog.json", "w", encoding="utf-8") as f:
             json.dump(feature_metadata, f, indent=2, ensure_ascii=False)

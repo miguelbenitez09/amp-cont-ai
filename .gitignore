@@ -86,6 +86,8 @@ data/enterprise_db/
 # Raw, Silver, and Gold data are generated deterministically via reproducible pipeline
 data/raw/*
 !data/raw/.gitkeep
+data/bronze/*
+!data/bronze/.gitkeep
 data/silver/*
 !data/silver/.gitkeep
 data/gold/*
@@ -143,3 +145,10 @@ datasets/bronze_2/data/
 .local/
 .artifacts/
 !brain/TRACEABILITY.csv
+bin/
+tools/scrapers/ana/*.js
+logs/audit_runs/
+datasets_imports/
+datasets_exports/
+datasets_aduanas/
+artifacts_audit/

@@ -16,7 +16,7 @@ window.I18N_EN = {
     role_prefix: "Role:",
     worm_valid: "WORM: Valid",
     verifying: "Verifying...",
-    healthy: "100% Operational",
+    healthy: "Operational status",
     settings: "Settings",
     openapi_docs: "OpenAPI Docs",
     lang_label: "Language:"
@@ -41,10 +41,11 @@ window.I18N_EN = {
     attribution_notice: "Mandatory author attribution under Section 7 of the GNU GPL v3.0 License.",
     stat_data_points: "140 Months",
     stat_data_points_sub: "Real Microdata (2015–2026)",
-    stat_accuracy: "90.89% Accuracy",
-    stat_accuracy_sub: "Champion LightGBM (WAPE 9.11%)",
-    stat_zero_mocks: "0% Mocks",
-    stat_zero_mocks_sub: "Real Production Data Guarantee",
+    stat_accuracy: "Measured benchmark",
+    stat_accuracy_sub: "Check the result and evaluation date",
+    stat_zero_mocks: "Evidence-backed data",
+    stat_zero_mocks_sub: "Check the manifest and measurement date",
+    evidence_badge: "Connected sources • verifiable status",
     stat_worm_ledger: "SHA-256",
     stat_worm_ledger_sub: "Immutable WORM Ledger"
   },
@@ -131,6 +132,9 @@ window.I18N_EN = {
     import_procedure: "Import Procedure:",
     export_procedure: "Export Procedure:",
     legal_basis: "Statutory Legal Basis:",
+    evidence_pending: "Candidate rule: the procedure and legal basis require a linked official document; they do not prove current legal validity on their own.",
+    evidence_historical: "Historical observation record; it does not represent current legal validity.",
+    evidence_verified: "Linked official documentary evidence verified.",
     bitemporal_validity: "Bitemporal Validity:",
     dai_rate: "DAI Tariff Rate:",
     itbms_rate: "ITBMS Rate:",
@@ -173,7 +177,10 @@ window.I18N_EN = {
     subtitle: "End-to-end lineage data governance, automated Great Expectations test suites, and Feature Store with Zero Lookahead Bias.",
     bronze_title: "Bronze Layer (Raw Ingestion)",
     silver_title: "Silver Layer (Curated & Enriched)",
-    gold_title: "Gold Layer (Aggregated & Features)"
+    gold_title: "Gold Layer (Aggregated & Features)",
+    ana_status_label: "ANA catalog status:",
+    ana_records_label: "ANA records:",
+    ana_integrity_label: "Publication integrity:"
   },
   security: {
     title: "Operational Security, RBAC/ABAC Matrix & WORM Ledger",
@@ -184,7 +191,10 @@ window.I18N_EN = {
     btn_verify_worm: "🛡️ Verify WORM Integrity",
     block_height: "Block Height:",
     chain_integrity: "Chain Integrity Status:",
-    last_block_hash: "Last Block Hash:"
+    last_block_hash: "Last Block Hash:",
+    permissions_sub: "Registered permissions"
+    ,authenticated_session: "Authenticated session",
+    guest_mode: "Guest mode · read-only permissions"
   },
   telemetry: {
     title: "Real-Time Compute & Inference Telemetry",
@@ -200,5 +210,15 @@ window.I18N_EN = {
     success: "Operation completed successfully",
     close: "Close",
     details: "View Details"
+  },
+  _coverage: {
+    nav_theme_sunset: "Pacific Sunset (Coral / Neon)", nav_theme_cobalt: "Midnight Cobalt (Deep Blue)",
+    cot_soul_risk: "📈 Risk Manager & What-If (Monte Carlo, drought)", cot_guardrail_label: "Guardrail level:",
+    cot_guardrail_balanced: "Balanced (flexible audit)", cot_guardrail_permissive: "Permissive (severe injections only)",
+    cot_quick_queries: "Quick test queries:", cot_btn_run_cot: "Run real-time CoT inference", cot_copy_btn: "Copy response",
+    cot_legal_citations_title: "Tracked Panamanian regulatory sources and citations:", cot_feedback_useful: "Useful", cot_feedback_not_useful: "Not useful", cot_feedback_category: "Category:",
+    customs_title: "Panamanian Medallion Lakehouse & Legal-Tariff RAG", customs_subtitle: "Search tariff chapters, HS codes, treaties and verified rules.", customs_search_label: "Tariff database RAG query:", customs_calculator_title: "Customs tax liquidation calculator (ANA)", customs_cif_value: "CIF value (USD):",
+    forecast_terminal_label: "Port terminal:", benchmark_title: "Machine-learning algorithm tournament (temporal backtesting)", benchmark_subtitle: "Empirical comparison of models on historical data.", benchmark_btn_compare: "Refresh benchmark metrics",
+    footer_legal: "Developed by Miguel Benítez • GNU GPL v3.0 license.", footer_disclaimer: "Open data protected by Panama Law 6 of 2002."
   }
 };

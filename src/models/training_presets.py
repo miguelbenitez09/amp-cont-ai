@@ -275,8 +275,9 @@ model.fit(X_train, y_train)"""
     @classmethod
     def get_preset(cls, preset_id: str) -> Optional[Dict[str, Any]]:
         """Finds a specific preset by ID."""
+        effective_id = "balanced_production" if preset_id == "balanced_champion" else preset_id
         for p in cls.PRESETS + cls._CUSTOM_PRESETS:
-            if p.id == preset_id:
+            if p.id == effective_id or p.id == preset_id:
                 return asdict(p)
         return None
 

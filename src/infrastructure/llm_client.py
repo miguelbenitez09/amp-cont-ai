@@ -32,11 +32,32 @@ class UnifiedLLMClient:
     Orchestrates inference across vLLM, Ollama, Cloud LLM Adapters, and Autonomous Maritime Synthesis.
     """
 
-    def __init__(self, timeout_seconds: float = 8.0):
+    def __init__(self, timeout_seconds: float = 90.0):
         self.timeout = timeout_seconds
         self.session = requests.Session()
         self._last_health = None
         self._last_health_ts = 0.0
+
+    @staticmethod
+    def parse_openai_sse(raw_lines: List[str]) -> str:
+        """Extract visible assistant content while discarding reasoning deltas."""
+        content: list[str] = []
+        for line in raw_lines:
+            if not line.startswith("data:"):
+                continue
+            payload = line[5:].strip()
+            if payload == "[DONE]":
+                continue
+            try:
+                choices = json.loads(payload).get("choices", [])
+                for choice in choices:
+                    delta = choice.get("delta") or {}
+                    value = delta.get("content")
+                    if isinstance(value, str):
+                        content.append(value)
+            except (TypeError, ValueError, json.JSONDecodeError):
+                continue
+        return "".join(content)
 
     @property
     def vllm_base_url(self) -> str:
@@ -48,7 +69,7 @@ class UnifiedLLMClient:
 
     @property
     def default_model(self) -> str:
-        return SecretManager.get_secret("DEFAULT_LLM_MODEL", "meta-llama/Llama-3.3-70B-Instruct-AWQ")
+        return SecretManager.get_secret("DEFAULT_LLM_MODEL", "Qwen/Qwen3-1.7B")
 
     def check_health(self) -> Dict[str, Any]:
         """Checks availability of local LLM runtimes and cloud adapters (cached for 10s)."""
@@ -64,6 +85,7 @@ class UnifiedLLMClient:
 
         vllm_models = []
         ollama_models = []
+        diagnostics = []
 
         # Check vLLM (fast 0.4s timeout)
         try:
@@ -75,23 +97,25 @@ class UnifiedLLMClient:
             if r.status_code == 200:
                 vllm_ok = True
                 vllm_models = [m.get("id") for m in r.json().get("data", [])]
-        except Exception:
-            pass
+        except Exception as exc:
+            diagnostics.append({"runtime": "vllm", "error": str(exc)})
 
         # Check Ollama (fast 0.4s timeout)
         try:
             r = self.session.get(f"{self.ollama_base_url}/api/tags", timeout=0.4)
             if r.status_code == 200:
-                ollama_ok = True
-                ollama_models = [m.get("name") for m in r.json().get("models", [])]
-        except Exception:
-            pass
+                ollama_models = [m.get("name") for m in r.json().get("models", []) if m.get("name")]
+                # A running Ollama daemon without any installed model cannot
+                # serve inference and must not be selected as a healthy backend.
+                ollama_ok = bool(ollama_models)
+        except Exception as exc:
+            diagnostics.append({"runtime": "ollama", "error": str(exc)})
 
         active_backend = "vllm" if vllm_ok else (
             "ollama" if ollama_ok else (
                 "openai_compatible" if openai_ok else (
                     "gemini" if gemini_ok else (
-                        "anthropic" if anthropic_ok else "autonomous_maritime_engine"
+                        "anthropic" if anthropic_ok else "local_sovereign_expert"
                     )
                 )
             )
@@ -105,7 +129,14 @@ class UnifiedLLMClient:
                 "gemini": gemini_ok,
                 "anthropic": anthropic_ok
             },
+            "local_sovereign_expert": {
+                "available": True,
+                "engine": "DuckDB RAG (27,764 Subpartidas ANA) + LightGBM Cuantiles",
+                "mode": "Autónomo y Determínistico Sin Dependencias Externas"
+            },
             "active_backend": active_backend,
+            "inference_available": True,
+            "diagnostics": diagnostics,
             "weights_volume_path": SecretManager.get_secret("MODEL_WEIGHTS_PATH"),
             "author": "Desarrollado v1.0.0 Miguel Benítez"
         }
@@ -134,13 +165,18 @@ class UnifiedLLMClient:
         user_message: str,
         temperature: float = 0.2,
         max_tokens: int = 700,
-        context_data: Optional[Dict[str, Any]] = None
+        context_data: Optional[Dict[str, Any]] = None,
+        preferred_runtime: str = "auto",
+        preferred_model: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Executes inference with real context grounding across vLLM, Ollama, Cloud LLM,
         or Autonomous Maritime Synthesis Engine.
         """
         health = self.check_health()
+        preference = (preferred_runtime or "auto").strip().lower()
+        if preference not in {"auto", "vllm", "ollama", "openai", "local"}:
+            raise ValueError(f"Unsupported runtime preference: {preferred_runtime}")
         backend = health["active_backend"]
         t0 = time.time()
 
@@ -148,16 +184,23 @@ class UnifiedLLMClient:
         grounded_system_prompt = system_prompt
         if context_data:
             grounded_system_prompt += f"\n\n[CONTEXTO MARÍTIMO OFICIAL RECUPERADO (AMP / ANA / LEYES)]:\n{json.dumps(context_data, ensure_ascii=False, indent=2)}"
+        grounded_system_prompt += (
+            "\n\nREGLAS DE EVIDENCIA: No inventes códigos HS, tasas, permisos, tratados, "
+            "fechas ni métricas. Si el contexto no contiene evidencia suficiente, indica exactamente "
+            "qué dato falta. Distingue una observación histórica de una norma vigente."
+        )
 
         # 1. Try vLLM (OpenAI-compatible API with PagedAttention)
-        if backend == "vllm" or health["vllm"]["available"]:
+        if preference in {"auto", "vllm"} and health["vllm"]["available"]:
             try:
                 headers = {"Content-Type": "application/json"}
                 vllm_key = SecretManager.get_secret("VLLM_API_KEY")
                 if vllm_key:
                     headers["Authorization"] = f"Bearer {vllm_key}"
 
-                model_name = health["vllm"]["models"][0] if health["vllm"]["models"] else SecretManager.get_secret("DEFAULT_VLLM_MODEL", "meta-llama/Llama-3.3-70B-Instruct-AWQ")
+                model_name = preferred_model or (health["vllm"]["models"][0] if health["vllm"]["models"] else SecretManager.get_secret("DEFAULT_VLLM_MODEL", "Qwen/Qwen3-1.7B"))
+                if model_name not in health["vllm"]["models"]:
+                    raise ValueError(f"Requested model is not served by vLLM: {model_name}")
                 payload = {
                     "model": model_name,
                     "messages": [
@@ -183,9 +226,11 @@ class UnifiedLLMClient:
                 logger.warning(f"vLLM inference failed: {e}. Falling back...")
 
         # 2. Try Ollama (Local runtime)
-        if backend == "ollama" or health["ollama"]["available"]:
+        if preference in {"auto", "ollama", "local"} and health["ollama"]["available"]:
             try:
-                model_name = health["ollama"]["models"][0] if health["ollama"]["models"] else SecretManager.get_secret("DEFAULT_OLLAMA_MODEL", "gemma:2b")
+                model_name = preferred_model or (health["ollama"]["models"][0] if health["ollama"]["models"] else SecretManager.get_secret("DEFAULT_OLLAMA_MODEL", "qwen3:1.7b"))
+                if model_name not in health["ollama"]["models"]:
+                    raise ValueError(f"Requested model is not installed in Ollama: {model_name}")
                 payload = {
                     "model": model_name,
                     "messages": [
@@ -193,7 +238,16 @@ class UnifiedLLMClient:
                         {"role": "user", "content": user_message}
                     ],
                     "stream": False,
-                    "options": {"temperature": temperature}
+                    "think": False,
+                    "keep_alive": "10m",
+                    "options": {
+                        "temperature": temperature,
+                        "num_predict": min(max_tokens, int(SecretManager.get_secret("OLLAMA_MAX_TOKENS", "64"))),
+                        # The installed NVIDIA driver cannot execute the CUDA
+                        # kernels shipped with this Ollama build. CPU mode is
+                        # explicit and can be overridden after a driver upgrade.
+                        "num_gpu": int(SecretManager.get_secret("OLLAMA_NUM_GPU", "0")),
+                    }
                 }
                 res = self.session.post(f"{self.ollama_base_url}/api/chat", json=payload, timeout=self.timeout)
                 if res.status_code == 200:
@@ -202,7 +256,7 @@ class UnifiedLLMClient:
                     lat_ms = (time.time() - t0) * 1000
                     return {
                         "content": content,
-                        "backend_used": "Ollama (Local Quantized)",
+                        "backend_used": "Ollama (Quantized)",
                         "model": model_name,
                         "latency_ms": round(lat_ms, 2),
                         "tokens_used": data.get("eval_count", len(content.split()) * 2)
@@ -212,7 +266,7 @@ class UnifiedLLMClient:
 
         # 3. Try OpenAI / Compatible Cloud Adapter
         openai_key = SecretManager.get_secret("OPENAI_API_KEY")
-        if openai_key:
+        if openai_key and preference in {"auto", "openai"}:
             try:
                 base_url = SecretManager.get_secret("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
                 model_name = SecretManager.get_secret("OPENAI_MODEL", "gpt-4o-mini")
@@ -252,8 +306,10 @@ class UnifiedLLMClient:
             "content": grounded_content,
             "backend_used": "Maritime Domain Expert Engine (Deterministic Fallback)",
             "model": "maritime_domain_expert_v1.0.0_panama",
-            "latency_ms": round(lat_ms + 18.5, 2),
+            "latency_ms": round(lat_ms, 2),
             "tokens_used": tokens_est,
+            "generation_status": "degraded_no_llm",
+            "runtime_diagnostics": health.get("diagnostics", []),
             "context_budget_max": 2048,
             "vram_limit": "4096 MiB (RTX 3050 Laptop)"
         }
@@ -327,18 +383,19 @@ class UnifiedLLMClient:
             "medicamento", "café", "cafe", "tlc", "sieca", "duca"
         ])
 
-        if has_customs_kw or not sections:
-            # Resolve HS Code
-            tariff = None
-            hs_match = re.search(r"\b(\d{4}[.]?\d{2}[.]?\d{0,4})\b", user_message)
-            if hs_match:
-                code_clean = hs_match.group(1).replace(".", "")[:6]
-                tariff = PanamaTariffDatabase.lookup_by_hs_code(code_clean)
+        if has_customs_kw:
+            # Resolve HS Code - Check context_data first
+            tariff = (context_data or {}).get("tariff")
+            if not tariff:
+                hs_match = re.search(r"\b(\d{4}[.]?\d{2}[.]?\d{0,4})\b", user_message)
+                if hs_match:
+                    code_clean = hs_match.group(1).replace(".", "")[:6]
+                    tariff = PanamaTariffDatabase.lookup_by_hs_code(code_clean)
 
             if not tariff:
                 if "carne" in msg or "bovina" in msg or "0201" in msg:
                     tariff = PanamaTariffDatabase.lookup_by_hs_code("020110")
-                elif "banano" in msg or "plátano" in msg or "0803" in msg:
+                elif any(b in msg for b in ["banana", "banano", "plátano", "platano", "0803"]):
                     tariff = PanamaTariffDatabase.lookup_by_hs_code("080390")
                 elif "bunker" in msg or "combustible" in msg or "2710" in msg:
                     tariff = PanamaTariffDatabase.lookup_by_hs_code("271019")
@@ -349,24 +406,39 @@ class UnifiedLLMClient:
                 elif "auto" in msg or "vehiculo" in msg or "8703" in msg:
                     tariff = PanamaTariffDatabase.lookup_by_hs_code("870323")
                 else:
-                    cat = PanamaTariffDatabase.get_tariff_catalog()
-                    tariff = cat[1] if len(cat) > 1 else cat[0]
+                    # Attempt text search in database
+                    results = PanamaTariffDatabase.search_by_description(user_message, limit=1)
+                    if results:
+                        tariff = results[0]
+            if not tariff:
+                sections.append(
+                    "### Clasificación arancelaria pendiente\n"
+                    "No encontré una subpartida verificable para la mercancía indicada. "
+                    "Proporcione composición, uso, presentación, país de origen y, si existe, "
+                    "un código HS candidato. No se calcularon DAI, ITBMS ni permisos."
+                )
+                tariff = None
 
-            dai_rate = tariff.get("arancel_dai_pct", 15)
-            itbms_rate = tariff.get("itbms_pct", 7)
-            permits = tariff.get("permiso_requerido", "Permiso estándar de importación")
-            entities = ", ".join(tariff.get("entidades_reguladoras", ["Aduanas-ANA"]))
-            reefer = "❄️ Requiere Contenedor Reefer (42R1)" if tariff.get("requiere_reefer") else "📦 Carga Seca Estándar (Dry 22G1/45G1)"
+            if tariff:
+                dai_rate = tariff.get("arancel_dai_pct")
+                itbms_rate = tariff.get("itbms_pct")
+                permits = tariff.get("permiso_requerido") or "Información no verificada"
+                entities = ", ".join(tariff.get("entidades_reguladoras", ["Aduanas-ANA"]))
+                reefer = "❄️ Requiere Contenedor Reefer (42R1)" if tariff.get("requiere_reefer") else "📦 Condición no refrigerada según catálogo"
+                sections.append(
+                    f"### 📋 3. Clasificación Arancelaria (ANA / SIECA):\n"
+                    f"- **Subpartida Arancelaria Panamá:** `{tariff.get('hs_code_panama')}` — *{tariff.get('descripcion')}*\n"
+                    f"- **Nomenclatura OMA (HS Code 6 dígitos):** `{tariff.get('hs_code_6')}` | **Condición de Transporte:** {reefer}\n"
+                    f"- **Gravámenes registrados:** DAI: **{dai_rate if dai_rate is not None else 'N/D'}%** | ITBMS: **{itbms_rate if itbms_rate is not None else 'N/D'}%**. La aplicabilidad requiere fecha, origen y evidencia vigente.\n"
+                    f"- **Entidades Reguladoras & Permisos Previos:** **{entities}** — *{permits}*.\n"
+                    f"- **Procedimiento Aduanero en Muelle:** {tariff.get('procedimiento_importacion', 'Información no verificada en el catálogo disponible.')}"
+                )
 
+        if not sections:
             sections.append(
-                f"### 📋 3. Clasificación Arancelaria, Tratados y Procedimiento Aduanero (ANA / SIECA):\n"
-                f"- **Subpartida Arancelaria Panamá:** `{tariff.get('hs_code_panama')}` — *{tariff.get('descripcion')}*\n"
-                f"- **Nomenclatura OMA (HS Code 6 dígitos):** `{tariff.get('hs_code_6')}` | **Condición de Transporte:** {reefer}\n"
-                f"- **Gravámenes Fiscales:** Arancel DAI: **{dai_rate}%** sobre CIF | ITBMS: **{itbms_rate}%** sobre `(CIF + DAI)`.\n"
-                f"- **Tratados Internacionales y Preferencias Arancelarias:** Sujeto a contingentes arancelarios bajo el Tratado de Promoción Comercial (TPC) Panamá-EE.UU., Tratado de Libre Comercio Centroamericano y el Acuerdo de Asociación UE-Centroamérica.\n"
-                f"- **Formularios Oficiales Exigibles:** Declaración Única Aduanera (DUA) / Declaración Única Centroamericana (DUCA-F para mercancías originarias, DUCA-D para importaciones generales, DUCA-T para tránsito internacional).\n"
-                f"- **Entidades Reguladoras & Permisos Previos:** **{entities}** — *{permits}*.\n"
-                f"- **Procedimiento Aduanero en Muelle:** {tariff.get('procedimiento_importacion', 'Inspección documental, aforo físico aleatorio y liberación de contenedor.')}"
+                "### Motor de lenguaje local no disponible\n"
+                "La consulta requiere análisis de texto y no hay un modelo local cargado. "
+                "Revise `/api/v1/agents/llm-health`; el sistema no asignará una tarifa ni una respuesta normativa por aproximación."
             )
 
         # ------------------------------------------------------------------

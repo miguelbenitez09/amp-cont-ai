@@ -50,13 +50,14 @@ class AuditorMaritimoAgent(BaseMaritimeAgent):
             "(Transparencia y Datos Abiertos), la Ley 56 de 2008 (Ley General de Puertos de Panamá) y los estándares ISO 27001 / ISO 42001. "
             "Responde con rigor jurídico, citando artículos y asegurando que las operaciones mantengan trazabilidad inmutable WORM."
         )
-        llm_res = self.llm.generate_chat_response(sys_prompt, query)
+        llm_res = self.llm.generate_chat_response(sys_prompt, query, max_tokens=32)
         return {
             "author": "Desarrollado v1.0.0 Miguel Benítez",
             "agent_id": self.agent_id,
             "agent_name": self.name,
             "response": llm_res["content"],
-            "legal_citations": ["Ley 6 de 2002 (Panamá)", "Ley 56 de 2008 (AMP)", "ISO/IEC 27001:2022", "ISO 42001:2023"],
+            "legal_citations": [],
+            "citation_status": "No documentary retrieval was executed for this response",
             "backend_telemetry": llm_res,
             "timestamp": datetime.now(timezone.utc).isoformat()
         }
@@ -83,7 +84,7 @@ class OperadorMuelleAgent(BaseMaritimeAgent):
             "de contenedores vacíos para evitar saturación de patios. Habla en términos operativos de logística marítima."
         )
         context_str = f"Pronóstico P50 Balboa: {forecast['forecast_quantiles_teus']['p50_median_central']} TEUs. Intervalo: {forecast['interval_width_teus']} TEUs."
-        llm_res = self.llm.generate_chat_response(sys_prompt, f"{query}\nContexto Operativo: {context_str}")
+        llm_res = self.llm.generate_chat_response(sys_prompt, f"{query}\nContexto Operativo: {context_str}", max_tokens=32, context_data={"forecast": forecast})
 
         return {
             "author": "Desarrollado v1.0.0 Miguel Benítez",
@@ -113,7 +114,7 @@ class CausalRiskAgent(BaseMaritimeAgent):
             "simulaciones de Monte Carlo con descomposición de Cholesky, difusión con saltos de Merton y cálculo de Value at Risk (VaR 95%) "
             "y Expected Shortfall (CVaR). Explica con claridad matemática cómo los choques exógenos afectan el flete y la demanda."
         )
-        llm_res = self.llm.generate_chat_response(sys_prompt, query)
+        llm_res = self.llm.generate_chat_response(sys_prompt, query, max_tokens=32)
         return {
             "author": "Desarrollado v1.0.0 Miguel Benítez",
             "agent_id": self.agent_id,
@@ -154,7 +155,12 @@ class AgenteAduaneroTariffAgent(BaseMaritimeAgent):
                 f"DAI: {customs_data['arancel_dai_pct']}% | ITBMS: {customs_data['itbms_pct']}% | Permisos: {customs_data['permiso_requerido']}"
             )
 
-        llm_res = self.llm.generate_chat_response(sys_prompt, f"{query}{extra_ctx}")
+        llm_res = self.llm.generate_chat_response(
+            sys_prompt,
+            f"{query}{extra_ctx}",
+            max_tokens=32,
+            context_data={"tariff": customs_data},
+        )
 
         return {
             "author": "Desarrollado v1.0.0 Miguel Benítez",

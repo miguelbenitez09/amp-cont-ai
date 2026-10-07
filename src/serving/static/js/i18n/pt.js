@@ -18,7 +18,7 @@ window.I18N_PT = {
     role_prefix: "Função:",
     worm_valid: "WORM: Válido",
     verifying: "Verificando...",
-    healthy: "100% Operacional",
+    healthy: "Estado operacional",
     settings: "Ajustes",
     openapi_docs: "OpenAPI Docs",
     lang_label: "Idioma:"
@@ -43,10 +43,11 @@ window.I18N_PT = {
     attribution_notice: "Atribuição de autoria obrigatória sob a Seção 7 da Licença GNU GPL v3.0.",
     stat_data_points: "140 Meses",
     stat_data_points_sub: "Microdados Reais (2015–2026)",
-    stat_accuracy: "90.89% Precisão",
-    stat_accuracy_sub: "Champion LightGBM (WAPE 9.11%)",
-    stat_zero_mocks: "0% Mocks",
-    stat_zero_mocks_sub: "Garantia de Dados Reais em Prod",
+    stat_accuracy: "Benchmark medido",
+    stat_accuracy_sub: "Consulte o resultado e a data da avaliação",
+    stat_zero_mocks: "Dados com evidência",
+    stat_zero_mocks_sub: "Consulte o manifesto e a data da medição",
+    evidence_badge: "Fontes conectadas • estado verificável",
     stat_worm_ledger: "SHA-256",
     stat_worm_ledger_sub: "Ledger WORM Imutável"
   },
@@ -105,11 +106,27 @@ window.I18N_PT = {
   },
   benchmark: {
     title: "Torneio de 8 Algoritmos de Machine Learning (Backtesting Temporal)",
-    subtitle: "Comparação empírica de 8 modelos competitivos avaliados sobre 140 meses de microdados históricos.",
+    subtitle: "Comparação empírica de 8 modelos competitivos sobre a cobertura temporal registrada no manifesto.",
     btn_compare: "Atualizar Métricas de Benchmark"
   },
   footer: {
     legal: "Desenvolvido por Miguel Benítez • Engenheiro em Sistemas e Computação • Universidade Tecnológica do Panamá (UTP) • Licença GNU GPL v3.0 com Atribuição Obrigatória (Seção 7).",
-    disclaimer: "Dados abertos protegidos sob a Lei 6 de 2002 da República do Panamá."
+    disclaimer: "Dados abertos protegidos pela Lei 6 de 2002 da República do Panamá."
+  },
+  _coverage: {
+    nav_theme_sunset: "Pacífico Sunset (Coral / Neon)", nav_theme_cobalt: "Cobalto da Meia-Noite (Azul profundo)",
+    cot_soul_scientist: "🔬 Cientista de Dados Portuários", cot_soul_risk: "📈 Gestor de Risco e What-If (Monte Carlo, seca)",
+    cot_guardrail_label: "Nível de guardrail:", cot_guardrail_balanced: "Equilibrado (auditoria flexível)", cot_guardrail_permissive: "Permissivo (apenas injeções graves)",
+    cot_quick_queries: "Consultas rápidas de teste:", cot_btn_run_cot: "Executar inferência CoT em tempo real", cot_copy_btn: "Copiar resposta",
+    cot_legal_citations_title: "Fontes e citações normativas panamenhas rastreadas:", cot_feedback_useful: "Útil", cot_feedback_not_useful: "Não útil", cot_feedback_category: "Categoria:",
+    customs_title: "Lakehouse Medallion e RAG jurídico-tarifário panamenho", customs_subtitle: "Consulta de capítulos tarifários, códigos HS, tratados e regras verificadas.", customs_search_label: "Consulta RAG do banco tarifário:", customs_calculator_title: "Calculadora de liquidação fiscal aduaneira (ANA)", customs_cif_value: "Valor CIF (USD):",
+    forecast_terminal_label: "Terminal portuário:", benchmark_title: "Torneio de algoritmos de aprendizado de máquina (backtesting temporal)", benchmark_subtitle: "Comparação empírica de modelos sobre dados históricos.", benchmark_btn_compare: "Atualizar métricas de benchmark",
+    footer_legal: "Desenvolvido por Miguel Benítez • Licença GNU GPL v3.0.", footer_disclaimer: "Dados abertos protegidos pela Lei 6 de 2002 do Panamá.",
+    cot_seal_valid: "Selo de integridade válido", cot_hash_label: "Hash:", cot_seal_signature: "Assinatura do selo:", cot_engine_val: "Validação do motor:",
+    cot_guardrail_level: "Nível de guardrail", cot_preset_title: "Consultas predefinidas", cot_preset_beef: "Carne bovina", cot_preset_drought: "Risco de seca", cot_preset_container: "Contêiner", cot_preset_jailbreak: "Teste de segurança", cot_btn_execute: "Executar", cot_ready_status: "Pronto", cot_latency_label: "Latência:", cot_inference_label: "Inferência:", cot_tokens_label: "Tokens:", cot_seal_status: "Estado do selo:", cot_chain_title: "Cadeia de raciocínio verificada", cot_step1_desc: "Validar a pergunta e o contexto.", cot_step2_desc: "Recuperar fontes relevantes.", cot_step3_desc: "Comparar evidências e regras.", cot_step4_desc: "Formular uma resposta fundamentada.", cot_step5_desc: "Apresentar citações e limitações.", cot_btn_copy: "Copiar", cot_initial_response_hint: "A resposta aparecerá aqui após a execução.", cot_citations_title: "Fontes e citações", cot_thumb_up: "Útil", cot_thumb_down: "Não útil", cot_rating_label: "Avaliação:", cot_category_label: "Categoria:", cot_cat_accuracy: "Precisão", cot_cat_legal: "Base legal", cot_cat_reasoning: "Raciocínio", cot_cat_latency: "Latência", cot_cat_general: "Geral",
+    customs_banner_title: "Plataforma aduaneira", customs_banner_subtitle: "Consulta documentada de tarifas e procedimentos.", customs_badge_rag: "RAG tarifário", customs_badge_lakehouse: "Lakehouse", customs_badge_iso: "ISO 6346", customs_search_title: "Pesquisar tarifas", customs_quick_filters: "Filtros rápidos", customs_calc_title: "Calculadora aduaneira", customs_calc_hs_code_label: "Código HS:", customs_calc_cif_label: "Valor CIF:", customs_container_title: "Validador de contêiner", customs_container_label: "Identificador do contêiner:", customs_container_size_label: "Código de tamanho/tipo:", customs_btn_validate_container: "Validar contêiner", customs_results_title: "Resultados", customs_permits_required: "Permissões exigidas", customs_import_procedure: "Procedimento de importação", customs_export_procedure: "Procedimento de exportação", customs_legal_basis: "Base legal", customs_evidence_pending: "Regra candidata: o procedimento e a base legal exigem documento oficial vinculado; não comprovam vigência legal atual por si sós.", customs_evidence_historical: "Registro histórico de observação; não representa vigência legal atual.", customs_evidence_verified: "Evidência documental oficial vinculada e verificada.", customs_bitemporal_validity: "Vigência bitemporal", customs_dai_rate: "Taxa DAI", customs_itbms_rate: "Taxa ITBMS", customs_reefer_status: "Estado refrigerado",
+    forecast_port_label: "Porto:", forecast_algo_label: "Algoritmo:", forecast_bunker_label: "Bunker:", forecast_transits_label: "Trânsitos:", forecast_kpi_p50: "Mediana P50", forecast_kpi_p10: "Piso P10", forecast_kpi_p90: "Teto P90", forecast_kpi_balance: "Saldo", forecast_table_month: "Mês", forecast_table_step: "Etapa", forecast_table_p10: "P10", forecast_table_p50: "P50", forecast_table_p90: "P90", forecast_table_empty_ratio: "Índice de vazio", forecast_table_status: "Estado",
+    simulation_title: "Simulação operacional", simulation_subtitle: "Cenários e incerteza com dados registrados.", simulation_scenario_label: "Cenário:", simulation_paths_label: "Caminhos:", simulation_btn_simulate: "Executar simulação", simulation_kpi_expected: "Valor esperado", simulation_kpi_var95: "VaR 95%", simulation_kpi_cvar: "CVaR", simulation_kpi_prob: "Probabilidade",
+    data_platform_title: "Plataforma de dados", data_platform_subtitle: "Linhas Bronze, Silver e Gold com procedência.", data_platform_bronze_title: "Camada Bronze (origem)", data_platform_silver_title: "Camada Silver (tratada)", data_platform_gold_title: "Camada Gold (serviço)", data_platform_ana_status_label: "Estado do catálogo ANA:", data_platform_ana_records_label: "Registros ANA:", data_platform_ana_integrity_label: "Integridade da publicação:", security_title: "Segurança e auditoria", security_permissions_sub: "Permissões registradas", security_authenticated_session: "Sessão autenticada", security_guest_mode: "Modo convidado · permissões de consulta", security_subtitle: "Permissões e eventos verificáveis.", security_role_selector_label: "Função operacional:", security_btn_simulate_role: "Alternar função", security_worm_verify_title: "Verificação da cadeia WORM", security_btn_verify_worm: "Verificar integridade", security_block_height: "Altura do bloco:", security_chain_integrity: "Integridade da cadeia:", security_last_block_hash: "Hash do último bloco:", telemetry_title: "Telemetria", telemetry_subtitle: "Medições registradas de execução.", telemetry_total_inferences: "Inferências totais", telemetry_avg_latency: "Latência média", telemetry_tokens_consumed: "Tokens consumidos", telemetry_user_satisfaction: "Satisfação do usuário", common_loading: "Carregando...", common_error: "Ocorreu um erro", common_success: "Operação concluída", common_close: "Fechar", common_details: "Ver detalhes"
   }
 };

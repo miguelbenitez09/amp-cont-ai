@@ -1,0 +1,125 @@
+# AMP-CONT-AI CAPABILITY MATRIX
+# Matriz de Capacidades Oficial por Rol y Permisos de Sistema
+# Modelo RBAC: 12 Roles, 31 Permisos con Control Estricto de Acceso
+
+roles:
+  - id: "superadmin"
+    name: "Super Administrador de Sistema"
+    description: "Control absoluto de plataforma, despliegue, secretos, llaves criptográficas y auditoría"
+    permissions: ["*"]
+    capabilities:
+      can_deploy_models: true
+      can_rotate_secrets: true
+      can_modify_guardrails: true
+      can_manage_users: true
+      can_export_worm_audit: true
+      can_run_simulations: true
+      can_manage_brain: true
+
+  - id: "admin"
+    name: "Administrador de Operaciones MLOps"
+    description: "Gestión de modelos, pipelines, usuarios operativos y monitoreo"
+    permissions:
+      - "users:read"
+      - "users:write"
+      - "models:read"
+      - "models:train"
+      - "models:deploy"
+      - "audit:read"
+      - "guardrails:read"
+      - "guardrails:update"
+      - "system:status"
+      - "brain:read"
+    capabilities:
+      can_deploy_models: true
+      can_rotate_secrets: false
+      can_modify_guardrails: true
+      can_manage_users: true
+      can_export_worm_audit: false
+      can_run_simulations: true
+      can_manage_brain: false
+
+  - id: "ml_engineer"
+    name: "Ingeniero de Machine Learning"
+    description: "Entrenamiento de modelos, cuantiles, tuning de hiperparámetros y evaluación"
+    permissions:
+      - "models:read"
+      - "models:train"
+      - "data:read"
+      - "data:features"
+      - "lakehouse:query"
+      - "rag:read"
+    capabilities:
+      can_deploy_models: false
+      can_rotate_secrets: false
+      can_modify_guardrails: false
+      can_manage_users: false
+      can_export_worm_audit: false
+      can_run_simulations: true
+      can_manage_brain: false
+
+  - id: "customs_officer"
+    name: "Oficial de Aduanas (ANA Panamá)"
+    description: "Consulta de aranceles oficiales, notas marginales, acuerdos comerciales y clasificación HS"
+    permissions:
+      - "customs:tariff_lookup"
+      - "customs:agreements_read"
+      - "rag:infer"
+      - "audit:read_own"
+    capabilities:
+      can_deploy_models: false
+      can_rotate_secrets: false
+      can_modify_guardrails: false
+      can_manage_users: false
+      can_export_worm_audit: false
+      can_run_simulations: false
+      can_manage_brain: false
+
+  - id: "port_analyst"
+    name: "Analista Portuario (AMP / Terminales)"
+    description: "Análisis de tráfico de contenedores, TEUs por puerto y proyecciones de demanda"
+    permissions:
+      - "ports:demand_forecast"
+      - "lakehouse:query_aggregates"
+      - "rag:infer"
+      - "audit:read_own"
+    capabilities:
+      can_deploy_models: false
+      can_rotate_secrets: false
+      can_modify_guardrails: false
+      can_manage_users: false
+      can_export_worm_audit: false
+      can_run_simulations: true
+      can_manage_brain: false
+
+  - id: "auditor"
+    name: "Auditor Soberano / Contraloría"
+    description: "Inspección forense de sellos criptográficos, ledgers WORM y trazas de decisión"
+    permissions:
+      - "audit:read_all"
+      - "audit:verify_worm"
+      - "audit:export"
+      - "brain:read"
+    capabilities:
+      can_deploy_models: false
+      can_rotate_secrets: false
+      can_modify_guardrails: false
+      can_manage_users: false
+      can_export_worm_audit: true
+      can_run_simulations: false
+      can_manage_brain: false
+
+  - id: "readonly_viewer"
+    name: "Visor de Tableros Públicos"
+    description: "Acceso de lectura exclusivamente a estadísticas consolidadas y métricas públicas"
+    permissions:
+      - "dashboard:read"
+      - "customs:tariff_lookup_basic"
+    capabilities:
+      can_deploy_models: false
+      can_rotate_secrets: false
+      can_modify_guardrails: false
+      can_manage_users: false
+      can_export_worm_audit: false
+      can_run_simulations: false
+      can_manage_brain: false

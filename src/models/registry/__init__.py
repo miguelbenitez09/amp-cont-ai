@@ -5,13 +5,14 @@ Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 
 from pathlib import Path
 from typing import Dict, Any, Optional
+import math
 import mlflow
 from mlflow.tracking import MlflowClient
 from src.utils.logger import logger
 from src.models.registry.manager import ModelLifecycleManager
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
-DB_PATH = (PROJECT_ROOT / "mlflow.db").as_posix()
+DB_PATH = ((PROJECT_ROOT / "data" / "enterprise_db" / "mlflow.db") if (PROJECT_ROOT / "data" / "enterprise_db" / "mlflow.db").exists() else (PROJECT_ROOT / "mlflow.db")).as_posix()
 TRACKING_URI = f"sqlite:///{DB_PATH}"
 
 
@@ -41,7 +42,20 @@ class ModelRegistryManager:
             latest_version = versions[0]
             run = self.client.get_run(latest_version.run_id)
             metrics = run.data.metrics
-            p50_wape = metrics.get("p50_wape", 0.0911)
+            p50_wape = metrics.get("p50_wape")
+
+            # A model may only be promoted on observed evaluation evidence.  A
+            # fabricated default metric used to let unevaluated artifacts pass
+            # this gate, which made the registry status impossible to audit.
+            if p50_wape is None or not math.isfinite(float(p50_wape)):
+                self.client.set_registered_model_alias(self.model_name, "challenger", latest_version.version)
+                return {
+                    "promoted": False,
+                    "version": latest_version.version,
+                    "alias": "challenger",
+                    "reason": "Missing or non-finite required metric: p50_wape",
+                }
+            p50_wape = float(p50_wape)
 
             if p50_wape > wape_threshold:
                 self.client.set_registered_model_alias(self.model_name, "challenger", latest_version.version)
@@ -63,12 +77,13 @@ class ModelRegistryManager:
                 "current_stage": champion.current_stage,
                 "description": champion.description
             }
-        except Exception:
+        except Exception as exc:
             return {
                 "name": self.model_name,
-                "version": "v1.0.0",
-                "current_stage": "Production",
-                "description": "Panama PortOps Champion"
+                "version": None,
+                "current_stage": "UNAVAILABLE",
+                "description": "No champion alias is registered and verified.",
+                "error": str(exc),
             }
 
 

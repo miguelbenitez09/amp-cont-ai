@@ -84,3 +84,25 @@ docker-down:
 	docker compose down
 
 all: classify normalize quality features train register monitor test
+
+# --- LOOP ENGINEERING GOVERNANCE COMMANDS ---
+.PHONY: audit clean verify brain-reconcile test-postgres test-e2e release-check
+
+audit:
+	python -m pytest tests/test_security_gateway.py tests/test_ui_state_machine.py tests/test_brain_api.py -v
+
+clean:
+	python -c "import pathlib, shutil; [shutil.rmtree(p) for p in pathlib.Path('.').rglob('__pycache__') if p.is_dir()]; [shutil.rmtree(p) for p in pathlib.Path('.').rglob('.pytest_cache') if p.is_dir()]"
+
+verify:
+	python -m pytest tests/ -q --ignore=tests/test_agents_customs_mcp.py
+
+brain-reconcile:
+	python -c "from src.brain.service import brain_service; print('Brain status:', brain_service.get_source_of_truth().get('system', {}).get('lifecycle_state'))"
+
+test-postgres:
+	python -c "from src.infrastructure.db.factory import DatabaseFactory; print(DatabaseFactory.test_adapter_connection('duckdb'))"
+
+release-check: verify audit brain-reconcile
+	@echo "Release check passed: candidate ready for LOOP closeout verification."
+

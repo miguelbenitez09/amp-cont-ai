@@ -25,12 +25,28 @@ ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 BOOTSTRAP_DIR = ROOT_DIR / ".bootstrap"
 
 
+def _load_existing_bootstrap_password() -> Optional[str]:
+    """Reuse the local bootstrap credential when this checkout already has one."""
+    cred_file = BOOTSTRAP_DIR / "root-credentials.txt"
+    if not cred_file.exists():
+        return None
+    try:
+        for line in cred_file.read_text(encoding="utf-8").splitlines():
+            if line.startswith("Default Pass:"):
+                password = line.split("Default Pass:", 1)[1].strip()
+                return password or None
+    except OSError:
+        return None
+    return None
+
+
 class BootstrapManager:
     """Handles cryptographic root user initialization, role matrix, and deployment verification."""
 
     DEFAULT_ROOT_USERNAME = "root"
-    _DEFAULT_PWD_FALLBACK = "admin_portops_2026!"
-    DEFAULT_ROOT_PASSWORD = os.getenv("PORTOPS_ROOT_PASSWORD", _DEFAULT_PWD_FALLBACK)
+    # A bootstrap password is generated per process when the operator does not
+    # provide one explicitly.  Never ship a shared credential in source code.
+    DEFAULT_ROOT_PASSWORD = os.getenv("PORTOPS_ROOT_PASSWORD") or _load_existing_bootstrap_password() or secrets.token_urlsafe(24)
 
     @classmethod
     def is_root_initialized(cls, conn: sqlite3.Connection) -> bool:

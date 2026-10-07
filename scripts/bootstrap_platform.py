@@ -207,14 +207,14 @@ def run_platform_bootstrap(user_mode: bool = False, elevate: bool = False, dry_r
     suite = get_champion_suite()
     comp_8 = suite.get_benchmark_summary()
     print(f"│  • Algoritmos Auditados en Suite: \033[96m{len(comp_8)} de 8 modelos disponibles\033[0m")
-    champ = comp_8.get("lightgbm", {})
-    rf = comp_8.get("random_forest", {})
-    cb = comp_8.get("catboost_gbdt", {})
-    print(f"│    1. LightGBM (Champion): WAPE = {champ.get('avg_wape', 0.0911)*100:.2f}% | R² = {champ.get('avg_r2', 0.9634)}")
-    print(f"│    2. Random Forest: WAPE = {rf.get('avg_wape', 0.0915)*100:.2f}% | Latencia = {rf.get('avg_latency_ms', 4.58)} ms")
-    print(f"│    3. CatBoost GBDT: WAPE = {cb.get('avg_wape', 0.0913)*100:.2f}%")
-    print("│    4. HistGradientBoosting | 5. Extra Trees | 6. Quantile Neural MLP | 7. Bayes Ridge | 8. Ridge Baseline")
-    print("│  [✓] Garantía matemática anti-cruce de cuantiles P10 <= P50 <= P90 verificada.")
+    selection = suite.get_selection_recommendation()
+    print(f"│  • Selección calculada: {selection.get('candidate') or 'N/D'}")
+    print(f"│  • Política: {selection.get('policy', 'N/D')} | Promoción gobernada: {selection.get('requires_governance_promotion', 'N/D')}")
+    for key, metrics in comp_8.items():
+        wape = metrics.get("avg_wape")
+        wape_text = f"{wape * 100:.2f}%" if isinstance(wape, (int, float)) else "N/D"
+        print(f"│    {key}: WAPE = {wape_text} | R² = {metrics.get('avg_r2', 'N/D')} | latencia = {metrics.get('avg_latency_ms', 'N/D')} ms")
+    print("│  [i] Las invariantes cuantílicas sólo se marcan verificadas cuando existe un reporte de evaluación registrado.")
 
     # -------------------------------------------------------------------------
     # STEP 11: Dual-Layer Guardrails System

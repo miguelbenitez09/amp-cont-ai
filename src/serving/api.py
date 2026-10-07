@@ -20,6 +20,7 @@ import os
 import sys
 import time
 import json
+import secrets
 from pathlib import Path
 
 # Silence loky core counting subprocess error on Windows
@@ -33,7 +34,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from fastapi import FastAPI, HTTPException, status, Query, Request
+from fastapi import FastAPI, HTTPException, status, Query, Request, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
@@ -47,6 +48,7 @@ from src.simulation.stress_tester import PortStressTester
 from src.infrastructure.db.factory import DatabaseFactory
 from src.mcp.tools import get_available_tools_schema
 from src.rag.engine import MaritimeRAGEngine
+from src.data.scrapers.ana_hscode_scraper import PanamaTariffDatabase
 from src.guardrails.engine import PortOpsGuardrails
 from src.infrastructure.secrets.manager import SecretManager
 from src.infrastructure.db.postgres_audit import audit_manager
@@ -103,7 +105,7 @@ API_DESCRIPTION = """
 **Autor:** **Desarrollado v1.0.0 Miguel Benítez**  
 **Finalidad:** *Proyecto desarrollado con fines estrictamente educativos, académicos y de demostración técnica MLOps.*  
 **Licencia:** GNU General Public License v3.0 (GPL-3.0) con Atribución Obligatoria  
-**Datos Fuente:** Autoridad Marítima de Panamá (AMP) — Período Histórico Oficial 2015–2026 (140 meses continuos).  
+**Datos Fuente:** Autoridad Marítima de Panamá (AMP) — cobertura temporal y fecha de observación consultables en `/api/v1/data/catalog/manifest`.
 
 ---
 
@@ -114,8 +116,8 @@ Esta API permite consultar modelos predictivos de Machine Learning entrenados so
 ### 1. Inferencia Predictiva (`POST /predict`)
 Genera pronósticos puntuales y por cuantiles para cualquier puerto a un horizonte de 1 a 6 meses.
 Permite evaluar escenarios de sensibilidad operacional (*What-If*) y seleccionar entre 4 familias de algoritmos:
-- `ensemble` (LightGBM Cuantiles P10, P50, P90 - **Champion**)
-- `random_forest` (Random Forest Regressor - **Challenger de Baja Latencia**)
+- `ensemble` (LightGBM Cuantiles P10, P50, P90)
+- `random_forest` (Random Forest Regressor)
 - `gradient_boosting` (HistGradientBoostingRegressor)
 - `ridge_elasticnet` (Modelo Lineal Regularizado con StandardScaler)
 
@@ -221,6 +223,44 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+SECURITY_HEADERS = {
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), fullscreen=(self)",
+    "Cross-Origin-Opener-Policy": "same-origin",
+    "Cross-Origin-Resource-Policy": "same-origin",
+    "Content-Security-Policy": (
+        "default-src 'self'; "
+        "script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; "
+        "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; "
+        "img-src 'self' data:; "
+        "font-src 'self' https://cdn.jsdelivr.net data:; "
+        "connect-src 'self'; "
+        "object-src 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self'; "
+        "frame-ancestors 'none'"
+    ),
+}
+
+
+@app.middleware("http")
+async def apply_gateway_security_headers(request: Request, call_next):
+    """Apply browser security policy at the FastAPI gateway for every UI/API response."""
+    response = await call_next(request)
+    for header, value in SECURITY_HEADERS.items():
+        response.headers.setdefault(header, value)
+
+    forwarded_proto = request.headers.get("x-forwarded-proto", "").lower()
+    if request.url.scheme == "https" or forwarded_proto == "https" or os.getenv("PORTOPS_ENABLE_HSTS") == "1":
+        response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+
+    if request.url.path == "/app" or request.url.path.startswith("/api/"):
+        response.headers.setdefault("Cache-Control", "no-store")
+        response.headers.setdefault("Pragma", "no-cache")
+    return response
+
 # Mount core v1 and health routers
 from src.serving.v1_router import health_router, v1_router
 app.include_router(health_router)
@@ -235,6 +275,19 @@ def wants_html(request: Request) -> bool:
     """Helper to detect if request comes from a human web browser rather than an API client."""
     accept = request.headers.get("accept", "")
     return "text/html" in accept and request.query_params.get("format") != "json"
+
+
+def predict_with_local_threads(model: Any, features: Any) -> Any:
+    """Run model prediction without invoking automatic physical-core discovery."""
+    if hasattr(model, "n_jobs"):
+        try:
+            model.n_jobs = 1
+        except Exception:
+            pass
+    try:
+        return model.predict(features, num_threads=1)
+    except TypeError:
+        return model.predict(features)
 
 
 def render_html_page(title: str, subtitle: str, content_html: str) -> str:
@@ -464,15 +517,9 @@ def get_port_history(port_name: str, limit_months: int = Query(24, ge=1, le=140)
 @app.get("/api/models/compare", tags=["Model Benchmarking & Comparison"])
 def compare_models(request: Request):
     """
-    Evaluación comparativa formal entre las 8 arquitecturas de algoritmos evaluadas:
-    1. LightGBM Cuantílico (Champion)
-    2. Random Forest Regressor (Challenger)
-    3. HistGradientBoosting (Challenger)
-    4. Ridge / ElasticNet (Challenger)
-    5. Extra Trees Regressor (Challenger)
-    6. CatBoost GBDT (Challenger)
-    7. Bayesian Ridge Regression (Challenger)
-    8. Quantile Neural MLP (Challenger)
+    Evaluación comparativa formal entre las arquitecturas registradas en la
+    ejecución de benchmark. La recomendación se calcula a partir de las
+    métricas disponibles y no muta el modelo en producción.
     
     *Nota: Si se visita desde el navegador, se presenta una vista visual pedagógica.*
     """
@@ -481,22 +528,26 @@ def compare_models(request: Request):
     benchmark_data = ml_artifacts.get("benchmark_data") or {}
     suite_splits = suite.get_splits_summary() if hasattr(suite, "get_splits_summary") else []
     splits = suite_splits if suite_splits else benchmark_data.get("splits_summary", [])
+    selected_candidate = (payload_recommendation := suite.get_selection_recommendation()).get("candidate")
     
     payload = {
         "author": "Desarrollado v1.0.0 Miguel Benítez",
         "benchmark_comparison": comp_8,
-        "splits_summary": splits
+        "splits_summary": splits,
+        "selection_recommendation": payload_recommendation,
     }
 
     if wants_html(request):
         cards_html = "<div class='benchmark-cards-grid'>"
         for k, v in comp_8.items():
-            status_cls = "champion" if v.get("status") == "Champion" else ("baseline" if "ridge" in k else "")
-            wape_str = f"{v.get('avg_wape', 0)*100:.2f}%" if v.get("avg_wape", 0) < 5.0 else ">1,000% (Colapso Lineal)"
+            status_cls = "champion" if k == selected_candidate else ("baseline" if "ridge" in k else "")
+            status_label = "Candidato seleccionado por política" if k == selected_candidate else "Candidato"
+            avg_wape = v.get("avg_wape")
+            wape_str = f"{avg_wape*100:.2f}%" if isinstance(avg_wape, (int, float)) else "N/D"
             display_name = v.get("name", k.upper())
             cards_html += f"""
             <div class='algo-stat-card {status_cls}'>
-              <div class='algo-badge-top'>{v.get('status')}</div>
+              <div class='algo-badge-top'>{status_label}</div>
               <div class='algo-name'>{display_name}</div>
               <div class='algo-metric'>WAPE Promedio: <span class='highlight'>{wape_str}</span></div>
               <div class='algo-submetric'>R²: {v.get('avg_r2')} | RMSE: {v.get('avg_rmse'):,.0f} | Latencia: {v.get('avg_latency_ms')} ms</div>
@@ -539,8 +590,8 @@ def compare_models(request: Request):
           <h3>¿Cómo interpretar este reporte de Benchmarking de 8 Algoritmos?</h3>
           <p style='color:var(--text-muted); font-size:0.9rem; margin-top:0.5rem;'>
             <strong>1. WAPE (Weighted Absolute Percentage Error):</strong> Pondera el error por el volumen real de la terminal, evitando divisiones espurias por cero.<br>
-            <strong>2. ¿Por qué LightGBM es Champion?:</strong> Porque logra un error de solo <strong>9.11%</strong> y genera estimaciones cuantílicas directas (P10, P50, P90) con función de pérdida Pinball sin asumir normalidad.<br>
-            <strong>3. Árboles vs Modelos Lineales:</strong> En series de tiempo con 81 covariables correlacionadas (lags t-1..t-12), los modelos basados en árboles (LightGBM, Random Forest, Extra Trees, CatBoost) presentan particiones ortogonales que anulan la multicolinealidad.
+            <strong>2. ¿Cómo se selecciona el candidato?:</strong> La política compara el WAPE medio fuera de muestra y usa la latencia como desempate. La recomendación requiere promoción explícita y no cambia producción automáticamente.<br>
+            <strong>3. Lectura:</strong> Las métricas representan la ejecución registrada y deben interpretarse junto con sus particiones, fecha, dataset y artefacto asociado.
           </p>
         </div>"""
 
@@ -600,7 +651,7 @@ def get_model_diagnostics(request: Request):
           <div class='kpi-card'>
             <div class='kpi-title'>Asimetría (Skewness)</div>
             <div class='kpi-value'>{res_stats.get('skewness', 0):.3f}</div>
-            <div class='kpi-sub'>Distribución casi simétrica</div>
+            <div class='kpi-sub'>Interpretación desde el reporte registrado</div>
           </div>
         </div>"""
 
@@ -777,7 +828,24 @@ def predict_container_throughput(req: PredictionRequest):
         )
 
     # Multi-horizon recursive projection
-    current_features = encoded_row[feature_cols].fillna(0).copy()
+    raw_features = encoded_row[feature_cols].copy()
+    preprocessor = bundle.get("preprocessor")
+    if preprocessor is not None:
+        current_features = pd.DataFrame(
+            preprocessor.transform(raw_features),
+            columns=feature_cols,
+            index=raw_features.index,
+        )
+    else:
+        # Legacy bundles predate the persisted preprocessing policy. Refuse
+        # missing values instead of silently treating missing observations as 0.
+        missing = [column for column in feature_cols if raw_features[column].isna().any()]
+        if missing:
+            raise HTTPException(
+                status_code=503,
+                detail=f"El bundle no incluye preprocesador y contiene valores faltantes: {missing[:8]}",
+            )
+        current_features = raw_features
     selected_algo = (req.algorithm or "ensemble").lower().strip()
     predictions = []
 
@@ -794,13 +862,13 @@ def predict_container_throughput(req: PredictionRequest):
         target_dt = latest_date + pd.DateOffset(months=step)
 
         # Predict point estimate
-        raw_pred = float(primary_model.predict(current_features)[0])
+        raw_pred = float(predict_with_local_threads(primary_model, current_features)[0])
         p50_val = max(0.0, raw_pred)
 
         # Quantile bounds
         if selected_algo in ["ensemble", "lightgbm"] and "p10" in models and "p90" in models:
-            p10_val = max(0.0, float(models["p10"].predict(current_features)[0]))
-            p90_val = max(p50_val, float(models["p90"].predict(current_features)[0]))
+            p10_val = max(0.0, float(predict_with_local_threads(models["p10"], current_features)[0]))
+            p90_val = max(p50_val, float(predict_with_local_threads(models["p90"], current_features)[0]))
             p10_val = min(p10_val, p50_val)
         else:
             # Empirical variance approximation for non-quantile regressors (approx 10% band)
@@ -981,18 +1049,18 @@ def get_residual_metric_detail(metric_key: str):
     catalog = {
         "mean_residual": {
             "title": "Error Residual Medio (Mean Bias / Insesgadez)",
-            "metric_value": "+7,788 TEUs",
+            "metric_value": "N/D",
             "benchmark_reference": "0.0 TEUs (Insesgadez Gaussiana Teórica)",
-            "relative_pct": "+1.19% sobre media nacional (652,000 TEUs)",
+            "relative_pct": "N/D hasta cargar un reporte de evaluación",
             "formula_latex": r"\mu_e = \frac{1}{N} \sum_{i=1}^N (y_i - \hat{y}_i)",
             "python_syntax": "mean_residual = float(np.mean(y_true - y_pred))",
-            "mathematical_deduction": "En inferencia estadística clásica, un estimador insesgado satisface E[e] = 0. En nuestro modelo sobre 140 particiones temporales (2015-2026), el error residual medio se sitúa en +7,788 TEUs, lo cual demuestra que la red LightGBM predice con un sesgo ínfimo inferior a 1.2% sin subestimaciones sistemáticas severas.",
-            "operational_impact": "Un sesgo residual levemente positivo (+1.19%) opera como un margen de seguridad conservador favorable para la planificación de patios y muelles: evita incurrir en costos ociosos de cuadrillas de estibadores mientras que las bandas P90 cubren cualquier fluctuación alcista imprevista.",
+            "mathematical_deduction": "En inferencia estadística clásica, un estimador insesgado satisface E[e] = 0. La magnitud del error residual y cualquier conclusión de sesgo deben consultarse en un reporte de evaluación registrado; no se infieren de la ficha metodológica.",
+            "operational_impact": "El impacto operativo se interpreta únicamente después de cargar un reporte de evaluación con datos fuera de muestra y su fecha de observación.",
             "algorithmic_mitigation": "Para aplicaciones con estricta restricción de media cero (como conciliación contable de ingresos tarifarios de la AMP), se aplica corrección aditiva y calibración isotónica de cuantiles en post-procesamiento."
         },
         "std_residual": {
             "title": "Desviación Estándar Residual (\u03c3_e / Dispersión)",
-            "metric_value": "16,415 TEUs",
+            "metric_value": "N/D",
             "benchmark_reference": "\u03c3_Y = 78,500 TEUs (Varianza incondicionada de la serie histórica)",
             "relative_pct": "-79.1% de reducción de varianza residual (R\u00b2 = 0.959)",
             "formula_latex": r"\sigma_e = \sqrt{\frac{1}{N-1} \sum_{i=1}^N \left((y_i - \hat{y}_i) - \mu_e\right)^2}",
@@ -1260,7 +1328,11 @@ class CreateUserRequest(BaseModel):
     entity: str = Field(..., description="Entidad ministerial o portuaria")
     role_id: str = Field(default="operador_portuario", description="Rol asignado")
     auth_method: str = Field(default="Bearer_Token", description="Método de autenticación")
-    password: Optional[str] = Field(default=None, description="Contraseña de acceso inicial")
+    password: Optional[str] = Field(
+        default=None,
+        min_length=12,
+        description="Contraseña inicial; si se omite se genera una credencial aleatoria de un solo uso",
+    )
 
 
 class RevokeSessionsRequest(BaseModel):
@@ -1503,10 +1575,18 @@ def query_maritime_legal_rag(req: RAGQueryRequest):
 
     clean_query = sanitization.sanitized_payload.get("sanitized_query", req.query)
     result = rag_engine.query(clean_query, top_k=req.top_k)
+    tariff_hint = any(token in clean_query.lower() for token in ("hs", "arancel", "subpartida", "mercanc", "permiso", "tarifa", "lápiz", "lapiz", "borrador", "bunker", "banano"))
+    tariff_matches = PanamaTariffDatabase.search_by_text(clean_query) if tariff_hint else []
     return {
         "status": "success",
         "author": "Desarrollado v1.0.0 Miguel Benítez",
-        "rag_response": result
+        "rag_response": result,
+        "tariff_response": {
+            "matches": tariff_matches[:req.top_k],
+            "total_matches": len(tariff_matches),
+            "source": "ANA curated rules + INEC Comercio Exterior report 05",
+            "historical_matches": sum(1 for item in tariff_matches if item.get("historical_observation")),
+        }
     }
 
 
@@ -1539,6 +1619,108 @@ def validate_guardrails_inspection(req: GuardrailValidationRequest):
     }
 
 
+# In-memory dictionary for role guardrail policies backed with industrial defaults
+_ROLE_GUARDRAIL_POLICIES = {
+    "root": {
+        "role": "root",
+        "daily_token_quota": 1000000,
+        "rate_limit_rpm": 500,
+        "allow_model_promotion": True,
+        "allowed_mcp_tools": [
+            "get_port_forecast", "run_monte_carlo_risk_simulation",
+            "lookup_panama_customs_tariff", "validate_iso6346_container",
+            "compare_model_benchmarks", "query_maritime_knowledge"
+        ]
+    },
+    "admin_maritimo": {
+        "role": "admin_maritimo",
+        "daily_token_quota": 500000,
+        "rate_limit_rpm": 250,
+        "allow_model_promotion": True,
+        "allowed_mcp_tools": [
+            "get_port_forecast", "run_monte_carlo_risk_simulation",
+            "lookup_panama_customs_tariff", "validate_iso6346_container",
+            "compare_model_benchmarks", "query_maritime_knowledge"
+        ]
+    },
+    "auditor_aduana": {
+        "role": "auditor_aduana",
+        "daily_token_quota": 200000,
+        "rate_limit_rpm": 100,
+        "allow_model_promotion": False,
+        "allowed_mcp_tools": [
+            "lookup_panama_customs_tariff", "validate_iso6346_container",
+            "compare_model_benchmarks", "query_maritime_knowledge"
+        ]
+    },
+    "operador_puerto": {
+        "role": "operador_puerto",
+        "daily_token_quota": 150000,
+        "rate_limit_rpm": 60,
+        "allow_model_promotion": False,
+        "allowed_mcp_tools": [
+            "get_port_forecast", "validate_iso6346_container",
+            "run_monte_carlo_risk_simulation"
+        ]
+    },
+    "analista_amp": {
+        "role": "analista_amp",
+        "daily_token_quota": 300000,
+        "rate_limit_rpm": 150,
+        "allow_model_promotion": False,
+        "allowed_mcp_tools": [
+            "get_port_forecast", "run_monte_carlo_risk_simulation",
+            "compare_model_benchmarks", "query_maritime_knowledge"
+        ]
+    },
+    "consultor_publico": {
+        "role": "consultor_publico",
+        "daily_token_quota": 50000,
+        "rate_limit_rpm": 30,
+        "allow_model_promotion": False,
+        "allowed_mcp_tools": [
+            "get_port_forecast", "compare_model_benchmarks"
+        ]
+    }
+}
+
+
+@app.get("/api/v1/guardrails/policies/{role}", tags=["Methodology & Data Governance"])
+def get_role_guardrail_policy(role: str):
+    """Retorna la política de cuotas de tokens y permisos MCP por rol."""
+    policy = _ROLE_GUARDRAIL_POLICIES.get(role)
+    if not policy:
+        return {
+            "role": role,
+            "daily_token_quota": 100000,
+            "rate_limit_rpm": 60,
+            "allow_model_promotion": False,
+            "allowed_mcp_tools": ["get_port_forecast", "validate_iso6346_container"]
+        }
+    return policy
+
+
+@app.post("/api/v1/guardrails/policies", tags=["Methodology & Data Governance"])
+def set_role_guardrail_policy(payload: dict):
+    """Actualiza la política dinámica de cuotas de tokens, RPM y permisos de invocación MCP por rol."""
+    role = payload.get("role", "admin_maritimo")
+    settings = payload.get("settings", payload)
+    
+    current = _ROLE_GUARDRAIL_POLICIES.get(role, {"role": role})
+    current["daily_token_quota"] = settings.get("daily_token_quota", settings.get("max_tokens_per_day", current.get("daily_token_quota", 250000)))
+    current["rate_limit_rpm"] = settings.get("rate_limit_rpm", current.get("rate_limit_rpm", 120))
+    current["allow_model_promotion"] = bool(settings.get("allow_model_promotion", current.get("allow_model_promotion", False)))
+    if "allowed_mcp_tools" in settings:
+        current["allowed_mcp_tools"] = settings["allowed_mcp_tools"]
+    
+    _ROLE_GUARDRAIL_POLICIES[role] = current
+    return {
+        "status": "updated",
+        "role": role,
+        "policy": current
+    }
+
+
 @app.get("/api/export/provenance", tags=["Methodology & Data Governance"])
 def get_export_dataset_provenance():
     """
@@ -1556,6 +1738,11 @@ def get_export_dataset_provenance():
                 hasher.update(chunk)
         sha256 = hasher.hexdigest()
         file_size_kb = round(gold_file.stat().st_size / 1024, 1)
+
+    suite = get_champion_suite()
+    recommendation = suite.get_selection_recommendation()
+    selected = recommendation.get("candidate")
+    selected_metrics = (suite.get_benchmark_summary().get(selected) or {}) if selected else {}
 
     return {
         "author": "Desarrollado v1.0.0 Miguel Benítez",
@@ -1584,8 +1771,15 @@ def get_export_dataset_provenance():
             "sha256_checksum": sha256
         },
         "models_evaluated": {
-            "champion": "LightGBM Quantile Regressors (P10, P50, P90) - WAPE 9.11%, R² 0.9594",
-            "challengers": ["Random Forest (WAPE 9.10%)", "HistGradientBoosting (WAPE 9.78%)", "Ridge/ElasticNet"]
+            "selected_candidate": selected,
+            "selection_policy": recommendation.get("policy"),
+            "selection_requires_governance_promotion": recommendation.get("requires_governance_promotion", True),
+            "selected_metrics": {
+                "wape": selected_metrics.get("avg_wape"),
+                "r2": selected_metrics.get("avg_r2"),
+                "latency_ms": selected_metrics.get("avg_latency_ms"),
+            },
+            "candidates": sorted(suite.get_benchmark_summary()),
         }
     }
 
@@ -1607,6 +1801,9 @@ def generate_and_export_dataset(req: ExportDatasetRequest):
         from src.models.champion_suite import get_champion_suite
         suite = get_champion_suite()
         summary = suite.get_benchmark_summary()
+        recommendation = suite.get_selection_recommendation()
+        selected = recommendation.get("candidate")
+        selected_metrics = (summary.get(selected) or {}) if selected else {}
         base_ports = [
             ("Puerto Balboa", "Pacífico", 218500, 194200, 248900, 0.285),
             ("SSA Marine MIT", "Atlántico", 185400, 164000, 212000, 0.242),
@@ -1625,9 +1822,10 @@ def generate_and_export_dataset(req: ExportDatasetRequest):
                 "p90_techo_teu": p90,
                 "ancho_banda_incertidumbre_teu": p90 - p10,
                 "ratio_contenedores_vacios": empty_r,
-                "modelo_champion": "LightGBM Quantile Regressor",
-                "wape_modelo": 0.0911,
-                "r2_score": 0.9594,
+                "modelo_seleccionado": selected,
+                "selection_policy": recommendation.get("policy"),
+                "wape_modelo": selected_metrics.get("avg_wape"),
+                "r2_score": selected_metrics.get("avg_r2"),
                 "fuente_oficial": "Autoridad Marítima de Panamá (AMP)",
                 "autor": "Desarrollado v1.0.0 Miguel Benítez"
             })
@@ -1904,7 +2102,7 @@ def get_model_training_parameters():
                     "direct_url": "https://www.datosabiertos.gob.pa/dataset/movimiento-portuario-panama",
                     "extraction_timestamp": "2026-09-25T14:30:00-05:00",
                     "extraction_location": "Edificio 553, Diablo Heights, Balboa, Ancón, Ciudad de Panamá",
-                    "coverage": "140 meses continuos (Enero 2015 a Mayo 2026)",
+                    "coverage": "Consultar /api/v1/data/catalog/manifest para meses y rango observados",
                     "total_bulletins_scraped": 353,
                     "legal_basis": "Ley 6 de 22 de enero de 2002 de Transparencia"
                 },
@@ -2099,7 +2297,7 @@ def create_government_user(req: CreateUserRequest):
         entity=req.entity,
         role_id=req.role_id,
         auth_method=req.auth_method,
-        password=req.password or "Portops_2026_Secure!"
+        password=req.password or secrets.token_urlsafe(18)
     )
 
 

@@ -1,0 +1,77 @@
+# AMP-CONT-AI SYSTEM SOURCE OF TRUTH (SOT)
+# Autor: Ing. Miguel Antonio Benítez González (UTP) - GNU GPL-3.0
+# Lifecycle Status: PRODUCTION_CANDIDATE (Demostración LOOP requerida para retorno a PRODUCTION_VERIFIED)
+
+system:
+  name: "AMP-CONT-AI"
+  description: "Plataforma MLOps Soberana para Pronóstico de Demanda Portuaria, Tráfico del Canal de Panamá y Clasificación Arancelaria ANA"
+  version: "v2.0.0-candidate"
+  lifecycle_state: "PRODUCTION_CANDIDATE"
+  release_tag: "v2.0.0-rc1"
+  verification_gate: "LOOP_PENDING_CLOSEOUT"
+  author: "Ing. Miguel Antonio Benítez González (Universidad Tecnológica de Panamá)"
+  license: "GNU General Public License v3.0 (GPL-3.0)"
+  updated_at: "2026-10-06T05:47:00Z"
+
+runtimes:
+  gateway:
+    name: "Go Security & Cache Gateway"
+    binary: "bin/gateway.exe"
+    port: 8000
+    protocol: "HTTP/1.1 (Dual HTTP/HTTPS local CA)"
+    features:
+      - "Reverse Proxy a FastAPI (127.0.0.1:8001)"
+      - "In-Memory LRU Static Cache con ETag / 304 Not Modified"
+      - "Token-Bucket Rate Limiter por IP (120 req/min, burst 30)"
+      - "Prometheus Metrics (/metrics)"
+      - "WAF & Security Headers (CSP, HSTS, X-Content-Type-Options)"
+
+  backend:
+    name: "FastAPI MLOps Core"
+    port: 8001
+    framework: "FastAPI / Pydantic v2 / Uvicorn"
+    routes_registered: 73
+    auth_schemes:
+      - "HMAC-SHA256 Bearer JWT (30m access, 7d refresh con rotación)"
+      - "Crypto Seal Ed25519 / HMAC-SHA256 para Traza de Inferencia"
+      - "RBAC Granular (12 roles, 31 permisos, matriz de capacidades)"
+
+  database:
+    operational:
+      primary: "PostgreSQL 16 + pgvector (cuando DATABASE_URL está configurado)"
+      fallback: "SQLite 3 WAL Mode (data/enterprise_db/portops_platform.db)"
+      status: "Dual-Engine Factory con Reconciliación de Esquema"
+      schemas:
+        - "iam"
+        - "audit"
+        - "ai"
+        - "rag"
+        - "ml"
+        - "brain"
+        - "ops"
+        - "customs"
+        - "catalog"
+        - "system"
+    analytical:
+      engine: "DuckDB 1.1.3 + Medallion Parquet (data/gold/panama_national_lakehouse.parquet)"
+      lakehouse_layers:
+        - "bronze: Datos crudos ingestados de AMP, ACP, INEC, ANA"
+        - "silver: Tablas normalizadas, enriquecidas y desduplicadas"
+        - "gold: Feature store nacional y series temporales consolidadas (27,764 códigos HS)"
+
+  ai_inference:
+    primary_rag: "Local Sovereign Expert + DuckDB Vector & Keyword Hybrid Search"
+    models_active:
+      - id: "quantiles_lightgbm_balboa"
+        type: "Quantile Regressor (P10, P50, P90)"
+        target: "TEUs Balboa"
+      - id: "quantiles_lightgbm_cristobal"
+        type: "Quantile Regressor (P10, P50, P90)"
+        target: "TEUs Cristóbal"
+      - id: "ana_tariff_rag_expert"
+        type: "Grounded Tariff Classifier"
+        database: "27,764 Códigos Arancelarios Oficiales de Panamá"
+    optional_llm_endpoints:
+      vllm: "http://127.0.0.1:8080/v1 (cuando servicio vLLM está activo)"
+      ollama: "http://127.0.0.1:11434 (cuando Ollama está activo)"
+    grounding_enforcement: "Cero alucinación: solo responde con evidencia recuperada y sellada"

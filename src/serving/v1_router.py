@@ -23,6 +23,8 @@ import uuid
 import yaml
 import sqlite3
 import hashlib
+import hmac
+import time
 from pathlib import Path
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timezone
@@ -66,6 +68,40 @@ def get_db_conn() -> sqlite3.Connection:
     conn = sqlite3.connect(str(DB_PATH), timeout=20.0)
     conn.row_factory = sqlite3.Row
     return conn
+
+
+def is_secure_session_request(request: Request) -> bool:
+    """Detect whether cookies must be emitted with the Secure attribute."""
+    forwarded_proto = request.headers.get("x-forwarded-proto", "").lower()
+    return (
+        request.url.scheme == "https"
+        or forwarded_proto == "https"
+        or os.getenv("PORTOPS_SECURE_COOKIES") == "1"
+    )
+
+
+def set_session_cookie(response: Response, request: Request, token: str, max_age: int = 12 * 3600) -> None:
+    """Issue the session cookie with the strongest attributes supported by the current transport."""
+    response.set_cookie(
+        key="portops_session",
+        value=token,
+        max_age=max_age,
+        httponly=True,
+        secure=is_secure_session_request(request),
+        samesite="lax",
+        path="/",
+    )
+
+
+def should_defer_mfa_for_bootstrap(conn: sqlite3.Connection, user: sqlite3.Row) -> bool:
+    """Do not block first-run bootstrap or forced password rotation behind MFA."""
+    if bool(user["must_change_password"]):
+        return True
+    try:
+        setup_status = BootstrapManager.check_admin_setup_status(conn)
+    except Exception:
+        setup_status = {"requires_first_run_setup": False}
+    return bool(setup_status.get("requires_first_run_setup"))
 
 
 # --- Create Routers ---
@@ -206,7 +242,6 @@ def get_current_user_and_session(
             "permissions": ["data.read", "forecast.read", "model.read"],
             "is_authenticated": False
         }
-
     is_valid, payload, err = AuthenticationEngine.verify_token(token)
     if not is_valid or not payload:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=err or "Token inválido.")
@@ -239,6 +274,112 @@ def get_current_user_and_session(
             "token": token,
             "is_authenticated": True
         }
+
+
+def get_optional_current_user(
+    request: Request,
+    authorization: Optional[str] = Header(None),
+    portops_session: Optional[str] = Cookie(None)
+) -> Dict[str, Any]:
+    """
+    Resolves authenticated user context if valid, otherwise falls back smoothly to
+    guest_viewer without raising 401 exceptions on expired/stale cookies for interactive endpoints.
+    """
+    token = None
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split(" ")[1].strip()
+    elif portops_session:
+        token = portops_session.strip()
+
+    guest_ctx = {
+        "user_id": "anonymous",
+        "username": "guest_viewer",
+        "roles": ["readonly_viewer"],
+        "permissions": ["data.read", "forecast.read", "model.read"],
+        "is_authenticated": False
+    }
+
+    if not token:
+        return guest_ctx
+
+    try:
+        is_valid, payload, err = AuthenticationEngine.verify_token(token)
+        if not is_valid or not payload:
+            return guest_ctx
+
+        with get_db_conn() as conn:
+            sess_ok, sess_data, sess_err = SessionManager.validate_session(conn, token)
+            if not sess_ok:
+                return guest_ctx
+
+            user_id = payload.get("user_id")
+            roles = AuthorizationEngine.get_user_roles(conn, user_id)
+            permissions = AuthorizationEngine.get_user_permissions(conn, user_id)
+
+            cursor = conn.cursor()
+            cursor.execute("SELECT username, email, is_root, must_change_password FROM users WHERE user_id = ?;", (user_id,))
+            u = cursor.fetchone()
+            if not u:
+                return guest_ctx
+
+            return {
+                "user_id": user_id,
+                "username": u["username"],
+                "email": u["email"] or f"{u['username']}@portops.local",
+                "full_name": u["username"],
+                "is_root": bool(u["is_root"]),
+                "must_change_password": bool(u["must_change_password"]),
+                "roles": roles,
+                "permissions": permissions,
+                "token": token,
+                "is_authenticated": True
+            }
+    except Exception:
+        return guest_ctx
+
+
+def require_admin_user(
+    current_user: Dict[str, Any] = Depends(get_current_user_and_session),
+) -> Dict[str, Any]:
+    """Require an authenticated administrative role for IAM mutations and inventory."""
+    if not current_user.get("is_authenticated"):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Autenticación requerida para administrar usuarios.")
+    roles = set(current_user.get("roles", []))
+    allowed_roles = {"root", "platform_admin", "security_admin"}
+    if not roles.intersection(allowed_roles) and not current_user.get("is_root"):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="El rol actual no puede administrar usuarios.")
+    return current_user
+
+
+def require_platform_operator(
+    current_user: Dict[str, Any] = Depends(get_current_user_and_session),
+) -> Dict[str, Any]:
+    """Require an authenticated role allowed to mutate platform configuration."""
+    if not current_user.get("is_authenticated"):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Autenticación requerida para modificar la plataforma.")
+    roles = set(current_user.get("roles", []))
+    allowed_roles = {"root", "platform_admin", "security_admin", "mlops_engineer"}
+    if not roles.intersection(allowed_roles) and not current_user.get("is_root"):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="El rol actual no puede modificar la configuración de la plataforma.")
+    return current_user
+
+
+def require_install_secret_or_admin(
+    x_install_secret: Optional[str] = Header(None),
+    current_user: Dict[str, Any] = Depends(get_current_user_and_session),
+) -> Dict[str, Any]:
+    """Protect root bootstrap with an installer-provided, non-default secret."""
+    configured_secret = os.getenv("PORTOPS_INSTALL_SECRET", "").strip()
+    if configured_secret:
+        if not x_install_secret or not hmac.compare_digest(x_install_secret, configured_secret):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                                detail="Se requiere el secreto de instalación de un solo uso.")
+        return current_user
+    return require_admin_user(current_user)
 
 
 # ==============================================================================
@@ -332,8 +473,12 @@ def login(req: LoginRequest, request: Request, response: Response):
         cursor.execute("UPDATE users SET failed_attempts = 0, updated_at = ? WHERE user_id = ?;", (datetime.now(timezone.utc).isoformat(), user["user_id"]))
         conn.commit()
 
-        # If MFA enabled, return challenge
-        if user["mfa_enabled"] and user["mfa_secret"]:
+        mfa_deferred = should_defer_mfa_for_bootstrap(conn, user)
+
+        # If MFA enabled after bootstrap, return challenge. During first-run
+        # setup or mandatory password rotation, grant the session so the root
+        # operator can complete installation before opting into MFA.
+        if user["mfa_enabled"] and user["mfa_secret"] and not mfa_deferred:
             temp_token = AuthenticationEngine.create_token(
                 {"user_id": user["user_id"], "purpose": "mfa_challenge"},
                 expires_in_seconds=300
@@ -363,19 +508,12 @@ def login(req: LoginRequest, request: Request, response: Response):
             result="SUCCESS"
         )
 
-        # Set secure HttpOnly cookie
-        response.set_cookie(
-            key="portops_session",
-            value=token,
-            max_age=12 * 3600,
-            httponly=True,
-            samesite="lax",
-            path="/"
-        )
+        set_session_cookie(response, request, token)
 
         return {
             "session_token": token,
             "mfa_required": False,
+            "mfa_deferred_until_setup_complete": bool(user["mfa_enabled"] and user["mfa_secret"] and mfa_deferred),
             "must_change_password": bool(user["must_change_password"]),
             "user": {
                 "user_id": user["user_id"],
@@ -434,14 +572,7 @@ def verify_mfa(req: MFAVerifyRequest, request: Request, response: Response):
             result="SUCCESS"
         )
 
-        response.set_cookie(
-            key="portops_session",
-            value=token,
-            max_age=12 * 3600,
-            httponly=True,
-            samesite="lax",
-            path="/"
-        )
+        set_session_cookie(response, request, token)
 
         return {
             "session_token": token,
@@ -484,6 +615,8 @@ def setup_mfa(current_user: Dict[str, Any] = Depends(get_current_user_and_sessio
 @v1_router.post("/auth/password/change")
 def change_password(
     req: PasswordChangeRequest,
+    request: Request,
+    response: Response,
     current_user: Dict[str, Any] = Depends(get_current_user_and_session)
 ):
     """
@@ -491,7 +624,7 @@ def change_password(
     - Verificación de contraseña previa
     - Longitud >= 12 caracteres y chequeo de entropía
     - No reutilización de las últimas 5 contraseñas
-    - Revocación instantánea de sesiones previas
+    - Revocación instantánea de sesiones previas y emisión de nueva sesión activa
     - Reseteo del flag must_change_password
     """
     if not current_user.get("is_authenticated"):
@@ -501,32 +634,28 @@ def change_password(
 
     with get_db_conn() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT password_hash, salt FROM users WHERE user_id = ?;", (user_id,))
+        cursor.execute("SELECT user_id, username, email, is_root, password_hash, salt FROM users WHERE user_id = ?;", (user_id,))
         u = cursor.fetchone()
 
-        if not AuthenticationEngine.verify_password(req.old_password, u["password_hash"], u["salt"]):
+        if not u or not AuthenticationEngine.verify_password(req.old_password, u["password_hash"], u["salt"]):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="La contraseña actual es incorrecta.")
 
-        # Get last 5 password hashes for history check
-        cursor.execute("SELECT password_hash, salt FROM password_history WHERE user_id = ? ORDER BY created_at DESC LIMIT 5;", (user_id,))
-        history = cursor.fetchall()
-        hist_hashes = [(r["password_hash"], r["salt"]) for r in history]
-
-        # Validate with NIST policy
-        is_valid, err_msg = PasswordPolicy.validate_password(req.new_password, hist_hashes)
-        if not is_valid:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=err_msg)
+        is_complex, complexity_errors = PasswordPolicy.validate_complexity(req.new_password)
+        if not is_complex:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=" ".join(complexity_errors))
 
         # Hash new password
         new_hash, new_salt = AuthenticationEngine.hash_password(req.new_password)
+        history_ok, history_error = PasswordPolicy.check_history(conn, user_id, new_hash)
+        if not history_ok:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=history_error)
         now_str = datetime.now(timezone.utc).isoformat()
 
         # Insert history
-        hist_id = str(uuid.uuid4())
         cursor.execute("""
-        INSERT INTO password_history (history_id, user_id, password_hash, salt, created_at)
-        VALUES (?, ?, ?, ?, ?);
-        """, (hist_id, user_id, new_hash, new_salt, now_str))
+        INSERT INTO password_history (user_id, password_hash, created_at)
+        VALUES (?, ?, ?);
+        """, (user_id, new_hash, now_str))
 
         # Update user
         cursor.execute("""
@@ -537,11 +666,40 @@ def change_password(
 
         # Revoke other sessions
         SessionManager.revoke_all_user_sessions(conn, user_id)
+
+        # Issue fresh active session token for the user so they stay authenticated
+        roles = AuthorizationEngine.get_user_roles(conn, user_id)
+        permissions = AuthorizationEngine.get_user_permissions(conn, user_id)
+        new_token = AuthenticationEngine.create_token({
+            "user_id": user_id,
+            "username": u["username"],
+            "roles": roles,
+            "is_root": bool(u["is_root"])
+        }, expires_in_seconds=12 * 3600)
+
+        client_ip = request.client.host if request.client else "127.0.0.1"
+        user_agent = request.headers.get("user-agent", "Unknown")
+        SessionManager.create_session(conn, user_id, new_token, ip_address=client_ip, user_agent=user_agent)
         conn.commit()
+
+        set_session_cookie(response, request, new_token)
 
         return {
             "success": True,
-            "message": "Contraseña actualizada exitosamente bajo estándar NIST SP 800-63B. Las demás sesiones activas han sido invalidadas."
+            "message": "Contraseña actualizada exitosamente bajo estándar NIST SP 800-63B.",
+            "session_token": new_token,
+            "must_change_password": False,
+            "mfa_required": False,
+            "user": {
+                "user_id": user_id,
+                "username": u["username"],
+                "email": u["email"] or f"{u['username']}@portops.local",
+                "full_name": u["username"],
+                "is_root": bool(u["is_root"])
+            },
+            "roles": roles,
+            "permissions": permissions,
+            "author": "Desarrollado v1.0.0 Miguel Benítez"
         }
 
 
@@ -557,19 +715,55 @@ def get_first_run_status():
 
 
 @v1_router.post("/auth/first-run/change-root-password", tags=["Identity & Access Management"])
-def first_run_change_root_password(req: FirstRunPasswordChangeRequest):
+def first_run_change_root_password(
+    req: FirstRunPasswordChangeRequest,
+    request: Request,
+    response: Response
+):
     """
     Cambio obligatorio de contraseña de superadministrador 'root' en el primer inicio.
-    Verifica doble coincidencia y no permite continuar sin actualización criptográfica.
+    Verifica doble coincidencia y emite token de sesión activo.
     """
     try:
         with get_db_conn() as conn:
-            return BootstrapManager.change_root_password(
+            result = BootstrapManager.change_root_password(
                 conn,
                 old_password=req.old_password,
                 new_password=req.new_password,
                 confirm_password=req.confirm_password
             )
+            cursor = conn.cursor()
+            cursor.execute("SELECT user_id, username, email, is_root FROM users WHERE username = 'root' LIMIT 1;")
+            root_u = cursor.fetchone()
+            user_id = root_u["user_id"]
+            roles = AuthorizationEngine.get_user_roles(conn, user_id)
+            permissions = AuthorizationEngine.get_user_permissions(conn, user_id)
+            new_token = AuthenticationEngine.create_token({
+                "user_id": user_id,
+                "username": root_u["username"],
+                "roles": roles,
+                "is_root": True
+            }, expires_in_seconds=12 * 3600)
+            client_ip = request.client.host if request.client else "127.0.0.1"
+            user_agent = request.headers.get("user-agent", "Unknown")
+            SessionManager.create_session(conn, user_id, new_token, ip_address=client_ip, user_agent=user_agent)
+            conn.commit()
+            set_session_cookie(response, request, new_token)
+            return {
+                **result,
+                "session_token": new_token,
+                "must_change_password": False,
+                "user": {
+                    "user_id": user_id,
+                    "username": root_u["username"],
+                    "email": root_u["email"] or "root@portops.pa",
+                    "full_name": root_u["username"],
+                    "is_root": True
+                },
+                "roles": roles,
+                "permissions": permissions,
+                "author": "Desarrollado v1.0.0 Miguel Benítez"
+            }
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
@@ -577,7 +771,13 @@ def first_run_change_root_password(req: FirstRunPasswordChangeRequest):
 
 
 @v1_router.post("/auth/first-run/create-admins", tags=["Identity & Access Management"])
-def first_run_create_mandatory_admins(req: CreateMandatoryAdminsRequest):
+def first_run_create_mandatory_admins(
+    req: CreateMandatoryAdminsRequest,
+    request: Request,
+    response: Response,
+    authorization: Optional[str] = Header(None),
+    portops_session: Optional[str] = Cookie(None)
+):
     """
     Creación obligatoria de los 3 usuarios administrativos del sistema:
     - SysAdmin: Administración general de infraestructura (platform_admin)
@@ -586,14 +786,76 @@ def first_run_create_mandatory_admins(req: CreateMandatoryAdminsRequest):
     """
     try:
         with get_db_conn() as conn:
-            return BootstrapManager.create_mandatory_admins(
+            # Si la plataforma ya completó la configuración inicial, requerir rol root/admin
+            setup_status = BootstrapManager.check_admin_setup_status(conn)
+            if not setup_status.get("requires_first_run_setup", False):
+                token = None
+                if authorization and authorization.startswith("Bearer "):
+                    token = authorization.split("Bearer ", 1)[1].strip()
+                elif portops_session:
+                    token = portops_session.strip()
+                if not token:
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="La plataforma ya fue inicializada. Se requieren credenciales administrativas activas."
+                    )
+                is_valid, payload, _ = AuthenticationEngine.verify_token(token)
+                if not is_valid or not payload or not payload.get("is_root"):
+                    raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="Solo el superadministrador 'root' puede reconfigurar los administradores."
+                    )
+
+            result = BootstrapManager.create_mandatory_admins(
                 conn,
                 sysadmin_data=req.sysadmin.model_dump(),
                 secops_data=req.secops_admin.model_dump(),
                 mlops_data=req.mlops_admin.model_dump()
             )
+            cursor = conn.cursor()
+            cursor.execute("SELECT user_id, username, email, is_root FROM users WHERE username = 'root' LIMIT 1;")
+            root_u = cursor.fetchone()
+            if not root_u:
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Usuario root no encontrado tras inicialización.")
+            user_id = root_u["user_id"]
+            roles = AuthorizationEngine.get_user_roles(conn, user_id)
+            permissions = AuthorizationEngine.get_user_permissions(conn, user_id)
+
+            active_token = AuthenticationEngine.create_token({
+                "user_id": user_id,
+                "username": root_u["username"],
+                "roles": roles,
+                "is_root": True
+            }, expires_in_seconds=12 * 3600)
+            client_ip = request.client.host if request.client else "127.0.0.1"
+            user_agent = request.headers.get("user-agent", "Unknown")
+            SessionManager.create_session(conn, user_id, active_token, ip_address=client_ip, user_agent=user_agent)
+            conn.commit()
+            set_session_cookie(response, request, active_token)
+
+            return {
+                **result,
+                "session_token": active_token,
+                "session": {
+                    "token": active_token,
+                    "user_id": user_id,
+                    "username": root_u["username"]
+                },
+                "user": {
+                    "user_id": user_id,
+                    "username": root_u["username"],
+                    "email": root_u["email"] or "root@portops.pa",
+                    "full_name": root_u["username"],
+                    "is_root": True
+                },
+                "roles": roles,
+                "permissions": permissions,
+                "author": "Desarrollado v1.0.0 Miguel Benítez"
+            }
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error creando administradores: {str(e)}")
 
@@ -721,15 +983,24 @@ def list_permissions():
 
 class CreateAuthUserRequest(BaseModel):
     username: str
-    password: str = "Portops_2026_Secure!"
+    password: str = Field(..., min_length=8, description="Contraseña inicial entregada por un administrador autorizado.")
     email: Optional[str] = None
     role_id: str = "readonly_viewer"
     full_name: Optional[str] = None
     entity: Optional[str] = "Autoridad Marítima de Panamá (AMP)"
 
 
+class UpdateAuthUserRequest(BaseModel):
+    full_name: Optional[str] = None
+    email: Optional[str] = None
+    role_id: Optional[str] = None
+    entity: Optional[str] = None
+    password: Optional[str] = Field(None, min_length=8, description="Nueva contraseña del usuario.")
+    is_active: Optional[bool] = None
+
+
 @v1_router.get("/auth/users", tags=["Identity & Access Management"])
-def list_real_users():
+def list_real_users(current_user: Dict[str, Any] = Depends(require_admin_user)):
     """Retorna la lista de usuarios reales persistidos en SQLite."""
     from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
     overview = PanamaSecurityGovernancePanel.get_security_overview()
@@ -741,7 +1012,7 @@ def list_real_users():
 
 
 @v1_router.post("/auth/users", tags=["Identity & Access Management"])
-def create_real_user(req: CreateAuthUserRequest):
+def create_real_user(req: CreateAuthUserRequest, current_user: Dict[str, Any] = Depends(require_admin_user)):
     """Crea un usuario real persistido en SQLite con contraseña hasheada y rol asignado."""
     from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
     res = PanamaSecurityGovernancePanel.register_user(
@@ -749,7 +1020,30 @@ def create_real_user(req: CreateAuthUserRequest):
         full_name=req.full_name or req.username.title(),
         entity=req.entity or "Autoridad Marítima de Panamá (AMP)",
         role_id=req.role_id,
-        password=req.password
+        password=req.password,
+        email=req.email
+    )
+    if res.get("status") == "error":
+        raise HTTPException(status_code=400, detail=res.get("message"))
+    return res
+
+
+@v1_router.put("/auth/users/{username}", tags=["Identity & Access Management"])
+def update_real_user(
+    username: str,
+    req: UpdateAuthUserRequest,
+    current_user: Dict[str, Any] = Depends(require_admin_user)
+):
+    """Actualiza parámetros, rol RBAC, estado activo/inactivo o contraseña de un usuario en SQLite."""
+    from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
+    res = PanamaSecurityGovernancePanel.update_user(
+        username=username,
+        full_name=req.full_name,
+        email=req.email,
+        role_id=req.role_id,
+        entity=req.entity,
+        password=req.password,
+        is_active=req.is_active
     )
     if res.get("status") == "error":
         raise HTTPException(status_code=400, detail=res.get("message"))
@@ -757,7 +1051,7 @@ def create_real_user(req: CreateAuthUserRequest):
 
 
 @v1_router.delete("/auth/users/{username}", tags=["Identity & Access Management"])
-def delete_real_user(username: str):
+def delete_real_user(username: str, current_user: Dict[str, Any] = Depends(require_admin_user)):
     """Elimina un usuario real de SQLite (protegiendo al usuario root)."""
     from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
     success = PanamaSecurityGovernancePanel.delete_user(username)
@@ -920,7 +1214,8 @@ def get_models_benchmark():
 
     return {
         "author": "Desarrollado v1.0.0 Miguel Benítez",
-        "champion_algorithm": "LightGBM Quantile Ensemble",
+        "champion_algorithm": None,
+        "selection_recommendation": suite.get_selection_recommendation(),
         "evaluation_metrics": ["WAPE", "MAE", "RMSE", "R2", "Pinball Loss (P10, P50, P90)", "Latency"],
         "benchmark_comparison": comp,
         "splits_summary": splits
@@ -1266,7 +1561,7 @@ def verify_worm_audit_chain():
                 "genesis_hash": blocks[0]["block_hash"],
                 "head_hash": expected_prev,
                 "reason": None if valid else f"Hash chain broken at block {failed_id}",
-                "integrity_status": "100% Cryptographically Sound (WORM Certified)" if valid else "Tampering Detected"
+                "integrity_status": "Cryptographically Sound (WORM Certified)" if valid else "Tampering Detected"
             }
         }
 
@@ -1317,7 +1612,7 @@ def list_available_agents():
 @v1_router.post("/agents/chat")
 def chat_with_agent_swarm(
     req: AgentChatRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user_and_session)
+    current_user: Dict[str, Any] = Depends(get_optional_current_user)
 ):
     """
     Interacción con el enjambre de agentes marítimos:
@@ -1342,12 +1637,13 @@ class ReasoningChatRequest(BaseModel):
     target_soul_id: Optional[str] = Field(default=None, description="Identificador del Soul (auditor_maritimo, operador_muelle, cientifico_causal, agente_aduanero).")
     guardrail_level: str = Field(default="strict", description="Nivel de rigor: 'standard', 'strict', 'zero_tolerance'.")
     runtime_preference: str = Field(default="auto", description="Preferencia de motor LLM: 'auto', 'vllm', 'ollama', 'local'.")
+    max_tokens: Optional[int] = Field(default=768, description="Límite máximo de tokens de salida.")
 
 
 @v1_router.post("/agents/reasoning-chat")
 def chat_with_reasoning_cot(
     req: ReasoningChatRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user_and_session)
+    current_user: Dict[str, Any] = Depends(get_optional_current_user)
 ):
     """
     Inferencia Interactiva con visualización explícita de Cadena de Razonamiento (CoT):
@@ -1392,7 +1688,39 @@ def chat_with_reasoning_cot(
             "details": f"Alerta de seguridad: {'; '.join(ctx_res.violations)}",
             "duration_ms": step1_ms
         })
+        # Deterministic State Machine: transition subsequent steps to OMITTED
+        cot_steps.append({
+            "step_number": 2,
+            "title": "Verificación Criptográfica de Soul Inmutable",
+            "status": "OMITTED",
+            "details": "Omitido deterministamente: El flujo fue bloqueado por Guardrails de Entrada en el Paso 1.",
+            "duration_ms": 0.0
+        })
+        cot_steps.append({
+            "step_number": 3,
+            "title": "Recuperación de Evidencia Normativa y RAG Marítimo",
+            "status": "OMITTED",
+            "details": "Omitido deterministamente: Sin recuperación de evidencia documental requerida.",
+            "duration_ms": 0.0
+        })
+        cot_steps.append({
+            "step_number": 4,
+            "title": "Clasificación de intención y ejecución controlada",
+            "status": "OMITTED",
+            "details": "Omitido deterministamente: Sin inferencia cuantitativa requerida.",
+            "duration_ms": 0.0
+        })
+        cot_steps.append({
+            "step_number": 5,
+            "title": "Síntesis Ejecutiva Auditada",
+            "status": "OMITTED",
+            "details": "Omitido deterministamente: Conclusión generada por regla de contención soberana.",
+            "duration_ms": 0.0
+        })
         
+        # Calculate anti-tamper seal of rejection decision
+        rejection_seal = hashlib.sha256(f"{request_id}:REJECTED:{ctx_res.violations[0]}".encode()).hexdigest()
+
         # Log blocked inference
         try:
             with get_db_conn() as conn:
@@ -1403,7 +1731,7 @@ def chat_with_reasoning_cot(
                         query_context, guardrail_verdict, soul_id, ip_origin, created_at
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, (
-                    request_id, user_id, "Gemma-4-Industrial-vLLM", "GuardrailsBlocker",
+                    request_id, user_id, "PortOps-Guardrail-Sovereign", "GuardrailsBlocker",
                     prompt_tokens, 0, prompt_tokens, step1_ms, compute_device,
                     "OUT_OF_DOMAIN", "BLOCKED", None, "127.0.0.1", datetime.now(timezone.utc).isoformat()
                 ))
@@ -1414,19 +1742,36 @@ def chat_with_reasoning_cot(
         return {
             "author": "Desarrollado v1.0.0 Miguel Benítez",
             "request_id": request_id,
+            "trace_id": request_id,
             "query": req.query,
             "status": "GUARDRAIL_BLOCKED",
             "chain_of_thought": cot_steps,
+            "execution_trace": cot_steps,
+            "cryptographic_seal": rejection_seal,
             "response": f"⚠️ Consulta bloqueada por Guardrails: {ctx_res.violations[0]}",
+            "contextual_help": {
+                "admissible_domains": [
+                    "Clasificación arancelaria de mercancías (ej. 'Tarifa para carne bovina 0201.10.00')",
+                    "Pronóstico de TEUs en terminales de Panamá (ej. 'Pronóstico de TEUs en Balboa para M+1')",
+                    "Regulaciones marítimas soberanas (ej. 'Requisitos de Ley 56 de 2008 en recintos portuarios')"
+                ],
+                "recommended_queries": [
+                    "¿Cuál es el arancel para carne bovina (0201.10.00)?",
+                    "Proyectar volumen de TEUs en Balboa para el próximo mes",
+                    "¿Qué artículos de la Ley 56 aplican para concesiones de muelles?"
+                ]
+            },
             "metrics": {
                 "request_id": request_id,
+                "trace_id": request_id,
                 "total_latency_ms": round((time.perf_counter() - t_start) * 1000, 2),
                 "prompt_tokens": prompt_tokens,
                 "completion_tokens": 0,
                 "total_tokens": prompt_tokens,
                 "compute_device": compute_device,
                 "guardrail_verdict": "BLOCKED",
-                "soul_seal_valid": False
+                "soul_seal_valid": False,
+                "cryptographic_seal": rejection_seal
             }
         }
 
@@ -1444,6 +1789,13 @@ def chat_with_reasoning_cot(
     t0 = time.perf_counter()
     # Route soul
     q_lower = req.query.lower()
+    intent = "documental"
+    if any(term in q_lower for term in ("pronóstico", "pronostica", "forecast", "teu", "volumen", "demanda", "capacidad")):
+        intent = "forecast"
+    elif any(term in q_lower for term in ("arancel", "partida", "dai", "itbms", "hs ")):
+        intent = "tariff"
+    elif any(term in q_lower for term in ("simulación", "simula", "escenario", "riesgo", "monte carlo")):
+        intent = "simulation"
     selected_soul_id = req.target_soul_id
     if not selected_soul_id:
         if any(w in q_lower for w in ["arancel", "dai", "itbms", "aduanas", "partida", "cif", "mida", "minsa"]):
@@ -1472,9 +1824,6 @@ def chat_with_reasoning_cot(
         "duration_ms": step2_ms
     })
 
-    # -------------------------------------------------------------
-    # PASO 3: Recuperación de Evidencia Normativa y RAG Marítimo
-    # -------------------------------------------------------------
     # -------------------------------------------------------------
     # PASO 3: Recuperación de Evidencia Normativa y RAG Marítimo
     # -------------------------------------------------------------
@@ -1534,15 +1883,19 @@ def chat_with_reasoning_cot(
     elif "bocas" in q_lower or "almirante" in q_lower:
         target_port = "Bocas Fruit Co."
 
-    forecast = engine.predict_terminal(target_port, horizon_months=1)
+    forecast = engine.predict_terminal(target_port, horizon_months=1) if intent == "forecast" else {
+        "forecast_quantiles_teus": {},
+        "empty_container_ratio_estimate": None,
+        "model_algorithm": None,
+    }
     step4_ms = round((time.perf_counter() - t0) * 1000, 2)
 
     q = forecast["forecast_quantiles_teus"]
     cot_steps.append({
         "step_number": 4,
-        "title": "Inferencia Numérica & Garantía Isotónica (P10 <= P50 <= P90)",
+        "title": "Clasificación de intención y ejecución controlada",
         "status": "COMPLETED",
-        "details": f"Proyección {target_port} M+1: P10={q['p10_pessimistic_floor']:,} TEUs | P50={q['p50_median_central']:,} TEUs | P90={q['p90_capacity_stress']:,} TEUs. Monotonía verificada (P10 <= P50 <= P90).",
+        "details": (f"Intención '{intent}'. Proyección {target_port} M+1: P10={q['p10_pessimistic_floor']:,} TEUs | P50={q['p50_median_central']:,} TEUs | P90={q['p90_capacity_stress']:,} TEUs." if intent == "forecast" else f"Intención '{intent}'. No se ejecutó un pronóstico porque la consulta no lo solicitó."),
         "duration_ms": step4_ms
     })
 
@@ -1558,6 +1911,7 @@ def chat_with_reasoning_cot(
     )
     context_data = {
         "port": target_port,
+        "intent": intent,
         "quantiles_teus": q,
         "empty_ratio": forecast.get("empty_container_ratio_estimate", 0.28),
         "tariff": tariff_match,
@@ -1566,7 +1920,9 @@ def chat_with_reasoning_cot(
     llm_resp = client.generate_chat_response(
         system_prompt=sys_prompt,
         user_message=req.query,
-        context_data=context_data
+        context_data=context_data,
+        preferred_runtime=req.runtime_preference,
+        max_tokens=req.max_tokens or 768,
     )
     step5_ms = round((time.perf_counter() - t0) * 1000, 2)
 
@@ -1592,7 +1948,7 @@ def chat_with_reasoning_cot(
                     query_context, guardrail_verdict, soul_id, ip_origin, created_at
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                request_id, user_id, "Gemma-4-Industrial-vLLM", llm_resp.get("backend_used", "HybridFallback"),
+                request_id, user_id, llm_resp.get("model", "unavailable"), llm_resp.get("backend_used", "DeterministicFallback"),
                 prompt_tokens, completion_tokens, total_tokens, total_duration, compute_device,
                 selected_soul_id, "PASS", selected_soul_id, "127.0.0.1", datetime.now(timezone.utc).isoformat()
             ))
@@ -1600,17 +1956,25 @@ def chat_with_reasoning_cot(
     except Exception:
         pass
 
+    # Calculate cryptographic seal of complete inference trace
+    trace_payload = f"{request_id}:{seal_res.get('encrypted_seal')}:{llm_resp['content'][:100]}"
+    crypto_seal = hashlib.sha256(trace_payload.encode()).hexdigest()
+
     return {
         "author": "Desarrollado v1.0.0 Miguel Benítez",
         "request_id": request_id,
+        "trace_id": request_id,
         "query": req.query,
         "status": "SUCCESS",
         "assigned_soul": soul_dict,
         "chain_of_thought": cot_steps,
+        "execution_trace": cot_steps,
+        "cryptographic_seal": crypto_seal,
         "response": llm_resp["content"],
         "legal_citations": citations,
         "metrics": {
             "request_id": request_id,
+            "trace_id": request_id,
             "total_latency_ms": total_duration,
             "inference_step_latency_ms": step4_ms,
             "prompt_tokens": prompt_tokens,
@@ -1621,7 +1985,8 @@ def chat_with_reasoning_cot(
             "backend_used": llm_resp.get("backend_used", "Local Heuristic Engine"),
             "guardrail_verdict": "VERIFIED_SAFE",
             "soul_seal_valid": seal_res.get("valid", False),
-            "anti_crossing_verified": True
+            "cryptographic_seal": crypto_seal,
+            "anti_crossing_verified": intent == "forecast"
         }
     }
 
@@ -1632,6 +1997,36 @@ def check_llm_runtime_health():
     from src.infrastructure.llm_client import get_llm_client
     client = get_llm_client()
     return client.check_health()
+
+
+@v1_router.get("/governance/gaps")
+def list_governance_gaps(status_filter: Optional[str] = None):
+    """Returns the auditable engineering gap queue without mutating it."""
+    from src.governance.gap_queue import GapQueue
+    payload = GapQueue(GOLD_DIR / "governance" / "gap_queue.json").load()
+    items = payload.get("items", [])
+    if status_filter:
+        items = [item for item in items if item.get("status") == status_filter]
+    return {
+        "schema_version": payload.get("schema_version", "1.0"),
+        "updated_at": payload.get("updated_at"),
+        "count": len(items),
+        "items": items,
+    }
+
+
+@v1_router.get("/integrations/wazuh/health")
+def wazuh_integration_health(current_user: Dict[str, Any] = Depends(get_current_user_and_session)):
+    """Checks the configured Wazuh manager using JWT authentication."""
+    from src.infrastructure.security.wazuh_client import WazuhClient
+    return WazuhClient().health()
+
+
+@v1_router.get("/integrations/wazuh/capabilities")
+def wazuh_integration_capabilities(current_user: Dict[str, Any] = Depends(get_current_user_and_session)):
+    """Expose the Wazuh management contract even when the manager is disabled."""
+    from src.infrastructure.security.wazuh_client import WazuhClient
+    return WazuhClient().capabilities()
 
 
 # ==============================================================================
@@ -1657,7 +2052,7 @@ def list_mcp_tools():
 @v1_router.post("/mcp/execute")
 def execute_mcp_tool(
     req: MCPExecuteRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user_and_session)
+    current_user: Dict[str, Any] = Depends(get_optional_current_user)
 ):
     """Ejecuta una herramienta MCP con validación de seguridad RBAC."""
     from src.mcp.tools import execute_tool
@@ -1679,8 +2074,8 @@ def execute_mcp_tool(
 # ==============================================================================
 
 class CustomsCalculateRequest(BaseModel):
-    hs_code: str = Field(default="010121", description="Código arancelario de 6 a 12 dígitos.")
-    cif_value_usd: float = Field(default=10000.0, ge=0.0, description="Valor CIF en dólares para liquidación.")
+    hs_code: str = Field(..., min_length=4, max_length=20, description="Código arancelario con 4 a 12 dígitos, con separadores opcionales.")
+    cif_value_usd: float = Field(..., gt=0.0, description="Valor CIF en dólares para liquidación.")
 
 
 class ContainerValidateRequest(BaseModel):
@@ -1692,22 +2087,36 @@ class ContainerValidateRequest(BaseModel):
 def search_customs_tariff(query: Optional[str] = None):
     """Búsqueda de subpartidas arancelarias oficiales de Panamá (ANA / SIECA)."""
     from src.data.scrapers.ana_hscode_scraper import PanamaTariffDatabase
+    request_id = str(uuid.uuid4())
+    started = time.perf_counter()
     if query:
         items = PanamaTariffDatabase.search_by_text(query)
     else:
         items = PanamaTariffDatabase.get_tariff_catalog()
+    historical = sum(1 for item in items if item.get("historical_observation"))
+    latency_ms = round((time.perf_counter() - started) * 1000, 3)
+    Path("logs").mkdir(parents=True, exist_ok=True)
+    with (Path("logs") / "tariff_queries.jsonl").open("a", encoding="utf-8") as fh:
+        fh.write(json.dumps({"request_id": request_id, "query": query or "", "matches": len(items), "historical_matches": historical, "latency_ms": latency_ms, "timestamp": datetime.now(timezone.utc).isoformat()}, ensure_ascii=False) + "\n")
     return {
+        "request_id": request_id,
         "author": "Desarrollado v1.0.0 Miguel Benítez",
         "total_matches": len(items),
+        "historical_matches": historical,
+        "current_rule_matches": len(items) - historical,
+        "source": "ANA curated rules + INEC Comercio Exterior report 05 historical descriptions",
         "items": items
     }
 
 
 @v1_router.post("/customs/tariff/calculate")
 def calculate_landed_customs_cost(req: CustomsCalculateRequest):
-    """Liquidación fiscal aduanera formal (DAI, ITBMS 7%, tasas ANA, permisos MIDA/MINSA)."""
+    """Calcula los componentes respaldados y declara faltantes sin inventar tasas."""
     from src.data.scrapers.ana_hscode_scraper import PanamaTariffDatabase
-    calc = PanamaTariffDatabase.calculate_landed_customs_cost(hs_code=req.hs_code, cif_value_usd=req.cif_value_usd)
+    try:
+        calc = PanamaTariffDatabase.calculate_landed_customs_cost(hs_code=req.hs_code, cif_value_usd=req.cif_value_usd)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail={"error": str(exc), "hs_code": req.hs_code, "next_step": "Clasifique la subpartida con una regla ANA vigente antes de liquidar."}) from exc
     return {
         "author": "Desarrollado v1.0.0 Miguel Benítez",
         "result": calc,
@@ -1743,7 +2152,7 @@ class ModelFeedbackRequest(BaseModel):
 @v1_router.post("/telemetry/feedback")
 def submit_model_feedback(
     req: ModelFeedbackRequest,
-    current_user: Dict[str, Any] = Depends(get_current_user_and_session)
+    current_user: Dict[str, Any] = Depends(get_optional_current_user)
 ):
     """
     Registra la retroalimentación del usuario (Thumbs Up/Down, Estrellas 1-5, Comentarios)
@@ -1800,7 +2209,7 @@ def get_telemetry_logs(
     limit: int = 50,
     offset: int = 0,
     user_filter: Optional[str] = None,
-    current_user: Dict[str, Any] = Depends(get_current_user_and_session)
+    current_user: Dict[str, Any] = Depends(get_optional_current_user)
 ):
     """
     Retorna el historial de telemetría de cómputo, desglose de tokens y latencias.
@@ -1845,7 +2254,7 @@ def get_telemetry_logs(
 @v1_router.get("/telemetry/summary")
 @v1_router.get("/telemetry/stats")
 def get_telemetry_summary(
-    current_user: Dict[str, Any] = Depends(get_current_user_and_session)
+    current_user: Dict[str, Any] = Depends(get_optional_current_user)
 ):
     """
     Métricas agregadas en tiempo real para el HUD de observabilidad y control de inferencia.
@@ -1884,21 +2293,21 @@ def get_telemetry_summary(
         passed_inferences = cursor.fetchone()[0]
 
     total_inf = row["total_inferences"]
-    pass_rate = round((passed_inferences / total_inf) * 100.0, 1) if total_inf > 0 else 100.0
+    pass_rate = round((passed_inferences / total_inf) * 100.0, 1) if total_inf > 0 else None
     fb_total = fb["total_feedback"]
-    fb_pos_pct = round((fb["positive_count"] / fb_total) * 100.0, 1) if fb_total > 0 else 100.0
+    fb_pos_pct = round((fb["positive_count"] / fb_total) * 100.0, 1) if fb_total > 0 else None
 
     return {
         "author": "Desarrollado v1.0.0 Miguel Benítez",
         "active_compute_device": device_str,
         "total_inferences": total_inf,
-        "avg_latency_ms": round(row["avg_latency_ms"], 2),
+        "avg_latency_ms": round(row["avg_latency_ms"], 2) if total_inf > 0 else None,
         "total_tokens_consumed": int(row["total_tokens_used"]),
         "total_prompt_tokens": int(row["total_prompt_tokens"]),
         "total_completion_tokens": int(row["total_completion_tokens"]),
         "guardrails_pass_rate_pct": pass_rate,
         "feedback_total": fb_total,
-        "feedback_avg_rating": round(fb["avg_rating"], 2),
+        "feedback_avg_rating": round(fb["avg_rating"], 2) if fb_total > 0 else None,
         "feedback_positive_rate_pct": fb_pos_pct,
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
@@ -1919,7 +2328,7 @@ def get_deploy_verification():
 
 
 @v1_router.post("/system/root-init", tags=["Deploy & Governance"])
-def initialize_or_verify_root():
+def initialize_or_verify_root(current_user: Dict[str, Any] = Depends(require_install_secret_or_admin)):
     """
     Establishes and verifies the default canonical root administrator.
     """
@@ -1939,7 +2348,7 @@ class TestProviderRequest(BaseModel):
     provider: str
 
 @v1_router.get("/system/secrets", tags=["Secrets & Infrastructure"])
-def get_secrets_inventory():
+def get_secrets_inventory(current_user: Dict[str, Any] = Depends(require_admin_user)):
     """
     Returns inventory of configured secrets, model tokens, and storage volume paths with cryptographic masking.
     """
@@ -1958,7 +2367,7 @@ def get_secrets_inventory():
     }
 
 @v1_router.post("/system/secrets", tags=["Secrets & Infrastructure"])
-def update_system_secret(req: SetSecretRequest):
+def update_system_secret(req: SetSecretRequest, current_user: Dict[str, Any] = Depends(require_admin_user)):
     """
     Securely updates a secret or storage volume path in the encrypted local vault.
     """
@@ -1970,7 +2379,7 @@ def update_system_secret(req: SetSecretRequest):
     }
 
 @v1_router.post("/system/provider-test", tags=["Secrets & Infrastructure"])
-def test_provider(req: TestProviderRequest):
+def test_provider(req: TestProviderRequest, current_user: Dict[str, Any] = Depends(require_admin_user)):
     """
     Tests connectivity and adapter readiness for a model runtime (vLLM, Ollama, OpenAI, Gemini, Anthropic).
     """
@@ -1997,7 +2406,7 @@ def get_guardrail_policies():
     }
 
 @v1_router.post("/guardrails/policies", tags=["Guardrails & Policies"])
-def update_guardrail_policy(req: UpdatePolicyRequest):
+def update_guardrail_policy(req: UpdatePolicyRequest, current_user: Dict[str, Any] = Depends(require_admin_user)):
     """
     Updates token quotas, rate limits, or module access for a specific role.
     """
@@ -2022,7 +2431,8 @@ def get_benchmark_8_models():
     suite = get_champion_suite()
     return {
         "author": "Desarrollado v1.0.0 Miguel Benítez",
-        "champion_algorithm": "LightGBM Quantile (Pinball Loss)",
+        "champion_algorithm": None,
+        "selection_recommendation": suite.get_selection_recommendation(),
         "models_evaluated_count": 8,
         "benchmark_comparison": suite.get_benchmark_summary(),
         "splits_summary": suite.get_splits_summary()
@@ -2134,7 +2544,7 @@ def get_model_deployments_catalog():
 @v1_router.post("/models/register", tags=["MLOps Model Registry"])
 def register_new_model_endpoint(
     req: ModelRegisterRequest,
-    current_user: Optional[Dict[str, Any]] = Depends(get_current_user_and_session)
+    current_user: Dict[str, Any] = Depends(require_platform_operator)
 ):
     """
     Registers a new model and version into the authoritative MLOps Registry.
@@ -2163,7 +2573,7 @@ def register_new_model_endpoint(
 @v1_router.post("/models/deploy", tags=["MLOps Model Deployment"])
 def deploy_model_endpoint(
     req: ModelDeployRequest,
-    current_user: Optional[Dict[str, Any]] = Depends(get_current_user_and_session)
+    current_user: Dict[str, Any] = Depends(require_platform_operator)
 ):
     """
     Deploys a registered model to a designated runtime.
@@ -2366,6 +2776,141 @@ def get_scrapers_live_status():
         "macro_energy_multimodal": macro_info,
         "author": "developed by Miguel Benítez"
     }
+
+
+@v1_router.get("/data/ana/status", tags=["Data Platform & Ingestion"])
+def get_ana_catalog_status():
+    """Expose the read-only publication boundary for the ANA agreement catalog.
+
+    This endpoint intentionally reads manifests only.  A staging run with failed
+    records is never presented as a published catalog, and recovery sources are
+    reported separately because they do not replace the original ANA evidence.
+    """
+    bronze_root = PROJECT_ROOT / "data" / "bronze" / "ana_agreements_full"
+    staging_root = bronze_root / ".staging"
+    staging_manifests = sorted(staging_root.glob("*/manifest.json"), key=lambda p: p.stat().st_mtime, reverse=True)
+
+    def read_json(path: Path) -> Dict[str, Any]:
+        try:
+            return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+        except (OSError, ValueError):
+            return {}
+
+    source_manifest = read_json(staging_manifests[0]) if staging_manifests else {}
+    silver_manifest_path = PROJECT_ROOT / "data" / "silver" / "ana_agreements_catalog.manifest.json"
+    current_path = PROJECT_ROOT / "data" / "bronze" / "ana_agreements_full" / "CURRENT"
+    silver_manifest = read_json(silver_manifest_path)
+    recovery_manifest = read_json(PROJECT_ROOT / "data" / "bronze" / "ana_recovery_sources" / "manifest.json")
+    register = read_json(PROJECT_ROOT / "data" / "gold" / "ana_agreements_recovery" / "source_register.json")
+    missing_report_path = PROJECT_ROOT / "data" / "gold" / "ana_missing_references_report.json"
+    missing_report = read_json(missing_report_path)
+    current_snapshot = read_json(current_path)
+
+    failures = source_manifest.get("failures") or []
+    records = int(source_manifest.get("record_count") or silver_manifest.get("records") or 0)
+    downloaded = max(0, records - len(failures)) if records else int(silver_manifest.get("downloaded_records") or 0)
+    recovery_records = recovery_manifest.get("records") or []
+    recovery_downloaded = sum(1 for item in recovery_records if item.get("status") == "downloaded")
+    recovery_errors = sum(1 for item in recovery_records if item.get("status") == "error")
+    relation_counts: Dict[str, int] = {}
+    for item in register.get("records") or []:
+        key = str(item.get("status") or "unknown")
+        relation_counts[key] = relation_counts.get(key, 0) + 1
+
+    complete = bool(source_manifest.get("complete")) and not failures
+    publication_ready = bool(silver_manifest.get("publication_ready")) and complete
+    if publication_ready:
+        publication_status = "published"
+    elif source_manifest:
+        publication_status = "staging_incomplete"
+    else:
+        publication_status = "unavailable"
+
+    return {
+        "catalog": "ana_agreements_full",
+        "observed_at": datetime.now(timezone.utc).isoformat(),
+        "publication_status": publication_status,
+        "published": publication_ready,
+        "current_snapshot": {
+            "path": str(current_path),
+            "available": bool(current_snapshot),
+            "run_id": current_snapshot.get("run_id"),
+            "published_at": current_snapshot.get("published_at"),
+            "records": current_snapshot.get("records"),
+        },
+        "source": {
+            "run_id": source_manifest.get("run_id"),
+            "manifest_path": str(staging_manifests[0]) if staging_manifests else None,
+            "records": records,
+            "downloaded_records": downloaded,
+            "failed_records": len(failures),
+            "complete": complete,
+            "failures": failures,
+        },
+        "silver": {
+            "manifest_path": str(silver_manifest_path),
+            "records": silver_manifest.get("records", 0),
+            "publication_ready": publication_ready,
+            "raw_inputs_modified": bool(silver_manifest.get("raw_inputs_modified", False)),
+            "sha256": silver_manifest.get("sha256"),
+        },
+        "recovery": {
+            "records": len(recovery_records),
+            "downloaded": recovery_downloaded,
+            "errors": recovery_errors,
+            "raw_inputs_modified": bool(recovery_manifest.get("raw_inputs_modified", False)),
+            "relation_status_counts": relation_counts,
+        },
+        "missing_references": {
+            "report_path": str(missing_report_path),
+            "records": int(missing_report.get("record_count") or len(failures)),
+            "classification_counts": missing_report.get("classification_counts", {}),
+            "raw_inputs_modified": bool(missing_report.get("raw_inputs_modified", False)),
+        },
+        "raw_inputs_modified": bool(silver_manifest.get("raw_inputs_modified", False)) or bool(recovery_manifest.get("raw_inputs_modified", False)),
+    }
+
+
+# ============================================================================
+# PROJECT BRAIN & LOOP GOVERNANCE ENDPOINTS
+# ============================================================================
+
+from src.brain.service import brain_service
+
+@v1_router.get("/brain/status")
+async def get_brain_system_status():
+    """Returns the System Source of Truth and runtime lifecycle."""
+    sot = brain_service.get_source_of_truth()
+    return sot or {"error": "SYSTEM_SOURCE_OF_TRUTH.yaml not available"}
+
+@v1_router.get("/brain/capabilities")
+async def get_brain_capabilities():
+    """Returns the sovereign Capability Matrix by role."""
+    return brain_service.get_capability_matrix()
+
+@v1_router.get("/brain/gaps")
+async def get_brain_gap_register():
+    """Returns the active GAP register and tracking status."""
+    return brain_service.get_gap_register()
+
+@v1_router.get("/brain/catalogs")
+async def get_brain_catalogs():
+    """Returns data catalog and model catalog."""
+    return {
+        "data_catalog": brain_service.get_data_catalog(),
+        "model_catalog": brain_service.get_model_catalog(),
+        "security_baseline": brain_service.get_security_baseline(),
+    }
+
+class ProposalEvaluationRequest(BaseModel):
+    proposal_id: str
+    scores: Dict[str, float]
+
+@v1_router.post("/brain/evaluate-proposal")
+async def evaluate_brain_proposal(req: ProposalEvaluationRequest):
+    """Evaluates an architectural change proposal against the 5-criterion matrix."""
+    return brain_service.evaluate_proposal(req.dict())
+
 
 
 

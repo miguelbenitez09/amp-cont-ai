@@ -30,7 +30,7 @@ jobs:
       - name: Install canonical runtime and test tools
         run: python -m pip install -r requirements-framework.txt pytest==8.3.5 httpx==0.28.1
       - name: Isolated framework tests only
-        run: python -m pytest -q tests/test_public_release_boundary.py tests/test_framework.py
+        run: python -m pytest -q tests/test_public_release_boundary.py tests/test_framework_installer.py tests/test_framework_ml.py
       - name: Build public candidate
         run: python scripts/build_public_release.py --output ${{ runner.temp }}/amp-public.zip
   container:

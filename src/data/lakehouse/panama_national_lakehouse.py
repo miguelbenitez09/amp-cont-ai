@@ -80,7 +80,8 @@ class PanamaNationalLakehouse:
                 "lng_lpg_carriers_transits": int(base_transits * 0.14),
                 "vehicle_carriers_roro_transits": int(base_transits * 0.07),
                 "tankers_chemical_transits": int(base_transits * 0.05),
-                "source": "Autoridad del Canal de Panamá (ACP) - Boletines Estadísticos"
+                "source": "SIMULATED_SCENARIO — calibrate with ACP bulletin before production use",
+                "classification": "SIMULATED"
             })
 
         df = pd.DataFrame(records)
@@ -160,21 +161,30 @@ class PanamaNationalLakehouse:
                 "stevedoring_overtime_surcharge_active": bool(holidays_count >= 3),
                 "blockade_severity_score": blockade_severity_score,
                 "disruption_event_name": disruption_event_name,
-                "source": "IMHPA / Gaceta Oficial de Panamá / Cronología de Disrupciones Portuarias"
+                "source": "SIMULATED_SCENARIO — validate against IMHPA and Gaceta Oficial before production use",
+                "classification": "SIMULATED"
             })
 
         df = pd.DataFrame(records)
         df.to_csv(self.lakehouse_dir / "panama_climate_festivities_disruptions_2015_2026.csv", index=False)
         return df
 
-    def build_full_national_lakehouse(self) -> Dict[str, Any]:
-        """Runs the entire lakehouse compilation pipeline."""
+    def build_full_national_lakehouse(self, include_simulated: bool = False) -> Dict[str, Any]:
+        """Compile the lakehouse; simulation tables require an explicit opt-in."""
+        if not include_simulated:
+            return {
+                "status": "BLOCKED_MISSING_VERIFIED_SOURCES",
+                "author": "Desarrollado v1.0.0 Miguel Benítez",
+                "tables": {},
+                "reason": "Synthetic national, ACP and climate series are excluded from production.",
+            }
         df_ministries = self.scraper.fetch_synthetic_empirical_series()
         df_acp = self.generate_acp_detailed_transit_series()
         df_climate = self.generate_climate_and_disruptions_series()
 
         return {
-            "status": "Lakehouse compiled successfully",
+            "status": "SIMULATION_LAKEHOUSE_COMPILED",
+            "classification": "SIMULATED_NOT_FOR_PRODUCTION_TRAINING",
             "author": "Desarrollado v1.0.0 Miguel Benítez",
             "tables": {
                 "panama_17_ministries_indicators": len(df_ministries),

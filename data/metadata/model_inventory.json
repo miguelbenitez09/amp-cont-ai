@@ -1,0 +1,26 @@
+{
+  "generated_at": "2026-09-30T23:10:53Z",
+  "source": "local Ollama manifest and project model directory",
+  "artifacts": [
+    {
+      "name": "qwen3:1.7b",
+      "runtime": "ollama",
+      "digest": "sha256:3d0b790534fe4b79525fc3692950408dca41171676ed7e21db57af5c65ef6ab6",
+      "manifest_digest": "sha256:8f68893c685c3ddff2aa3fffce2aa60a30bb2da65ca488b61fff134a4d1730e7",
+      "size_bytes": 1359279776,
+      "path": "~/.ollama/models/manifests/registry.ollama.ai/library/qwen3/1.7b",
+      "live_probe": {
+        "endpoint": "http://127.0.0.1:11434/api/generate",
+        "request": "temperature=0, think=false, num_predict=8",
+        "result": "OK",
+        "status": "VERIFIED"
+      }
+    },
+    {
+      "name": "champion_models.joblib",
+      "runtime": "local_tabular",
+      "path": "models/champion_models.joblib",
+      "status": "PRESENT"
+    }
+  ]
+}

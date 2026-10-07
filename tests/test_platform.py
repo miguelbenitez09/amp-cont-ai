@@ -171,6 +171,43 @@ def test_data_manifest_and_sources():
     assert len(m["content_hash"]) == 64
 
 
+def test_ana_catalog_status_exposes_publication_boundary():
+    res = requests.get(f"{BASE_URL}/api/v1/data/ana/status", timeout=5)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["catalog"] == "ana_agreements_full"
+    assert data["source"]["records"] == 700
+    assert data["source"]["failed_records"] == 17
+    assert data["source"]["complete"] is False
+    assert data["published"] is False
+    assert data["publication_status"] == "staging_incomplete"
+    assert data["silver"]["publication_ready"] is False
+    assert data["missing_references"]["records"] == 17
+    assert data["missing_references"]["classification_counts"] == {"resource_not_found_at_probed_variants": 17}
+    assert data["missing_references"]["raw_inputs_modified"] is False
+    assert data["current_snapshot"]["available"] is False
+    assert data["raw_inputs_modified"] is False
+
+
+def test_platform_mutations_require_server_authorization():
+    checks = [
+        ("get", "/api/v1/system/secrets"),
+        ("post", "/api/v1/system/secrets"),
+        ("post", "/api/v1/system/provider-test"),
+        ("post", "/api/v1/guardrails/policies"),
+        ("post", "/api/v1/models/register"),
+        ("post", "/api/v1/models/deploy"),
+        ("post", "/api/v1/system/root-init"),
+    ]
+    for method, path in checks:
+        request = getattr(requests, method)
+        kwargs = {"timeout": 5}
+        if method == "post":
+            kwargs["json"] = {}
+        response = request(f"{BASE_URL}{path}", **kwargs)
+        assert response.status_code == 401, f"{method.upper()} {path} must require authentication"
+
+
 def test_features_catalog():
     res = requests.get(f"{BASE_URL}/api/v1/features/catalog", timeout=5)
     assert res.status_code == 200
@@ -183,8 +220,11 @@ def test_models_benchmark_and_registry():
     bench_res = requests.get(f"{BASE_URL}/api/v1/models/benchmark", timeout=5)
     assert bench_res.status_code == 200
     bench_data = bench_res.json()
-    assert "LightGBM" in bench_data["champion_algorithm"]
+    assert bench_data["champion_algorithm"] is None
+    assert bench_data["selection_recommendation"]["status"] == "candidate_selected"
+    assert bench_data["selection_recommendation"]["requires_governance_promotion"] is True
     assert len(bench_data["benchmark_comparison"]) >= 4
+    assert all(item.get("evidence") == "models\\model_benchmark.json" for item in bench_data["benchmark_comparison"].values())
 
     reg_res = requests.get(f"{BASE_URL}/api/v1/models/registry", timeout=5)
     assert reg_res.status_code == 200

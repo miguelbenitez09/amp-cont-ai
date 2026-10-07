@@ -27,8 +27,8 @@ class ModelCatalogService:
     def __init__(
         self,
         db_path: str = "data/enterprise_db/portops_platform.db",
-        vllm_endpoint: str = "http://127.0.0.1:8001/v1",
-        vllm_health_endpoint: str = "http://127.0.0.1:8001/health"
+        vllm_endpoint: str = "http://127.0.0.1:8080/v1",
+        vllm_health_endpoint: str = "http://127.0.0.1:8080/health"
     ):
         self.repository = CatalogRepository(db_path=db_path)
         self.vllm_source = VllmCatalogSource(endpoint=vllm_endpoint, health_endpoint=vllm_health_endpoint)

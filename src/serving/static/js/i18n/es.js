@@ -16,7 +16,7 @@ window.I18N_ES = {
     role_prefix: "Rol:",
     worm_valid: "WORM: Válido",
     verifying: "Verificando...",
-    healthy: "100% Operativo",
+    healthy: "Estado operativo",
     settings: "Ajustes",
     openapi_docs: "OpenAPI Docs",
     lang_label: "Idioma:"
@@ -35,16 +35,17 @@ window.I18N_ES = {
   },
   landing: {
     hero_title: "Inteligencia Artificial Portuaria, Inferencia Cuantílica y MLOps para el Hub Logístico de Panamá",
-    hero_desc: "Plataforma analítica e industrial de código abierto desarrollada para procesar 140 meses continuos de microdatos reales (2015–2026) de la Autoridad Marítima de Panamá (AMP). Libre de costos privativos de licenciamiento, bajo estricto cumplimiento cívico de la Ley 6 de 2002 (Ley de Transparencia de la República de Panamá).",
+    hero_desc: "Plataforma analítica e industrial de código abierto desarrollada para procesar microdatos reales de la Autoridad Marítima de Panamá (AMP), con cobertura temporal consultable en el manifiesto. Libre de costos privativos de licenciamiento, bajo estricto cumplimiento cívico de la Ley 6 de 2002 (Ley de Transparencia de la República de Panamá).",
     author_badge: "Autor: Miguel Benítez",
     license_badge: "Licencia: GNU GPL v3.0",
     attribution_notice: "Atribución de autoría obligatoria bajo la Sección 7 de la Licencia GNU GPL v3.0.",
     stat_data_points: "140 Meses",
     stat_data_points_sub: "Microdatos Reales (2015–2026)",
-    stat_accuracy: "90.89% Precisión",
-    stat_accuracy_sub: "Champion LightGBM (WAPE 9.11%)",
-    stat_zero_mocks: "0% Mocks",
-    stat_zero_mocks_sub: "Garantía de Datos Reales en Prod",
+    stat_accuracy: "Benchmark medido",
+    stat_accuracy_sub: "Consulta el resultado y la fecha de evaluación",
+    stat_zero_mocks: "Datos con evidencia",
+    stat_zero_mocks_sub: "Consulta el manifiesto y la fecha de medición",
+    evidence_badge: "Fuentes conectadas • estado verificable",
     stat_worm_ledger: "SHA-256",
     stat_worm_ledger_sub: "Ledger WORM Inmutable"
   },
@@ -131,6 +132,9 @@ window.I18N_ES = {
     import_procedure: "Procedimiento de Importación:",
     export_procedure: "Procedimiento de Exportación:",
     legal_basis: "Base Legal y Resoluciones:",
+    evidence_pending: "Esta ficha es una regla candidata: el procedimiento y la base legal requieren documento oficial enlazado; no prueban vigencia por sí solos.",
+    evidence_historical: "Registro histórico de observación; no representa vigencia legal actual.",
+    evidence_verified: "Evidencia documental oficial enlazada y verificada.",
     bitemporal_validity: "Vigencia Bitemporal:",
     dai_rate: "Arancel DAI:",
     itbms_rate: "ITBMS:",
@@ -173,7 +177,10 @@ window.I18N_ES = {
     subtitle: "Gobernanza de datos con linaje de extremo a extremo, pruebas de calidad automatizadas Great Expectations y Feature Store con Cero Fuga Temporal (Zero Lookahead Bias).",
     bronze_title: "Capa Bronze (Raw Ingestion)",
     silver_title: "Capa Silver (Curated & Enriched)",
-    gold_title: "Capa Gold (Aggregated & Features)"
+    gold_title: "Capa Gold (Aggregated & Features)",
+    ana_status_label: "Estado del catálogo ANA:",
+    ana_records_label: "Registros ANA:",
+    ana_integrity_label: "Integridad de publicación:"
   },
   security: {
     title: "Seguridad Operacional, Matriz RBAC/ABAC y Ledger WORM",
@@ -184,7 +191,10 @@ window.I18N_ES = {
     btn_verify_worm: "🛡️ Verificar Integridad WORM",
     block_height: "Altura de Bloques:",
     chain_integrity: "Estado de Integridad:",
-    last_block_hash: "Hash Último Bloque:"
+    last_block_hash: "Hash Último Bloque:",
+    permissions_sub: "Permisos registrados"
+    ,authenticated_session: "Sesión autenticada",
+    guest_mode: "Modo invitado · permisos de consulta"
   },
   telemetry: {
     title: "Telemetría de Cómputo e Inferencia en Tiempo Real",
@@ -200,5 +210,16 @@ window.I18N_ES = {
     success: "Operación completada con éxito",
     close: "Cerrar",
     details: "Ver Detalles"
+  },
+  /* Claves compartidas con los componentes dinámicos. */
+  _coverage: {
+    nav_theme_sunset: "Pacífico Sunset (Coral / Neón)", nav_theme_cobalt: "Cobalto Medianoche (Azul profundo)",
+    cot_soul_risk: "📈 Gestor de Riesgo y What-If (Monte Carlo, sequía)", cot_guardrail_label: "Nivel de guardrail:",
+    cot_guardrail_balanced: "Equilibrado (auditoría flexible)", cot_guardrail_permissive: "Permisivo (solo inyecciones graves)",
+    cot_quick_queries: "Consultas rápidas de prueba:", cot_btn_run_cot: "Ejecutar inferencia CoT en tiempo real", cot_copy_btn: "Copiar respuesta",
+    cot_legal_citations_title: "Fuentes y citas normativas panameñas rastreadas:", cot_feedback_useful: "Útil", cot_feedback_not_useful: "No útil", cot_feedback_category: "Categoría:",
+    customs_title: "Lakehouse Medallion y RAG jurídico-arancelario panameño", customs_subtitle: "Consulta de capítulos arancelarios, códigos HS, tratados y reglas verificadas.", customs_search_label: "Consulta RAG del banco arancelario:", customs_calculator_title: "Calculadora de liquidación fiscal aduanera (ANA)", customs_cif_value: "Valor CIF (USD):",
+    forecast_terminal_label: "Terminal portuario:", benchmark_title: "Torneo de algoritmos de aprendizaje automático (backtesting temporal)", benchmark_subtitle: "Comparación empírica de modelos sobre datos históricos.", benchmark_btn_compare: "Actualizar métricas de benchmark",
+    footer_legal: "Desarrollado por Miguel Benítez • Licencia GNU GPL v3.0.", footer_disclaimer: "Datos abiertos protegidos por la Ley 6 de 2002 de Panamá."
   }
 };

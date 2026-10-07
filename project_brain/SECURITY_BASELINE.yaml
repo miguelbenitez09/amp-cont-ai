@@ -1,0 +1,21 @@
+# AMP-CONT-AI SECURITY BASELINE
+# Estándar Criptográfico, Control de Acceso y Cumplimiento Normativo
+standards:
+  framework: "NIST SP 800-63B / ISO 27001 / Ley 81 de Protección de Datos Personales de Panamá"
+  cryptography:
+    password_hashing: "Argon2id (m=65536, t=3, p=4)"
+    token_signing: "HMAC-SHA256 (JWT)"
+    inference_sealing: "HMAC-SHA256 / Ed25519"
+    worm_audit_chain: "SHA-256 Merkle-Style Chained Hashes"
+  network_security:
+    gateway_proxy: "Go reverse proxy con TLS Termination local y WAF"
+    rate_limiting: "120 req/min por cliente IP con burst de 30"
+    cors_policy: "Restringido al host de origen"
+    security_headers:
+      - "Strict-Transport-Security: max-age=63072000; includeSubDomains"
+      - "X-Content-Type-Options: nosniff"
+      - "X-Frame-Options: DENY"
+      - "Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
+  data_protection:
+    anonymization: "Haseo unidireccional de PII según Ley 81 de Panamá"
+    audit_immutability: "Almacén WORM (Write Once, Read Many) con sellado criptográfico inmutable"

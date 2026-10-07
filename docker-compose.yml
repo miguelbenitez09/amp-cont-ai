@@ -1,11 +1,35 @@
 # Public local installation. Configure advanced integrations through the app.
 services:
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    ports:
+      - "127.0.0.1:${AMP_PORT:-8000}:8000"
+    environment:
+      PORT: "8000"
+      UPSTREAM_URL: "http://framework:8000"
+      STATIC_DIR: "/app/static"
+    restart: unless-stopped
+    depends_on:
+      - framework
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8000/health/gateway || exit 1"]
+      interval: 10s
+      timeout: 3s
+      start_period: 3s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
   framework:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "127.0.0.1:${AMP_PORT:-8000}:8000"
+      - "127.0.0.1:${AMP_BACKEND_PORT:-8001}:8000"
     environment:
       AMP_MODE: ${AMP_MODE:-portal}
       AMP_STATE_DIR: /app/state
@@ -16,5 +40,37 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
+
+  portops-prod:
+    profiles: ["prod-tls"]
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    ports:
+      - "${PORTOPS_LAN_BIND:-0.0.0.0}:${PORTOPS_HTTPS_PORT:-8443}:8443"
+    environment:
+      PORTOPS_SECURE_COOKIES: "1"
+      PORTOPS_ENABLE_HSTS: "1"
+      PORTOPS_AUTH_SECRET: ${PORTOPS_AUTH_SECRET:-local-production-like-secret-change-me}
+      LOKY_MAX_CPU_COUNT: ${LOKY_MAX_CPU_COUNT:-2}
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models:ro
+      - ./config:/app/config:ro
+      - ./configs:/app/configs:ro
+      - ./.bootstrap:/app/.bootstrap
+      - ./logs:/app/logs
+      - ./.local/tls:/certs:ro
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "python", "-c", "import ssl, urllib.request; ctx=ssl._create_unverified_context(); urllib.request.urlopen('https://127.0.0.1:8443/health/live', context=ctx, timeout=5)"]
+      interval: 30s
+      timeout: 8s
+      start_period: 45s
+      retries: 3
 volumes:
   framework_state:

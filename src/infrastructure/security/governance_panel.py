@@ -22,6 +22,7 @@ import os
 import time
 import uuid
 import hashlib
+import secrets
 import sqlite3
 from pathlib import Path
 from typing import Dict, List, Any, Optional
@@ -213,9 +214,12 @@ class PanamaSecurityGovernancePanel:
                     real_users.append({
                         "username": r_dict["username"],
                         "full_name": r_dict["username"].replace("_", " ").title(),
+                        "email": r_dict.get("email") or f"{r_dict['username']}@portops.pa",
                         "entity": "Panamá PortOps-AI Core" if is_root else "Autoridad Marítima de Panamá (AMP)",
                         "role_id": c_role,
                         "status": "ACTIVO" if r_dict.get("is_active") else "INACTIVO",
+                        "is_active": bool(r_dict.get("is_active")),
+                        "is_root": is_root,
                         "last_login": r_dict.get("created_at", time.strftime("%Y-%m-%d %H:%M UTC")),
                         "auth_method": "MFA_TOTP" if r_dict.get("mfa_enabled") else ("Certificado_Digital" if is_root else "Bearer_Token"),
                         "created_at": r_dict.get("created_at", time.strftime("%Y-%m-%d %H:%M UTC"))
@@ -335,11 +339,14 @@ class PanamaSecurityGovernancePanel:
         entity: str,
         role_id: str,
         auth_method: str = "Bearer_Token",
-        password: str = "Portops_2026_Secure!"
+        password: Optional[str] = None,
+        email: Optional[str] = None
     ) -> Dict[str, Any]:
         """Registers a new user directly in SQLite database with cryptographic password hashing."""
         canonical_role = cls.resolve_canonical_role(role_id)
+        password = password or secrets.token_urlsafe(18)
         clean_user = username.strip().lower()
+        user_email = (email or f"{clean_user}@portops.pa").strip()
 
         from src.auth.authentication import AuthenticationEngine
         now_str = time.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -366,7 +373,7 @@ class PanamaSecurityGovernancePanel:
                         created_at, updated_at
                     ) VALUES (?, ?, ?, ?, ?, 1, 0, 0, 0, 0, ?, ?);
                 """, (
-                    new_uid, clean_user, f"{clean_user}@portops.pa", pwd_hash, salt_hex, now_str, now_str
+                    new_uid, clean_user, user_email, pwd_hash, salt_hex, now_str, now_str
                 ))
 
                 # Map canonical role to db role_id
@@ -392,6 +399,7 @@ class PanamaSecurityGovernancePanel:
                 "user": {
                     "username": clean_user,
                     "full_name": full_name.strip(),
+                    "email": user_email,
                     "entity": entity.strip(),
                     "role_id": canonical_role,
                     "status": "ACTIVO",
@@ -406,19 +414,99 @@ class PanamaSecurityGovernancePanel:
             }
 
     @classmethod
+    def update_user(
+        cls,
+        username: str,
+        full_name: Optional[str] = None,
+        email: Optional[str] = None,
+        role_id: Optional[str] = None,
+        entity: Optional[str] = None,
+        password: Optional[str] = None,
+        is_active: Optional[bool] = None
+    ) -> Dict[str, Any]:
+        """Updates an existing user in SQLite database (role, status, email, password, and metadata)."""
+        clean_user = username.strip().lower()
+        now_str = time.strftime("%Y-%m-%dT%H:%M:%SZ")
+        try:
+            with cls._get_db() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT user_id, username, is_root FROM users WHERE LOWER(username) = ?;", (clean_user,))
+                row = cursor.fetchone()
+                if not row:
+                    return {"status": "error", "message": f"Usuario '{username}' no encontrado."}
+
+                user_id = row["user_id"]
+                is_root = bool(row["is_root"])
+
+                updates = []
+                params = []
+
+                if email is not None and email.strip():
+                    updates.append("email = ?")
+                    params.append(email.strip())
+
+                if is_active is not None:
+                    if is_root and not is_active:
+                        return {"status": "error", "message": "El superadministrador 'root' no puede ser desactivado."}
+                    updates.append("is_active = ?")
+                    params.append(1 if is_active else 0)
+
+                if password and password.strip():
+                    from src.auth.authentication import AuthenticationEngine
+                    pwd_hash, salt_hex = AuthenticationEngine.hash_password(password.strip())
+                    updates.append("password_hash = ?")
+                    params.append(pwd_hash)
+                    updates.append("salt = ?")
+                    params.append(salt_hex)
+
+                if updates:
+                    updates.append("updated_at = ?")
+                    params.append(now_str)
+                    params.append(user_id)
+                    query = f"UPDATE users SET {', '.join(updates)} WHERE user_id = ?;"
+                    cursor.execute(query, params)
+
+                if role_id and not is_root:
+                    canonical_role = cls.resolve_canonical_role(role_id)
+                    db_role_id = "platform_admin" if canonical_role == "platform_admin" else (
+                        "mlops_engineer" if canonical_role == "mlops_engineer" else (
+                            "port_operator" if canonical_role == "port_operator" else (
+                                "compliance_auditor" if canonical_role == "compliance_auditor" else "readonly_viewer"
+                            )
+                        )
+                    )
+                    cursor.execute("DELETE FROM user_roles WHERE user_id = ?;", (user_id,))
+                    cursor.execute("""
+                        INSERT INTO user_roles (user_id, role_id, assigned_by, assigned_at)
+                        VALUES (?, ?, 'admin_update', ?);
+                    """, (user_id, db_role_id, now_str))
+
+                conn.commit()
+
+                return {
+                    "status": "success",
+                    "message": f"Usuario '{clean_user}' actualizado exitosamente.",
+                    "username": clean_user
+                }
+        except Exception as e:
+            return {"status": "error", "message": f"Error al actualizar usuario: {str(e)}"}
+
+    @classmethod
     def delete_user(cls, username: str) -> bool:
         """Deletes a user from SQLite database (protects root user)."""
         clean_user = username.strip().lower()
         try:
             with cls._get_db() as conn:
                 cursor = conn.cursor()
-                cursor.execute("SELECT is_root FROM users WHERE LOWER(username) = ?;", (clean_user,))
+                cursor.execute("SELECT user_id, is_root FROM users WHERE LOWER(username) = ?;", (clean_user,))
                 row = cursor.fetchone()
                 if not row:
                     return False
                 if row["is_root"] == 1 or clean_user == "root":
                     return False  # Never delete root
 
+                cursor.execute("DELETE FROM user_roles WHERE user_id = ?;", (row["user_id"],))
+                cursor.execute("DELETE FROM sessions WHERE user_id = ?;", (row["user_id"],))
                 cursor.execute("DELETE FROM users WHERE LOWER(username) = ?;", (clean_user,))
                 conn.commit()
                 return True

@@ -1,0 +1,36 @@
+version: "1.0"
+hardware_profile:
+  gpu: "NVIDIA GeForce RTX 3050 Laptop GPU"
+  vram_mib: 4096
+  ram_gib: 31.8
+local_inventory:
+  docker_volumes: []
+  docker_images: []
+  discovered_weight_files: []
+  ollama:
+    - id: "qwen3:1.7b"
+      manifest_digest: "8f68893c685c3ddff2aa3fffce2aa60a30bb2da65ca488b61fff134a4d1730e7"
+      weight_digest: "3d0b790534fe4b79525fc3692950408dca41171676ed7e21db57af5c65ef6ab6"
+      size_bytes: 1359293444
+      parameters: "2.0B"
+      quantization: "Q4_K_M"
+      license: "Apache-2.0"
+      runtime_mode: "cpu"
+      status: "verified_serving"
+candidates:
+  - id: "Qwen/Qwen3-1.7B"
+    role: "rag_text_and_tool_router"
+    license: "Apache-2.0"
+    priority: 1
+    vllm_status: "not_deployed"
+    reason: "Fits the local memory envelope; official vLLM recipe is available."
+  - id: "qwen3:4b"
+    role: "quality_challenger"
+    license: "Apache-2.0"
+    priority: 2
+    status: "not_downloaded"
+    reason: "Higher quality candidate; benchmark only after GPU driver/runtime remediation."
+selection_policy:
+  text_queries: "Prefer a healthy local LLM with an installed model; never infer availability from a listening port alone."
+  numeric_forecasts: "Use versioned tabular models and Feature Store artifacts; do not delegate arithmetic forecasts to the LLM."
+  promotion: "Require temporal backtesting, finite metrics, WAPE <= 0.15, R2 >= 0, provenance, and registry alias."

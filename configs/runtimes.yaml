@@ -6,9 +6,9 @@ runtimes:
     id: "runtime-vllm-primary"
     name: "vLLM High-Throughput Engine"
     type: "vllm"
-    enabled: true
-    endpoint: "http://127.0.0.1:8001/v1"
-    health_endpoint: "http://127.0.0.1:8001/health"
+    enabled: false
+    endpoint: "http://127.0.0.1:8080/v1"
+    health_endpoint: "http://127.0.0.1:8080/health"
     timeout_seconds: 30
     gpu_profile:
       device: "cuda"
@@ -17,9 +17,26 @@ runtimes:
       enforce_eager: true
     capabilities:
       streaming: true
-      tool_calling: true
-      json_mode: true
+      continuous_batching: "probe_required"
+      paged_kv_cache: "probe_required"
+      prefix_caching: "probe_required"
+      speculative_decoding: "probe_required"
+      quantization: ["AWQ", "GPTQ", "bitsandbytes"]
+      tool_calling: "probe_required"
+      json_mode: "probe_required"
+      chat_completions: "probe_required"
+  vllm_cpu:
+    id: "runtime-vllm-cpu-validation"
+    name: "vLLM CPU Fallback"
+    type: "vllm"
+    enabled: false
+    endpoint: "http://127.0.0.1:8080/v1"
+    health_endpoint: "http://127.0.0.1:8080/health"
+    model: "Qwen/Qwen2.5-0.5B-Instruct"
+    capabilities:
+      streaming: true
       chat_completions: true
+      production_ready: false
 
   ollama:
     id: "runtime-ollama-local"
@@ -58,3 +75,10 @@ runtimes:
     capabilities:
       streaming: true
       tool_calling: true
+
+selection_policy:
+  numeric_forecasts: "local_tabular"
+  text_queries: "ollama_then_vllm"
+  require_live_checks: true
+  vllm_cuda_minimum: "12.3-compatible"
+  fallback_when_vllm_unhealthy: "ollama"

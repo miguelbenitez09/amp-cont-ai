@@ -1,0 +1,55 @@
+services:
+  vllm:
+    image: vllm/vllm-openai:v0.10.2
+    profiles: ["vllm"]
+    ports:
+      - "127.0.0.1:8080:8000"
+    environment:
+      VLLM_API_KEY: ${VLLM_API_KEY:?set VLLM_API_KEY}
+    command:
+      - "--model"
+      - "${VLLM_MODEL:-Qwen/Qwen2.5-1.5B-Instruct-AWQ}"
+      - "--quantization"
+      - "${VLLM_QUANTIZATION:-awq}"
+      - "--gpu-memory-utilization"
+      - "0.85"
+      - "--max-model-len"
+      - "2048"
+      - "--enable-prefix-caching"
+      - "--enable-chunked-prefill"
+      - "--disable-log-requests"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+
+  vllm-cpu:
+    image: vllm/vllm-openai-cpu:latest
+    profiles: ["vllm-cpu"]
+    ports:
+      - "127.0.0.1:8080:8000"
+    environment:
+      VLLM_API_KEY: ${VLLM_API_KEY:?set VLLM_API_KEY}
+    shm_size: "1gb"
+    command:
+      - "--model"
+      - "${VLLM_CPU_MODEL:-Qwen/Qwen2.5-0.5B-Instruct}"
+      - "--max-model-len"
+      - "128"
+      - "--dtype"
+      - "float32"
+      - "--gpu-memory-utilization"
+      - "0.3"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)"]
+      interval: 15s
+      timeout: 8s
+      retries: 20

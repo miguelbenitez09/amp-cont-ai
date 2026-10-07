@@ -5,14 +5,161 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panamá PortOps-AI v1.0.0 | developed by Miguel Benítez</title>
   <meta name="description" content="Plataforma Soberana de Inteligencia Portuaria, Benchmarking Multi-Algoritmo y Simulación Estocástica • developed by Miguel Benítez">
-  <link rel="stylesheet" href="/static/css/style.css?v=1.0.4">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚓</text></svg>">
+  <link rel="stylesheet" href="/static/css/style.css?v=4.0.0">
+  <link rel="icon" type="image/svg+xml" href="/static/framework/logo.svg">
   <!-- Chart.js 4.4 CDN for Responsive High-Performance Rendering -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <!-- KaTeX 0.16.9 CDN for High-Fidelity Mathematical Typography -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+  <style id="first-run-wizard-embedded-styles">
+    /* Guaranteed Modern Dark Cybernetic Reset & Styling for First-Run Console */
+    #first-run-setup-modal .btn,
+    .fr-nav-tab,
+    .btn-circular-close {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    #first-run-setup-modal .fr-nav-tabs {
+      display: flex !important;
+      flex-wrap: nowrap !important;
+      overflow-x: auto !important;
+      gap: 0.75rem !important;
+      align-items: center !important;
+      background: rgba(10, 18, 36, 0.95) !important;
+      padding: 0.75rem 1.75rem !important;
+      border-bottom: 1px solid rgba(0, 229, 255, 0.25) !important;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 229, 255, 0.4) transparent;
+    }
+
+    #first-run-setup-modal .fr-nav-tab {
+      all: unset !important;
+      box-sizing: border-box !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 0.6rem !important;
+      padding: 0.65rem 1.35rem !important;
+      border-radius: 9px !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+      font-size: 0.88rem !important;
+      font-weight: 600 !important;
+      color: #94A3B8 !important;
+      background: rgba(15, 23, 42, 0.8) !important;
+      border: 1px solid rgba(0, 229, 255, 0.2) !important;
+      cursor: pointer !important;
+      white-space: nowrap !important;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      flex-shrink: 0 !important;
+      user-select: none !important;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    #first-run-setup-modal .fr-nav-tab:hover {
+      background: rgba(0, 229, 255, 0.12) !important;
+      color: #F1F5F9 !important;
+      border-color: rgba(0, 229, 255, 0.5) !important;
+      box-shadow: 0 4px 14px rgba(0, 229, 255, 0.2) !important;
+      transform: translateY(-1px) !important;
+    }
+
+    #first-run-setup-modal .fr-nav-tab.active {
+      background: linear-gradient(135deg, rgba(2, 132, 199, 0.35) 0%, rgba(0, 229, 255, 0.28) 100%) !important;
+      color: #00E5FF !important;
+      border-color: #00E5FF !important;
+      box-shadow: 0 0 18px rgba(0, 229, 255, 0.4), inset 0 0 10px rgba(0, 229, 255, 0.15) !important;
+      font-weight: 700 !important;
+    }
+
+    #btn-close-firstrun-top {
+      all: unset !important;
+      box-sizing: border-box !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 38px !important;
+      height: 38px !important;
+      border-radius: 50% !important;
+      background: rgba(15, 23, 42, 0.85) !important;
+      border: 1px solid rgba(148, 163, 184, 0.3) !important;
+      color: #94A3B8 !important;
+      cursor: pointer !important;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      user-select: none !important;
+    }
+
+    #btn-close-firstrun-top:hover {
+      background: rgba(239, 68, 68, 0.2) !important;
+      border-color: rgba(239, 68, 68, 0.6) !important;
+      color: #EF4444 !important;
+      box-shadow: 0 0 14px rgba(239, 68, 68, 0.4) !important;
+      transform: scale(1.06) !important;
+    }
+
+    #first-run-setup-modal .btn-secondary {
+      all: unset !important;
+      box-sizing: border-box !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 0.5rem !important;
+      padding: 0.6rem 1.4rem !important;
+      border-radius: 8px !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+      font-size: 0.86rem !important;
+      font-weight: 600 !important;
+      color: #94A3B8 !important;
+      background: rgba(15, 23, 42, 0.85) !important;
+      border: 1px solid rgba(148, 163, 184, 0.28) !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    #first-run-setup-modal .btn-secondary:hover {
+      background: rgba(30, 41, 59, 0.95) !important;
+      color: #F1F5F9 !important;
+      border-color: rgba(0, 229, 255, 0.45) !important;
+      box-shadow: 0 4px 14px rgba(0, 229, 255, 0.15) !important;
+      transform: translateY(-1px) !important;
+    }
+
+    #first-run-setup-modal .btn-primary {
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      box-sizing: border-box !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 0.5rem !important;
+      border-radius: 8px !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+      font-weight: 700 !important;
+      cursor: pointer !important;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      border: 1px solid transparent !important;
+    }
+
+    /* Global Dark Mode Autofill Override for Chrome, Edge, Safari */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active,
+    textarea:-webkit-autofill,
+    select:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0 1000px #0b1528 inset !important;
+      -webkit-text-fill-color: #F8FAFC !important;
+      caret-color: #00E5FF !important;
+      border-color: rgba(0, 229, 255, 0.5) !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+  </style>
 </head>
 <body>
 
@@ -79,17 +226,22 @@
             <option value="theme-midnight-cobalt">Midnight Cobalt (Azul Profundo)</option>
           </select>
         </div>
-        <button class="badge btn-security-hud" id="btn-auth-iam" title="Centro de Autenticación, MFA RFC 6238 y Seguridad Operativa">
+        <button type="button" class="badge btn-security-hud" id="btn-auth-iam" onclick="window.openAuthModal('atab-login')" title="Centro de Autenticación, MFA RFC 6238 y Seguridad Operativa">
           <span class="status-dot green"></span> <span id="nav-user-label" data-i18n="nav.login_iam">Iniciar Sesión | Login In</span>
         </button>
-        <span class="badge role-pill" id="hud-active-role" title="Rol RBAC activo en el sistema">Modo: Invitado</span>
+        <span class="badge" id="hud-env-badge" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4); font-size: 0.74rem;">ENTORNO: CANDIDATE</span>
+        <span class="badge role-pill" id="hud-active-role" title="Rol RBAC activo en el sistema" onclick="window.openAuthModal('atab-roles')" style="cursor: pointer;">Modo: Invitado</span>
+        <span class="badge" id="hud-cap-badge" title="Capacidades vigentes del rol" style="background: rgba(0, 245, 212, 0.1); color: #00F5D4; font-size: 0.72rem; border: 1px solid rgba(0, 245, 212, 0.3);">Cap: 2/31</span>
+        <button type="button" class="badge btn-security-hud" id="btn-nav-chat" onclick="document.getElementById('cot-reasoning-section').scrollIntoView({behavior: 'smooth'})" title="Abrir Asistente Conversacional MLOps & RAG Aduanas" style="background: rgba(0, 245, 212, 0.12); color: #00F5D4; border-color: rgba(0, 245, 212, 0.4);">
+          <span>💬</span> <span>Asistente IA & RAG</span>
+        </button>
         <button class="badge worm-badge" id="hud-worm-status" title="Auditoría WORM Criptográfica SHA-256">
           <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> <span data-i18n="nav.worm_valid">WORM: Válido</span>
         </button>
         <span class="badge healthy" id="health-badge"><span class="status-dot"></span> <span data-i18n="nav.verifying">Verificando...</span></span>
         <button class="badge btn-gear" id="btn-settings-gear" title="Abrir panel de configuración del modelo y simulación de nuevas variables">
           <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-          <span id="algo-badge-text">LightGBM Champion</span>
+          <span id="algo-badge-text">Modelo activo</span>
           <span class="gear-badge-tag" data-i18n="nav.settings">⚙️ Ajustes</span>
         </button>
         <span class="badge" id="latency-badge"><svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> -- ms</span>
@@ -156,12 +308,12 @@
         <!-- Hero Section -->
         <div class="landing-hero card">
           <div class="hero-badge-row">
-            <span class="badge hero-law-badge">
+            <span class="badge hero-law-badge interactive-nav-badge" role="button" tabindex="0" data-nav-tab="tab-data-platform" title="Abrir fuentes y datos">
               <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
               Ley 6 de 2002 de Transparencia de Panamá • Datos Abiertos AMP (2015–2026)
             </span>
-            <span class="badge hero-author-badge">Desarrollado v1.0.0 Miguel Benítez</span>
-            <span class="badge hero-license-badge">GNU GPL-3.0 Copyleft</span>
+            <span class="badge hero-author-badge interactive-nav-badge" role="button" tabindex="0" data-nav-tab="tab-methodology" title="Abrir metodología">Desarrollado v1.0.0 Miguel Benítez</span>
+            <span class="badge hero-license-badge interactive-nav-badge" role="button" tabindex="0" data-nav-tab="tab-security-iam" title="Abrir gobernanza y licencia">GNU GPL-3.0 Copyleft</span>
           </div>
 
           <h1 class="hero-title">Panamá PortOps-AI <span class="version-highlight">v1.0</span></h1>
@@ -174,9 +326,9 @@
               <strong>Propósito Cívico y Educativo:</strong> Diseñado para empoderar a personas naturales y jurídicas en Panamá (transportistas de carga terrestre, terminales portuarias, agencias navieras, estudiantes universitarios y servidores públicos), facilitando una herramienta soberana, verificable y 100% de código abierto que elimina la dependencia de costosas licencias privativas.
             </p>
             <p class="hero-stat-line">
-              <span>⚓ <strong>140 meses continuos</strong> analizados (2015-01 a 2026-05)</span> • 
+              <span>⚓ <strong id="hero-coverage-value">N/D</strong> de cobertura temporal registrada</span> •
               <span>📦 <strong>353 boletines oficiales</strong> procesados con deduplicación bitemporal</span> • 
-              <span>🎯 <strong>Zero Mocks:</strong> Cero datos simulados; 100% cálculo empírico real</span>
+              <span>🎯 <strong>Procedencia:</strong> Los estados y resultados muestran la fuente y la fecha de verificación disponibles</span>
             </p>
           </div>
 
@@ -187,7 +339,7 @@
             </button>
             <button class="btn btn-secondary" onclick="document.querySelector('[data-tab=tab-benchmark]').click()">
               <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-              Ver Torneo Champion/Challenger
+              Ver comparación de modelos
             </button>
             <button class="btn btn-secondary" onclick="document.querySelector('[data-tab=tab-simulation]').click()">
               <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><circle cx="15.5" cy="15.5" r="1.5"></circle></svg>
@@ -200,7 +352,7 @@
           </div>
         </div>
 
-        <!-- System Capabilities Grid (Zero Mocks) -->
+        <!-- System capabilities and evidence status -->
         <div class="landing-section-header">
           <svg class="section-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
           <h2>Capacidades Operativas del Ecosistema</h2>
@@ -210,8 +362,8 @@
           
           <div class="capability-card card" onclick="document.querySelector('[data-tab=tab-forecast]').click()">
             <div class="cap-header">
-              <span class="cap-tag champion">🏆 Champion</span>
-              <span class="cap-metric">WAPE 9.11%</span>
+              <span class="cap-tag champion" title="Benchmark de pronóstico"><span class="cap-icon" aria-hidden="true">📊</span><span class="cap-label">Benchmark</span></span>
+              <span class="cap-metric">Resultado medido en la instancia</span>
             </div>
             <h3>Inferencia Cuantílica en Tiempo Real</h3>
             <p>Pronóstico condicional a 1–6 meses para las 6 terminales portuarias con bandas de incertidumbre operacional (P10 Suelo, P50 Mediana, P90 Techo de Capacidad) y semáforo de vacíos.</p>
@@ -222,11 +374,11 @@
 
           <div class="capability-card card" onclick="document.querySelector('[data-tab=tab-benchmark]').click()">
             <div class="cap-header">
-              <span class="cap-tag benchmark">🔬 8 Algoritmos</span>
-              <span class="cap-metric">R² 0.9832 • WAPE 9.11%</span>
+              <span class="cap-tag benchmark" title="Benchmark registrado"><span class="cap-icon" aria-hidden="true">🔬</span><span class="cap-label">Benchmark registrado</span></span>
+              <span class="cap-metric">Métricas: N/D hasta cargar la ejecución</span>
             </div>
             <h3>Benchmarking Multi-Algoritmo</h3>
-            <p>Expanding Window Backtesting empírico (140 meses) comparando 8 arquitecturas competitivas: LightGBM Quantile Champion, Random Forest, CatBoost, Extra Trees, HistGB, Red Neuronal MLP, Bayesian Ridge y ElasticNet.</p>
+            <p>Expanding Window Backtesting empírico comparando 8 arquitecturas. La selección se calcula con la política configurada y requiere promoción gobernada.</p>
             <div class="cap-footer">
               <span>Ver Matriz Comparativa (8 Modelos) →</span>
             </div>
@@ -234,7 +386,7 @@
 
           <div class="capability-card card" onclick="document.querySelector('[data-tab=tab-diagnostics]').click()">
             <div class="cap-header">
-              <span class="cap-tag diag">📊 Zero Mocks</span>
+              <span class="cap-tag diag" title="Estados con procedencia"><span class="cap-icon" aria-hidden="true">📊</span><span class="cap-label">Estados con procedencia</span></span>
               <span class="cap-metric">85 Features Gold</span>
             </div>
             <h3>Diagnóstico de Residuos & Causalidad</h3>
@@ -246,7 +398,7 @@
 
           <div class="capability-card card" onclick="document.querySelector('[data-tab=tab-simulation]').click()">
             <div class="cap-header">
-              <span class="cap-tag sim">🎲 Estocástico</span>
+              <span class="cap-tag sim" title="Simulación estocástica"><span class="cap-icon" aria-hidden="true">🎲</span><span class="cap-label">Estocástico</span></span>
               <span class="cap-metric">VaR 95% & CVaR</span>
             </div>
             <h3>Monte Carlo & Reverse Stress Testing</h3>
@@ -403,7 +555,7 @@
                   <tr>
                     <td class="param-name-cell">algorithm</td>
                     <td><span class="type-pill">string (Body)</span></td>
-                    <td><code>ensemble</code> (Champion), <code>random_forest</code>, <code>gradient_boosting</code>, <code>ridge_elasticnet</code></td>
+                    <td><code>ensemble</code>, <code>random_forest</code>, <code>gradient_boosting</code>, <code>ridge_elasticnet</code> (catálogo registrado)</td>
                     <td><span class="rule-pill">Fallback Determinista</span></td>
                     <td>Motor de cómputo predictivo. Selecciona entre inferencia cuantil asimétrica (LightGBM) o modelos comparativos de respaldo y baseline.</td>
                   </tr>
@@ -494,8 +646,8 @@
                 <span class="badge" style="background: rgba(0, 245, 212, 0.15); color: #00F5D4; border: 1px solid #00F5D4;">🔐 4 SOULS SELLADOS SHA-256</span>
                 <span class="badge" style="background: rgba(255, 209, 102, 0.15); color: #FFD166; border: 1px solid #FFD166;">🛡️ GUARDRAILS ACTIVOS</span>
               </div>
-              <h2 style="font-size: 1.45rem; color: #F8FAFC; margin: 0 0 4px 0;">Cadena de Razonamiento CoT, Guardrails y Almas Criptográficas</h2>
-              <p style="color: #94A3B8; font-size: 0.88rem; margin: 0;">Inspección en tiempo real de los 5 hitos operacionales: Guardrails de Contexto, Sello Anti-Tamper, RAG Jurídico (Ley 6/56), Inferencia Cuantílica y Síntesis Ejecutiva.</p>
+              <h2 style="font-size: 1.45rem; color: #F8FAFC; margin: 0 0 4px 0;">Traza de Ejecución, Evidencia y Decisiones MLOps</h2>
+              <p style="color: #94A3B8; font-size: 0.88rem; margin: 0;">Inspección determinista de los 5 hitos operacionales: Guardrails de Contexto, Sello Anti-Tamper, RAG Jurídico (Ley 6/56), Inferencia Cuantílica y Síntesis Auditada.</p>
             </div>
             <div style="display: flex; gap: 0.6rem; align-items: center;">
               <span class="badge" style="background: rgba(0, 229, 255, 0.1); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.3); font-size: 0.8rem; padding: 0.4rem 0.8rem;">
@@ -599,7 +751,7 @@
             <div class="card" style="margin-bottom: 1.25rem;">
               <div class="card-header" style="margin-bottom: 1rem;">
                 <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                <h2>Cadena de Razonamiento Paso a Paso (Chain of Thought - CoT)</h2>
+                <h2>Traza de Ejecución, Evidencia y Decisiones (Auditoría Soberana)</h2>
               </div>
               
               <div id="cot-steps-container" style="display: flex; flex-direction: column; gap: 0.75rem;">
@@ -665,24 +817,56 @@
               </div>
             </div>
 
-            <!-- Executive Final Response Card -->
-            <div class="card" style="border-left: 4px solid #00F5D4;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <!-- Conversational Chat Thread Window -->
+            <div class="card" style="border-left: 4px solid #00F5D4; display: flex; flex-direction: column;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                  <span style="font-size: 1.1rem;">📝</span>
-                  <h3 style="font-size: 1.05rem; margin: 0; color: #00F5D4;">Síntesis Ejecutiva del Agente</h3>
+                  <span style="font-size: 1.2rem;">💬</span>
+                  <h3 style="font-size: 1.05rem; margin: 0; color: #00F5D4;">Conversación con el Asistente MLOps & RAG Aduanas</h3>
+                  <span class="badge" style="background: rgba(0, 245, 212, 0.15); color: #00F5D4; font-size: 0.72rem; border: 1px solid rgba(0, 245, 212, 0.3);">27,764 Partidas Indexadas</span>
                 </div>
-                <button id="btn-copy-cot-res" class="btn btn-secondary btn-sm" onclick="window.copyCoTResponse()" style="font-size: 0.76rem;">
-                  📋 Copiar Respuesta
-                </button>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                  <button id="btn-clear-chat-thread" class="btn btn-secondary btn-sm" onclick="window.clearChatThread()" style="font-size: 0.76rem;" title="Limpiar historial de chat e iniciar nueva sesión">
+                    🗑️ Nueva Conversación
+                  </button>
+                  <button id="btn-copy-cot-res" class="btn btn-secondary btn-sm" onclick="window.copyCoTResponse()" style="font-size: 0.76rem;">
+                    📋 Copiar Última Respuesta
+                  </button>
+                </div>
               </div>
 
-              <div id="cot-final-response-box" style="padding: 1rem; background: var(--bg-input); border-radius: 8px; border: 1px solid var(--border-color); color: #E2E8F0; font-size: 0.92rem; line-height: 1.6; white-space: pre-wrap; min-height: 90px;">
-                La síntesis del razonamiento aparecerá aquí una vez ejecutada la consulta.
+              <!-- Scrollable Messages Container -->
+              <div id="cot-chat-thread" class="cot-chat-thread">
+                <!-- Initial Welcome Bubble -->
+                <div class="chat-bubble assistant-bubble">
+                  <div class="chat-bubble-header">
+                    <span class="chat-bubble-author">🤖 Asistente Soberano MLOps Panamá</span>
+                    <span class="chat-bubble-meta">Base de Conocimiento Activa</span>
+                  </div>
+                  <div style="line-height: 1.55; font-size: 0.88rem;">
+                    <p style="margin: 0 0 0.5rem 0;">
+                      👋 <strong>¡Bienvenido al Asistente Inteligente de Panamá PortOps-AI v1.0!</strong>
+                    </p>
+                    <p style="margin: 0 0 0.5rem 0; font-size: 0.84rem; color: #CBD5E1;">
+                      Consultas conectadas en tiempo real a:
+                    </p>
+                    <ul style="margin: 0 0 0.6rem 1.25rem; font-size: 0.82rem; color: #94A3B8;">
+                      <li><strong>Catálogo Oficial de Aduanas (ANA / SIECA):</strong> 27,764 subpartidas arancelarias oficiales (HS Codes) con DAI, ITBMS y entidades reguladoras (MIDA, MINSA, APA).</li>
+                      <li><strong>Modelo Cuantílico LightGBM:</strong> Proyecciones P10, P50 y P90 de TEUs para los 6 puertos nacionales (Balboa, Cristóbal, MIT, PSA, CCT, Bocas).</li>
+                      <li><strong>Marco Normativo:</strong> Ley 6 de 2002 (Transparencia) y Ley 56 de 2008 (Ley General de Puertos).</li>
+                    </ul>
+                    <p style="margin: 0; font-size: 0.82rem; color: #00E5FF;">
+                      💡 <em>Escribe tu pregunta abajo o usa una de las consultas de prueba rápida del panel lateral. Puedes pulsar Enter para enviar.</em>
+                    </p>
+                  </div>
+                </div>
               </div>
+
+              <!-- Fallback and Raw Response Box (Preserved for compatibility and copying) -->
+              <div id="cot-final-response-box" style="display: none;"></div>
 
               <!-- Citations Row -->
-              <div id="cot-citations-row" style="margin-top: 1rem; display: none;">
+              <div id="cot-citations-row" style="margin-top: 0.75rem; display: none;">
                 <span style="font-size: 0.75rem; color: #94A3B8; font-weight: bold; display: block; margin-bottom: 0.4rem;">🏛️ Fuentes y Citas Normativas Panameñas Trazables:</span>
                 <div id="cot-citations-tags" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
               </div>
@@ -808,7 +992,7 @@
               <!-- Quick Presets -->
               <div>
                 <span style="font-size: 0.75rem; color: #94A3B8; display: block; margin-bottom: 0.4rem;" data-i18n="customs.quick_filters">Filtros rápidos de partidas clave:</span>
-                <div style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+                <div id="customs-quick-filters" style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
                   <button type="button" class="btn btn-secondary btn-sm" style="font-size: 0.73rem; padding: 0.25rem 0.5rem;" onclick="window.setCustomsPreset('banano')">🍌 Bananas (0803)</button>
                   <button type="button" class="btn btn-secondary btn-sm" style="font-size: 0.73rem; padding: 0.25rem 0.5rem;" onclick="window.setCustomsPreset('carne')">🥩 Carne Bovina (0201)</button>
                   <button type="button" class="btn btn-secondary btn-sm" style="font-size: 0.73rem; padding: 0.25rem 0.5rem;" onclick="window.setCustomsPreset('cafe')">☕ Café Geisha (0901)</button>
@@ -831,11 +1015,11 @@
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
                 <div class="form-group">
                   <label for="calc-hs-code" style="font-size: 0.75rem; color: #94A3B8; display: block; margin-bottom: 2px;" data-i18n="customs.calc_hs_code_label">Subpartida Arancelaria:</label>
-                  <input type="text" id="calc-hs-code" value="0201.30.00.00.20" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #F8FAFC; font-size: 0.82rem; font-family: var(--font-mono);">
+                  <input type="text" id="calc-hs-code" value="" autocomplete="off" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #F8FAFC; font-size: 0.82rem; font-family: var(--font-mono);">
                 </div>
                 <div class="form-group">
                   <label for="calc-cif-usd" style="font-size: 0.75rem; color: #94A3B8; display: block; margin-bottom: 2px;" data-i18n="customs.calc_cif_label">Valor CIF (USD):</label>
-                  <input type="number" id="calc-cif-usd" value="10000" step="500" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #F8FAFC; font-size: 0.82rem;">
+                  <input type="number" id="calc-cif-usd" value="" min="0.01" step="0.01" autocomplete="off" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #F8FAFC; font-size: 0.82rem;">
                 </div>
               </div>
 
@@ -856,7 +1040,7 @@
               <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 0.6rem; margin-bottom: 0.6rem;">
                 <div>
                   <label for="container-id-input" style="font-size: 0.75rem; color: #94A3B8; display: block; margin-bottom: 2px;" data-i18n="customs.container_label">Identificador (11 chars):</label>
-                  <input type="text" id="container-id-input" value="MSCU5281437" maxlength="11" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #F8FAFC; font-size: 0.85rem; font-family: var(--font-mono); text-transform: uppercase;">
+                  <input type="text" id="container-id-input" value="" maxlength="11" autocomplete="off" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #F8FAFC; font-size: 0.85rem; font-family: var(--font-mono); text-transform: uppercase;">
                 </div>
                 <div>
                   <label for="container-size-select" style="font-size: 0.75rem; color: #94A3B8; display: block; margin-bottom: 2px;" data-i18n="customs.container_size_label">Tipo/Dimensión:</label>
@@ -878,7 +1062,7 @@
                 </button>
               </div>
 
-              <button type="button" class="btn btn-primary" style="width: 100%; padding: 0.5rem; font-weight: bold; background: #38BDF8; color: #070D1E; border: none;" onclick="window.validateContainerISO6346()" data-i18n="customs.btn_validate_container">
+              <button type="button" class="btn btn-primary" id="btn-validate-container" style="width: 100%; padding: 0.5rem; font-weight: bold; background: #38BDF8; color: #070D1E; border: none;" onclick="window.validateContainerISO6346()" data-i18n="customs.btn_validate_container">
                 🛡️ Validar Dígito Verificador Módulo-11
               </button>
 
@@ -933,9 +1117,9 @@
               </div>
 
               <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; font-size: 0.78rem; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
-                <div><span>Archivo Autorizado:</span> <code style="color: #00E5FF;">data/silver/dim_tariff_panama.parquet</code></div>
-                <div><span>Partidas Registradas:</span> <strong style="color: #00F5D4;">17 autorizadas</strong></div>
-                <div><span>Garantía de Integridad:</span> <span class="badge" style="background: rgba(0,245,212,0.15); color: #00F5D4; font-size: 0.7rem;">Cero Mocks</span></div>
+                <div><span data-i18n="data_platform.ana_status_label">Estado del catálogo ANA:</span> <strong id="ana-catalog-status" style="color: #FFD166;">N/D</strong></div>
+                <div><span data-i18n="data_platform.ana_records_label">Registros ANA:</span> <strong id="ana-catalog-records" style="color: #00E5FF;">N/D</strong></div>
+                <div><span data-i18n="data_platform.ana_integrity_label">Integridad de publicación:</span> <span id="ana-catalog-integrity" class="badge" style="background: rgba(255,209,102,0.15); color: #FFD166; font-size: 0.7rem;">N/D</span></div>
               </div>
             </div>
 
@@ -1088,67 +1272,67 @@
           <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
           <div>
             <h2>Evaluación Comparativa de Múltiples Algoritmos (Expanding Window Backtesting)</h2>
-            <p class="card-subtitle">Entrenamiento y validación estricta fuera de muestra sobre 140 meses de estadísticas de la Autoridad Marítima de Panamá</p>
+            <p class="card-subtitle" id="benchmark-coverage-sub">Entrenamiento y validación fuera de muestra: cobertura temporal N/D hasta consultar el manifiesto</p>
           </div>
         </div>
 
         <div class="benchmark-cards-grid" id="benchmark-cards" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
           <!-- 8 Competitive Algorithm Cards with Real Benchmarking Metrics -->
-          <div class="algo-stat-card champion" onclick="window.openModelDetailModal && window.openModelDetailModal('lightgbm')">
-            <div class="algo-badge-top">🏆 Champion</div>
-            <div class="algo-name">LightGBM Quantiles</div>
-            <div class="algo-metric">WAPE: <span class="highlight">9.11%</span></div>
-            <div class="algo-submetric">R²: 0.9594 | RMSE: 15,080 | Latencia: 13.28 ms</div>
-            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Pinball Loss P10/P50/P90 con regularización elástica.</div>
+          <div class="algo-stat-card" data-state="loading">
+            <div class="algo-badge-top">📊 Benchmark</div>
+            <div class="algo-name">Selección pendiente</div>
+            <div class="algo-metric">WAPE: <span class="highlight">N/D</span></div>
+            <div class="algo-submetric">R²: N/D | RMSE: N/D | Latencia: N/D</div>
+            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Las métricas se cargan desde el benchmark registrado.</div>
           </div>
           <div class="algo-stat-card" onclick="window.openModelDetailModal && window.openModelDetailModal('random_forest')">
-            <div class="algo-badge-top">🥈 Challenger</div>
+            <div class="algo-badge-top">Candidato</div>
             <div class="algo-name">Random Forest</div>
-            <div class="algo-metric">WAPE: <span class="highlight">9.10%</span></div>
-            <div class="algo-submetric">R²: 0.9588 | RMSE: 15,085 | Latencia: 4.58 ms</div>
-            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">100 árboles ortogonales. Latencia ultra baja en borde.</div>
+            <div class="algo-metric">WAPE: <span class="highlight">N/D</span></div>
+            <div class="algo-submetric">R²: N/D | RMSE: N/D | Latencia: N/D</div>
+            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Métricas pendientes de la ejecución registrada.</div>
           </div>
           <div class="algo-stat-card" onclick="window.openModelDetailModal && window.openModelDetailModal('gradient_boosting')">
-            <div class="algo-badge-top">🥉 Challenger</div>
+            <div class="algo-badge-top">Candidato</div>
             <div class="algo-name">HistGradientBoosting</div>
-            <div class="algo-metric">WAPE: <span class="highlight">9.78%</span></div>
-            <div class="algo-submetric">R²: 0.9545 | RMSE: 15,853 | Latencia: 70.30 ms</div>
-            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Discretización en 256 bins para optimización en memoria.</div>
+            <div class="algo-metric">WAPE: <span class="highlight">N/D</span></div>
+            <div class="algo-submetric">R²: N/D | RMSE: N/D | Latencia: N/D</div>
+            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Métricas pendientes de la ejecución registrada.</div>
           </div>
           <div class="algo-stat-card" onclick="window.openModelDetailModal && window.openModelDetailModal('catboost_gbdt')">
-            <div class="algo-badge-top">🐱 Challenger</div>
+            <div class="algo-badge-top">Candidato</div>
             <div class="algo-name">CatBoost GBDT</div>
-            <div class="algo-metric">WAPE: <span class="highlight">9.18%</span></div>
-            <div class="algo-submetric">R²: 0.9582 | RMSE: 15,120 | Latencia: 18.45 ms</div>
-            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Árboles simétricos (Oblivious) anti-sobreajuste.</div>
+            <div class="algo-metric">WAPE: <span class="highlight">N/D</span></div>
+            <div class="algo-submetric">R²: N/D | RMSE: N/D | Latencia: N/D</div>
+            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Métricas pendientes de la ejecución registrada.</div>
           </div>
           <div class="algo-stat-card" onclick="window.openModelDetailModal && window.openModelDetailModal('extra_trees')">
-            <div class="algo-badge-top">🌳 Challenger</div>
+            <div class="algo-badge-top">Candidato</div>
             <div class="algo-name">Extra Trees Regressor</div>
-            <div class="algo-metric">WAPE: <span class="highlight">9.24%</span></div>
-            <div class="algo-submetric">R²: 0.9572 | RMSE: 15,210 | Latencia: 3.82 ms</div>
-            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Particiones estocásticas de máxima aleatorización.</div>
+            <div class="algo-metric">WAPE: <span class="highlight">N/D</span></div>
+            <div class="algo-submetric">R²: N/D | RMSE: N/D | Latencia: N/D</div>
+            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Métricas pendientes de la ejecución registrada.</div>
           </div>
           <div class="algo-stat-card" onclick="window.openModelDetailModal && window.openModelDetailModal('neural_mlp_quantile')">
-            <div class="algo-badge-top">🧠 Challenger</div>
+            <div class="algo-badge-top">Candidato</div>
             <div class="algo-name">Quantile Neural MLP</div>
-            <div class="algo-metric">WAPE: <span class="highlight">9.65%</span></div>
-            <div class="algo-submetric">R²: 0.9558 | RMSE: 15,640 | Latencia: 6.12 ms</div>
-            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Perceptrón denso (128-64-32) con GELU y Huber loss.</div>
+            <div class="algo-metric">WAPE: <span class="highlight">N/D</span></div>
+            <div class="algo-submetric">R²: N/D | RMSE: N/D | Latencia: N/D</div>
+            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Métricas pendientes de la ejecución registrada.</div>
           </div>
           <div class="algo-stat-card" onclick="window.openModelDetailModal && window.openModelDetailModal('bayesian_ridge')">
-            <div class="algo-badge-top">📐 Challenger</div>
+            <div class="algo-badge-top">Candidato</div>
             <div class="algo-name">Bayesian Ridge</div>
-            <div class="algo-metric">WAPE: <span class="highlight">15.80%</span></div>
-            <div class="algo-submetric">R²: 0.8995 | RMSE: 23,890 | Latencia: 0.28 ms</div>
-            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Inferencia analítica bayesiana con priors conjugados.</div>
+            <div class="algo-metric">WAPE: <span class="highlight">N/D</span></div>
+            <div class="algo-submetric">R²: N/D | RMSE: N/D | Latencia: N/D</div>
+            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Métricas pendientes de la ejecución registrada.</div>
           </div>
           <div class="algo-stat-card baseline" onclick="window.openModelDetailModal && window.openModelDetailModal('ridge_elasticnet')">
             <div class="algo-badge-top">📏 Baseline</div>
             <div class="algo-name">Ridge / ElasticNet</div>
-            <div class="algo-metric">WAPE: <span class="highlight">16.42%</span></div>
-            <div class="algo-submetric">R²: 0.8920 | RMSE: 24,510 | Latencia: 0.19 ms</div>
-            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Línea base paramétrica (colapso ante 81 lags colineales).</div>
+            <div class="algo-metric">WAPE: <span class="highlight">N/D</span></div>
+            <div class="algo-submetric">R²: N/D | RMSE: N/D | Latencia: N/D</div>
+            <div style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">Métricas pendientes de la ejecución registrada.</div>
           </div>
         </div>
 
@@ -1177,22 +1361,23 @@
         <div id="algo-chart-analysis-box" style="display: none; margin-top: 1rem; padding: 1.1rem 1.25rem; background: rgba(10, 18, 36, 0.95); border: 1px solid #00E5FF; border-radius: 8px; box-shadow: 0 4px 20px rgba(0, 229, 255, 0.2);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
             <div style="display: flex; align-items: center; gap: 0.5rem;">
-              <span class="badge" id="aca-badge" style="background: rgba(0, 245, 212, 0.2); color: #00F5D4; font-size: 0.75rem;">CHAMPION</span>
-              <h4 id="aca-title" style="margin: 0; color: #F8FAFC; font-size: 1.05rem;">LightGBM Quantile</h4>
+              <span class="badge" id="aca-badge" style="background: rgba(0, 245, 212, 0.2); color: #00F5D4; font-size: 0.75rem;">SELECCIÓN PENDIENTE</span>
+              <h4 id="aca-title" style="margin: 0; color: #F8FAFC; font-size: 1.05rem;">Sin candidato seleccionado</h4>
             </div>
             <button type="button" onclick="document.getElementById('algo-chart-analysis-box').style.display='none'" style="background: transparent; border: none; color: #94A3B8; font-size: 1.1rem; cursor: pointer;">✕</button>
           </div>
           <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 0.75rem; background: rgba(3, 7, 18, 0.5); padding: 0.6rem; border-radius: 6px;">
-            <div><span style="color: #94A3B8; font-size: 0.75rem;">WAPE Promedio:</span> <strong id="aca-wape" style="color: #00E5FF; font-size: 0.95rem; display: block;">9.11%</strong></div>
-            <div><span style="color: #94A3B8; font-size: 0.75rem;">Coeficiente R²:</span> <strong id="aca-r2" style="color: #00F5D4; font-size: 0.95rem; display: block;">0.9832</strong></div>
-            <div><span style="color: #94A3B8; font-size: 0.75rem;">Latencia Inferencia:</span> <strong id="aca-latency" style="color: #F8FAFC; font-size: 0.95rem; display: block;">1.8 ms</strong></div>
+            <div><span style="color: #94A3B8; font-size: 0.75rem;">WAPE Promedio:</span> <strong id="aca-wape" style="color: #00E5FF; font-size: 0.95rem; display: block;">N/D</strong></div>
+            <div><span style="color: #94A3B8; font-size: 0.75rem;">Coeficiente R²:</span> <strong id="aca-r2" style="color: #00F5D4; font-size: 0.95rem; display: block;">N/D</strong></div>
+            <div><span style="color: #94A3B8; font-size: 0.75rem;">Latencia Inferencia:</span> <strong id="aca-latency" style="color: #F8FAFC; font-size: 0.95rem; display: block;">N/D</strong></div>
           </div>
           <p id="aca-desc" style="font-size: 0.86rem; color: #CBD5E1; margin: 0; line-height: 1.55;">Descripción técnica del comportamiento y ajuste del algoritmo.</p>
         </div>
 
         <!-- Cross Validation Splits Table -->
-        <div class="table-responsive" style="margin-top: 1.5rem;">
+        <div class="table-responsive benchmark-splits" style="margin-top: 1.5rem;">
           <h3>Desglose Temporal por Partición de Validación (Expanding Window - 8 Algoritmos)</h3>
+          <p class="table-help">Selecciona una fila para ver su período y contexto. Usa Enter o Espacio con el foco de teclado.</p>
           <table class="data-table" id="splits-table">
             <thead>
               <tr>
@@ -1206,13 +1391,14 @@
                 <th>Neural MLP</th>
                 <th>Bayesian Ridge</th>
                 <th>Ridge / ElasticNet</th>
-                <th>R² Champion</th>
+                <th>R² del candidato seleccionado</th>
               </tr>
             </thead>
             <tbody id="splits-tbody">
               <!-- Populated via JS -->
             </tbody>
           </table>
+          <div id="split-detail-panel" class="split-detail-panel" hidden aria-live="polite"></div>
         </div>
       </div>
     </section>
@@ -1230,7 +1416,7 @@
               <div style="display:flex; align-items:center; gap:0.5rem;">
                 <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                 <div>
-                  <h2>Distribución y Propiedades de los Residuos (LightGBM Champion)</h2>
+                  <h2>Distribución y Propiedades de los Residuos (modelo seleccionado)</h2>
                   <p class="card-subtitle">Auditoría matemática de insesgadez, dispersión y colas pesadas</p>
                 </div>
               </div>
@@ -1244,8 +1430,8 @@
                   <span class="kpi-title">Error Medio</span>
                   <span class="info-icon-badge">ⓘ</span>
                 </div>
-                <div class="kpi-value" id="res-mean">+7,788 TEUs</div>
-                <div class="kpi-sub">Insesgadez / Bias (+1.19%)</div>
+                <div class="kpi-value" id="res-mean">N/D</div>
+                <div class="kpi-sub">Insesgadez / Bias</div>
               </div>
 
               <div class="kpi-card mini clickable-kpi-card" id="res-card-std" onclick="window.openResidualMetricModal('std_residual')" title="Clic para ver deducción matemática e impacto operacional">
@@ -1253,7 +1439,7 @@
                   <span class="kpi-title">Desv. Estándar</span>
                   <span class="info-icon-badge">ⓘ</span>
                 </div>
-                <div class="kpi-value" id="res-std">16,415 TEUs</div>
+                <div class="kpi-value" id="res-std">N/D</div>
                 <div class="kpi-sub">Dispersión Residual (σ_e)</div>
               </div>
 
@@ -1262,7 +1448,7 @@
                   <span class="kpi-title">Error Abs. Mediano</span>
                   <span class="info-icon-badge">ⓘ</span>
                 </div>
-                <div class="kpi-value" id="res-med">9,891 TEUs</div>
+                <div class="kpi-value" id="res-med">N/D</div>
                 <div class="kpi-sub">Robustez MedAE (L1)</div>
               </div>
 
@@ -1271,7 +1457,7 @@
                   <span class="kpi-title">Asimetría</span>
                   <span class="info-icon-badge">ⓘ</span>
                 </div>
-                <div class="kpi-value" id="res-skew">+0.406</div>
+                <div class="kpi-value" id="res-skew">N/D</div>
                 <div class="kpi-sub">Fisher-Pearson Skewness</div>
               </div>
             </div>
@@ -1761,17 +1947,17 @@
           </div>
           <div class="kpi-card">
             <div class="kpi-title">Score de Calidad General</div>
-            <div class="kpi-value" id="dp-quality-score" style="color: var(--emerald-success);">1.00 / 1.00</div>
-            <div class="kpi-sub">5/5 Compuertas Aprobadas (100%)</div>
+            <div class="kpi-value" id="dp-quality-score" style="color: var(--emerald-success);">N/D</div>
+            <div class="kpi-sub">Ejecuta las compuertas para medir</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-title">Terminales Validadas</div>
-            <div class="kpi-value">6 Puertos</div>
+            <div class="kpi-value" id="dp-port-count">N/D</div>
             <div class="kpi-sub">Balboa, MIT, PSA, CCT, Cristóbal, Bocas</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-title">Datos en Cuarentena</div>
-            <div class="kpi-value" id="dp-quarantine-count" style="color: var(--cyan-bright);">0 Lotes</div>
+            <div class="kpi-value" id="dp-quarantine-count" style="color: var(--cyan-bright);">N/D</div>
             <div class="kpi-sub">data/quarantine/ (Aislados)</div>
           </div>
         </div>
@@ -1784,50 +1970,50 @@
               <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">Evaluación exhaustiva de cada lote de datos antes de permitir su promoción a la capa Silver/Gold.</p>
             </div>
             <span class="badge" id="dp-gates-status-badge" style="background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3);">
-              ✓ Todos los Gates Activos
+              N/D · Pendiente de ejecutar
             </span>
           </div>
 
           <div class="data-gate-grid" id="data-gates-container">
             <!-- Gate 1 -->
-            <div class="data-gate-card passed" id="gate-card-1">
-              <span class="gate-badge-status pass">Gate 1: Aprobado</span>
+            <div class="data-gate-card" id="gate-card-1">
+              <span class="gate-badge-status">Gate 1: N/D</span>
               <div class="gate-title">Contrato de Esquema</div>
               <div class="gate-desc">Verifica la presencia y tipos estrictos de columnas obligatorias: event_date, port, teu_total, teu_full, teu_empty, published_at.</div>
-              <span class="gate-score-pill">Score: 1.00 • 0 violaciones</span>
+              <span class="gate-score-pill">N/D · Ejecutar validación</span>
             </div>
             <!-- Gate 2 -->
-            <div class="data-gate-card passed" id="gate-card-2">
-              <span class="gate-badge-status pass">Gate 2: Aprobado</span>
+            <div class="data-gate-card" id="gate-card-2">
+              <span class="gate-badge-status">Gate 2: N/D</span>
               <div class="gate-title">Completitud & Nulos</div>
               <div class="gate-desc">Tasa de valores nulos o vacíos en columnas críticas (teu_total, teu_full, teu_empty) &le; 0.00%. Cero tolerancia a faltantes no documentados.</div>
-              <span class="gate-score-pill">Score: 1.00 • 0 nulos</span>
+              <span class="gate-score-pill">N/D · Ejecutar validación</span>
             </div>
             <!-- Gate 3 -->
-            <div class="data-gate-card passed" id="gate-card-3">
-              <span class="gate-badge-status pass">Gate 3: Aprobado</span>
+            <div class="data-gate-card" id="gate-card-3">
+              <span class="gate-badge-status">Gate 3: N/D</span>
               <div class="gate-title">Validez & Límites Físicos</div>
               <div class="gate-desc">Validación de nombres canónicos de las 6 terminales portuarias panameñas y límites físicos de patio (TEUs &ge; 0 y &le; 600,000/mes).</div>
-              <span class="gate-score-pill">Score: 1.00 • 6/6 puertos válidos</span>
+              <span class="gate-score-pill">N/D · Ejecutar validación</span>
             </div>
             <!-- Gate 4 -->
-            <div class="data-gate-card passed" id="gate-card-4">
-              <span class="gate-badge-status pass">Gate 4: Aprobado</span>
+            <div class="data-gate-card" id="gate-card-4">
+              <span class="gate-badge-status">Gate 4: N/D</span>
               <div class="gate-title">Consistencia & Balance</div>
               <div class="gate-desc">Balance contable estricto: |teu_total - (teu_full + teu_empty)| &le; 1.0. Garantiza que la suma de llenos y vacíos cuadre exactamente con el total.</div>
-              <span class="gate-score-pill">Score: 1.00 • Balance exacto</span>
+              <span class="gate-score-pill">N/D · Ejecutar validación</span>
             </div>
             <!-- Gate 5 -->
-            <div class="data-gate-card passed" id="gate-card-5">
-              <span class="gate-badge-status pass">Gate 5: Aprobado</span>
+            <div class="data-gate-card" id="gate-card-5">
+              <span class="gate-badge-status">Gate 5: N/D</span>
               <div class="gate-title">Integridad Bitemporal</div>
               <div class="gate-desc">Prevención matemática de Data Leakage: event_date &le; published_at. Protege la frontera de información contra fugas del futuro.</div>
-              <span class="gate-score-pill">Score: 1.00 • Cero lookahead bias</span>
+              <span class="gate-score-pill">N/D · Ejecutar validación</span>
             </div>
           </div>
 
           <div id="dp-gate-execution-log" style="margin-top: 1rem; font-family: var(--font-mono); font-size: 0.75rem; color: #94a3b8; background: rgba(5,8,16,0.6); padding: 0.6rem 0.8rem; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);">
-            Última verificación: Ejecutada exitosamente sobre silver/container_movements_silver.parquet. Cero registros en cuarentena.
+            Última verificación: N/D · Ejecuta las compuertas para registrar una medición.
           </div>
         </div>
 
@@ -2004,13 +2190,13 @@
         <div class="kpi-grid" style="margin-bottom: 1.5rem;">
           <div class="kpi-card">
             <div class="kpi-title">Identidad Activa</div>
-            <div class="kpi-value" id="iam-user-kpi" style="font-size: 1.25rem;">root</div>
-            <div class="kpi-sub" id="iam-auth-type-sub">CSPRNG Bootstrap Autenticado</div>
+            <div class="kpi-value" id="iam-user-kpi" style="font-size: 1.25rem;">N/D</div>
+            <div class="kpi-sub" id="iam-auth-type-sub">Estado de sesión: N/D</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-title">Rol Activo Simulado</div>
-            <div class="kpi-value" id="iam-role-kpi" style="color: #c084fc; font-size: 1.25rem;">root</div>
-            <div class="kpi-sub">31/31 Permisos Otorgados</div>
+            <div class="kpi-value" id="iam-role-kpi" style="color: #c084fc; font-size: 1.25rem;">N/D</div>
+            <div class="kpi-sub" id="iam-permission-sub" data-i18n="security.permissions_sub">Permisos registrados: N/D</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-title">Libro Inmutable WORM</div>
@@ -2187,7 +2373,7 @@
             <div class="kpi-card" style="padding: 0.85rem;">
               <div class="kpi-title">Inferencias Totales</div>
               <div class="kpi-value" id="kpi-telemetry-total-inferences" style="font-size: 1.25rem; color: #00E5FF;">0</div>
-              <div class="kpi-sub" id="kpi-telemetry-pass-rate">100% Guardrails Pass</div>
+              <div class="kpi-sub" id="kpi-telemetry-pass-rate">N/D Guardrails Pass</div>
             </div>
             <div class="kpi-card" style="padding: 0.85rem;">
               <div class="kpi-title">Latencia Promedio</div>
@@ -2201,8 +2387,8 @@
             </div>
             <div class="kpi-card" style="padding: 0.85rem;">
               <div class="kpi-title">Satisfacción Usuarios</div>
-              <div class="kpi-value" id="kpi-telemetry-satisfaction" style="font-size: 1.25rem; color: #38BDF8;">100%</div>
-              <div class="kpi-sub" id="kpi-telemetry-rating-sub">⭐ 5.0 Promedio</div>
+              <div class="kpi-value" id="kpi-telemetry-satisfaction" style="font-size: 1.25rem; color: #38BDF8;">N/D</div>
+              <div class="kpi-sub" id="kpi-telemetry-rating-sub">Sin feedback registrado</div>
             </div>
           </div>
 
@@ -2289,6 +2475,7 @@
       </div>
 
       <div class="modal-footer">
+        <button id="modal-audit-btn" class="btn-secondary modal-audit-btn" type="button">🔎 Auditar controles y evidencia</button>
         <span class="modal-author">Desarrollado v1.0.0 Miguel Benítez — Fines Educativos</span>
         <button id="modal-action-btn" class="btn-primary" style="width: auto; padding: 0.45rem 1.2rem; font-size: 0.85rem;">Cerrar Detalle</button>
       </div>
@@ -2419,7 +2606,22 @@
           <h2 id="settings-modal-title">⚙️ Panel de Gobernanza, Modelos & Replicabilidad</h2>
           <p class="settings-subtitle">Presets de entrenamiento, replicabilidad determinista con Seed 42, anonimización bajo Ley 81 de 2019, control RBAC estatal y servidor MCP de herramientas de IA.</p>
         </div>
-        <button id="settings-close-btn" class="modal-close" aria-label="Cerrar">&times;</button>
+        <div class="modal-header-right" style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+          <div class="perspective-control-wrapper">
+            <label for="settings-role-perspective-select" class="perspective-label">🎭 Perspectiva (Vista por Rol):</label>
+            <select id="settings-role-perspective-select" class="perspective-select" onchange="window.switchRolePerspective(this.value)">
+              <option value="root">👑 Superadministrador (root)</option>
+              <option value="admin_maritimo">⚓ Operaciones Portuarias (admin_maritimo)</option>
+              <option value="mlops_engineer">🧪 Ingeniero MLOps (mlops_engineer)</option>
+              <option value="compliance_auditor">⚖️ Auditor Cumplimiento (auditor_aduana)</option>
+              <option value="operador_puerto">🏗️ Operador de Muelle (operador_puerto)</option>
+              <option value="readonly_viewer">👁️ Visualizador Cívico (consultor_publico)</option>
+            </select>
+            <span id="perspective-badge" class="badge badge-perspective">Vista: Root (Admin Completo)</span>
+          </div>
+          <span id="settings-dirty-badge" class="badge badge-dirty" style="display:none;">⚠️ Cambios sin guardar</span>
+          <button id="settings-close-btn" class="modal-close" aria-label="Cerrar">&times;</button>
+        </div>
       </div>
 
       <div class="settings-tabs-nav">
@@ -2449,10 +2651,10 @@
           <div class="preset-grid horizontal-preset-grid" id="preset-cards-container">
             <div class="preset-card active" data-preset-id="balanced_champion" onclick="selectTrainingPreset('balanced_champion')">
               <div class="preset-header">
-                <span class="preset-title">Equilibrado Champion</span>
-                <span class="preset-badge champion">WAPE 9.11%</span>
+                <span class="preset-title">Equilibrado</span>
+                <span class="preset-badge champion">Métrica pendiente</span>
               </div>
-              <p class="preset-desc">LightGBM optimizado para minimizar WAPE y MAE sin sobreajuste. Ideal para producción general en muelles.</p>
+              <p class="preset-desc">Receta registrada para comparar WAPE y MAE; requiere una ejecución evaluada antes de promoverla a producción.</p>
               <div class="preset-specs">LR: 0.05 • Est: 120 • Prof: 6 • L1: 0.1 • L2: 0.2</div>
               <div class="preset-card-footer">
                 <button class="preset-info-btn" onclick="event.stopPropagation(); showPresetMathDetail('balanced_champion')">📐 Matemática & Código</button>
@@ -2498,7 +2700,7 @@
             <div class="preset-card" data-preset-id="ultra_low_latency_tree" onclick="selectTrainingPreset('ultra_low_latency_tree')">
               <div class="preset-header">
                 <span class="preset-title">Ultra-Low Latency Tree</span>
-                <span class="preset-badge champion">&lt; 0.5 ms Edge</span>
+                <span class="preset-badge champion">Latencia: N/D</span>
               </div>
               <p class="preset-desc">Árboles superficiales podados para inferencia en tiempo real en compuertas de muelle (Edge/IoT).</p>
               <div class="preset-specs">LR: 0.08 • Est: 50 • Prof: 3 • Subsample: 0.70</div>
@@ -2673,7 +2875,273 @@
           <small class="field-hint" style="display:block; margin-top:0.4rem; color:var(--text-dim);">⚡ <strong>Hot-Reloading:</strong> Las configuraciones se actualizan en la memoria del runtime FastAPI instantáneamente sin reiniciar el contenedor Docker ni perder estado.</small>
         </div>
 
-        <!-- Tab: Replicabilidad Determinista & URLs Ministeriales -->
+        <!-- Tab 2: Deploy & Root Admin Verification -->
+        <div id="stab-deploy-verify" class="settings-tab-content">
+          <div class="modal-section-header">
+            <span class="step-num">🚀</span>
+            <h3>Verificación Inicial de Despliegue & Superadministrador Root (Checklist 360°)</h3>
+          </div>
+          <p class="field-hint">Verificación integral del estado de puesta en producción conforme a Ley 6 de 2002 y estándares MLOps de soberanía analítica portuaria.</p>
+
+          <!-- Host Hardware & NVIDIA GPU Discovery Banner -->
+          <div id="platform-hardware-banner" style="background: rgba(16, 26, 48, 0.75); border: 1px solid rgba(0, 245, 212, 0.3); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <div style="font-weight: 700; color: #00F5D4; font-size: 0.95rem;">
+                🎮 Aceleración Hardware & GPU: <span id="hw-gpu-name" style="color: #F8FAFC;">NVIDIA GeForce RTX 3050 Laptop GPU (4.0 GB VRAM)</span>
+              </div>
+              <span class="badge" id="hw-profile-badge" style="background: rgba(0, 245, 212, 0.15); color: #00F5D4; border: 1px solid #00F5D4;">● CUDA AWQ-4BIT</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.75rem; font-size: 0.78rem; color: #CBD5E1;">
+              <div>
+                • <strong>Procesador:</strong> <span id="hw-cpu-spec">Intel Core 8 Cores / 16 Threads (AVX-512)</span><br>
+                • <strong>Memoria RAM:</strong> <span id="hw-ram-spec">31.8 GB Totales (Categoría Enterprise)</span>
+              </div>
+              <div>
+                • <strong>Perfil de Cómputo:</strong> <code id="hw-compute-profile" style="color: #38BDF8;">GPU_ACCELERATED_QUANTIZED_AWQ_4BIT</code><br>
+                • <strong>Privilegios Host:</strong> <span id="hw-admin-status" style="color: #34D399;">Usuario Estándar Seguro (Lakehouse Local)</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="background: rgba(16, 26, 48, 0.7); border: 1px solid rgba(0, 229, 255, 0.25); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <div style="font-weight: 700; color: #00E5FF; font-size: 0.95rem;">👑 Administrador Maestro Canónico: <code style="color:#00F5D4; background:rgba(0,245,212,0.1); padding:2px 8px; border-radius:4px;">root</code></div>
+              <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid #10B981;">✓ ACTIVO & VERIFICADO</span>
+            </div>
+            <p style="font-size: 0.82rem; color: #94A3B8; margin: 0 0 0.5rem 0;">Credenciales iniciales establecidas para el usuario root con perfil de Superadministrador (MLOps Lead). Tiene privilegios totales para configurar modelos, conectar servidores vLLM, gestionar la bóveda de secretos y autorizar promociones de modelos a producción.</p>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="window.runDeployVerificationCheck()" style="padding: 0.35rem 0.8rem; font-size: 0.8rem; border-color: #00E5FF; color: #00E5FF;">
+                ⚡ Ejecutar Verificación de Despliegue en Vivo
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="window.ensureRootUserInit()" style="padding: 0.35rem 0.8rem; font-size: 0.8rem;">
+                🔑 Re-validar Acceso Root
+              </button>
+            </div>
+          </div>
+
+          <h4 style="font-size: 0.9rem; color: #F8FAFC; margin-bottom: 0.5rem;">Matriz de Validación de Puesta en Producción:</h4>
+          <div id="deploy-verification-checklist" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.75rem;">
+            <div class="interactive-audit-card" onclick="window.inspectItemDetails('check', 'iam', {title: '1. IAM & Root Admin', desc: 'Validación de superadministrador y tokens seguros'})" style="background: rgba(3, 7, 18, 0.6); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 0.75rem; cursor: pointer;">
+              <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 0.85rem; color: #34D399;">
+                <span>1. IAM & Root Admin</span>
+                <span>OK</span>
+              </div>
+              <p style="font-size: 0.75rem; color: #94A3B8; margin: 0.25rem 0 0 0;">Superadministrador canónico configurado con clave segura y rotación NIST.</p>
+            </div>
+            <div class="interactive-audit-card" onclick="window.inspectItemDetails('check', 'rbac', {title: '2. Matriz de 6 Roles RBAC', desc: 'Control de acceso basado en roles'})" style="background: rgba(3, 7, 18, 0.6); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 0.75rem; cursor: pointer;">
+              <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 0.85rem; color: #34D399;">
+                <span>2. Matriz de 6 Roles RBAC</span>
+                <span>OK</span>
+              </div>
+              <p style="font-size: 0.75rem; color: #94A3B8; margin: 0.25rem 0 0 0;">Roles root, admin_maritimo, auditor, operador, analista y consultor activos.</p>
+            </div>
+            <div class="interactive-audit-card" onclick="window.inspectItemDetails('check', 'feature_store', {title: '3. Capa Gold Feature Store', desc: '81 features particionadas'})" style="background: rgba(3, 7, 18, 0.6); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 0.75rem; cursor: pointer;">
+              <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 0.85rem; color: #34D399;">
+                <span>3. Capa Gold Feature Store</span>
+                <span>OK</span>
+              </div>
+              <p style="font-size: 0.75rem; color: #94A3B8; margin: 0.25rem 0 0 0;">Parquet validado SHA-256 con 81 variables macroeconómicas y operativas.</p>
+            </div>
+            <div class="interactive-audit-card" onclick="window.inspectItemDetails('check', 'benchmarks', {title: '4. 8 Modelos Evaluados', desc: 'Torneo de algoritmos MLOps'})" style="background: rgba(3, 7, 18, 0.6); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 0.75rem; cursor: pointer;">
+              <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 0.85rem; color: #34D399;">
+                <span>4. 8 Modelos Evaluados</span>
+                <span>OK</span>
+              </div>
+              <p style="font-size: 0.75rem; color: #94A3B8; margin: 0.25rem 0 0 0;">Métricas y candidato seleccionados desde benchmark registrado; promoción con gobernanza.</p>
+            </div>
+            <div class="interactive-audit-card" onclick="window.inspectItemDetails('check', 'vault', {title: '5. Bóveda Criptográfica', desc: 'PBKDF2/AES-256'})" style="background: rgba(3, 7, 18, 0.6); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 0.75rem; cursor: pointer;">
+              <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 0.85rem; color: #34D399;">
+                <span>5. Bóveda Criptográfica</span>
+                <span>OK</span>
+              </div>
+              <p style="font-size: 0.75rem; color: #94A3B8; margin: 0.25rem 0 0 0;">Bóveda PBKDF2/AES-256 operativa con enmascaramiento sk-****.</p>
+            </div>
+            <div class="interactive-audit-card" onclick="window.inspectItemDetails('check', 'guardrails', {title: '6. Guardrails Inmutables', desc: 'P10 <= P50 <= P90 y límites físicos'})" style="background: rgba(3, 7, 18, 0.6); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 0.75rem; cursor: pointer;">
+              <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 0.85rem; color: #34D399;">
+                <span>6. Guardrails Inmutables</span>
+                <span>OK</span>
+              </div>
+              <p style="font-size: 0.75rem; color: #94A3B8; margin: 0.25rem 0 0 0;">Sello HMAC-SHA256 activo para invariantes de puerto y cuantiles P10-P90.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: vLLM, Storage Volumes & Secrets Vault -->
+        <div id="stab-vllm-secrets" class="settings-tab-content">
+          <div class="modal-section-header">
+            <span class="step-num">⚡</span>
+            <h3>vLLM Engine, Rutas de Volúmenes & Bóveda de Secretos (AES-256)</h3>
+          </div>
+          <p class="field-hint">Configura el runtime de inferencia vLLM (PagedAttention), el pathing de almacenamiento de pesos y las credenciales de adaptadores a modelos cloud.</p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+            <!-- Column 1: vLLM & Storage Volumes -->
+            <div style="background: rgba(16, 26, 48, 0.7); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
+              <h4 style="font-size: 0.9rem; color: #00E5FF; margin: 0 0 0.5rem 0;">📁 Configuración de Volúmenes y Rutas de Almacenamiento</h4>
+              
+              <div class="form-group" style="margin-bottom: 0.65rem;">
+                <label style="font-size: 0.78rem; font-weight: 600;">Volumen de Pesos de Modelos (MODEL_WEIGHTS_PATH):</label>
+                <input type="text" id="cfg-weights-path" class="form-input" style="font-family: var(--font-mono); font-size: 0.75rem; padding: 0.35rem 0.6rem;" value="models">
+                <small style="color: #64748B; font-size: 0.7rem;">Ruta de montaje local o compartida (/mnt/models, models/weights, HuggingFace cache).</small>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0.65rem;">
+                <label style="font-size: 0.78rem; font-weight: 600;">Almacenamiento Lakehouse (LAKEHOUSE_STORAGE_PATH):</label>
+                <input type="text" id="cfg-lakehouse-path" class="form-input" style="font-family: var(--font-mono); font-size: 0.75rem; padding: 0.35rem 0.6rem;" value="data">
+                <small style="color: #64748B; font-size: 0.7rem;">Ruta base de capas Bronze, Silver Delta y Gold Feature Store.</small>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0.65rem;">
+                <label style="font-size: 0.78rem; font-weight: 600;">Endpoint de vLLM (VLLM_BASE_URL):</label>
+                <input type="text" id="cfg-vllm-url" class="form-input" style="font-family: var(--font-mono); font-size: 0.75rem; padding: 0.35rem 0.6rem;" value="http://localhost:8080/v1">
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label style="font-size: 0.78rem; font-weight: 600;">Modelo vLLM por Defecto:</label>
+                <input type="text" id="cfg-vllm-model" class="form-input" style="font-family: var(--font-mono); font-size: 0.75rem; padding: 0.35rem 0.6rem;" value="meta-llama/Llama-3.3-70B-Instruct-AWQ">
+              </div>
+
+              <button type="button" class="btn btn-primary btn-sm" onclick="window.saveStorageAndVllmConfig()" style="font-size: 0.8rem; padding: 0.4rem 0.9rem;">
+                💾 Guardar Rutas y Configuración vLLM
+              </button>
+            </div>
+
+            <!-- Column 2: Provider Adapters & Live Ping -->
+            <div style="background: rgba(16, 26, 48, 0.7); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
+              <h4 style="font-size: 0.9rem; color: #38BDF8; margin: 0 0 0.5rem 0;">🔌 Adaptadores a Modelos de IA & Pruebas en Vivo</h4>
+              <p style="font-size: 0.75rem; color: #94A3B8; margin-bottom: 0.6rem;">Prueba la conectividad de los runtimes activos para inferencia CoT y generación aumentada:</p>
+
+              <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(3, 7, 18, 0.5); padding: 0.45rem 0.7rem; border-radius: 6px;">
+                  <span style="font-size: 0.8rem; font-weight: 600;">vLLM PagedAttention</span>
+                  <button type="button" class="btn-subtle" onclick="window.testModelProvider('vllm')" style="padding: 2px 8px; font-size: 0.72rem;">⚡ Test Conexión</button>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(3, 7, 18, 0.5); padding: 0.45rem 0.7rem; border-radius: 6px;">
+                  <span style="font-size: 0.8rem; font-weight: 600;">Ollama (Local Quantized)</span>
+                  <button type="button" class="btn-subtle" onclick="window.testModelProvider('ollama')" style="padding: 2px 8px; font-size: 0.72rem;">⚡ Test Conexión</button>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(3, 7, 18, 0.5); padding: 0.45rem 0.7rem; border-radius: 6px;">
+                  <span style="font-size: 0.8rem; font-weight: 600;">OpenAI / OpenAI-Compatible</span>
+                  <button type="button" class="btn-subtle" onclick="window.testModelProvider('openai')" style="padding: 2px 8px; font-size: 0.72rem;">⚡ Test Conexión</button>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(3, 7, 18, 0.5); padding: 0.45rem 0.7rem; border-radius: 6px;">
+                  <span style="font-size: 0.8rem; font-weight: 600;">Google Gemini (Flash Open API)</span>
+                  <button type="button" class="btn-subtle" onclick="window.testModelProvider('gemini')" style="padding: 2px 8px; font-size: 0.72rem;">⚡ Test Conexión</button>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(3, 7, 18, 0.5); padding: 0.45rem 0.7rem; border-radius: 6px;">
+                  <span style="font-size: 0.8rem; font-weight: 600;">Anthropic Claude (3.5 Sonnet)</span>
+                  <button type="button" class="btn-subtle" onclick="window.testModelProvider('anthropic')" style="padding: 2px 8px; font-size: 0.72rem;">⚡ Test Conexión</button>
+                </div>
+              </div>
+
+              <div id="provider-test-result" style="margin-top: 0.75rem; font-size: 0.75rem; color: #00F5D4; min-height: 20px;"></div>
+            </div>
+          </div>
+
+          <!-- Secrets Inventory Table -->
+          <div style="background: rgba(16, 26, 48, 0.7); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h4 style="font-size: 0.9rem; color: #F8FAFC; margin: 0;">🔐 Inventario de Claves y Secretos Criptográficos</h4>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="window.loadSecretsVaultInventory()" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">↺ Actualizar</button>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table" style="font-size: 0.78rem;">
+                <thead>
+                  <tr>
+                    <th>Variable / Clave</th>
+                    <th>Categoría</th>
+                    <th>Valor Enmascarado</th>
+                    <th>Bóveda de Respaldo</th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+                <tbody id="secrets-vault-tbody">
+                  <!-- Dynamically populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: User-Configurable Guardrails & Quotas -->
+        <div id="stab-user-guardrails" class="settings-tab-content">
+          <div class="modal-section-header">
+            <span class="step-num">🛡️</span>
+            <h3>Guardrails Configurables por Usuario, Cuotas de Tokens & Acceso a MCP</h3>
+          </div>
+          <p class="field-hint">Administra los límites operativos de consulta, consumo de tokens y permisos de invocación de herramientas MCP por rol de usuario.</p>
+
+          <div style="background: rgba(6, 182, 212, 0.08); border-left: 4px solid #00E5FF; padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.8rem; color: #94A3B8;">
+            <strong style="color: #00E5FF;">Doble Capa de Protección:</strong> Los <em>Guardrails Legados del Sistema</em> (límites físicos de TEU, no negatividad, no-cruce de cuantiles $P10 \le P50 \le P90$ y filtro de inyección) son <strong>inmutables y sellados criptográficamente</strong>. Aquí configuras las políticas dinámicas de negocio, cuotas y permisos por rol.
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;">
+            <!-- Select Role -->
+            <div style="background: rgba(16, 26, 48, 0.7); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
+              <label style="font-size: 0.85rem; font-weight: 700; color: #F8FAFC;">Seleccionar Rol a Gestionar:</label>
+              <select id="guardrail-role-select" class="form-select" onchange="window.loadRoleGuardrailPolicy(this.value)" style="margin-top: 0.4rem; margin-bottom: 1rem;">
+                <option value="root">root (Superadministrador / MLOps Lead)</option>
+                <option value="admin_maritimo" selected>admin_maritimo (Operaciones Portuarias)</option>
+                <option value="auditor_aduana">auditor_aduana (Auditor Aduanero ANA)</option>
+                <option value="operador_puerto">operador_puerto (Operador de Muelle)</option>
+                <option value="analista_amp">analista_amp (Analista Estadístico AMP)</option>
+                <option value="consultor_publico">consultor_publico (Acceso Cívico Ley 6)</option>
+              </select>
+
+              <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label style="font-size: 0.78rem;">Cuota Diaria de Tokens:</label>
+                <input type="number" id="gr-tokens-input" class="form-input" style="font-family: var(--font-mono); font-size: 0.8rem;" value="250000">
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label style="font-size: 0.78rem;">Límite de Consultas (RPM):</label>
+                <input type="number" id="gr-rpm-input" class="form-input" style="font-family: var(--font-mono); font-size: 0.8rem;" value="120">
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label style="font-size: 0.78rem; display: flex; align-items: center; gap: 0.4rem;">
+                  <input type="checkbox" id="gr-allow-promotion">
+                  <span>Permitir Promoción de Modelos a Producción</span>
+                </label>
+              </div>
+
+              <button type="button" class="btn btn-primary btn-sm" onclick="window.saveRoleGuardrailPolicy()" style="width: 100%; margin-top: 0.5rem;">
+                💾 Guardar Políticas del Rol
+              </button>
+            </div>
+
+            <!-- MCP Tools & Module Access Matrix -->
+            <div style="background: rgba(16, 26, 48, 0.7); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
+              <h4 style="font-size: 0.88rem; color: #00F5D4; margin: 0 0 0.5rem 0;">Herramientas MCP & Módulos Autorizados para este Rol</h4>
+              <p style="font-size: 0.75rem; color: #94A3B8; margin-bottom: 0.6rem;">Marca qué herramientas MCP nativas puede invocar el agente bajo este rol:</p>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; font-size: 0.75rem;">
+                <label style="display: flex; align-items: center; gap: 0.35rem; background: rgba(3,7,18,0.4); padding: 0.4rem; border-radius: 4px;">
+                  <input type="checkbox" id="mcp-tool-forecast" checked> <span>🔮 get_port_forecast</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.35rem; background: rgba(3,7,18,0.4); padding: 0.4rem; border-radius: 4px;">
+                  <input type="checkbox" id="mcp-tool-sim" checked> <span>🎲 run_monte_carlo_risk_simulation</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.35rem; background: rgba(3,7,18,0.4); padding: 0.4rem; border-radius: 4px;">
+                  <input type="checkbox" id="mcp-tool-tariff" checked> <span>🛃 lookup_panama_customs_tariff</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.35rem; background: rgba(3,7,18,0.4); padding: 0.4rem; border-radius: 4px;">
+                  <input type="checkbox" id="mcp-tool-container" checked> <span>📦 validate_iso6346_container</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.35rem; background: rgba(3,7,18,0.4); padding: 0.4rem; border-radius: 4px;">
+                  <input type="checkbox" id="mcp-tool-benchmark" checked> <span>📊 compare_model_benchmarks</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.35rem; background: rgba(3,7,18,0.4); padding: 0.4rem; border-radius: 4px;">
+                  <input type="checkbox" id="mcp-tool-rag" checked> <span>⚖️ query_maritime_knowledge</span>
+                </label>
+              </div>
+
+              <div id="gr-save-status" style="margin-top: 0.75rem; font-size: 0.75rem; color: #34D399; font-weight: 600;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 5: Replicabilidad Determinista & URLs Ministeriales -->
         <div id="stab-reproducibility" class="settings-tab-content">
           <div class="modal-section-header">
             <span class="step-num">🔬</span>
@@ -2687,7 +3155,7 @@
                 <span class="m-title">Autoridad Marítima de Panamá (AMP)</span>
                 <span class="badge badge-success">Fuente Primaria</span>
               </div>
-              <p class="preset-desc">Movimiento de Contenedores en TEUs (140 meses continuos: 2015-01 a 2026-05) y Despacho de Combustible Bunkering.</p>
+              <p class="preset-desc">Movimiento de contenedores en TEUs y despacho de combustible bunkering; la cobertura temporal se toma del manifiesto consultado.</p>
               <a href="https://www.datosabiertos.gob.pa/dataset/?organization=autoridad-maritima-de-panama-amp" target="_blank" class="m-url">🌐 datosabiertos.gob.pa/dataset/?organization=autoridad-maritima-de-panama-amp</a>
             </div>
 
@@ -2740,7 +3208,7 @@
             <div class="settings-form-grid" style="grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin: 0.75rem 0;">
               <div class="form-group">
                 <label for="repro-save-path">Ruta / Archivo Destino:</label>
-                <input type="text" id="repro-save-path" value="models/champion_lightgbm.joblib" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--cyan-bright); font-size:0.78rem; font-family:var(--font-mono);">
+                <input type="text" id="repro-save-path" value="models/registered_candidate.joblib" style="padding:0.4rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--cyan-bright); font-size:0.78rem; font-family:var(--font-mono);">
               </div>
               <div class="form-group">
                 <label for="repro-model-id">ID de Identificación del Modelo:</label>
@@ -3064,68 +3532,166 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
         </div>
 
 
-        <!-- Tab 2: Extensibilidad y Nuevas APIs -->
+        <!-- Tab 9: Ingesta Nuevas APIs, Adaptadores & Data Quality Gate -->
         <div id="stab-extensibility" class="settings-tab-content">
-          <div class="extensibility-explainer">
-            <h3>¿Cómo sumar nuevas variables externas al modelo sin romper nada?</h3>
-            <p>El ecosistema <strong>Panamá PortOps-AI</strong> está diseñado para recibir datos satelitales (AIS), batimetría de la Cuenca del Canal o índices de fletes internacionales. Antes de ingresar al modelo, cada dato pasa por un <strong>Data Quality Gate</strong> (filtro de calidad estricto) y se normaliza matemáticamente para evitar que valores grandes distorsionen los cálculos.</p>
+          <div class="modal-section-header">
+            <span class="step-num">🔌</span>
+            <h3>Ingesta de Nuevas APIs, Adaptadores de Persistencia & Data Quality Gate</h3>
           </div>
+          <p class="field-hint">Módulos de interconexión con fuentes externas, bases de datos analíticas de alto rendimiento y compuertas de calidad de datos para variables exógenas.</p>
 
-          <div class="ext-simulator-box">
-            <h4>Simulador de Ingesta y Calidad de Nueva Variable</h4>
-            <div class="settings-form-grid">
-              <div class="form-group">
-                <label for="ext-port">Terminal Objetivo:</label>
-                <select id="ext-port">
-                  <option value="Puerto Balboa">Puerto Balboa (Pacífico)</option>
-                  <option value="SSA Marine MIT">SSA Marine MIT (Atlántico)</option>
-                  <option value="PSA Panama International Terminal">PSA Panama (Pacífico)</option>
-                  <option value="Colon Container Terminal">Colon Container Terminal (Atlántico)</option>
-                  <option value="Puerto Cristóbal">Puerto Cristóbal (Atlántico)</option>
-                </select>
+          <div class="enterprise-box">
+            <!-- Adaptadores de Base de Datos y Caché -->
+            <div class="infra-card">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
+                <h4 style="margin:0;">🔌 Adaptadores Abiertos de Base de Datos & Ingesta (Pool Activo)</h4>
+                <span class="badge badge-info" style="font-size:0.72rem;">Fuentes conectadas • estado verificable</span>
+              </div>
+              <p>Módulos desacoplados de persistencia y conexión para soportar arquitecturas de código abierto soberanas. Haz clic en cualquier adaptador para ejecutar un test de conexión y diagnóstico en tiempo real:</p>
+              
+              <div class="infra-grid">
+                <div class="infra-item interactive-db-card" id="db-card-duckdb" onclick="testDatabaseAdapter('duckdb')">
+                  <div class="infra-item-header">
+                    <span class="infra-name">DuckDB Columnar</span>
+                    <span class="badge badge-success" id="db-badge-duckdb">Activo (In-Process)</span>
+                  </div>
+                  <p class="infra-desc">OLAP para escaneo vectorial de microdatos Parquet con cobertura temporal registrada en el manifiesto.</p>
+                  <div class="infra-actions">
+                    <small class="infra-stat" id="db-stat-duckdb">Latencia: &lt; 0.5 ms • Pooling: 4 hilos</small>
+                    <button class="btn-db-test" onclick="event.stopPropagation(); testDatabaseAdapter('duckdb');">⚡ Probar Ping</button>
+                  </div>
+                </div>
+
+                <div class="infra-item interactive-db-card" id="db-card-timescaledb" onclick="testDatabaseAdapter('timescaledb')">
+                  <div class="infra-item-header">
+                    <span class="infra-name">PostgreSQL / TimescaleDB</span>
+                    <span class="badge badge-info" id="db-badge-timescaledb">Configurado / Container</span>
+                  </div>
+                  <p class="infra-desc">Hipertablas particionadas por mes para telemetría continua de buques y puertos.</p>
+                  <div class="infra-actions">
+                    <small class="infra-stat" id="db-stat-timescaledb">Modo: Service 'timescaledb' en docker-compose</small>
+                    <button class="btn-db-test" onclick="event.stopPropagation(); testDatabaseAdapter('timescaledb');">⚡ Probar Ping</button>
+                  </div>
+                </div>
+
+                <div class="infra-item interactive-db-card" id="db-card-redis" onclick="testDatabaseAdapter('redis')">
+                  <div class="infra-item-header">
+                    <span class="infra-name">Redis In-Memory Cache</span>
+                    <span class="badge badge-success" id="db-badge-redis">Activo (Cache Layer)</span>
+                  </div>
+                  <p class="infra-desc">Cacheo predictivo para inferencias de cuantiles P10, P50, P90 en sub-milisegundos.</p>
+                  <div class="infra-actions">
+                    <small class="infra-stat" id="db-stat-redis">Latencia: 0.05 ms • Fallback en memoria activo</small>
+                    <button class="btn-db-test" onclick="event.stopPropagation(); testDatabaseAdapter('redis');">⚡ Probar Ping</button>
+                  </div>
+                </div>
               </div>
 
-              <div class="form-group">
-                <label for="ext-feature-name">Nombre de Variable Externa:</label>
-                <select id="ext-feature-name">
-                  <option value="ais_avg_draft_meters">AIS: Calado Dinámico Medio (metros)</option>
-                  <option value="gatun_lake_level_feet">ACP: Nivel de Lago Gatún (pies sobre el mar)</option>
-                  <option value="fbx_freight_index_usd">Fletes: Freightos Baltic Index (USD/FEU)</option>
-                  <option value="anchorage_wait_hours">AIS: Horas de Espera en Fondeadero</option>
-                  <option value="nino_34_sst_anomaly">NOAA: Anomalía Temperatura Mar Niño 3.4 (°C)</option>
-                </select>
-              </div>
+              <!-- Live Diagnostic Drawer for Database Adapters -->
+              <div id="db-live-diagnostic-box" class="db-diagnostic-drawer" style="display:none; margin-top:1rem;">
+                <div class="db-diag-header">
+                  <div style="display:flex; align-items:center; gap:0.5rem;">
+                    <span class="pulse-indicator"></span>
+                    <strong id="db-diag-engine-name">Diagnóstico en Tiempo Real: DuckDB</strong>
+                    <span class="badge badge-success" id="db-diag-status-badge">ONLINE</span>
+                  </div>
+                  <button class="btn-close-diag" onclick="document.getElementById('db-live-diagnostic-box').style.display='none'">✕ Cerrar</button>
+                </div>
+                
+                <div class="db-diag-metrics-grid">
+                  <div class="diag-metric-card">
+                    <span class="diag-metric-label">Latencia Medida</span>
+                    <span class="diag-metric-val" id="db-diag-latency">0.24 ms</span>
+                  </div>
+                  <div class="diag-metric-card">
+                    <span class="diag-metric-label">Pool Conexiones</span>
+                    <span class="diag-metric-val" id="db-diag-pool">4 Hilos Activos</span>
+                  </div>
+                  <div class="diag-metric-card">
+                    <span class="diag-metric-label">Operación I/O</span>
+                    <span class="diag-metric-val" id="db-diag-op">Zero-Copy In-Process</span>
+                  </div>
+                  <div class="diag-metric-card">
+                    <span class="diag-metric-label">Modo Persistencia</span>
+                    <span class="diag-metric-val" id="db-diag-fallback">Parquet & Memory</span>
+                  </div>
+                </div>
 
-              <div class="form-group">
-                <label for="ext-feature-value">Valor Empírico a Probar:</label>
-                <input type="number" id="ext-feature-value" step="0.1" value="14.2">
-              </div>
+                <div class="db-diag-query-row" style="margin-top:0.75rem;">
+                  <label for="db-custom-query-input"><strong>Consulta Diagnóstica / Comando:</strong></label>
+                  <div style="display:flex; gap:0.5rem; margin-top:0.3rem;">
+                    <input type="text" id="db-custom-query-input" style="flex:1; padding:0.4rem 0.6rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--cyan-bright); font-family:var(--font-mono); font-size:0.78rem;" value="SELECT count(*) as total_filas, min(date) as desde, max(date) as hasta FROM amp_port_monthly_throughput">
+                    <button class="btn btn-secondary btn-sm" id="btn-run-custom-db-query" onclick="runCustomDbQuery()">▶ Ejecutar</button>
+                  </div>
+                </div>
 
-              <div class="form-group">
-                <label for="ext-norm-method">Método de Normalización:</label>
-                <select id="ext-norm-method">
-                  <option value="robust_mad" selected>Hampel MAD (Robusto ante outliers marítimos)</option>
-                  <option value="z_score">Z-Score Estándar (Media 0, Desviación 1)</option>
-                  <option value="min_max">Min-Max Scaling (Escalado entre 0 y 1)</option>
-                  <option value="log_ratio">Log-Ratio ln(1 + x/x_base)</option>
-                </select>
+                <div id="db-diag-result-preview" style="margin-top:0.6rem;"></div>
               </div>
             </div>
 
-            <div class="settings-actions">
-              <button id="btn-simulate-ext" class="btn btn-primary">
-                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                Auditar Calidad y Simular Concatenación
-              </button>
+            <!-- Extensibilidad y Simulador de Ingesta -->
+            <div class="extensibility-explainer" style="margin-top: 1rem;">
+              <h3>¿Cómo sumar nuevas variables externas al modelo sin romper nada?</h3>
+              <p>El ecosistema <strong>Panamá PortOps-AI</strong> está diseñado para recibir datos satelitales (AIS), batimetría de la Cuenca del Canal o índices de fletes internacionales. Antes de ingresar al modelo, cada dato pasa por un <strong>Data Quality Gate</strong> (filtro de calidad estricto) y se normaliza matemáticamente para evitar que valores grandes distorsionen los cálculos.</p>
             </div>
 
-            <div id="ext-result-box" class="ext-result-box" style="display:none;">
-              <div class="ext-result-header">
-                <span class="badge" id="ext-quality-badge">Gate: Aprobado</span>
-                <span id="ext-formula-badge" class="formula-badge">z = (x - median) / MAD</span>
+            <div class="ext-simulator-box">
+              <h4>Simulador de Ingesta y Calidad de Nueva Variable</h4>
+              <div class="settings-form-grid">
+                <div class="form-group">
+                  <label for="ext-port">Terminal Objetivo:</label>
+                  <select id="ext-port">
+                    <option value="Puerto Balboa">Puerto Balboa (Pacífico)</option>
+                    <option value="SSA Marine MIT">SSA Marine MIT (Atlántico)</option>
+                    <option value="PSA Panama International Terminal">PSA Panama (Pacífico)</option>
+                    <option value="Colon Container Terminal">Colon Container Terminal (Atlántico)</option>
+                    <option value="Puerto Cristóbal">Puerto Cristóbal (Atlántico)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="ext-feature-name">Nombre de Variable Externa:</label>
+                  <select id="ext-feature-name">
+                    <option value="ais_avg_draft_meters">AIS: Calado Dinámico Medio (metros)</option>
+                    <option value="gatun_lake_level_feet">ACP: Nivel de Lago Gatún (pies sobre el mar)</option>
+                    <option value="fbx_freight_index_usd">Fletes: Freightos Baltic Index (USD/FEU)</option>
+                    <option value="anchorage_wait_hours">AIS: Horas de Espera en Fondeadero</option>
+                    <option value="nino_34_sst_anomaly">NOAA: Anomalía Temperatura Mar Niño 3.4 (°C)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="ext-feature-value">Valor Empírico a Probar:</label>
+                  <input type="number" id="ext-feature-value" step="0.1" value="14.2">
+                </div>
+
+                <div class="form-group">
+                  <label for="ext-norm-method">Método de Normalización:</label>
+                  <select id="ext-norm-method">
+                    <option value="robust_mad" selected>Hampel MAD (Robusto ante outliers marítimos)</option>
+                    <option value="z_score">Z-Score Estándar (Media 0, Desviación 1)</option>
+                    <option value="min_max">Min-Max Scaling (Escalado entre 0 y 1)</option>
+                    <option value="log_ratio">Log-Ratio ln(1 + x/x_base)</option>
+                  </select>
+                </div>
               </div>
-              <div class="ext-result-details" id="ext-result-details"></div>
+
+              <div class="settings-actions">
+                <button id="btn-simulate-ext" class="btn btn-primary">
+                  <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                  Auditar Calidad y Simular Concatenación
+                </button>
+              </div>
+
+              <div id="ext-result-box" class="ext-result-box" style="display:none;">
+                <div class="ext-result-header">
+                  <span class="badge" id="ext-quality-badge">Gate: Aprobado</span>
+                  <span id="ext-formula-badge" class="formula-badge">z = (x - median) / MAD</span>
+                </div>
+                <div class="ext-result-details" id="ext-result-details"></div>
+              </div>
             </div>
+
           </div>
         </div>
 
@@ -3186,13 +3752,13 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
             <div class="glossary-item" data-cat="metrics" data-letter="W">
               <div class="glossary-term">🎯 WAPE (Weighted Absolute Percentage Error)</div>
               <span class="type-pill">Métricas</span>
-              <p><strong>¿Qué significa?:</strong> Es el porcentaje promedio ponderado de error del modelo. A diferencia del MAPE clásico (que colapsa si un mes tiene cero o valores chicos), el WAPE divide la suma de errores absolutos entre la suma total de volumen ($\frac{\sum |y - \hat{y}|}{\sum y}$). Un WAPE de <strong>9.11%</strong> significa más de <strong>90.89% de precisión global</strong>.</p>
+              <p><strong>¿Qué significa?:</strong> Es el porcentaje promedio ponderado de error del modelo. A diferencia del MAPE clásico (que colapsa si un mes tiene cero o valores chicos), el WAPE divide la suma de errores absolutos entre la suma total de volumen ($\frac{\sum |y - \hat{y}|}{\sum y}$). El valor se muestra como <strong>N/D</strong> hasta que se carga una ejecución verificable.</p>
             </div>
 
             <div class="glossary-item" data-cat="metrics" data-letter="R">
               <div class="glossary-term">📈 Coeficiente R² (R-cuadrado / Bondad de Ajuste)</div>
               <span class="type-pill">Métricas</span>
-              <p><strong>¿Qué significa?:</strong> Mide la proporción de la varianza histórica del tráfico que el modelo logra explicar mediante sus 85 variables. Un R² de <strong>0.9594</strong> prueba que explica casi el <strong>96% de la variabilidad</strong>, dejando solo 4% atribuible a ruido blanco estocástico.</p>
+              <p><strong>¿Qué significa?:</strong> Mide la proporción de la varianza histórica del tráfico que el modelo logra explicar mediante sus variables registradas. El valor aparece como <strong>N/D</strong> hasta que la API entregue una medición de benchmark verificable.</p>
             </div>
 
             <div class="glossary-item" data-cat="metrics" data-letter="P">
@@ -3291,7 +3857,7 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
                 <span class="prov-legal">⚖️ Ley 6 de 2002 de Transparencia de Panamá</span>
               </div>
               <h4 class="prov-title">Microdatos Oficiales del Movimiento Portuario Nacional (AMP - INEC)</h4>
-              <p class="prov-desc">Todos los pronósticos y análisis generados se fundamentan en <strong>140 meses continuos (Enero 2015 a Enero 2026)</strong> de registros oficiales de contenedores en el Sistema Portuario Nacional de Panamá (SPN), auditados e imputados sin datos ficticios.</p>
+              <p class="prov-desc">Todos los pronósticos y análisis generados se fundamentan en <strong id="provenance-coverage">cobertura temporal N/D</strong> de registros oficiales del Sistema Portuario Nacional de Panamá (SPN); el manifiesto y la fecha de consulta determinan el alcance disponible.</p>
               
               <div class="prov-meta-grid">
                 <div class="prov-meta-item">
@@ -3304,7 +3870,7 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
                 </div>
                 <div class="prov-meta-item">
                   <span class="prov-meta-label">Modelos Evaluados:</span>
-                  <span class="prov-meta-val">LightGBM (WAPE 9.11%), Random Forest, HistGB, Ridge</span>
+                  <span class="prov-meta-val">Modelos y métricas del registro de benchmark</span>
                 </div>
                 <div class="prov-meta-item">
                   <span class="prov-meta-label">Integridad de Archivo Gold:</span>
@@ -3373,441 +3939,33 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
 
           </div>
         </div>
-
-        <!-- Tab: Ingesta de Nuevas APIs, Adaptadores & Conectores Abiertos -->
-        <div id="stab-extensibility" class="settings-tab-content">
-          <div class="enterprise-box">
-            
-            <!-- Adaptadores de Base de Datos y Caché -->
-            <div class="infra-card">
-              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
-                <h4 style="margin:0;">🔌 Adaptadores Abiertos de Base de Datos & Ingesta (Pool Activo)</h4>
-                <span class="badge badge-info" style="font-size:0.72rem;">Zero Mock • Conectores Abiertos</span>
-              </div>
-              <p>Módulos desacoplados de persistencia y conexión para soportar arquitecturas de código abierto soberanas. Haz clic en cualquier adaptador para ejecutar un test de conexión y diagnóstico en tiempo real:</p>
-              
-              <div class="infra-grid">
-                <div class="infra-item interactive-db-card" id="db-card-duckdb" onclick="testDatabaseAdapter('duckdb')">
-                  <div class="infra-item-header">
-                    <span class="infra-name">DuckDB Columnar</span>
-                    <span class="badge badge-success" id="db-badge-duckdb">Activo (In-Process)</span>
-                  </div>
-                  <p class="infra-desc">OLAP ultra-rápido para escaneo vectorial de 140 meses de microdatos Parquet.</p>
-                  <div class="infra-actions">
-                    <small class="infra-stat" id="db-stat-duckdb">Latencia: &lt; 0.5 ms • Pooling: 4 hilos</small>
-                    <button class="btn-db-test" onclick="event.stopPropagation(); testDatabaseAdapter('duckdb');">⚡ Probar Ping</button>
-                  </div>
-                </div>
-
-                <div class="infra-item interactive-db-card" id="db-card-timescaledb" onclick="testDatabaseAdapter('timescaledb')">
-                  <div class="infra-item-header">
-                    <span class="infra-name">PostgreSQL / TimescaleDB</span>
-                    <span class="badge badge-info" id="db-badge-timescaledb">Configurado / Container</span>
-                  </div>
-                  <p class="infra-desc">Hipertablas particionadas por mes para telemetría continua de buques y puertos.</p>
-                  <div class="infra-actions">
-                    <small class="infra-stat" id="db-stat-timescaledb">Modo: Service 'timescaledb' en docker-compose</small>
-                    <button class="btn-db-test" onclick="event.stopPropagation(); testDatabaseAdapter('timescaledb');">⚡ Probar Ping</button>
-                  </div>
-                </div>
-
-                <div class="infra-item interactive-db-card" id="db-card-redis" onclick="testDatabaseAdapter('redis')">
-                  <div class="infra-item-header">
-                    <span class="infra-name">Redis In-Memory Cache</span>
-                    <span class="badge badge-success" id="db-badge-redis">Activo (Cache Layer)</span>
-                  </div>
-                  <p class="infra-desc">Cacheo predictivo para inferencias de cuantiles P10, P50, P90 en sub-milisegundos.</p>
-                  <div class="infra-actions">
-                    <small class="infra-stat" id="db-stat-redis">Latencia: 0.05 ms • Fallback en memoria activo</small>
-                    <button class="btn-db-test" onclick="event.stopPropagation(); testDatabaseAdapter('redis');">⚡ Probar Ping</button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Live Diagnostic Drawer for Database Adapters -->
-              <div id="db-live-diagnostic-box" class="db-diagnostic-drawer" style="display:none; margin-top:1rem;">
-                <div class="db-diag-header">
-                  <div style="display:flex; align-items:center; gap:0.5rem;">
-                    <span class="pulse-indicator"></span>
-                    <strong id="db-diag-engine-name">Diagnóstico en Tiempo Real: DuckDB</strong>
-                    <span class="badge badge-success" id="db-diag-status-badge">ONLINE</span>
-                  </div>
-                  <button class="btn-close-diag" onclick="document.getElementById('db-live-diagnostic-box').style.display='none'">✕ Cerrar</button>
-                </div>
-                
-                <div class="db-diag-metrics-grid">
-                  <div class="diag-metric-card">
-                    <span class="diag-metric-label">Latencia Medida</span>
-                    <span class="diag-metric-val" id="db-diag-latency">0.24 ms</span>
-                  </div>
-                  <div class="diag-metric-card">
-                    <span class="diag-metric-label">Pool Conexiones</span>
-                    <span class="diag-metric-val" id="db-diag-pool">4 Hilos Activos</span>
-                  </div>
-                  <div class="diag-metric-card">
-                    <span class="diag-metric-label">Operación I/O</span>
-                    <span class="diag-metric-val" id="db-diag-op">Zero-Copy In-Process</span>
-                  </div>
-                  <div class="diag-metric-card">
-                    <span class="diag-metric-label">Modo Persistencia</span>
-                    <span class="diag-metric-val" id="db-diag-fallback">Parquet & Memory</span>
-                  </div>
-                </div>
-
-                <div class="db-diag-query-row" style="margin-top:0.75rem;">
-                  <label for="db-custom-query-input"><strong>Consulta Diagnóstica / Comando:</strong></label>
-                  <div style="display:flex; gap:0.5rem; margin-top:0.3rem;">
-                    <input type="text" id="db-custom-query-input" style="flex:1; padding:0.4rem 0.6rem; background:var(--bg-input); border:1px solid var(--border-color); border-radius:4px; color:var(--cyan-bright); font-family:var(--font-mono); font-size:0.78rem;" value="SELECT count(*) as total_filas, min(date) as desde, max(date) as hasta FROM amp_port_monthly_throughput">
-                    <button class="btn btn-secondary btn-sm" id="btn-run-custom-db-query" onclick="runCustomDbQuery()">▶ Ejecutar</button>
-                  </div>
-                </div>
-
-                <div id="db-diag-result-preview" style="margin-top:0.6rem;"></div>
-              </div>
-            </div>
-
-            <!-- Servidor MCP (Model Context Protocol) -->
-            <div class="infra-card" style="margin-top: 1rem;">
-              <h4>🤖 Servidor MCP Nativo (Model Context Protocol)</h4>
-              <p>El proyecto expone un servidor MCP estandarizado para interconectar herramientas con <strong>Claude Desktop, Cursor, Antigravity y agentes de IA</strong>:</p>
-              <div class="mcp-tools-list">
-                <span class="mcp-tool-pill">🛠️ get_port_forecast</span>
-                <span class="mcp-tool-pill">🛠️ run_monte_carlo_risk_simulation</span>
-                <span class="mcp-tool-pill">🛠️ compare_model_benchmarks</span>
-                <span class="mcp-tool-pill">🛠️ simulate_external_feature</span>
-                <span class="mcp-tool-pill">🛠️ query_maritime_knowledge</span>
-              </div>
-              <small class="field-hint" style="margin-top: 0.5rem; display: block;">Configuración lista en <code>src/mcp/claude_desktop_config.json</code> para añadir al agente con un solo clic.</small>
-            </div>
-
-            <!-- Asistente RAG Marítimo y Jurídico de Panamá -->
-            <div class="infra-card" style="margin-top: 1rem;">
-              <h4>📚 Asistente RAG Marítimo & Leyes Portuarias de Panamá</h4>
-              <p>Realiza consultas semánticas con citas jurídicas verificadas sobre la <strong>Ley 56 de 2008 (General de Puertos)</strong>, <strong>Ley 6 de 2002 (Transparencia)</strong> y regulaciones ACP:</p>
-              
-              <div class="rag-query-box">
-                <div class="rag-input-row">
-                  <input type="text" id="rag-query-input" placeholder="Ej: ¿Qué exige la Ley 56 para otorgar concesiones de terminales portuarias?" value="¿Qué exige la Ley 56 sobre las concesiones de terminales portuarias?">
-                  <button id="btn-exec-rag" class="btn btn-primary">
-                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    Consultar RAG
-                  </button>
-                </div>
-                <div id="rag-result-panel" class="rag-result-panel" style="display: none; margin-top: 0.75rem;">
-                  <!-- Populated via JS -->
-                </div>
-              </div>
-            </div>
-
-            <!-- Guardrails y Seguridad -->
-            <div class="infra-card" style="margin-top: 1rem;">
-              <h4>🛡️ Guardrails de Inferencia & Gestor de Secretos</h4>
-              <div class="infra-grid">
-                <div class="infra-item">
-                  <div class="infra-item-header">
-                    <span class="infra-name">Guardrail Físico</span>
-                    <span class="badge badge-success">Activo</span>
-                  </div>
-                  <p class="infra-desc">Bloquea inferencias con TEUs negativos o que superen los 600,000 TEUs/mes por terminal.</p>
-                </div>
-                <div class="infra-item">
-                  <div class="infra-item-header">
-                    <span class="infra-name">Guardrail Cuantílico</span>
-                    <span class="badge badge-success">Activo</span>
-                  </div>
-                  <p class="infra-desc">Garantiza estrictamente la relación monotónica matemática $P_{10} \le P_{50} \le P_{90}$.</p>
-                </div>
-                <div class="infra-item">
-                  <div class="infra-item-header">
-                    <span class="infra-name">Gestor de Secretos</span>
-                    <span class="badge badge-success">sk-**** Enmascarado</span>
-                  </div>
-                  <p class="infra-desc">Protege tokens de APIs externas y credenciales de base de datos contra fugas en logs y UI.</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Aceleración CUDA & vLLM -->
-            <div class="infra-card" style="margin-top: 1rem;">
-              <h4>⚡ Aceleración por Hardware (CUDA, ONNX & vLLM Ready)</h4>
-              <p>La arquitectura del microservicio soporta ejecución acelerada tanto en CPU multinúcleo como en GPU NVIDIA:</p>
-              <div class="cuda-status-badge">
-                <span>Modo de Ejecución: <strong>CPU Multiprocessing (Optimizado con OpenMP para LightGBM)</strong></span>
-                <span class="badge badge-info">CUDA & vLLM Configurado en Dockerfile</span>
-          </div>
-        </div>
-
-        <!-- Tab: Deploy & Root Admin Verification -->
-        <div id="stab-deploy-verify" class="settings-tab-content">
-          <div class="modal-section-header">
-            <span class="step-num">🚀</span>
-            <h3>Verificación Inicial de Despliegue & Superadministrador Root (Checklist 360°)</h3>
-          </div>
-          <p class="field-hint">Verificación integral del estado de puesta en producción conforme a Ley 6 de 2002 y estándares MLOps de soberanía analítica portuaria.</p>
-
-          <!-- Host Hardware & NVIDIA GPU Discovery Banner -->
-          <div id="platform-hardware-banner" style="background: rgba(16, 26, 48, 0.75); border: 1px solid rgba(0, 245, 212, 0.3); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-              <div style="font-weight: 700; color: #00F5D4; font-size: 0.95rem;">
-                🎮 Aceleración Hardware & GPU: <span id="hw-gpu-name" style="color: #F8FAFC;">NVIDIA GeForce RTX 3050 Laptop GPU (4.0 GB VRAM)</span>
-              </div>
-              <span class="badge" id="hw-profile-badge" style="background: rgba(0, 245, 212, 0.15); color: #00F5D4; border: 1px solid #00F5D4;">● CUDA AWQ-4BIT</span>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.78rem; color: #CBD5E1;">
-              <div>
-                • <strong>Procesador:</strong> <span id="hw-cpu-spec">Intel Core 8 Cores / 16 Threads (AVX-512)</span><br>
-                • <strong>Memoria RAM:</strong> <span id="hw-ram-spec">31.8 GB Totales (Categoría Enterprise)</span>
-              </div>
-              <div>
-                • <strong>Perfil de Cómputo:</strong> <code id="hw-compute-profile" style="color: #38BDF8;">GPU_ACCELERATED_QUANTIZED_AWQ_4BIT</code><br>
-                • <strong>Privilegios Host:</strong> <span id="hw-admin-status" style="color: #34D399;">Usuario Estándar Seguro (Lakehouse Local)</span>
-              </div>
-            </div>
-          </div>
-
-          <div style="background: rgba(16, 26, 48, 0.7); border: 1px solid rgba(0, 229, 255, 0.25); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-              <div style="font-weight: 700; color: #00E5FF; font-size: 0.95rem;">👑 Administrador Maestro Canónico: <code style="color:#00F5D4; background:rgba(0,245,212,0.1); padding:2px 8px; border-radius:4px;">root</code></div>
-              <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid #10B981;">✓ ACTIVO & VERIFICADO</span>
-            </div>
-            <p style="font-size: 0.82rem; color: #94A3B8; margin: 0 0 0.5rem 0;">Credenciales iniciales establecidas para el usuario root con perfil de Superadministrador (MLOps Lead). Tiene privilegios totales para configurar modelos, conectar servidores vLLM, gestionar la bóveda de secretos y autorizar promociones de modelos a producción.</p>
-            <div style="display: flex; gap: 0.5rem;">
-              <button type="button" class="btn btn-secondary btn-sm" onclick="window.runDeployVerificationCheck()" style="padding: 0.35rem 0.8rem; font-size: 0.8rem; border-color: #00E5FF; color: #00E5FF;">
-                ⚡ Ejecutar Verificación de Despliegue en Vivo
-              </button>
-              <button type="button" class="btn btn-secondary btn-sm" onclick="window.ensureRootUserInit()" style="padding: 0.35rem 0.8rem; font-size: 0.8rem;">
-                🔑 Re-validar Acceso Root
-              </button>
-            </div>
-          </div>
-
-          <h4 style="font-size: 0.9rem; color: #F8FAFC; margin-bottom: 0.5rem;">Matriz de Validación de Puesta en Producción:</h4>
-          <div id="deploy-verification-checklist" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-            <div style="background: rgba(3, 7, 18, 0.6); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 0.75rem;">
-              <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 0.85rem; color: #34D399;">
-                <span>1. IAM & Root Admin</span>
-                <span>✓ PASS</span>
-              </div>
-              <p style="font-size: 0.75rem; color: #94A3B8; margin: 0.25rem 0 0 0;">Usuario 'root' inicializado y verificado con rol de Superadministrador.</p>
-            </div>
-            <div style="background: rgba(3, 7, 18, 0.6); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 0.75rem;">
-              <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 0.85rem; color: #34D399;">
-                <span>2. Matriz de 6 Roles RBAC</span>
-                <span>✓ PASS</span>
-              </div>
-              <p style="font-size: 0.75rem; color: #94A3B8; margin: 0.25rem 0 0 0;">Roles root, admin_maritimo, auditor, operador, analista y consultor activos.</p>
-            </div>
-            <div style="background: rgba(3, 7, 18, 0.6); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 0.75rem;">
-              <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 0.85rem; color: #34D399;">
-                <span>3. Capa Gold Feature Store</span>
-                <span>✓ PASS</span>
-              </div>
-              <p style="font-size: 0.75rem; color: #94A3B8; margin: 0.25rem 0 0 0;">140 meses de microdatos AMP verificados en container_features.parquet.</p>
-            </div>
-            <div style="background: rgba(3, 7, 18, 0.6); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 0.75rem;">
-              <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 0.85rem; color: #34D399;">
-                <span>4. 8 Modelos Evaluados</span>
-                <span>✓ PASS</span>
-              </div>
-              <p style="font-size: 0.75rem; color: #94A3B8; margin: 0.25rem 0 0 0;">LightGBM Champion (WAPE 9.11%) y 7 algoritmos challengers auditados.</p>
-            </div>
-            <div style="background: rgba(3, 7, 18, 0.6); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 0.75rem;">
-              <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 0.85rem; color: #34D399;">
-                <span>5. Bóveda Criptográfica</span>
-                <span>✓ PASS</span>
-              </div>
-              <p style="font-size: 0.75rem; color: #94A3B8; margin: 0.25rem 0 0 0;">Bóveda PBKDF2/AES-256 operativa con enmascaramiento sk-****.</p>
-            </div>
-            <div style="background: rgba(3, 7, 18, 0.6); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px; padding: 0.75rem;">
-              <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 0.85rem; color: #34D399;">
-                <span>6. Guardrails Inmutables</span>
-                <span>✓ PASS</span>
-              </div>
-              <p style="font-size: 0.75rem; color: #94A3B8; margin: 0.25rem 0 0 0;">Sello HMAC-SHA256 activo para invariantes de puerto y cuantiles P10-P90.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tab: vLLM, Storage Volumes & Secrets Vault -->
-        <div id="stab-vllm-secrets" class="settings-tab-content">
-          <div class="modal-section-header">
-            <span class="step-num">⚡</span>
-            <h3>vLLM Engine, Rutas de Volúmenes & Bóveda de Secretos (AES-256)</h3>
-          </div>
-          <p class="field-hint">Configura el runtime de inferencia vLLM (PagedAttention), el pathing de almacenamiento de pesos y las credenciales de adaptadores a modelos cloud.</p>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
-            <!-- Column 1: vLLM & Storage Volumes -->
-            <div style="background: rgba(16, 26, 48, 0.7); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
-              <h4 style="font-size: 0.9rem; color: #00E5FF; margin: 0 0 0.5rem 0;">📁 Configuración de Volúmenes y Rutas de Almacenamiento</h4>
-              
-              <div class="form-group" style="margin-bottom: 0.65rem;">
-                <label style="font-size: 0.78rem; font-weight: 600;">Volumen de Pesos de Modelos (MODEL_WEIGHTS_PATH):</label>
-                <input type="text" id="cfg-weights-path" class="form-input" style="font-family: var(--font-mono); font-size: 0.75rem; padding: 0.35rem 0.6rem;" value="models">
-                <small style="color: #64748B; font-size: 0.7rem;">Ruta de montaje local o compartida (/mnt/models, models/weights, HuggingFace cache).</small>
-              </div>
-
-              <div class="form-group" style="margin-bottom: 0.65rem;">
-                <label style="font-size: 0.78rem; font-weight: 600;">Almacenamiento Lakehouse (LAKEHOUSE_STORAGE_PATH):</label>
-                <input type="text" id="cfg-lakehouse-path" class="form-input" style="font-family: var(--font-mono); font-size: 0.75rem; padding: 0.35rem 0.6rem;" value="data">
-                <small style="color: #64748B; font-size: 0.7rem;">Ruta base de capas Bronze, Silver Delta y Gold Feature Store.</small>
-              </div>
-
-              <div class="form-group" style="margin-bottom: 0.65rem;">
-                <label style="font-size: 0.78rem; font-weight: 600;">Endpoint de vLLM (VLLM_BASE_URL):</label>
-                <input type="text" id="cfg-vllm-url" class="form-input" style="font-family: var(--font-mono); font-size: 0.75rem; padding: 0.35rem 0.6rem;" value="http://localhost:8080/v1">
-              </div>
-
-              <div class="form-group" style="margin-bottom: 0.75rem;">
-                <label style="font-size: 0.78rem; font-weight: 600;">Modelo vLLM por Defecto:</label>
-                <input type="text" id="cfg-vllm-model" class="form-input" style="font-family: var(--font-mono); font-size: 0.75rem; padding: 0.35rem 0.6rem;" value="meta-llama/Llama-3.3-70B-Instruct-AWQ">
-              </div>
-
-              <button type="button" class="btn btn-primary btn-sm" onclick="window.saveStorageAndVllmConfig()" style="font-size: 0.8rem; padding: 0.4rem 0.9rem;">
-                💾 Guardar Rutas y Configuración vLLM
-              </button>
-            </div>
-
-            <!-- Column 2: Provider Adapters & Live Ping -->
-            <div style="background: rgba(16, 26, 48, 0.7); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
-              <h4 style="font-size: 0.9rem; color: #38BDF8; margin: 0 0 0.5rem 0;">🔌 Adaptadores a Modelos de IA & Pruebas en Vivo</h4>
-              <p style="font-size: 0.75rem; color: #94A3B8; margin-bottom: 0.6rem;">Prueba la conectividad de los runtimes activos para inferencia CoT y generación aumentada:</p>
-
-              <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(3, 7, 18, 0.5); padding: 0.45rem 0.7rem; border-radius: 6px;">
-                  <span style="font-size: 0.8rem; font-weight: 600;">vLLM PagedAttention</span>
-                  <button type="button" class="btn-subtle" onclick="window.testModelProvider('vllm')" style="padding: 2px 8px; font-size: 0.72rem;">⚡ Test Conexión</button>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(3, 7, 18, 0.5); padding: 0.45rem 0.7rem; border-radius: 6px;">
-                  <span style="font-size: 0.8rem; font-weight: 600;">Ollama (Local Quantized)</span>
-                  <button type="button" class="btn-subtle" onclick="window.testModelProvider('ollama')" style="padding: 2px 8px; font-size: 0.72rem;">⚡ Test Conexión</button>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(3, 7, 18, 0.5); padding: 0.45rem 0.7rem; border-radius: 6px;">
-                  <span style="font-size: 0.8rem; font-weight: 600;">OpenAI / OpenAI-Compatible</span>
-                  <button type="button" class="btn-subtle" onclick="window.testModelProvider('openai')" style="padding: 2px 8px; font-size: 0.72rem;">⚡ Test Conexión</button>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(3, 7, 18, 0.5); padding: 0.45rem 0.7rem; border-radius: 6px;">
-                  <span style="font-size: 0.8rem; font-weight: 600;">Google Gemini (Flash Open API)</span>
-                  <button type="button" class="btn-subtle" onclick="window.testModelProvider('gemini')" style="padding: 2px 8px; font-size: 0.72rem;">⚡ Test Conexión</button>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(3, 7, 18, 0.5); padding: 0.45rem 0.7rem; border-radius: 6px;">
-                  <span style="font-size: 0.8rem; font-weight: 600;">Anthropic Claude (3.5 Sonnet)</span>
-                  <button type="button" class="btn-subtle" onclick="window.testModelProvider('anthropic')" style="padding: 2px 8px; font-size: 0.72rem;">⚡ Test Conexión</button>
-                </div>
-              </div>
-
-              <div id="provider-test-result" style="margin-top: 0.75rem; font-size: 0.75rem; color: #00F5D4; min-height: 20px;"></div>
-            </div>
-          </div>
-
-          <!-- Secrets Inventory Table -->
-          <div style="background: rgba(16, 26, 48, 0.7); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-              <h4 style="font-size: 0.9rem; color: #F8FAFC; margin: 0;">🔐 Inventario de Claves y Secretos Criptográficos</h4>
-              <button type="button" class="btn btn-secondary btn-sm" onclick="window.loadSecretsVaultInventory()" style="font-size: 0.75rem; padding: 0.25rem 0.6rem;">↺ Actualizar</button>
-            </div>
-            <div class="table-responsive">
-              <table class="data-table" style="font-size: 0.78rem;">
-                <thead>
-                  <tr>
-                    <th>Variable / Clave</th>
-                    <th>Categoría</th>
-                    <th>Valor Enmascarado</th>
-                    <th>Bóveda de Respaldo</th>
-                    <th>Acción</th>
-                  </tr>
-                </thead>
-                <tbody id="secrets-vault-tbody">
-                  <!-- Dynamically populated via JS -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tab: User-Configurable Guardrails & Quotas -->
-        <div id="stab-user-guardrails" class="settings-tab-content">
-          <div class="modal-section-header">
-            <span class="step-num">🛡️</span>
-            <h3>Guardrails Configurables por Usuario, Cuotas de Tokens & Acceso a MCP</h3>
-          </div>
-          <p class="field-hint">Administra los límites operativos de consulta, consumo de tokens y permisos de invocación de herramientas MCP por rol de usuario.</p>
-
-          <div style="background: rgba(6, 182, 212, 0.08); border-left: 4px solid #00E5FF; padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.8rem; color: #94A3B8;">
-            <strong style="color: #00E5FF;">Doble Capa de Protección:</strong> Los <em>Guardrails Legados del Sistema</em> (límites físicos de TEU, no negatividad, no-cruce de cuantiles $P10 \le P50 \le P90$ y filtro de inyección) son <strong>inmutables y sellados criptográficamente</strong>. Aquí configuras las políticas dinámicas de negocio, cuotas y permisos por rol.
-          </div>
-
-          <div style="display: grid; grid-template-columns: 280px 1fr; gap: 1rem;">
-            <!-- Select Role -->
-            <div style="background: rgba(16, 26, 48, 0.7); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
-              <label style="font-size: 0.85rem; font-weight: 700; color: #F8FAFC;">Seleccionar Rol a Gestionar:</label>
-              <select id="guardrail-role-select" class="form-select" onchange="window.loadRoleGuardrailPolicy(this.value)" style="margin-top: 0.4rem; margin-bottom: 1rem;">
-                <option value="root">root (Superadministrador / MLOps Lead)</option>
-                <option value="admin_maritimo" selected>admin_maritimo (Operaciones Portuarias)</option>
-                <option value="auditor_aduana">auditor_aduana (Auditor Aduanero ANA)</option>
-                <option value="operador_puerto">operador_puerto (Operador de Muelle)</option>
-                <option value="analista_amp">analista_amp (Analista Estadístico AMP)</option>
-                <option value="consultor_publico">consultor_publico (Acceso Cívico Ley 6)</option>
-              </select>
-
-              <div class="form-group" style="margin-bottom: 0.75rem;">
-                <label style="font-size: 0.78rem;">Cuota Diaria de Tokens:</label>
-                <input type="number" id="gr-tokens-input" class="form-input" style="font-family: var(--font-mono); font-size: 0.8rem;" value="250000">
-              </div>
-
-              <div class="form-group" style="margin-bottom: 0.75rem;">
-                <label style="font-size: 0.78rem;">Límite de Consultas (RPM):</label>
-                <input type="number" id="gr-rpm-input" class="form-input" style="font-family: var(--font-mono); font-size: 0.8rem;" value="120">
-              </div>
-
-              <div class="form-group" style="margin-bottom: 0.75rem;">
-                <label style="font-size: 0.78rem; display: flex; align-items: center; gap: 0.4rem;">
-                  <input type="checkbox" id="gr-allow-promotion">
-                  <span>Permitir Promoción de Modelos a Producción</span>
-                </label>
-              </div>
-
-              <button type="button" class="btn btn-primary btn-sm" onclick="window.saveRoleGuardrailPolicy()" style="width: 100%; margin-top: 0.5rem;">
-                💾 Guardar Políticas del Rol
-              </button>
-            </div>
-
-            <!-- MCP Tools & Module Access Matrix -->
-            <div style="background: rgba(16, 26, 48, 0.7); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
-              <h4 style="font-size: 0.88rem; color: #00F5D4; margin: 0 0 0.5rem 0;">Herramientas MCP & Módulos Autorizados para este Rol</h4>
-              <p style="font-size: 0.75rem; color: #94A3B8; margin-bottom: 0.6rem;">Marca qué herramientas MCP nativas puede invocar el agente bajo este rol:</p>
-
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; font-size: 0.75rem;">
-                <label style="display: flex; align-items: center; gap: 0.35rem; background: rgba(3,7,18,0.4); padding: 0.4rem; border-radius: 4px;">
-                  <input type="checkbox" id="mcp-tool-forecast" checked> <span>🔮 get_port_forecast</span>
-                </label>
-                <label style="display: flex; align-items: center; gap: 0.35rem; background: rgba(3,7,18,0.4); padding: 0.4rem; border-radius: 4px;">
-                  <input type="checkbox" id="mcp-tool-sim" checked> <span>🎲 run_monte_carlo_risk_simulation</span>
-                </label>
-                <label style="display: flex; align-items: center; gap: 0.35rem; background: rgba(3,7,18,0.4); padding: 0.4rem; border-radius: 4px;">
-                  <input type="checkbox" id="mcp-tool-tariff" checked> <span>🛃 lookup_panama_customs_tariff</span>
-                </label>
-                <label style="display: flex; align-items: center; gap: 0.35rem; background: rgba(3,7,18,0.4); padding: 0.4rem; border-radius: 4px;">
-                  <input type="checkbox" id="mcp-tool-container" checked> <span>📦 validate_iso6346_container</span>
-                </label>
-                <label style="display: flex; align-items: center; gap: 0.35rem; background: rgba(3,7,18,0.4); padding: 0.4rem; border-radius: 4px;">
-                  <input type="checkbox" id="mcp-tool-benchmark" checked> <span>📊 compare_model_benchmarks</span>
-                </label>
-                <label style="display: flex; align-items: center; gap: 0.35rem; background: rgba(3,7,18,0.4); padding: 0.4rem; border-radius: 4px;">
-                  <input type="checkbox" id="mcp-tool-rag" checked> <span>⚖️ query_maritime_knowledge</span>
-                </label>
-              </div>
-
-              <div id="gr-save-status" style="margin-top: 0.75rem; font-size: 0.75rem; color: #34D399; font-weight: 600;"></div>
-            </div>
-          </div>
-        </div>
-
       </div>
 
       <div class="modal-footer">
-        <span class="modal-author">Panamá PortOps-AI v1.0 • Desarrollado v1.0.0 Miguel Benítez • Fines Educativos</span>
-        <button id="settings-action-btn" class="btn-primary" style="width: auto; padding: 0.45rem 1.2rem; font-size: 0.85rem;">Cerrar Panel</button>
+        <span class="modal-author">Panamá PortOps-AI v1.0 • Ing. Miguel Antonio Benítez González (UTP) • GNU GPL-3.0</span>
+        <button id="settings-action-btn" class="btn btn-primary" style="width: auto; padding: 0.45rem 1.4rem; font-size: 0.85rem;">Cerrar Panel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- DRAWER / POPOVER INSPECTOR ADAPTATIVO DE ELEMENTOS                          -->
+  <!-- ========================================================================= -->
+  <div id="item-inspector-overlay" class="item-inspector-overlay" style="display: none;" onclick="window.closeItemInspector(event)">
+    <div class="item-inspector-card" onclick="event.stopPropagation()">
+      <div class="inspector-header">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+          <span class="inspector-badge" id="inspector-type-badge">ITEM</span>
+          <h4 id="inspector-title" style="margin:0; font-size:1.05rem; color:#00E5FF;">Detalle de Elemento</h4>
+        </div>
+        <button type="button" class="btn-close-inspector" onclick="window.closeItemInspector()" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="inspector-body" id="inspector-body-content">
+        <!-- Dynamically injected via JS -->
+      </div>
+      <div class="inspector-footer">
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-inspector-undo" onclick="window.revertInspectedItem()">↺ Deshacer / Restaurar Predeterminado</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="window.closeItemInspector()">Aceptar</button>
       </div>
     </div>
   </div>
@@ -3825,7 +3983,7 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
           <h2 style="font-size: 1.25rem; color: #f8fafc; margin: 0.35rem 0 0.15rem 0;">🔐 Centro de Identidad, Autenticación IAM & WORM</h2>
           <p class="settings-subtitle">Autenticación criptográfica, MFA TOTP RFC 6238, cambio obligatorio de clave e inspección de tokens firmados.</p>
         </div>
-        <button class="modal-close" onclick="window.closeAuthModal()" aria-label="Cerrar">&times;</button>
+        <button id="btn-close-iam-top" class="modal-close" onclick="window.closeAuthModal()" aria-label="Cerrar">&times;</button>
       </div>
 
       <div class="auth-tabs-nav">
@@ -3838,21 +3996,17 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
       <div class="modal-body" style="padding: 0;">
         <!-- Tab 1: Login & MFA -->
         <div id="atab-login" class="auth-tab-content active">
-          <div class="auth-notice-box">
-            <strong>CSPRNG Root Security Notice:</strong> La plataforma no utiliza contraseñas por defecto (como <code>root/root</code>). Para el primer acceso, consulte las credenciales temporales generadas en <code>.bootstrap/root-credentials.txt</code>.
+          <div class="auth-notice-box" style="border-left: 4px solid var(--accent-primary); background: rgba(0, 229, 255, 0.06); padding: 0.85rem 1rem; border-radius: 6px; margin-bottom: 1.25rem;">
+            <div style="font-weight: 700; color: #00E5FF; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.25rem;">
+              <span>🛡️</span> <span>Acceso Corporativo Soberano (Zero Trust MLOps)</span>
+            </div>
+            <p style="font-size: 0.8rem; color: #cbd5e1; margin: 0; line-height: 1.45;">
+              Para acceder a la consola de personalización de modelos, Lakehouse y administración del framework, introduzca sus credenciales oficiales.
+              En despliegues nuevos o primer inicio, utilice el usuario <code>root</code> y la clave temporal generada en <code>.bootstrap/root-credentials.txt</code>.
+            </p>
           </div>
 
           <div id="auth-login-view">
-            <!-- 1-Click Credential Presets Bar -->
-            <div style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.25); border-radius: 8px;">
-              <span style="font-size: 0.8rem; font-weight: bold; color: #00E5FF; display: block; margin-bottom: 0.5rem;">⚡ Credenciales de Prueba Rápida (1-Clic):</span>
-              <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
-                <button type="button" class="btn btn-secondary btn-sm" style="font-size: 0.76rem; padding: 0.35rem 0.65rem;" onclick="window.applyAuthPreset('root')">👑 Root Admin (CSPRNG)</button>
-                <button type="button" class="btn btn-secondary btn-sm" style="font-size: 0.76rem; padding: 0.35rem 0.65rem;" onclick="window.applyAuthPreset('auditor')">⚖️ Auditor Ley 6/56</button>
-                <button type="button" class="btn btn-secondary btn-sm" style="font-size: 0.76rem; padding: 0.35rem 0.65rem;" onclick="window.applyAuthPreset('operador')">🚢 Operador Muelle</button>
-                <button type="button" class="btn btn-secondary btn-sm" style="font-size: 0.76rem; padding: 0.35rem 0.65rem;" onclick="window.applyAuthPreset('aduanas')">🛃 Oficial Aduanas ANA</button>
-              </div>
-            </div>
 
             <div class="auth-input-group">
               <label for="auth-input-username">Usuario:</label>
@@ -3977,7 +4131,7 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
 
       <div class="modal-footer" style="justify-content: space-between;">
         <span class="modal-author">Panamá PortOps-AI v1.0.0 • Desarrollado v1.0.0 Miguel Benítez</span>
-        <button onclick="window.closeAuthModal()" class="btn-primary" style="width: auto; padding: 0.45rem 1.2rem; font-size: 0.85rem;">Cerrar Centro IAM</button>
+        <button id="btn-close-iam-footer" onclick="window.closeAuthModal()" class="btn btn-secondary" style="width: auto; padding: 0.45rem 1.2rem; font-size: 0.85rem;">Cerrar Centro IAM</button>
       </div>
     </div>
   </div>
@@ -3986,172 +4140,506 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
   <!-- MODAL DE CONFIGURACIÓN INICIAL OBLIGATORIA (FIRST-RUN SETUP WIZARD)      -->
   <!-- ========================================================================= -->
   <div id="first-run-setup-modal" class="modal-backdrop" style="z-index: 10000; background: rgba(2, 6, 23, 0.96); backdrop-filter: blur(12px);">
-    <div class="modal-dialog" style="max-width: 980px; width: 95%; border: 1px solid #00E5FF; box-shadow: 0 0 50px rgba(0, 229, 255, 0.25); border-radius: 16px;">
-      <div class="modal-header" style="background: rgba(0, 229, 255, 0.08); border-bottom: 1px solid rgba(0, 229, 255, 0.25); padding: 1.25rem 1.75rem;">
+    <div class="modal-dialog" style="max-width: 1420px; width: 96vw; min-height: 84vh; max-height: 94vh; display: flex; flex-direction: column; border: 1px solid #00E5FF; box-shadow: 0 0 50px rgba(0, 229, 255, 0.25); border-radius: 16px; background: linear-gradient(150deg, #090e1d 0%, #030712 100%);">
+      
+      <!-- Modal Header -->
+      <div class="modal-header" style="background: rgba(0, 229, 255, 0.08); border-bottom: 1px solid rgba(0, 229, 255, 0.25); padding: 1.25rem 2rem; display: flex; justify-content: space-between; align-items: center;">
         <div class="modal-title-group">
           <span class="modal-badge" style="background: rgba(0, 245, 212, 0.15); color: #00F5D4; border: 1px solid rgba(0, 245, 212, 0.4); font-size: 0.75rem; letter-spacing: 1px;">
-            DESPLIEGUE SOBERANO • PROTOCOLO NIST SP 800-63B • ZERO TRUST MLOPS
+            DESPLIEGUE SOBERANO • PROTOCOLO NIST SP 800-63B • ZERO TRUST MLOPS • ESTUDIO DE CONTROL
           </span>
-          <h2 style="font-size: 1.4rem; color: #F8FAFC; margin: 0.4rem 0 0.2rem 0;" id="fr-wizard-title">🔐 Inicialización de Seguridad & Creación de Roles Administrativos</h2>
+          <h2 style="font-size: 1.45rem; color: #F8FAFC; margin: 0.4rem 0 0.2rem 0;" id="fr-wizard-title">🔐 Inicialización de Seguridad & Consola de Gobernanza RBAC</h2>
           <p class="settings-subtitle" id="fr-wizard-sub" style="font-size: 0.85rem; color: #94A3B8; margin: 0;">
-            Cumplimiento obligatorio de gobernanza para habilitar el Framework MLOps y las capacidades operativas en producción.
+            Cumplimiento obligatorio de gobernanza, auditoría de infraestructura y administración de identidades en tiempo real.
           </p>
         </div>
+        <button id="btn-close-firstrun-top" type="button" onclick="window.closeFirstRunModal()" aria-label="Cerrar Consola" title="Cerrar Consola (Esc)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
 
-      <div class="modal-body" style="padding: 1.75rem;">
-        <div class="fr-split-layout">
-          
-          <!-- Left Column: Security Briefing & Architecture Context -->
-          <div class="fr-briefing-panel">
-            <h3 style="font-size: 0.95rem; color: #00E5FF; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.4rem;">
-              <span>🛡️</span> <span>Gobernanza & Criterios NIST</span>
-            </h3>
+      <!-- Navigation Step Tabs -->
+      <div class="fr-nav-tabs" id="fr-wizard-tabs">
+        <button type="button" class="fr-nav-tab active" id="fr-tab-1" onclick="window.switchFirstRunStep(1)">
+          <span>🔐</span> <span>Fase 1: Credencial Root</span>
+        </button>
+        <button type="button" class="fr-nav-tab" id="fr-tab-2" onclick="window.switchFirstRunStep(2)">
+          <span>👥</span> <span>Fase 2: Tríada de Administradores</span>
+        </button>
+        <button type="button" class="fr-nav-tab" id="fr-tab-3" onclick="window.switchFirstRunStep(3)">
+          <span>⚡</span> <span>Fase 3: Infraestructura & Motores</span>
+        </button>
+        <button type="button" class="fr-nav-tab" id="fr-tab-4" onclick="window.switchFirstRunStep(4)">
+          <span>🛡️</span> <span>Fase 4: Consola IAM & CRUD de Usuarios</span>
+        </button>
+      </div>
 
-            <div class="fr-briefing-item">
-              <div class="fr-briefing-icon">⌨️</div>
-              <div class="fr-briefing-text">
-                <h4>Ingreso Manual Obligatorio (Anti-Paste)</h4>
-                <p>Por norma NIST SP 800-63B, la contraseña debe teclearse de forma manual. No se permite pegar desde el portapapeles para evitar inyecciones automáticas.</p>
-              </div>
-            </div>
-
-            <div class="fr-briefing-item">
-              <div class="fr-briefing-icon">👁️</div>
-              <div class="fr-briefing-text">
-                <h4>Control de Visibilidad</h4>
-                <p>Utilice el icono de ojo para alternar la visualización y confirmar visualmente los caracteres especiales antes de registrar.</p>
-              </div>
-            </div>
-
-            <div class="fr-briefing-item">
-              <div class="fr-briefing-icon">👥</div>
-              <div class="fr-briefing-text">
-                <h4>Segregación de 3 Administradores</h4>
-                <p>El sistema requiere 3 roles segregados: <strong>SysAdmin</strong> (Infraestructura), <strong>SecOpsAdmin</strong> (Seguridad), y <strong>MlopsAdmin</strong> (Modelos MLOps).</p>
-              </div>
-            </div>
-
-            <div class="fr-briefing-item">
-              <div class="fr-briefing-icon">⚡</div>
-              <div class="fr-briefing-text">
-                <h4>Hardware Host Detectado</h4>
-                <p>NVIDIA GeForce RTX 3050 Laptop (4GB VRAM) • Presupuesto de contexto: 2048 tokens por inferencia.</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Right Column: Interactive Setup Wizard -->
-          <div class="fr-form-panel">
+      <!-- Modal Body (Scrollable) -->
+      <div class="modal-body" style="padding: 1.5rem 2rem; overflow-y: auto; flex: 1;">
+        
+        <!-- ========================================================================= -->
+        <!-- FASE 1: Root Password Change                                             -->
+        <!-- ========================================================================= -->
+        <div id="fr-step-1" class="fr-step-view">
+          <div class="fr-split-layout">
             
-            <!-- STEP 1: Root Password Change -->
-            <div id="fr-step-1">
-              <div style="background: rgba(239, 68, 68, 0.12); border-left: 4px solid #EF4444; border-radius: 6px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
-                <div style="font-weight: 700; color: #FCA5A5; font-size: 0.88rem;">⚠️ Paso 1 de 2: Cambio Obligatorio de Contraseña de Root</div>
-                <p style="font-size: 0.8rem; color: #E2E8F0; margin: 0.3rem 0 0 0; line-height: 1.45;">
-                  La clave temporal por defecto (<code>admin_portops_2026!</code>) debe ser sustituida. Ingrese la nueva clave manualmente en ambos campos.
+            <!-- Left Column: Security Briefing -->
+            <div class="fr-briefing-panel">
+              <h3 style="font-size: 0.95rem; color: #00E5FF; margin: 0 0 1rem 0; display: flex; align-items: center; gap: 0.4rem;">
+                <span>🛡️</span> <span>Gobernanza & Criterios NIST SP 800-63B</span>
+              </h3>
+
+              <div class="fr-briefing-item">
+                <div class="fr-briefing-icon">⌨️</div>
+                <div class="fr-briefing-text">
+                  <h4>Ingreso Manual Obligatorio (Anti-Paste)</h4>
+                  <p>Por norma NIST SP 800-63B, la contraseña debe teclearse de forma manual para evitar inyecciones automatizadas en terminales portuarias.</p>
+                </div>
+              </div>
+
+              <div class="fr-briefing-item">
+                <div class="fr-briefing-icon">👁️</div>
+                <div class="fr-briefing-text">
+                  <h4>Control de Visibilidad</h4>
+                  <p>Utilice el icono de ojo para alternar la visualización y verificar caracteres especiales antes de registrar.</p>
+                </div>
+              </div>
+
+              <div class="fr-briefing-item">
+                <div class="fr-briefing-icon">👥</div>
+                <div class="fr-briefing-text">
+                  <h4>Segregación de 3 Administradores</h4>
+                  <p>El sistema requiere 3 roles segregados: <strong>SysAdmin</strong> (Infraestructura), <strong>SecOpsAdmin</strong> (Seguridad), y <strong>MlopsAdmin</strong> (Modelos MLOps).</p>
+                </div>
+              </div>
+
+              <div class="fr-briefing-item">
+                <div class="fr-briefing-icon">⚡</div>
+                <div class="fr-briefing-text">
+                  <h4>Hardware Host Detectado</h4>
+                  <p>NVIDIA GeForce RTX 3050 Laptop (4GB VRAM) • Presupuesto de contexto: 2048 tokens por inferencia.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Step 1 Form -->
+            <div class="fr-form-panel">
+              <div style="background: rgba(239, 68, 68, 0.12); border-left: 4px solid #EF4444; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.25rem;">
+                <div style="font-weight: 700; color: #FCA5A5; font-size: 0.95rem;">⚠️ Fase 1: Cambio Obligatorio de Contraseña de Root</div>
+                <p style="font-size: 0.85rem; color: #E2E8F0; margin: 0.35rem 0 0 0; line-height: 1.45;">
+                  La credencial de instalación se genera con alta entropía. Cámbiela obligatoriamente antes de desbloquear la plataforma soberana.
                 </p>
               </div>
 
               <!-- Old Password -->
-              <div class="auth-input-group" style="margin-bottom: 0.9rem;">
-                <label for="fr-old-password" style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 0.3rem;">Contraseña Actual / Inicial:</label>
+              <div class="auth-input-group" style="margin-bottom: 1rem;">
+                <label for="fr-old-password" style="font-size: 0.85rem; color: #94A3B8; display: block; margin-bottom: 0.4rem;">Contraseña Actual / Inicial:</label>
                 <div class="password-input-wrapper">
-                  <input type="password" id="fr-old-password" value="admin_portops_2026!" style="padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #F8FAFC; font-size: 0.88rem;">
+                  <input type="password" id="fr-old-password" value="" placeholder="Ingrese su contraseña actual..." style="padding: 0.65rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; color: #F8FAFC; font-size: 0.9rem;">
                   <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('fr-old-password')" title="Mostrar/Ocultar contraseña">👁️</button>
                 </div>
               </div>
 
               <!-- New Password -->
-              <div class="auth-input-group" style="margin-bottom: 0.9rem;">
-                <label for="fr-new-password" style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 0.3rem;">Nueva Contraseña (Mínimo 10 caracteres con alta entropía):</label>
+              <div class="auth-input-group" style="margin-bottom: 1rem;">
+                <label for="fr-new-password" style="font-size: 0.85rem; color: #94A3B8; display: block; margin-bottom: 0.4rem;">Nueva Contraseña (Mínimo 10 caracteres con alta entropía):</label>
                 <div class="password-input-wrapper">
-                  <input type="password" id="fr-new-password" placeholder="Escriba su nueva clave..." style="padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #F8FAFC; font-size: 0.88rem;">
+                  <input type="password" id="fr-new-password" placeholder="Escriba su nueva clave criptográfica..." style="padding: 0.65rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; color: #F8FAFC; font-size: 0.9rem;">
                   <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('fr-new-password')" title="Mostrar/Ocultar contraseña">👁️</button>
                 </div>
               </div>
 
               <!-- Confirm Password -->
-              <div class="auth-input-group" style="margin-bottom: 0.9rem;">
-                <label for="fr-confirm-password" style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 0.3rem;">Confirmar Nueva Contraseña (Debe coincidir):</label>
+              <div class="auth-input-group" style="margin-bottom: 1rem;">
+                <label for="fr-confirm-password" style="font-size: 0.85rem; color: #94A3B8; display: block; margin-bottom: 0.4rem;">Confirmar Nueva Contraseña (Debe coincidir exactamente):</label>
                 <div class="password-input-wrapper">
-                  <input type="password" id="fr-confirm-password" placeholder="Confirme la clave tecleando..." style="padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #F8FAFC; font-size: 0.88rem;">
+                  <input type="password" id="fr-confirm-password" placeholder="Confirme la clave tecleando..." style="padding: 0.65rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; color: #F8FAFC; font-size: 0.9rem;">
                   <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('fr-confirm-password')" title="Mostrar/Ocultar contraseña">👁️</button>
                 </div>
                 <div id="fr-password-match-indicator" class="password-match-indicator"></div>
                 <div id="fr-paste-warning" class="paste-warning-box" style="display: none;"></div>
               </div>
 
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem;">
-                <span id="fr-step1-status" style="font-size: 0.82rem; color: #FCA5A5;"></span>
-                <button type="button" class="btn btn-primary" onclick="window.submitFirstRunPasswordChange()" style="padding: 0.65rem 1.6rem; font-weight: 700; background: linear-gradient(135deg, #0284C7 0%, #00E5FF 100%); color: #020617; border: none; border-radius: 6px; cursor: pointer;">
-                  Guardar Contraseña y Avanzar al Paso 2 →
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+                <span id="fr-step1-status" style="font-size: 0.85rem; color: #FCA5A5;"></span>
+                <button type="button" class="btn btn-primary" onclick="window.submitFirstRunPasswordChange()" style="padding: 0.75rem 2rem; font-weight: 700; background: linear-gradient(135deg, #0284C7 0%, #00E5FF 100%); color: #020617; border: none; border-radius: 8px; cursor: pointer;">
+                  Guardar Contraseña y Avanzar a Fase 2 →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- FASE 2: Tríada de Administradores Obligatorios                            -->
+        <!-- ========================================================================= -->
+        <div id="fr-step-2" class="fr-step-view" style="display: none;">
+          <div style="background: rgba(0, 229, 255, 0.1); border-left: 4px solid #00E5FF; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.25rem;">
+            <div style="font-weight: 700; color: #00E5FF; font-size: 0.95rem;">👥 Fase 2: Configuración de la Tríada de Administradores Obligatorios</div>
+            <p style="font-size: 0.85rem; color: #E2E8F0; margin: 0.35rem 0 0 0; line-height: 1.45;">
+              Configure las credenciales de los 3 operadores administrativos con segregación de funciones según ISO 27001 y NIST Zero Trust.
+            </p>
+          </div>
+
+          <!-- SysAdmin Card -->
+          <div class="fr-admin-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <span style="font-size: 1.3rem;">🖥️</span>
+                <div>
+                  <h4 style="margin: 0; color: #38BDF8; font-size: 0.95rem;">1. SysAdmin — Administrador de Infraestructura & Plataforma</h4>
+                  <span style="font-size: 0.78rem; color: #94A3B8;">Dirección de Tecnología & Cloud • Clúster de Inferencia, NATS, Traefik, Certificados TLS 1.3</span>
+                </div>
+              </div>
+              <span class="fr-role-chip" style="background: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.4);">ROL: platform_admin</span>
+            </div>
+            <div class="fr-admin-grid-inputs">
+              <div>
+                <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.3rem;">Usuario:</label>
+                <input type="text" id="fr-sys-user" value="SysAdmin" placeholder="Usuario" style="width: 100%; padding: 0.6rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.88rem;">
+              </div>
+              <div>
+                <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.3rem;">Correo Electrónico Institucional:</label>
+                <input type="email" id="fr-sys-email" value="sysadmin@portops.pa" placeholder="Email" style="width: 100%; padding: 0.6rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.88rem;">
+              </div>
+              <div>
+                <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.3rem;">Contraseña Segura (Mín. 8 caracteres):</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="fr-sys-pass" placeholder="Contraseña segura" style="padding: 0.6rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.88rem;">
+                  <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('fr-sys-pass')">👁️</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SecOpsAdmin Card -->
+          <div class="fr-admin-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <span style="font-size: 1.3rem;">🛡️</span>
+                <div>
+                  <h4 style="margin: 0; color: #F59E0B; font-size: 0.95rem;">2. SecOpsAdmin — Administrador de Seguridad, Agentes & Ciberdefensa</h4>
+                  <span style="font-size: 0.78rem; color: #94A3B8;">Dirección de Ciberseguridad • Wazuh SIEM, Reglas WORM, Aprobación de Agentes, Hardening</span>
+                </div>
+              </div>
+              <span class="fr-role-chip" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.4);">ROL: security_admin</span>
+            </div>
+            <div class="fr-admin-grid-inputs">
+              <div>
+                <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.3rem;">Usuario:</label>
+                <input type="text" id="fr-sec-user" value="SecOpsAdmin" placeholder="Usuario" style="width: 100%; padding: 0.6rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.88rem;">
+              </div>
+              <div>
+                <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.3rem;">Correo Electrónico Institucional:</label>
+                <input type="email" id="fr-sec-email" value="secops@portops.pa" placeholder="Email" style="width: 100%; padding: 0.6rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.88rem;">
+              </div>
+              <div>
+                <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.3rem;">Contraseña Segura (Mín. 8 caracteres):</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="fr-sec-pass" placeholder="Contraseña segura" style="padding: 0.6rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.88rem;">
+                  <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('fr-sec-pass')">👁️</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MlopsAdmin Card -->
+          <div class="fr-admin-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <span style="font-size: 1.3rem;">🧠</span>
+                <div>
+                  <h4 style="margin: 0; color: #10B981; font-size: 0.95rem;">3. MlopsAdmin — Administrador de Ciclo de Vida de Modelos & Inferencia</h4>
+                  <span style="font-size: 0.78rem; color: #94A3B8;">Equipo MLOps & Ciencia de Datos • Catálogo de Modelos, Torneos Algorítmicos, Calibración de Pesos</span>
+                </div>
+              </div>
+              <span class="fr-role-chip" style="background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.4);">ROL: mlops_engineer</span>
+            </div>
+            <div class="fr-admin-grid-inputs">
+              <div>
+                <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.3rem;">Usuario:</label>
+                <input type="text" id="fr-ml-user" value="MlopsAdmin" placeholder="Usuario" style="width: 100%; padding: 0.6rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.88rem;">
+              </div>
+              <div>
+                <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.3rem;">Correo Electrónico Institucional:</label>
+                <input type="email" id="fr-ml-email" value="mlops@portops.pa" placeholder="Email" style="width: 100%; padding: 0.6rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.88rem;">
+              </div>
+              <div>
+                <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.3rem;">Contraseña Segura (Mín. 8 caracteres):</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="fr-ml-pass" placeholder="Contraseña segura" style="padding: 0.6rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.88rem;">
+                  <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('fr-ml-pass')">👁️</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <span id="fr-step2-status" style="font-size: 0.85rem; color: #FCA5A5;"></span>
+            <div style="display: flex; gap: 0.75rem;">
+              <button type="button" class="btn btn-secondary" onclick="window.switchFirstRunStep(1)" style="padding: 0.7rem 1.5rem; border-radius: 8px;">
+                ← Volver al Paso 1
+              </button>
+              <button type="button" class="btn btn-primary" onclick="window.submitFirstRunAdminsSetup()" style="padding: 0.7rem 2.2rem; font-weight: 700; background: linear-gradient(135deg, #059669 0%, #10B981 100%); color: #FFFFFF; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.35);">
+                🚀 Completar Inicialización y Desbloquear Plataforma
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- FASE 3: Diagnóstico de Infraestructura & Motores                          -->
+        <!-- ========================================================================= -->
+        <div id="fr-step-3" class="fr-step-view" style="display: none;">
+          <div style="background: rgba(56, 189, 248, 0.1); border-left: 4px solid #38BDF8; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <div style="font-weight: 700; color: #38BDF8; font-size: 0.95rem;">⚡ Fase 3: Diagnóstico de Motores de Infraestructura & Almacenamiento</div>
+              <p style="font-size: 0.85rem; color: #E2E8F0; margin: 0.35rem 0 0 0; line-height: 1.45;">
+                Verificación en tiempo real de conectores soberanos, base de datos de identidades, almacenamiento S3 y proxies de inferencia.
+              </p>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="window.runInfraDiagnostics()" style="padding: 0.6rem 1.4rem; background: #0284C7; border: none; border-radius: 6px; color: #fff; font-size: 0.85rem; cursor: pointer;">
+              🔄 Ejecutar Diagnóstico en Vivo
+            </button>
+          </div>
+
+          <!-- Infra Grid -->
+          <div class="fr-infra-grid">
+            
+            <div class="fr-infra-card healthy" id="card-infra-gateway">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                <span style="font-weight: 700; color: #F8FAFC; font-size: 0.9rem;">Go Gateway Edge (Puerto 8000)</span>
+                <span style="color: #34D399; font-size: 0.8rem; font-weight: 700;" id="status-infra-gateway">ACTIVO</span>
+              </div>
+              <p style="font-size: 0.78rem; color: #94A3B8; margin: 0 0 0.5rem 0;">Enrutador proxy de alta concurrencia para endpoints de inferencia `/predict` y `/simulate`.</p>
+              <div style="font-size: 0.72rem; color: #38BDF8; font-family: var(--font-mono);">Latencia: &lt; 2ms • TLS 1.3 • Reverse Proxy Gin</div>
+            </div>
+
+            <div class="fr-infra-card healthy" id="card-infra-db">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                <span style="font-weight: 700; color: #F8FAFC; font-size: 0.9rem;">PostgreSQL / SQLite Enterprise</span>
+                <span style="color: #34D399; font-size: 0.8rem; font-weight: 700;" id="status-infra-db">CONECTADO</span>
+              </div>
+              <p style="font-size: 0.78rem; color: #94A3B8; margin: 0 0 0.5rem 0;">Almacén relacional transaccional para identidades, sesiones, auditoría WORM y extensiones vectoriales.</p>
+              <div style="font-size: 0.72rem; color: #38BDF8; font-family: var(--font-mono);">portops_platform.db • WAL Mode • Cifrado AES-256</div>
+            </div>
+
+            <div class="fr-infra-card healthy" id="card-infra-minio">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                <span style="font-weight: 700; color: #F8FAFC; font-size: 0.9rem;">MinIO S3 / Lakehouse Medallion</span>
+                <span style="color: #34D399; font-size: 0.8rem; font-weight: 700;" id="status-infra-minio">OPERATIVO</span>
+              </div>
+              <p style="font-size: 0.78rem; color: #94A3B8; margin: 0 0 0.5rem 0;">Zonas Bronze (RAW inmutable), Silver (Anonimizado Parquet) y Gold (Features agregados).</p>
+              <div style="font-size: 0.72rem; color: #38BDF8; font-family: var(--font-mono);">Buckets: amp-bronze, amp-silver, amp-gold</div>
+            </div>
+
+            <div class="fr-infra-card healthy" id="card-infra-vault">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                <span style="font-weight: 700; color: #F8FAFC; font-size: 0.9rem;">HashiCorp Vault / SecretManager</span>
+                <span style="color: #34D399; font-size: 0.8rem; font-weight: 700;" id="status-infra-vault">PROTEGIDO</span>
+              </div>
+              <p style="font-size: 0.78rem; color: #94A3B8; margin: 0 0 0.5rem 0;">Custodia de claves HMAC, tokens de API de terceros y secretos de infraestructura.</p>
+              <div style="font-size: 0.72rem; color: #38BDF8; font-family: var(--font-mono);">Rotación Criptográfica • Zero Trust</div>
+            </div>
+
+            <div class="fr-infra-card healthy" id="card-infra-langgraph">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                <span style="font-weight: 700; color: #F8FAFC; font-size: 0.9rem;">LangGraph & Motores Agénticos</span>
+                <span style="color: #34D399; font-size: 0.8rem; font-weight: 700;" id="status-infra-langgraph">LISTO</span>
+              </div>
+              <p style="font-size: 0.78rem; color: #94A3B8; margin: 0 0 0.5rem 0;">Orquestación de agentes multi-etapa para simulación de congestión del Canal de Panamá.</p>
+              <div style="font-size: 0.72rem; color: #38BDF8; font-family: var(--font-mono);">vLLM Runtime • Budget: 2048 Tokens</div>
+            </div>
+
+          </div>
+
+          <!-- Diagnostic output log -->
+          <div style="background: rgba(11, 19, 38, 0.75); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 8px; padding: 1rem; font-family: var(--font-mono); font-size: 0.8rem; color: #38BDF8; max-height: 140px; overflow-y: auto;" id="fr-infra-log">
+            [INFO] Todos los sistemas de almacenamiento, proxies y bases de datos inicializados en estado saludable.
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; margin-top: 1.25rem; gap: 0.75rem;">
+            <button type="button" class="btn btn-secondary" onclick="window.switchFirstRunStep(2)" style="padding: 0.7rem 1.5rem; border-radius: 8px;">
+              ← Volver a Tríada Administrativa
+            </button>
+            <button type="button" class="btn btn-primary" onclick="window.switchFirstRunStep(4)" style="padding: 0.7rem 1.8rem; background: linear-gradient(135deg, #0284C7 0%, #00E5FF 100%); color: #020617; border: none; border-radius: 8px; font-weight: 700;">
+              Avanzar a Consola IAM & CRUD de Usuarios →
+            </button>
+          </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- FASE 4: Consola de Identidad & Control de Acceso (CRUD)                   -->
+        <!-- ========================================================================= -->
+        <div id="fr-step-4" class="fr-step-view" style="display: none;">
+          <div style="background: rgba(16, 185, 129, 0.1); border-left: 4px solid #10B981; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <div style="font-weight: 700; color: #10B981; font-size: 0.95rem;">🛡️ Fase 4: Consola de Identidades, Roles RBAC & Operaciones CRUD</div>
+              <p style="font-size: 0.85rem; color: #E2E8F0; margin: 0.35rem 0 0 0; line-height: 1.45;">
+                Administración directa en tiempo real: Lectura de usuarios, Creación con RBAC, Actualización de roles/contraseñas y Eliminación protegida.
+              </p>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="window.loadRealUsersList()" style="padding: 0.55rem 1.25rem; background: #059669; border: none; border-radius: 6px; color: #fff; font-size: 0.85rem; cursor: pointer;">
+              🔄 Refrescar Usuarios
+            </button>
+          </div>
+
+          <!-- Live Users Table (Read / Delete / Edit triggers) -->
+          <div class="fr-crud-table-container">
+            <table class="fr-crud-table">
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Nombre Completo</th>
+                  <th>Email Institucional</th>
+                  <th>Rol Asignado</th>
+                  <th>Entidad Portuaria</th>
+                  <th>Estado</th>
+                  <th style="text-align: right;">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="fr-users-table-body">
+                <tr>
+                  <td colspan="7" style="text-align: center; color: #94A3B8; padding: 1.5rem;">Cargando inventario de usuarios autenticados...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- User Creation & Editing Workspace -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem;">
+            
+            <!-- Provision New User (Create) -->
+            <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(0, 229, 255, 0.25); border-radius: 12px; padding: 1.25rem;">
+              <h4 style="margin: 0 0 0.75rem 0; color: #00E5FF; font-size: 0.92rem; display: flex; align-items: center; gap: 0.4rem;">
+                <span>➕</span> <span>Aprovisionar Nuevo Usuario (Create)</span>
+              </h4>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div>
+                  <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.25rem;">Nombre de Usuario:</label>
+                  <input type="text" id="crud-new-user" placeholder="ej. op_balboa" style="width: 100%; padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.85rem;">
+                </div>
+                <div>
+                  <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.25rem;">Nombre Completo:</label>
+                  <input type="text" id="crud-new-fullname" placeholder="ej. Operador Balboa" style="width: 100%; padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.85rem;">
+                </div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div>
+                  <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.25rem;">Email:</label>
+                  <input type="email" id="crud-new-email" placeholder="ej. balboa@portops.pa" style="width: 100%; padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.85rem;">
+                </div>
+                <div>
+                  <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.25rem;">Rol RBAC:</label>
+                  <select id="crud-new-role" style="width: 100%; padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.85rem;">
+                    <option value="port_operator">Operador Portuario (port_operator)</option>
+                    <option value="mlops_engineer">Ingeniero MLOps (mlops_engineer)</option>
+                    <option value="compliance_auditor">Auditor de Cumplimiento (compliance_auditor)</option>
+                    <option value="readonly_viewer">Observador Solo Lectura (readonly_viewer)</option>
+                    <option value="platform_admin">Administrador de Plataforma (platform_admin)</option>
+                  </select>
+                </div>
+              </div>
+              <div style="margin-bottom: 0.85rem;">
+                <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.25rem;">Contraseña Inicial (Mín. 8 caracteres):</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="crud-new-pass" placeholder="Clave temporal segura" style="padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.85rem;">
+                  <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('crud-new-pass')">👁️</button>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span id="crud-create-status" style="font-size: 0.8rem; color: #F87171;"></span>
+                <button type="button" class="btn btn-primary" onclick="window.submitCreateUser()" style="padding: 0.55rem 1.4rem; background: linear-gradient(135deg, #0284C7 0%, #00E5FF 100%); color: #020617; border: none; border-radius: 6px; font-weight: 700; cursor: pointer;">
+                  ➕ Crear Usuario
                 </button>
               </div>
             </div>
 
-            <!-- STEP 2: 3 Mandatory Admins Setup -->
-            <div id="fr-step-2" style="display: none;">
-              <div style="background: rgba(0, 229, 255, 0.1); border-left: 4px solid #00E5FF; border-radius: 6px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
-                <div style="font-weight: 700; color: #00E5FF; font-size: 0.88rem;">👥 Paso 2 de 2: Creación Obligatoria de los 3 Administradores</div>
-                <p style="font-size: 0.8rem; color: #E2E8F0; margin: 0.3rem 0 0 0; line-height: 1.45;">
-                  Configure las credenciales de los 3 operadores del sistema con responsabilidades segregadas.
-                </p>
-              </div>
-
-              <!-- SysAdmin -->
-              <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.75rem;">
-                <div style="font-weight: bold; color: #38BDF8; font-size: 0.82rem; margin-bottom: 0.4rem;">1. SysAdmin (Infraestructura, Clúster & Servidores)</div>
-                <div style="display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 0.5rem; align-items: center;">
-                  <input type="text" id="fr-sys-user" value="SysAdmin" placeholder="Usuario" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
-                  <div class="password-input-wrapper">
-                    <input type="password" id="fr-sys-pass" placeholder="Contraseña segura" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
-                    <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('fr-sys-pass')">👁️</button>
-                  </div>
-                  <input type="email" id="fr-sys-email" value="sysadmin@portops.pa" placeholder="Email" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
+            <!-- Edit Existing User (Update) -->
+            <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 12px; padding: 1.25rem;" id="panel-edit-user">
+              <h4 style="margin: 0 0 0.75rem 0; color: #F59E0B; font-size: 0.92rem; display: flex; align-items: center; gap: 0.4rem;">
+                <span>✏️</span> <span>Modificar Usuario / Parámetros (Update)</span>
+              </h4>
+              <p style="font-size: 0.78rem; color: #94A3B8; margin: 0 0 0.75rem 0;">Haga clic en "Editar" en cualquier fila de la tabla superior para cargar aquí los datos.</p>
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div>
+                  <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.25rem;">Usuario a Modificar:</label>
+                  <input type="text" id="crud-edit-user" readonly style="width: 100%; padding: 0.55rem; background: rgba(2,6,23,0.5); border: 1px solid var(--border-color); border-radius: 6px; color: #F59E0B; font-weight: 700; font-size: 0.85rem;">
+                </div>
+                <div>
+                  <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.25rem;">Rol RBAC:</label>
+                  <select id="crud-edit-role" style="width: 100%; padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.85rem;">
+                    <option value="port_operator">Operador Portuario (port_operator)</option>
+                    <option value="mlops_engineer">Ingeniero MLOps (mlops_engineer)</option>
+                    <option value="compliance_auditor">Auditor de Cumplimiento (compliance_auditor)</option>
+                    <option value="readonly_viewer">Observador Solo Lectura (readonly_viewer)</option>
+                    <option value="platform_admin">Administrador de Plataforma (platform_admin)</option>
+                  </select>
                 </div>
               </div>
 
-              <!-- SecOpsAdmin -->
-              <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.75rem;">
-                <div style="font-weight: bold; color: #F59E0B; font-size: 0.82rem; margin-bottom: 0.4rem;">2. SecOpsAdmin (Ciberseguridad, Wazuh SIEM & Agentes)</div>
-                <div style="display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 0.5rem; align-items: center;">
-                  <input type="text" id="fr-sec-user" value="SecOpsAdmin" placeholder="Usuario" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
-                  <div class="password-input-wrapper">
-                    <input type="password" id="fr-sec-pass" placeholder="Contraseña segura" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
-                    <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('fr-sec-pass')">👁️</button>
-                  </div>
-                  <input type="email" id="fr-sec-email" value="secops@portops.pa" placeholder="Email" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div>
+                  <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.25rem;">Actualizar Email:</label>
+                  <input type="email" id="crud-edit-email" placeholder="nuevo_email@portops.pa" style="width: 100%; padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.85rem;">
+                </div>
+                <div>
+                  <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.25rem;">Estado de Cuenta:</label>
+                  <select id="crud-edit-status" style="width: 100%; padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.85rem;">
+                    <option value="true">ACTIVO (Permitir Acceso)</option>
+                    <option value="false">INACTIVO (Bloquear Acceso)</option>
+                  </select>
                 </div>
               </div>
 
-              <!-- MlopsAdmin -->
-              <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.1rem;">
-                <div style="font-weight: bold; color: #10B981; font-size: 0.82rem; margin-bottom: 0.4rem;">3. MlopsAdmin (Ciclo de Vida de Modelos & Runtimes vLLM)</div>
-                <div style="display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 0.5rem; align-items: center;">
-                  <input type="text" id="fr-ml-user" value="MlopsAdmin" placeholder="Usuario" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
-                  <div class="password-input-wrapper">
-                    <input type="password" id="fr-ml-pass" placeholder="Contraseña segura" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
-                    <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('fr-ml-pass')">👁️</button>
-                  </div>
-                  <input type="email" id="fr-ml-email" value="mlops@portops.pa" placeholder="Email" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 4px; color: #fff; font-size: 0.8rem;">
+              <div style="margin-bottom: 0.85rem;">
+                <label style="font-size: 0.78rem; color: #94A3B8; display: block; margin-bottom: 0.25rem;">Restablecer Contraseña (Opcional):</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="crud-edit-pass" placeholder="Dejar vacío para no modificar" style="padding: 0.55rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 0.85rem;">
+                  <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('crud-edit-pass')">👁️</button>
                 </div>
               </div>
 
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span id="fr-step2-status" style="font-size: 0.82rem; color: #FCA5A5;"></span>
-                <button type="button" class="btn btn-primary" onclick="window.submitFirstRunAdminsSetup()" style="padding: 0.7rem 2rem; font-weight: 700; background: linear-gradient(135deg, #059669 0%, #10B981 100%); color: #FFFFFF; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 15px rgba(16,185,129,0.35);">
-                  🚀 Completar Inicialización y Desbloquear Plataforma
+                <span id="crud-update-status" style="font-size: 0.8rem; color: #F87171;"></span>
+                <button type="button" class="btn btn-primary" onclick="window.submitUpdateUser()" style="padding: 0.55rem 1.4rem; background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%); color: #020617; border: none; border-radius: 6px; font-weight: 700; cursor: pointer;">
+                  💾 Guardar Actualización
                 </button>
               </div>
             </div>
 
           </div>
+
+          <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem; gap: 0.75rem;">
+            <button type="button" class="btn btn-secondary" onclick="window.switchFirstRunStep(3)" style="padding: 0.7rem 1.5rem; border-radius: 8px;">
+              ← Volver a Diagnóstico
+            </button>
+            <button type="button" class="btn btn-primary" onclick="window.closeFirstRunModal()" style="padding: 0.7rem 2rem; background: linear-gradient(135deg, #059669 0%, #10B981 100%); color: #FFFFFF; border: none; border-radius: 8px; font-weight: 700;">
+              ✓ Finalizar y Volver al Dashboard Principal
+            </button>
+          </div>
         </div>
+
       </div>
-    </div>
-  </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer" style="background: rgba(15, 23, 42, 0.9); border-top: 1px solid rgba(0, 229, 255, 0.2); padding: 0.9rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 0.82rem; color: #94A3B8;" id="fr-footer-status">
+          Panamá PortOps-AI v1.0.0 • Autor: Ing. Miguel Antonio Benítez González (UTP) • Licencia: GNU GPL-3.0
+        </div>
+        <button id="btn-close-firstrun-footer" type="button" class="btn btn-secondary" onclick="window.closeFirstRunModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+          <span>Cerrar Consola</span>
+        </button>
       </div>
+
     </div>
   </div>
 
@@ -4183,7 +4671,14 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
             Metodología API
           </a>
         </div>
-        <p class="footer-copyright">© 2026 Panamá PortOps-AI. Datos fuente: Autoridad Marítima de Panamá (2015–2026).</p>
+        <div class="footer-sources" aria-label="Fuentes de datos y trazabilidad">
+          <span class="footer-sources-title">Fuentes verificadas</span>
+          <a href="/api/export/provenance" target="_blank">AMP / datos marítimos</a>
+          <a href="/api/v1/customs/tariff/search?query=bunker" target="_blank">ANA / SIECA aranceles</a>
+          <a href="/api/models/diagnostics" target="_blank">Feature Store y modelos</a>
+          <a href="/api/v1/governance/gaps" target="_blank">Registro de procedencia y brechas</a>
+        </div>
+        <p class="footer-copyright">© 2026 Panamá PortOps-AI · Cada fuente se muestra con su manifiesto y estado de verificación.</p>
       </div>
     </div>
   </footer>
@@ -4192,10 +4687,12 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
   <script src="/static/js/i18n/es.js?v=1.0.0"></script>
   <script src="/static/js/i18n/en.js?v=1.0.0"></script>
   <script src="/static/js/i18n/pt.js?v=1.0.0"></script>
-  <script src="/static/js/i18n/i18n.js?v=1.0.0"></script>
+  <script src="/static/js/i18n/i18n.js?v=1.0.1"></script>
   <!-- Customs RAG, Tariff Explorer & Container Validator -->
-  <script src="/static/js/customs_rag.js?v=1.0.0"></script>
+  <script src="/static/js/customs_rag.js?v=1.0.1"></script>
+  <script src="/static/js/safe_markdown.js?v=1.0.0"></script>
   <!-- Application Logic -->
-  <script src="/static/js/app.js?v=1.0.0"></script>
+  <script src="/static/js/auth_flow.js?v=4.0.0"></script>
+  <script src="/static/js/app.js?v=4.0.0"></script>
 </body>
 </html>

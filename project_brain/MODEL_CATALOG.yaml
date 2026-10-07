@@ -1,0 +1,31 @@
+# AMP-CONT-AI MODEL CATALOG
+# Inventario Técnico de Modelos de Machine Learning e Inferencia RAG
+models:
+  - id: "quantile_lgbm_balboa"
+    name: "LightGBM Quantile Regressor - Puerto de Balboa"
+    task: "Forecasting Probabilístico de TEUs"
+    quantiles: [0.10, 0.50, 0.90]
+    champion_metric: "Pinball Loss (P50 MAPE < 6.8%)"
+    training_data: "data/gold/panama_national_lakehouse.parquet"
+    artifact_path: "models/champion_balboa_quantiles.pkl"
+    seed: 42
+    status: "PRODUCTION_ACTIVE"
+
+  - id: "quantile_lgbm_cristobal"
+    name: "LightGBM Quantile Regressor - Puerto de Cristóbal"
+    task: "Forecasting Probabilístico de TEUs"
+    quantiles: [0.10, 0.50, 0.90]
+    champion_metric: "Pinball Loss (P50 MAPE < 7.2%)"
+    training_data: "data/gold/panama_national_lakehouse.parquet"
+    artifact_path: "models/champion_cristobal_quantiles.pkl"
+    seed: 42
+    status: "PRODUCTION_ACTIVE"
+
+  - id: "sovereign_ana_rag_classifier"
+    name: "Clasificador Arancelario Soberano ANA (Zero-Hallucination RAG)"
+    task: "Búsqueda y Deducción Arancelaria SAC"
+    knowledge_base: "DuckDB 27,764 registros arancelarios oficiales de Panamá"
+    retrieval_strategy: "Hybrid BM25 + Vector Similarity (Cosine)"
+    hallucination_guard: "Bloqueo estricto cuando similitud de evidencia < 0.65"
+    crypto_signature: "HMAC-SHA256 / Ed25519"
+    status: "PRODUCTION_ACTIVE"

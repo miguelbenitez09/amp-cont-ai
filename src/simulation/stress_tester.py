@@ -58,6 +58,19 @@ class PortStressTester:
         self.feature_cols = self.bundle["feature_cols"]
         logger.info(f"Loaded Champion model suite ({list(self.models.keys())}) with {len(self.feature_cols)} features.")
 
+    @staticmethod
+    def _predict_with_local_threads(model: Any, features: pd.DataFrame) -> np.ndarray:
+        """Predict without triggering platform-dependent physical CPU discovery."""
+        if hasattr(model, "n_jobs"):
+            try:
+                model.n_jobs = 1
+            except Exception:
+                pass
+        try:
+            return model.predict(features, num_threads=1)
+        except TypeError:
+            return model.predict(features)
+
     def run_stress_test(
         self,
         port_name: str,
@@ -101,9 +114,9 @@ class PortStressTester:
             X_scenario = combined_features_df[self.feature_cols].fillna(0)
 
             # Predict across quantiles
-            preds_p50 = np.clip(self.models["p50"].predict(X_scenario), 0, None)
-            preds_p10 = np.clip(self.models["p10"].predict(X_scenario), 0, None)
-            preds_p90 = np.clip(self.models["p90"].predict(X_scenario), 0, None)
+            preds_p50 = np.clip(self._predict_with_local_threads(self.models["p50"], X_scenario), 0, None)
+            preds_p10 = np.clip(self._predict_with_local_threads(self.models["p10"], X_scenario), 0, None)
+            preds_p90 = np.clip(self._predict_with_local_threads(self.models["p90"], X_scenario), 0, None)
 
             # Ensure quantile monotonicity
             preds_p10 = np.minimum(preds_p10, preds_p50)
@@ -204,7 +217,7 @@ class PortStressTester:
             scenario_type="baseline"
         )
         base_X = base_df[self.feature_cols].fillna(0)
-        base_preds = self.models["p50"].predict(base_X)
+        base_preds = self._predict_with_local_threads(self.models["p50"], base_X)
         baseline_endpoint = float(np.mean(base_preds[base_df["horizon_step"] == horizon]))
 
         trans_mults = [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4]  # 0% to -60% drop
@@ -230,7 +243,7 @@ class PortStressTester:
                     custom_params=custom_params
                 )
                 test_X = test_df[self.feature_cols].fillna(0)
-                test_preds = self.models["p50"].predict(test_X)
+                test_preds = self._predict_with_local_threads(self.models["p50"], test_X)
                 endpoint_pred = float(np.mean(test_preds[test_df["horizon_step"] == horizon]))
 
                 drop_pct = (baseline_endpoint - endpoint_pred) / baseline_endpoint

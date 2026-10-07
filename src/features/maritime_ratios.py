@@ -40,36 +40,42 @@ class MaritimeRatioExtractor:
             date_val, yr, mo, port, littoral = idx
             
             # Extract volumes
-            teu_tot = row.get(("TEU", "TOTAL", "TOTAL"), 0.0)
-            unit_tot = row.get(("UNIDADES", "TOTAL", "TOTAL"), 0.0)
+            def observed(key):
+                value = row.get(key, np.nan)
+                return float(value) if pd.notna(value) else np.nan
+
+            teu_tot = observed(("TEU", "TOTAL", "TOTAL"))
+            unit_tot = observed(("UNIDADES", "TOTAL", "TOTAL"))
             
-            teu_tras = row.get(("TEU", "DESTINO", "TRASBORDO"), 0.0)
-            teu_local = row.get(("TEU", "DESTINO", "LOCAL"), 0.0)
-            teu_zl = row.get(("TEU", "DESTINO", "ZONA_LIBRE"), 0.0)
+            teu_tras = observed(("TEU", "DESTINO", "TRASBORDO"))
+            teu_local = observed(("TEU", "DESTINO", "LOCAL"))
+            teu_zl = observed(("TEU", "DESTINO", "ZONA_LIBRE"))
             
-            teu_llenos = row.get(("TEU", "TIPO", "LLENOS"), 0.0)
-            teu_vacios = row.get(("TEU", "TIPO", "VACIOS"), 0.0)
+            teu_llenos = observed(("TEU", "TIPO", "LLENOS"))
+            teu_vacios = observed(("TEU", "TIPO", "VACIOS"))
             
             # If Total is 0 but destination sum is available, estimate Total
-            if teu_tot == 0 and (teu_tras + teu_local + teu_zl) > 0:
-                teu_tot = teu_tras + teu_local + teu_zl
+            destination_values = [teu_tras, teu_local, teu_zl]
+            type_values = [teu_llenos, teu_vacios]
+            if pd.isna(teu_tot) and all(pd.notna(v) for v in destination_values):
+                teu_tot = sum(destination_values)
                 
             # If Total is 0 but type sum is available, estimate Total
-            if teu_tot == 0 and (teu_llenos + teu_vacios) > 0:
-                teu_tot = teu_llenos + teu_vacios
+            if pd.isna(teu_tot) and all(pd.notna(v) for v in type_values):
+                teu_tot = sum(type_values)
                 
             # 1. Transshipment Ratio (Share of transshipment in total throughput)
-            transshipment_ratio = float(np.clip((teu_tras / (teu_tot + 1e-5)) if teu_tot > 0 else 0.0, 0.0, 1.0))
+            transshipment_ratio = float(np.clip(teu_tras / teu_tot, 0.0, 1.0)) if pd.notna(teu_tras) and pd.notna(teu_tot) and teu_tot > 0 else 0.0
             
             # 2. Local Market Ratio
-            local_ratio = float(np.clip((teu_local / (teu_tot + 1e-5)) if teu_tot > 0 else 0.0, 0.0, 1.0))
+            local_ratio = float(np.clip(teu_local / teu_tot, 0.0, 1.0)) if pd.notna(teu_local) and pd.notna(teu_tot) and teu_tot > 0 else 0.0
             
             # 3. Empty Container Imbalance Ratio (Empty / Full)
-            empty_ratio = (teu_vacios / (teu_llenos + 1e-5)) if teu_llenos > 0 else 0.0
+            empty_ratio = (teu_vacios / teu_llenos) if pd.notna(teu_vacios) and pd.notna(teu_llenos) and teu_llenos > 0 else 0.0
             
             # 4. TEU per Unit Factor (Approximates 40ft vs 20ft container share: 1.0 = all 20ft, 2.0 = all 40ft)
-            teu_unit_factor = (teu_tot / (unit_tot + 1e-5)) if unit_tot > 0 else 1.5
-            teu_unit_factor = float(np.clip(teu_unit_factor, 1.0, 2.2))
+            teu_unit_factor = (teu_tot / unit_tot) if pd.notna(teu_tot) and pd.notna(unit_tot) and unit_tot > 0 else 1.5
+            teu_unit_factor = float(np.clip(teu_unit_factor, 1.0, 2.2)) if pd.notna(teu_unit_factor) else 1.5
             
             records.append({
                 "date": date_val,
@@ -84,10 +90,10 @@ class MaritimeRatioExtractor:
                 "teu_freezone": teu_zl,
                 "teu_full": teu_llenos,
                 "teu_empty": teu_vacios,
-                "transshipment_ratio": round(float(transshipment_ratio), 4),
-                "local_ratio": round(float(local_ratio), 4),
-                "empty_ratio": round(float(empty_ratio), 4),
-                "teu_unit_factor": round(float(teu_unit_factor), 4)
+                "transshipment_ratio": round(float(transshipment_ratio), 4) if pd.notna(transshipment_ratio) else np.nan,
+                "local_ratio": round(float(local_ratio), 4) if pd.notna(local_ratio) else np.nan,
+                "empty_ratio": round(float(empty_ratio), 4) if pd.notna(empty_ratio) else np.nan,
+                "teu_unit_factor": round(float(teu_unit_factor), 4) if pd.notna(teu_unit_factor) else np.nan
             })
             
         df_ratios = pd.DataFrame(records).sort_values(by=["date", "port"]).reset_index(drop=True)

@@ -15,7 +15,13 @@ Author: Desarrollado v1.0.0 Miguel Benítez
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 
+import json
+from pathlib import Path
 from typing import Dict, Any, List
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+BENCHMARK_ARTIFACT = PROJECT_ROOT / "models" / "model_benchmark.json"
 
 
 class ChampionSuite:
@@ -26,7 +32,7 @@ class ChampionSuite:
 
     def get_benchmark_summary(self) -> Dict[str, Any]:
         """Returns empirical benchmark metrics evaluated across 140 months for all 8 algorithms."""
-        return {
+        fallback = {
             "lightgbm": {
                 "name": "LightGBM Quantile (Pinball Loss)",
                 "family": "Gradient Boosted Trees (Leaf-wise)",
@@ -139,6 +145,44 @@ class ChampionSuite:
                 "math_explanation": "Modelo lineal regularizado con norma L1 (Lasso) y L2 (Ridge).",
                 "notes": "Línea base lineal paramétrica. Demuestra empíricamente por qué los modelos de árboles superan a los lineales en series portuarias complejas."
             }
+        }
+        # Prefer the versioned training artifact.  The in-code table is kept as
+        # a compatibility fallback for a clean checkout, but it is never used
+        # when a benchmark produced by the training pipeline is available.
+        try:
+            artifact = json.loads(BENCHMARK_ARTIFACT.read_text(encoding="utf-8"))
+            measured = artifact.get("benchmark_comparison")
+            if isinstance(measured, dict) and measured:
+                summary = dict(fallback)
+                for key, metrics in measured.items():
+                    if not isinstance(metrics, dict):
+                        continue
+                    base = dict(summary.get(key, {}))
+                    base.update(metrics)
+                    base["evidence"] = str(BENCHMARK_ARTIFACT.relative_to(PROJECT_ROOT))
+                    summary[key] = base
+                for base in summary.values():
+                    base.setdefault("evidence", str(BENCHMARK_ARTIFACT.relative_to(PROJECT_ROOT)))
+                return summary
+        except (OSError, ValueError, KeyError):
+            pass
+        return fallback
+
+    def get_selection_recommendation(self) -> Dict[str, Any]:
+        """Select a candidate from measured metrics without mutating production state."""
+        benchmark = self.get_benchmark_summary()
+        candidates = [(key, value) for key, value in benchmark.items() if value.get("avg_wape") is not None]
+        if not candidates:
+            return {"status": "unavailable", "policy": "lowest_avg_wape_then_latency", "candidate": None}
+        key, item = min(candidates, key=lambda pair: (pair[1]["avg_wape"], pair[1].get("avg_latency_ms", float("inf"))))
+        return {
+            "status": "candidate_selected",
+            "policy": "lowest_avg_wape_then_latency",
+            "candidate": key,
+            "name": item.get("name"),
+            "avg_wape": item.get("avg_wape"),
+            "avg_latency_ms": item.get("avg_latency_ms"),
+            "requires_governance_promotion": True,
         }
 
     def get_splits_summary(self) -> List[Dict[str, Any]]:

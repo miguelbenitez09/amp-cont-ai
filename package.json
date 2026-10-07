@@ -1,0 +1,15 @@
+{
+  "name": "panama-portops-ai-frontend-gateway",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@9.12.3",
+  "description": "Frontend gateway guardrails for Panama PortOps-AI v1.0.0.",
+  "engines": {
+    "node": ">=20.11.1",
+    "pnpm": ">=9.12.3"
+  },
+  "scripts": {
+    "preinstall": "node scripts/ensure_pnpm.js",
+    "check": "node --check src/serving/static/js/auth_flow.js && node --check src/serving/static/js/app.js && node --check src/serving/static/js/safe_markdown.js && node scripts/validate_i18n.js"
+  }
+}

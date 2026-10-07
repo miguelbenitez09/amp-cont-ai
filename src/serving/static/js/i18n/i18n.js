@@ -10,10 +10,29 @@
     currentLang: "es",
     dictionaries: {},
 
+    materializeCoverage(dictionary) {
+      // Older screens used flattened coverage keys while the page is migrated
+      // to native groups. Materialize them once at boot so all runtime lookups
+      // use the same `group.key` contract in ES, EN and PT.
+      const groups = ["nav", "cot", "customs", "forecast", "benchmark", "simulation",
+        "data_platform", "security", "telemetry", "common", "footer"];
+      const aliases = dictionary && dictionary._coverage;
+      if (!aliases) return;
+      Object.entries(aliases).forEach(([flatKey, value]) => {
+        const group = groups.find(prefix => flatKey.startsWith(`${prefix}_`));
+        if (!group) return;
+        dictionary[group] = dictionary[group] || {};
+        const key = flatKey.slice(group.length + 1);
+        if (!(key in dictionary[group])) dictionary[group][key] = value;
+      });
+      delete dictionary._coverage;
+    },
+
     init() {
       this.dictionaries["es"] = window.I18N_ES || {};
       this.dictionaries["en"] = window.I18N_EN || {};
       this.dictionaries["pt"] = window.I18N_PT || {};
+      Object.values(this.dictionaries).forEach(dictionary => this.materializeCoverage(dictionary));
 
       // Determine starting language from localStorage or navigator
       const savedLang = localStorage.getItem(STORAGE_KEY);

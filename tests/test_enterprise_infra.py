@@ -13,6 +13,8 @@ License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 
 import pytest
+import hashlib
+import json
 from fastapi.testclient import TestClient
 from src.serving.api import app
 from src.infrastructure.db.factory import DatabaseFactory
@@ -34,8 +36,21 @@ client = TestClient(app)
 
 
 class TestExternalDataConnectors:
-    def test_acp_hydrology_connector(self):
-        connector = ACPHydrologyConnector()
+    @staticmethod
+    def _verified_csv(tmp_path, filename, content):
+        source = tmp_path / filename
+        source.write_text(content, encoding="utf-8")
+        manifest = {
+            "classification": "OBSERVED",
+            "source_url": "https://example.test/official-source",
+            "retrieved_at": "2026-09-30T00:00:00Z",
+            "sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+        }
+        source.with_suffix(source.suffix + ".source.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    def test_acp_hydrology_connector(self, tmp_path):
+        self._verified_csv(tmp_path, "acp_gatun_lake_levels_observed.csv", "period,gatun_lake_level_feet,max_allowed_draft_feet\n2026-01,85.2,48.0\n")
+        connector = ACPHydrologyConnector(cache_dir=tmp_path)
         df = connector.fetch_historical_series()
         assert not df.empty
         assert "gatun_lake_level_feet" in df.columns
@@ -44,16 +59,18 @@ class TestExternalDataConnectors:
         assert df["gatun_lake_level_feet"].min() >= 75.0
         assert df["gatun_lake_level_feet"].max() <= 90.0
 
-    def test_ais_telemetry_connector(self):
-        connector = AISTelemetryConnector()
+    def test_ais_telemetry_connector(self, tmp_path):
+        self._verified_csv(tmp_path, "ais_vessel_telemetry_observed.csv", "period,balboa_anchorage_wait_hours,colon_anchorage_wait_hours\n2026-01,12.5,10.0\n")
+        connector = AISTelemetryConnector(cache_dir=tmp_path)
         df = connector.fetch_anchorage_telemetry()
         assert not df.empty
         assert "balboa_anchorage_wait_hours" in df.columns
         assert "colon_anchorage_wait_hours" in df.columns
         assert (df["balboa_anchorage_wait_hours"] > 0).all()
 
-    def test_freight_index_connector(self):
-        connector = FreightIndexConnector()
+    def test_freight_index_connector(self, tmp_path):
+        self._verified_csv(tmp_path, "freight_indices_observed.csv", "period,baltic_freight_fbx_usd,vlsfo_bunker_panama_usd_mt\n2026-01,1800,520\n")
+        connector = FreightIndexConnector(cache_dir=tmp_path)
         df = connector.fetch_freight_rates()
         assert not df.empty
         assert "baltic_freight_fbx_usd" in df.columns

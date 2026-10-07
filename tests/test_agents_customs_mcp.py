@@ -88,15 +88,9 @@ def test_customs_tariff_search_code():
 
 
 def test_customs_landed_cost_calculation():
-    # CIF $10,000 for meat (DAI 25%, ITBMS 0% exempt food)
-    cost = PanamaTariffDatabase.calculate_landed_customs_cost("0201.30.00.00.20", cif_value_usd=10000.0)
-    assert cost["cif_value_usd"] == 10000.0
-    assert cost["dai_rate_pct"] == 25.0
-    assert cost["dai_usd"] == 2500.0
-    assert cost["itbms_usd"] == 0.0   # Food exempt
-    assert cost["customs_declaration_fee_usd"] == 70.0
-    assert cost["total_import_taxes_usd"] == 2570.0
-    assert cost["total_landed_cost_usd"] == 12570.0
+    # Curated rates remain candidates until a document-level ANA source is linked.
+    with pytest.raises(ValueError, match="evidencia documental"):
+        PanamaTariffDatabase.calculate_landed_customs_cost("0201.30.00.00.20", cif_value_usd=10000.0)
 
 
 # ---------------------------------------------------------
@@ -179,9 +173,8 @@ def test_mcp_tool_execution():
     assert res["container_id"] == "MSKU1234565"
 
     # Execute Tariff tool
-    res_t = execute_tool("lookup_panama_customs_tariff", {"hs_code": "020130", "cif_value_usd": 15000.0})
-    assert res_t["cif_value_usd"] == 15000.0
-    assert res_t["total_landed_cost_usd"] > 15000.0
+    with pytest.raises(ValueError, match="evidencia documental"):
+        execute_tool("lookup_panama_customs_tariff", {"hs_code": "020130", "cif_value_usd": 15000.0})
 
 
 # ---------------------------------------------------------
@@ -239,11 +232,8 @@ def test_api_customs_tariff_search():
 def test_api_customs_tariff_calculate():
     payload = {"hs_code": "0201.30.00.00.20", "cif_value_usd": 20000.0}
     res = requests.post(f"{BASE_URL}/api/v1/customs/tariff/calculate", json=payload, timeout=5)
-    assert res.status_code == 200
-    data = res.json()
-    liq = data["liquidation"]
-    assert liq["dai_usd"] == 5000.0
-    assert liq["total_landed_cost_usd"] == 25070.0
+    assert res.status_code == 422
+    assert "evidencia documental" in res.json()["detail"]["error"]
 
 
 def test_api_container_validate():

@@ -4,6 +4,15 @@
  */
 
 (function() {
+  const escapeHtml = (value) => String(value ?? "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+  const displayValue = (value, fallback = "N/D") =>
+    value === null || value === undefined || value === "" ? fallback : escapeHtml(value);
+  const displayPercent = (value) => value === null || value === undefined ? "N/D" : `${escapeHtml(value)}%`;
+  const displayMoney = (value) => value === null || value === undefined ? "N/D" : `$${Number(value).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
+
   // --- 1. RAG Tariff Search ---
   window.searchCustomsTariff = async function(queryOverride) {
     const input = document.getElementById("customs-search-input");
@@ -27,8 +36,16 @@
     try {
       const url = query ? `/api/v1/customs/tariff/search?query=${encodeURIComponent(query)}` : `/api/v1/customs/tariff/search`;
       const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const detail = data.detail;
+        const message = typeof detail === "string" ? detail : detail?.error;
+        const nextStep = typeof detail === "object" ? detail?.next_step : null;
+        const error = new Error(message || `HTTP ${res.status}`);
+        error.nextStep = nextStep;
+        error.status = res.status;
+        throw error;
+      }
       const items = data.items || [];
 
       if (countBadge) {
@@ -51,14 +68,38 @@
       }
 
       container.innerHTML = items.map((item, idx) => {
-        const entities = (item.entidades_reguladoras || []).map(e => 
-          `<span class="badge" style="background: rgba(0, 229, 255, 0.12); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.3); font-size: 0.72rem; padding: 0.2rem 0.5rem;">🏛️ ${e}</span>`
-        ).join(" ");
+        const tr = (key, fallback) => window.t ? window.t(key, fallback) : fallback;
+        const isHistorical = Boolean(item.historical_observation);
+        const safeCode = escapeHtml(item.hs_code_panama);
+        const safeDescription = escapeHtml(item.descripcion);
+        const entities = (item.regulatory_entity_sources || (item.entidades_reguladoras || []).map(e => ({entity: e}))).map(source => {
+          const label = escapeHtml(source.entity || 'N/D');
+          const url = source.official_url ? escapeHtml(source.official_url) : '';
+          const content = url ? `<a href="${url}" target="_blank" rel="noopener noreferrer">🏛️ ${label} ↗</a>` : `🏛️ ${label}`;
+          const status = source.verification_status === 'official_homepage_reference' ? 'Fuente institucional de referencia; no prueba aplicabilidad legal.' : 'Fuente oficial pendiente de verificación.';
+          return `<span class="badge" title="${escapeHtml(status)}" style="background: rgba(0, 229, 255, 0.12); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.3); font-size: 0.72rem; padding: 0.2rem 0.5rem;">${content}</span>`;
+        }).join(" ");
+        const evidenceVerified = item.evidence_status === 'verified_document_evidence';
+        const evidenceNotice = isHistorical
+          ? tr("customs.evidence_historical", "Registro histórico de observación; no representa vigencia legal actual.")
+          : evidenceVerified
+            ? tr("customs.evidence_verified", "Evidencia documental oficial enlazada y verificada.")
+            : tr("customs.evidence_pending", "Esta ficha es una regla candidata: el procedimiento y la base legal requieren documento oficial enlazado; no prueban vigencia por sí solos.");
+        const liquidationButton = isHistorical || !evidenceVerified
+          ? `<button class="btn btn-secondary btn-sm" disabled title="Requiere evidencia documental ANA verificable">🔒 Liquidación bloqueada</button>`
+          : `<button class="btn btn-secondary btn-sm" onclick="window.selectTariffForCalc('${safeCode}')" title="Cargar subpartida en la calculadora aduanera" style="font-size: 0.76rem; padding: 0.35rem 0.65rem;">💵 Liquidar</button>`;
+        const provenanceBadge = isHistorical
+          ? `<span class="badge" style="background: rgba(255, 209, 102, 0.12); color: #FFD166;">📚 Histórico INEC · clasificación observada</span>`
+          : evidenceVerified
+            ? `<span class="badge" style="background: rgba(0, 245, 212, 0.12); color: #00F5D4;">✅ Evidencia documental verificada</span>`
+            : `<span class="badge" style="background: rgba(255, 209, 102, 0.12); color: #FFD166;">⚠️ Regla candidata · evidencia pendiente</span>`;
 
         const isReefer = item.requiere_reefer;
-        const reeferBadge = isReefer 
+        const reeferBadge = isReefer === true
           ? `<span class="badge" style="background: rgba(0, 245, 212, 0.15); color: #00F5D4; border: 1px solid rgba(0, 245, 212, 0.4);">❄️ Requiere Reefer</span>`
-          : `<span class="badge" style="background: rgba(255, 255, 255, 0.05); color: #94A3B8;">📦 Carga Seca</span>`;
+          : isReefer === false
+            ? `<span class="badge" style="background: rgba(255, 255, 255, 0.05); color: #94A3B8;">📦 Carga Seca</span>`
+            : `<span class="badge" style="background: rgba(255, 209, 102, 0.12); color: #FFD166;">❔ Tipo de carga N/D</span>`;
 
         return `
           <div class="card" style="margin-bottom: 1.25rem; border-left: 4px solid #00E5FF; background: rgba(16, 26, 48, 0.6); transition: transform 0.2s ease;">
@@ -66,22 +107,21 @@
               <div>
                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
                   <span style="font-family: var(--font-mono); font-weight: bold; font-size: 1.05rem; color: #00E5FF; letter-spacing: 0.5px;">
-                    ${item.hs_code_panama}
+                    ${safeCode}
                   </span>
-                  <span class="badge" style="background: rgba(255, 209, 102, 0.15); color: #FFD166; font-size: 0.72rem;">WCO HS-6: ${item.hs_code_6}</span>
+                  <span class="badge" style="background: rgba(255, 209, 102, 0.15); color: #FFD166; font-size: 0.72rem;">WCO HS-6: ${displayValue(item.hs_code_6)}</span>
                   ${reeferBadge}
-                  <span class="badge" style="background: rgba(148, 163, 184, 0.1); color: #94A3B8; font-size: 0.7rem;">Vigencia: ${item.effective_from || '2024-01-01'} al ${item.effective_to || '2026-12-31'}</span>
+                  ${provenanceBadge}
+                  <span class="badge" style="background: rgba(148, 163, 184, 0.1); color: #94A3B8; font-size: 0.7rem;">Vigencia: ${displayValue(item.effective_from)}${item.effective_to ? ` al ${displayValue(item.effective_to)}` : ''}</span>
                 </div>
-                <h3 style="color: #F8FAFC; font-size: 1.05rem; margin: 0 0 4px 0;">${item.descripcion}</h3>
+                <h3 style="color: #F8FAFC; font-size: 1.05rem; margin: 0 0 4px 0;">${safeDescription}</h3>
                 <div style="font-size: 0.78rem; color: var(--text-muted);">
-                  <strong>Capítulo ${item.capitulo}:</strong> ${item.seccion} | <strong>Tipo:</strong> ${item.tipo_mercancia} | <strong>Unidad:</strong> ${item.unidad_medida}
+                  <strong>Capítulo ${displayValue(item.capitulo)}:</strong> ${displayValue(item.seccion)} | <strong>Tipo:</strong> ${displayValue(item.tipo_mercancia)} | <strong>Unidad:</strong> ${displayValue(item.unidad_medida)}
                 </div>
               </div>
               <div style="display: flex; gap: 0.5rem; align-items: center;">
-                <button class="btn btn-secondary btn-sm" onclick="window.selectTariffForCalc('${item.hs_code_panama}')" title="Cargar subpartida en la calculadora aduanera" style="font-size: 0.76rem; padding: 0.35rem 0.65rem;">
-                  💵 Liquidar
-                </button>
-                <button class="btn btn-primary btn-sm" onclick="window.copyTariffToCoT('${item.hs_code_panama}', '${item.descripcion.replace(/'/g, "\\'")}')" title="Consultar con Agente CoT Inteligente" style="font-size: 0.76rem; padding: 0.35rem 0.65rem; background: #00E5FF; color: #070D1E; border: none; font-weight: bold;">
+                ${liquidationButton}
+                <button class="btn btn-primary btn-sm" onclick="window.copyTariffToCoT('${safeCode}', '${safeDescription.replace(/'/g, "\\'")}')" title="Consultar con Agente CoT Inteligente" style="font-size: 0.76rem; padding: 0.35rem 0.65rem; background: #00E5FF; color: #070D1E; border: none; font-weight: bold;">
                   🧠 Consultar CoT
                 </button>
               </div>
@@ -91,15 +131,15 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.6rem; margin-bottom: 0.85rem; padding: 0.65rem; background: rgba(0,0,0,0.25); border-radius: 6px;">
               <div>
                 <span style="font-size: 0.72rem; color: var(--text-muted); display: block;">Arancel DAI</span>
-                <span style="font-size: 1.1rem; font-weight: bold; color: ${item.arancel_dai_pct === 0 ? '#00F5D4' : '#FFD166'};">${item.arancel_dai_pct}%</span>
+                <span style="font-size: 1.1rem; font-weight: bold; color: ${item.arancel_dai_pct === 0 ? '#00F5D4' : '#FFD166'};">${displayPercent(item.arancel_dai_pct)}</span>
               </div>
               <div>
                 <span style="font-size: 0.72rem; color: var(--text-muted); display: block;">Impuesto ITBMS</span>
-                <span style="font-size: 1.1rem; font-weight: bold; color: ${item.itbms_pct === 0 ? '#00F5D4' : '#38BDF8'};">${item.itbms_pct}%</span>
+                <span style="font-size: 1.1rem; font-weight: bold; color: ${item.itbms_pct === 0 ? '#00F5D4' : '#38BDF8'};">${displayPercent(item.itbms_pct)}</span>
               </div>
               <div>
                 <span style="font-size: 0.72rem; color: var(--text-muted); display: block;">Tasa DUA (Fija)</span>
-                <span style="font-size: 1.1rem; font-weight: bold; color: #F8FAFC;">$70.00 USD</span>
+                <span style="font-size: 1.1rem; font-weight: bold; color: #F8FAFC;">${displayValue(item.customs_declaration_fee_usd, 'N/D')} USD</span>
               </div>
               <div>
                 <span style="font-size: 0.72rem; color: var(--text-muted); display: block;">Entidades</span>
@@ -110,19 +150,22 @@
             <!-- Details Expandable/Structured -->
             <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.82rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
               <div>
-                <strong style="color: #FFD166;">📜 Permiso Institucional Requerido:</strong>
-                <span style="color: #E2E8F0; margin-left: 4px;">${item.permiso_requerido || 'Inspección estándar de aduana ordinaria'}</span>
+                <strong style="color: #FFD166;">📜 ${tr("customs.permits_required", "Permisos y Entidades Reguladoras:")}</strong>
+                <span style="color: #E2E8F0; margin-left: 4px;">${displayValue(item.permiso_requerido)}</span>
               </div>
               <div>
-                <strong style="color: #00F5D4;">📥 Procedimiento Oficial de Importación:</strong>
-                <p style="color: var(--text-muted); margin: 3px 0 0 0; line-height: 1.45;">${item.procedimiento_importacion || 'Trámite aduanero regular.'}</p>
+                <strong style="color: #00F5D4;">📥 ${tr("customs.import_procedure", "Procedimiento de Importación:")}</strong>
+                <p style="color: var(--text-muted); margin: 3px 0 0 0; line-height: 1.45;">${displayValue(item.procedimiento_importacion)}</p>
               </div>
               <div>
-                <strong style="color: #38BDF8;">📤 Procedimiento de Exportación / Transbordo:</strong>
-                <p style="color: var(--text-muted); margin: 3px 0 0 0; line-height: 1.45;">${item.procedimiento_exportacion || 'Manifiesto de salida regular.'}</p>
+                <strong style="color: #38BDF8;">📤 ${tr("customs.export_procedure", "Procedimiento de Exportación / Transbordo:")}</strong>
+                <p style="color: var(--text-muted); margin: 3px 0 0 0; line-height: 1.45;">${displayValue(item.procedimiento_exportacion)}</p>
               </div>
               <div style="font-size: 0.75rem; color: #64748B;">
-                <strong>⚖️ Base Legal:</strong> ${item.base_legal || 'Arancel Nacional de Importación de la República de Panamá.'}
+                <strong>⚖️ ${tr("customs.legal_basis", "Base Legal y Resoluciones:")}</strong> ${displayValue(item.base_legal)}
+              </div>
+              <div style="font-size: 0.75rem; color: #FFD166; background: rgba(255,209,102,0.08); border-radius: 5px; padding: 0.45rem 0.55rem;">
+                ${evidenceVerified ? "✅" : "⚠️"} ${evidenceNotice}
               </div>
             </div>
           </div>
@@ -181,10 +224,15 @@
     const cifInput = document.getElementById("calc-cif-usd");
     const resultsBox = document.getElementById("customs-calc-results");
 
-    const hsCode = hsInput ? hsInput.value.trim() : "0201.30.00.00.20";
-    const cifVal = cifInput ? parseFloat(cifInput.value) || 10000.0 : 10000.0;
+    const hsCode = hsInput ? hsInput.value.trim() : "";
+    const cifVal = cifInput ? parseFloat(cifInput.value) : NaN;
 
     if (!resultsBox) return;
+
+    if (!hsCode || !Number.isFinite(cifVal) || cifVal <= 0) {
+      resultsBox.innerHTML = `<div role="alert" style="padding: 0.75rem; background: rgba(255,90,95,0.1); border-radius: 6px; color: #FF5A5F; font-size: 0.8rem;">Completa un código HS y un valor CIF mayor que cero.</div>`;
+      return;
+    }
 
     resultsBox.innerHTML = `<div style="text-align: center; color: var(--cyan-primary); padding: 1rem;">Calculando liquidación fiscal...</div>`;
 
@@ -198,57 +246,67 @@
         })
       });
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const detail = data.detail;
+        const message = typeof detail === "string" ? detail : detail?.error;
+        const nextStep = typeof detail === "object" ? detail?.next_step : null;
+        const error = new Error(message || `HTTP ${res.status}`);
+        error.nextStep = nextStep;
+        error.status = res.status;
+        throw error;
+      }
       const c = data.liquidation || data.result || data.calculation || data;
 
       resultsBox.innerHTML = `
         <div style="background: rgba(10, 18, 36, 0.95); border: 1px solid rgba(0, 229, 255, 0.35); border-radius: 8px; padding: 1.1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.6rem;">
             <div>
-              <div style="font-weight: bold; color: #F8FAFC; font-size: 0.95rem;">${c.commodity_description || "Liquidación Oficial DUA"}</div>
-              <div style="font-size: 0.76rem; color: #00E5FF; font-family: var(--font-mono); margin-top: 2px;">HS: ${c.hs_code || hsCode}</div>
+              <div style="font-weight: bold; color: #F8FAFC; font-size: 0.95rem;">${displayValue(c.commodity_description)}</div>
+              <div style="font-size: 0.76rem; color: #00E5FF; font-family: var(--font-mono); margin-top: 2px;">HS: ${displayValue(c.hs_code || hsCode)}</div>
             </div>
-            <span class="badge" style="background: rgba(0, 245, 212, 0.15); color: #00F5D4; font-size: 0.75rem; font-weight: 600;">DAI: ${c.dai_rate_pct || 0}% • ITBMS: ${c.itbms_rate_pct || 7}%</span>
+            <span class="badge" style="background: rgba(0, 245, 212, 0.15); color: #00F5D4; font-size: 0.75rem; font-weight: 600;">DAI: ${displayPercent(c.dai_rate_pct)} • ITBMS: ${displayPercent(c.itbms_rate_pct)}</span>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.84rem; margin-bottom: 0.85rem;">
             <div style="color: var(--text-muted);">Valor CIF Declarado:</div>
-            <div style="text-align: right; font-weight: bold; color: #F8FAFC;">$${(c.cif_value_usd || cifVal).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD</div>
+            <div style="text-align: right; font-weight: bold; color: #F8FAFC;">${displayMoney(c.cif_value_usd ?? cifVal)}</div>
 
-            <div style="color: var(--text-muted);">Arancel DAI (${c.dai_rate_pct || 0}%):</div>
-            <div style="text-align: right; font-weight: bold; color: #FFD166;">$${(c.dai_usd || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD</div>
+            <div style="color: var(--text-muted);">Arancel DAI (${displayPercent(c.dai_rate_pct)}):</div>
+            <div style="text-align: right; font-weight: bold; color: #FFD166;">${displayMoney(c.dai_usd)}</div>
 
-            <div style="color: var(--text-muted);">Impuesto ITBMS (${c.itbms_rate_pct || 7}%):</div>
-            <div style="text-align: right; font-weight: bold; color: #38BDF8;">$${(c.itbms_usd || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD</div>
+            <div style="color: var(--text-muted);">Impuesto ITBMS (${displayPercent(c.itbms_rate_pct)}):</div>
+            <div style="text-align: right; font-weight: bold; color: #38BDF8;">${displayMoney(c.itbms_usd)}</div>
 
             <div style="color: var(--text-muted);">Tasa DUA Aduanas (ANA):</div>
-            <div style="text-align: right; font-weight: bold; color: #F8FAFC;">$${(c.customs_declaration_fee_usd || 70.0).toFixed(2)} USD</div>
+            <div style="text-align: right; font-weight: bold; color: #F8FAFC;">${displayValue(c.customs_declaration_fee_usd, 'N/D')} USD</div>
           </div>
 
           <div style="background: rgba(15, 23, 42, 0.7); border-radius: 6px; padding: 0.55rem 0.75rem; margin-bottom: 0.75rem; font-size: 0.78rem; border-left: 3px solid #00E5FF;">
-            <div style="color: #94A3B8;"><strong>Entidades Reguladoras:</strong> ${(c.regulatory_entities || ['Aduanas-ANA']).join(', ')}</div>
-            <div style="color: #CBD5E1; margin-top: 3px;"><strong>Permiso Requerido:</strong> ${c.permits_required || 'Trámite aduanero estándar con inspección regular'}</div>
+            <div style="color: #94A3B8;"><strong>Entidades Reguladoras:</strong> ${Array.isArray(c.regulatory_entities) && c.regulatory_entities.length ? c.regulatory_entity_sources?.map(source => source.official_url ? `<a href="${escapeHtml(source.official_url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.entity)} ↗</a>` : escapeHtml(source.entity)).join(', ') : 'N/D'}</div>
+            <div style="color: #CBD5E1; margin-top: 3px;"><strong>Permiso Requerido:</strong> ${displayValue(c.permits_required)}</div>
           </div>
 
           <div style="border-top: 1px dashed var(--border-color); padding-top: 0.6rem; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
             <span style="font-weight: bold; color: #FF5A5F; font-size: 0.88rem;">Total Tributos Aduaneros:</span>
-            <span style="font-weight: bold; color: #FF5A5F; font-size: 1.05rem;">$${(c.total_import_taxes_usd || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD</span>
+            <span style="font-weight: bold; color: #FF5A5F; font-size: 1.05rem;">${displayMoney(c.total_import_taxes_usd)}</span>
           </div>
 
           <div style="background: rgba(0, 245, 212, 0.1); border: 1px solid rgba(0, 245, 212, 0.3); border-radius: 6px; padding: 0.65rem 0.85rem; display: flex; justify-content: space-between; align-items: center;">
             <div>
               <span style="font-weight: bold; color: #00F5D4; font-size: 0.9rem; display: block;">Costo Puesto en Muelle (Landed Cost):</span>
-              <span style="font-size: 0.72rem; color: #94A3B8;">Tasa efectiva: ${c.effective_tax_rate_pct || 0}%</span>
+              <span style="font-size: 0.72rem; color: #94A3B8;">Tasa efectiva: ${displayPercent(c.effective_tax_rate_pct)}</span>
             </div>
-            <span style="font-weight: bold; color: #00F5D4; font-size: 1.25rem;">$${(c.total_landed_cost_usd || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD</span>
+            <span style="font-weight: bold; color: #00F5D4; font-size: 1.25rem;">${displayMoney(c.total_landed_cost_usd)}</span>
           </div>
         </div>
       `;
     } catch (err) {
       resultsBox.innerHTML = `
-        <div style="padding: 0.75rem; background: rgba(255,90,95,0.1); border-radius: 6px; color: #FF5A5F; font-size: 0.8rem;">
-          Error calculando liquidación: ${err.message}
+        <div role="alert" style="padding: 0.85rem; background: rgba(255,90,95,0.1); border: 1px solid rgba(255,90,95,0.35); border-radius: 6px; color: #FF5A5F; font-size: 0.8rem;">
+          <strong>${escapeHtml(err.status === 422 ? "Liquidación bloqueada" : "Error calculando liquidación")}</strong>
+          <div style="margin-top: 0.35rem;">${escapeHtml(err.message)}</div>
+          ${err.nextStep ? `<div style="margin-top: 0.35rem; color: #FFD166;"><strong>Siguiente paso:</strong> ${escapeHtml(err.nextStep)}</div>` : ""}
         </div>
       `;
     }
@@ -260,10 +318,14 @@
     const sizeSelect = document.getElementById("container-size-select");
     const resultsBox = document.getElementById("container-validation-results");
 
-    const containerId = idInput ? idInput.value.trim().toUpperCase() : "MSCU5281437";
+    const containerId = idInput ? idInput.value.trim().toUpperCase() : "";
     const sizeType = sizeSelect ? sizeSelect.value : "45G1";
 
     if (!resultsBox) return;
+    if (!containerId) {
+      resultsBox.innerHTML = `<div role="alert" style="padding: 0.75rem; background: rgba(255,90,95,0.1); border-radius: 6px; color: #FF5A5F; font-size: 0.8rem;">Completa el identificador ISO 6346 de 11 caracteres.</div>`;
+      return;
+    }
 
     resultsBox.innerHTML = `<div style="text-align: center; color: var(--cyan-primary); padding: 1rem;">Validando Módulo-11 y Manifiesto...</div>`;
 
@@ -330,19 +392,19 @@
             <div>
               <strong style="color: #00E5FF; display: block; margin-bottom: 4px;">📐 Especificaciones ISO:</strong>
               <div style="color: var(--text-muted); line-height: 1.5;">
-                • Dimensiones: <strong>${spec.length_ft || 40} pies (${spec.height_ft || 9.5} ft High Cube)</strong><br>
-                • Capacidad: <strong>${r.teus || 2.0} TEUs</strong><br>
-                • Tipo: <strong>${spec.type || 'High Cube Dry Box'}</strong><br>
-                • Refrigerado: <strong>${spec.is_reefer ? 'Sí (Reefer Activo)' : 'No (Carga Seca)'}</strong>
+                • Dimensiones: <strong>${displayValue(spec.length_ft)} pies (${displayValue(spec.height_ft)} ft)</strong><br>
+                • Capacidad: <strong>${displayValue(r.teus)} TEUs</strong><br>
+                • Tipo: <strong>${displayValue(spec.type)}</strong><br>
+                • Refrigerado: <strong>${spec.is_reefer === true ? 'Sí (Reefer Activo)' : spec.is_reefer === false ? 'No (Carga Seca)' : 'N/D'}</strong>
               </div>
             </div>
             <div>
               <strong style="color: #FFD166; display: block; margin-bottom: 4px;">🚢 Manifiesto & Bahía de Estiba:</strong>
               <div style="color: var(--text-muted); line-height: 1.5;">
-                • Buque: <strong>${manifest.vessel_name || 'MSC PAMELA'} (${manifest.voyage_number || '2409W'})</strong><br>
-                • Terminal: <strong>${manifest.terminal_name || 'Puerto Balboa'}</strong><br>
-                • Coordenada Bahía: <strong>${manifest.bay_stowage_coordinate || '010382'}</strong><br>
-                • Precinto: <strong>${manifest.seal_number || 'PA-SEC-99214'}</strong>
+                • Buque: <strong>${displayValue(manifest.vessel_name)} (${displayValue(manifest.voyage_number)})</strong><br>
+                • Terminal: <strong>${displayValue(manifest.terminal_name)}</strong><br>
+                • Coordenada Bahía: <strong>${displayValue(manifest.bay_stowage_coordinate)}</strong><br>
+                • Precinto: <strong>${displayValue(manifest.seal_number)}</strong>
               </div>
             </div>
           </div>
@@ -371,12 +433,6 @@
     setTimeout(() => {
       if (document.getElementById("customs-results-container")) {
         window.searchCustomsTariff("");
-      }
-      if (document.getElementById("container-validation-results")) {
-        window.validateContainerISO6346();
-      }
-      if (document.getElementById("customs-calc-results")) {
-        window.calculateCustomsLandedCost();
       }
     }, 600);
   });

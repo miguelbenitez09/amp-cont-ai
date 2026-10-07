@@ -1,4 +1,5 @@
 {
+  "schema_version": "2.0",
   "table_name": "container_features",
   "primary_keys": [
     "date",
@@ -96,5 +97,24 @@
     "empty_ratio_growth_yoy",
     "nat_vlsfo_sales_tm_lag1",
     "nat_roro_units_lag1"
-  ]
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "path": "data\\silver\\fact_containers.parquet",
+        "sha256": "cf17d5679ca06252cfdc9b3854d3932b98c7574507212c7ba6309aec0b4ec3e7"
+      },
+      {
+        "path": "data\\silver\\fact_bunkering.parquet",
+        "sha256": "0a617a8c6f60231cd552fef2c2df7d91cd33663fa547102174e07adc5e67fefc"
+      },
+      {
+        "path": "data\\silver\\fact_roro.parquet",
+        "sha256": "1b4cba96f12089228cdd8648faac594ddb5e6a81dc2d2eb0f3f0e9a7d83f6bd6"
+      }
+    ],
+    "transform": "FeatureStorePipeline.build_container_feature_store",
+    "synthetic_rows_allowed": false,
+    "missing_value_policy": "domain-absent category values are encoded as zero; lag and rolling unknowns are imputed by training medians within each temporal split"
+  }
 }

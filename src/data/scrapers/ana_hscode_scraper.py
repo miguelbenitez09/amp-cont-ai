@@ -17,6 +17,8 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 from datetime import datetime, timezone
 import pandas as pd
+import unicodedata
+import re
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
@@ -25,6 +27,47 @@ if str(PROJECT_ROOT) not in sys.path:
 SILVER_DIR = PROJECT_ROOT / "data" / "silver"
 SILVER_DIR.mkdir(parents=True, exist_ok=True)
 TARIFF_PARQUET = SILVER_DIR / "dim_tariff_panama.parquet"
+HISTORICAL_TARIFF_PARQUET = SILVER_DIR / "dim_tariff_historical.parquet"
+
+# Official institutional entry points used only for provenance navigation. A
+# homepage is not evidence that a permit or legal requirement applies to a
+# particular HS code; the item-level rule still requires a supporting document.
+REGULATORY_ENTITY_SOURCES = {
+    "AMP": "https://www.amp.gob.pa/",
+    "MiAmbiente": "https://miambiente.gob.pa/",
+    "Secretaría Nacional de Energía": "https://www.energia.gob.pa/",
+    "MIDA": "https://mida.gob.pa/",
+    "MINSA": "https://www.minsa.gob.pa/",
+    "APA": "https://apa.gob.pa/",
+    "ARAP": "https://arap.gob.pa/",
+    "MICI": "https://mici.gob.pa/",
+    "Aduanas-ANA": "https://www.ana.gob.pa/",
+    "CITES": "https://cites.org/",
+    "ACODECO": "https://www.acodeco.gob.pa/",
+    "DGNTI-MICI": "https://mici.gob.pa/dgnti/",
+    "ASEP": "https://asep.gob.pa/",
+    "ATTT": "https://www.transito.gob.pa/",
+    "DIASP-MINSEG": "https://www.minseg.gob.pa/",
+    "MIDA-DNSA": "https://mida.gob.pa/",
+    "MIDA-DNSV": "https://mida.gob.pa/",
+    "MIDA-DNV": "https://mida.gob.pa/",
+    "MINSA-DNFD": "https://www.minsa.gob.pa/",
+    "Bolsa de Productos (BAISA)": "https://www.baisa.com/",
+}
+CURATED_RULE_EVIDENCE_STATUS = "pending_document_evidence"
+
+
+def regulatory_entity_sources(entities: List[str]) -> List[Dict[str, Any]]:
+    """Attach navigable institutional sources without asserting legal applicability."""
+    return [
+        {
+            "entity": entity,
+            "official_url": REGULATORY_ENTITY_SOURCES.get(entity),
+            "verification_status": "official_homepage_reference" if entity in REGULATORY_ENTITY_SOURCES else "unmapped_entity",
+            "evidence_scope": "institutional_entry_point_only",
+        }
+        for entity in entities
+    ]
 
 
 class PanamaTariffDatabase:
@@ -397,10 +440,52 @@ class PanamaTariffDatabase:
         }
     ]
 
+    _historical_items_cache: Optional[List[Dict[str, Any]]] = None
+
     @classmethod
-    def get_tariff_catalog(cls) -> List[Dict[str, Any]]:
-        """Returns the full parsed tariff catalog."""
-        return cls.OFFICIAL_TARIFF_ITEMS
+    def _historical_catalog(cls) -> List[Dict[str, Any]]:
+        """Loads observed historical descriptions built by the ingestion job.
+
+        These rows are discovery evidence only. They deliberately carry no
+        current tax rate or validity period and therefore cannot be used for
+        liquidation until a current ANA rule is linked.
+        """
+        if cls._historical_items_cache is not None:
+            return cls._historical_items_cache
+        if not HISTORICAL_TARIFF_PARQUET.exists():
+            cls._historical_items_cache = []
+            return cls._historical_items_cache
+        frame = pd.read_parquet(HISTORICAL_TARIFF_PARQUET)
+        items: List[Dict[str, Any]] = []
+        for row in frame.to_dict("records"):
+            code = str(row.get("hs_code", ""))
+            items.append({
+                "hs_code_6": str(row.get("hs_code_6", code[:6])),
+                "hs_code_panama": code,
+                "classification_system": row.get("classification_system"),
+                "descripcion": row.get("description"),
+                "capitulo": str(row.get("chapter", code[:2])),
+                "source_type": "historical_trade_observation",
+                "source_file": "INEC Comercio Exterior, reporte 05",
+                "effective_from": None,
+                "effective_to": None,
+                "historical_observation": True,
+            })
+        cls._historical_items_cache = items
+        return items
+
+    @classmethod
+    def get_tariff_catalog(cls, include_historical: bool = False) -> List[Dict[str, Any]]:
+        """Returns current rules; historical discovery rows are opt-in."""
+        items = cls.OFFICIAL_TARIFF_ITEMS + (cls._historical_catalog() if include_historical else [])
+        enriched = []
+        for item in items:
+            copy = dict(item)
+            entities = copy.get("entidades_reguladoras", [])
+            copy["regulatory_entity_sources"] = regulatory_entity_sources(entities)
+            copy.setdefault("evidence_status", CURATED_RULE_EVIDENCE_STATUS)
+            enriched.append(copy)
+        return enriched
 
     @classmethod
     def lookup_by_hs_code(cls, query: str) -> Optional[Dict[str, Any]]:
@@ -411,7 +496,10 @@ class PanamaTariffDatabase:
         for item in cls.OFFICIAL_TARIFF_ITEMS:
             item_clean = item["hs_code_panama"].replace(".", "").replace(" ", "").lower()
             if item["hs_code_6"] == clean or clean == item_clean or (len(clean) >= 4 and clean in item_clean):
-                return item
+                copy = dict(item)
+                copy["regulatory_entity_sources"] = regulatory_entity_sources(copy.get("entidades_reguladoras", []))
+                copy.setdefault("evidence_status", CURATED_RULE_EVIDENCE_STATUS)
+                return copy
         # Fallback to search_by_text
         matches = cls.search_by_text(query)
         if matches:
@@ -420,8 +508,7 @@ class PanamaTariffDatabase:
 
     @classmethod
     def search_by_text(cls, term: str) -> List[Dict[str, Any]]:
-        """Searches tariffs by description, regulatory entity, commodity type, HS code or procedures."""
-        import unicodedata
+        """Searches exact codes and all query tokens without substring false positives."""
         def _norm(s: str) -> str:
             if not s:
                 return ""
@@ -430,7 +517,7 @@ class PanamaTariffDatabase:
 
         term_norm = _norm(term).strip()
         if not term_norm:
-            return cls.OFFICIAL_TARIFF_ITEMS
+            return cls.get_tariff_catalog()
 
         # Map common synonyms in maritime / customs queries
         synonyms = {
@@ -445,12 +532,26 @@ class PanamaTariffDatabase:
             "combustible": "fueloleo",
             "bunker": "fueloleo",
             "arma": "revolver",
-            "pistola": "revolver"
+            "pistola": "revolver",
+            "lapiz": "lapices",
+            "borrador": "goma borrar",
+            "gomas": "goma borrar",
+            "medicamento": "medicamentos",
+            "gruas": "grua",
         }
         synonym_term = synonyms.get(term_norm, "")
+        query_tokens = [t for t in re.findall(r"[a-z0-9]+", term_norm) if len(t) >= 2]
+        synonym_tokens = [t for t in re.findall(r"[a-z0-9]+", synonym_term) if len(t) >= 2]
 
         results = []
-        for item in cls.OFFICIAL_TARIFF_ITEMS:
+        ranked = []
+        catalog = cls.get_tariff_catalog(include_historical=True)
+        # Category terms describe regulatory classes, not historical prose.
+        # Keep them constrained to curated rules to avoid matches such as
+        # "controlada" inside an unrelated historical procedure description.
+        if term_norm in {"controlado", "controlada", "material controlado"}:
+            catalog = [item for item in cls.OFFICIAL_TARIFF_ITEMS if item.get("tipo_mercancia") == "MATERIAL_CONTROLADO"]
+        for item in catalog:
             haystack = " ".join([
                 _norm(item.get("descripcion", "")),
                 _norm(item.get("tipo_mercancia", "")),
@@ -462,9 +563,16 @@ class PanamaTariffDatabase:
                 _norm(item.get("base_legal", "")),
                 " ".join(_norm(e) for e in item.get("entidades_reguladoras", []))
             ])
-            if term_norm in haystack or (synonym_term and synonym_term in haystack):
-                results.append(item)
-        return results
+            tokens = set(re.findall(r"[a-z0-9]+", haystack))
+            code_match = term_norm.replace(".", "").replace(" ", "").isdigit() and term_norm.replace(".", "").replace(" ", "") in _norm(item.get("hs_code_panama", "")).replace(".", "")
+            def matches(token: str) -> bool:
+                return token in tokens or any(t.startswith(token) for t in tokens if len(token) >= 4)
+            matched = sum(1 for token in query_tokens if matches(token))
+            synonym_match = bool(synonym_tokens) and all(matches(token) for token in synonym_tokens)
+            if code_match or (query_tokens and matched == len(query_tokens)) or synonym_match:
+                ranked.append((0 if code_match else 1, -matched, item.get("historical_observation", False), item))
+        ranked.sort(key=lambda row: (row[0], row[1], row[2], row[3].get("hs_code_panama", "")))
+        return [row[3] for row in ranked]
 
     @classmethod
     def calculate_landed_customs_cost(
@@ -481,16 +589,10 @@ class PanamaTariffDatabase:
         - Tasa de Inspección Aduanera DUA ($70.00)
         """
         item = cls.lookup_by_hs_code(hs_code)
-        if not item:
-            dai_pct = 10.0
-            itbms_pct = 7.0
-            item_desc = "Mercancía general sin clasificación específica"
-            permiso = "Trámite aduanero estándar con inspección regular"
-            entities = ["Aduanas-ANA"]
-            procedimiento = "Declaración ordinaria mediante agente de aduanas acreditado ante la ANA."
-            base_legal = "Decreto de Gabinete de Arancel Nacional de Importación."
-            eff_from = "2024-01-01"
-            eff_to = "2026-12-31"
+        if not item or item.get("historical_observation"):
+            raise ValueError("No existe una regla ANA vigente verificable para esa subpartida")
+        if item.get("evidence_status") != "verified_document_evidence":
+            raise ValueError("La regla candidata no tiene evidencia documental verificable; no se permite liquidar")
         else:
             dai_pct = item["arancel_dai_pct"]
             itbms_pct = item["itbms_pct"]
@@ -499,15 +601,15 @@ class PanamaTariffDatabase:
             entities = item["entidades_reguladoras"]
             procedimiento = item["procedimiento_importacion"]
             base_legal = item["base_legal"]
-            eff_from = item.get("effective_from", "2024-01-01")
-            eff_to = item.get("effective_to", "2026-12-31")
+            eff_from = item.get("effective_from")
+            eff_to = item.get("effective_to")
 
         dai_usd = cif_value_usd * (dai_pct / 100.0)
         customs_base_itbms = cif_value_usd + dai_usd
         itbms_usd = customs_base_itbms * (itbms_pct / 100.0)
-        customs_processing_fee = 70.0  # Tasa oficial de declaración DUA aduanera
-        total_customs_taxes = dai_usd + itbms_usd + customs_processing_fee
-        total_landed = cif_value_usd + total_customs_taxes
+        customs_processing_fee = item.get("customs_declaration_fee_usd")
+        total_customs_taxes = (dai_usd + itbms_usd + customs_processing_fee) if customs_processing_fee is not None else None
+        total_landed = cif_value_usd + total_customs_taxes if total_customs_taxes is not None else None
 
         return {
             "hs_code": hs_code,
@@ -517,17 +619,19 @@ class PanamaTariffDatabase:
             "dai_usd": round(dai_usd, 2),
             "itbms_rate_pct": itbms_pct,
             "itbms_usd": round(itbms_usd, 2),
-            "customs_declaration_fee_usd": round(customs_processing_fee, 2),
-            "total_import_taxes_usd": round(total_customs_taxes, 2),
-            "total_landed_cost_usd": round(total_landed, 2),
-            "effective_tax_rate_pct": round((total_customs_taxes / cif_value_usd) * 100.0, 2) if cif_value_usd > 0 else 0.0,
+            "customs_declaration_fee_usd": round(customs_processing_fee, 2) if customs_processing_fee is not None else None,
+            "total_import_taxes_usd": round(total_customs_taxes, 2) if total_customs_taxes is not None else None,
+            "total_landed_cost_usd": round(total_landed, 2) if total_landed is not None else None,
+            "effective_tax_rate_pct": round((total_customs_taxes / cif_value_usd) * 100.0, 2) if total_customs_taxes is not None and cif_value_usd > 0 else None,
+            "calculation_status": "complete" if total_customs_taxes is not None else "partial_missing_verified_fee",
             "regulatory_entities": entities,
+            "regulatory_entity_sources": regulatory_entity_sources(entities),
             "permits_required": permiso,
             "import_procedure": procedimiento,
             "legal_framework": base_legal,
             "effective_from": eff_from,
             "effective_to": eff_to,
-            "author": "Desarrollado v1.0.0 Miguel Benítez"
+            "source_type": "curated_rule_requires_document_evidence",
         }
 
     @classmethod

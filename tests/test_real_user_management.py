@@ -10,17 +10,34 @@ Validates:
 
 import pytest
 import sqlite3
+import os
 from fastapi.testclient import TestClient
 from src.serving.api import app
 from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
+from src.auth.bootstrap import BootstrapManager
 from src.serving.v1_router import get_db_conn
 
 client = TestClient(app)
 
 
+def admin_headers():
+    for password in [
+        os.getenv("PORTOPS_ROOT_PASSWORD"),
+        "PortOpsSovereign2026!#",
+        BootstrapManager.DEFAULT_ROOT_PASSWORD,
+    ]:
+        if not password:
+            continue
+        response = client.post("/api/v1/auth/login", json={"username": "root", "password": password})
+        if response.status_code == 200:
+            return {"Authorization": f"Bearer {response.json()['session_token']}"}
+    raise RuntimeError("Could not authenticate as root for test")
+
+
 def test_list_real_users_from_db():
     """Verify GET /api/v1/auth/users returns real users from SQLite."""
-    resp = client.get("/api/v1/auth/users")
+    assert client.get("/api/v1/auth/users").status_code == 401
+    resp = client.get("/api/v1/auth/users", headers=admin_headers())
     assert resp.status_code == 200
     data = resp.json()
     assert "users" in data
@@ -36,10 +53,11 @@ def test_create_and_delete_real_user():
     test_user = "test_ops_analyst"
     
     # Clean up before
-    client.delete(f"/api/v1/auth/users/{test_user}")
+    headers = admin_headers()
+    client.delete(f"/api/v1/auth/users/{test_user}", headers=headers)
     
     # 1. Create User
-    create_resp = client.post("/api/v1/auth/users", json={
+    create_resp = client.post("/api/v1/auth/users", headers=headers, json={
         "username": test_user,
         "full_name": "Analista Operativo de Prueba",
         "entity": "Autoridad Marítima de Panamá (AMP)",
@@ -62,7 +80,7 @@ def test_create_and_delete_real_user():
         assert len(row["salt"]) == 64  # 32 bytes hex string
 
     # 3. Duplicate user registration should fail
-    dup_resp = client.post("/api/v1/auth/users", json={
+    dup_resp = client.post("/api/v1/auth/users", headers=headers, json={
         "username": test_user,
         "full_name": "Duplicado",
         "entity": "AMP",
@@ -73,7 +91,7 @@ def test_create_and_delete_real_user():
     assert "ya existe" in dup_resp.json()["detail"].lower()
 
     # 4. Delete user
-    del_resp = client.delete(f"/api/v1/auth/users/{test_user}")
+    del_resp = client.delete(f"/api/v1/auth/users/{test_user}", headers=headers)
     assert del_resp.status_code == 200
     assert del_resp.json()["status"] == "success"
 
@@ -86,7 +104,7 @@ def test_create_and_delete_real_user():
 
 def test_root_user_is_protected_from_deletion():
     """Verify root cannot be deleted through the API."""
-    resp = client.delete("/api/v1/auth/users/root")
+    resp = client.delete("/api/v1/auth/users/root", headers=admin_headers())
     assert resp.status_code == 400
     assert "protegido" in resp.json()["detail"].lower()
 

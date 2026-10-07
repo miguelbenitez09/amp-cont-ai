@@ -21,6 +21,7 @@ import lightgbm as lgb
 from sklearn.ensemble import RandomForestRegressor, HistGradientBoostingRegressor
 from sklearn.linear_model import Ridge, ElasticNet
 from sklearn.preprocessing import StandardScaler
+from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 import mlflow
 import mlflow.lightgbm
@@ -41,7 +42,7 @@ MODELS_DIR = PROJECT_ROOT / "models"
 MODELS_DIR.mkdir(exist_ok=True)
 
 # Set MLflow local database tracking URI (SQLite supports full Model Registry)
-DB_PATH = (PROJECT_ROOT / "mlflow.db").as_posix()
+DB_PATH = ((PROJECT_ROOT / "data" / "enterprise_db" / "mlflow.db") if (PROJECT_ROOT / "data" / "enterprise_db" / "mlflow.db").exists() else (PROJECT_ROOT / "mlflow.db")).as_posix()
 mlflow.set_tracking_uri(f"sqlite:///{DB_PATH}")
 
 
@@ -87,7 +88,9 @@ def compute_vif_and_collinearity(df_feat: pd.DataFrame, feature_cols: List[str],
     if len(numeric_cols) < 2:
         return {"high_correlation_pairs": [], "vif_scores": {}}
 
-    sub_df = df_feat[numeric_cols].fillna(0)
+    # Descriptive diagnostics use observed medians; zero is a meaningful port
+    # value and must not be silently substituted for missing observations.
+    sub_df = df_feat[numeric_cols].apply(lambda col: col.fillna(col.median()))
     corr_matrix = sub_df.corr().abs()
     
     # Identify pairs with correlation > 0.85
@@ -145,9 +148,11 @@ class ContainerModelTrainer:
         """
         feat_path = self.gold_dir / "container_features.parquet"
         df = pd.read_parquet(feat_path)
+        if "is_synthetic" in df.columns and df["is_synthetic"].fillna(False).any():
+            raise ValueError("Synthetic rows are not allowed in the production training dataset")
         
         # Sort strictly by date and port
-        df = df.sort_values(by=["date", "port"]).reset_index(drop=True)
+        df = df.dropna(subset=["teu_total"]).sort_values(by=["date", "port"]).reset_index(drop=True)
         target_col = "teu_total"
         
         # Exclude metadata, timestamps, and direct target leakages
@@ -191,6 +196,7 @@ class ContainerModelTrainer:
         }
         
         final_models = {}
+        final_imputer = None
         
         with mlflow.start_run(run_name="Multi_Algorithm_Expanding_Window_Suite") as parent_run:
             mlflow.log_param("author", "Desarrollado v1.0.0 Miguel Benítez")
@@ -204,14 +210,19 @@ class ContainerModelTrainer:
                 train_mask = (df["date"] >= train_start) & (df["date"] <= train_end)
                 test_mask = (df["date"] >= test_start) & (df["date"] <= test_end)
                 
-                X_train = df.loc[train_mask, feature_cols].fillna(0)
+                X_train_raw = df.loc[train_mask, feature_cols]
                 y_train = df.loc[train_mask, target_col].values
-                
-                X_test = df.loc[test_mask, feature_cols].fillna(0)
+
+                X_test_raw = df.loc[test_mask, feature_cols]
                 y_test = df.loc[test_mask, target_col].values
-                
-                if len(X_test) == 0:
+
+                if len(X_test_raw) == 0:
                     continue
+                # Fit preprocessing on the training window only to prevent
+                # temporal leakage. Missingness is imputed by training medians.
+                imputer = SimpleImputer(strategy="median")
+                X_train = pd.DataFrame(imputer.fit_transform(X_train_raw), columns=feature_cols, index=X_train_raw.index)
+                X_test = pd.DataFrame(imputer.transform(X_test_raw), columns=feature_cols, index=X_test_raw.index)
                     
                 with mlflow.start_run(run_name=f"Split_{split_idx + 1}_{test_start[:4]}", nested=True):
                     # 1. Baseline & Ridge/ElasticNet with StandardScaler Pipeline
@@ -297,6 +308,14 @@ class ContainerModelTrainer:
                     p10_preds = np.minimum(p10_preds, p50_preds)
                     p90_preds = np.maximum(p90_preds, p50_preds)
 
+                    mlflow.log_metrics({
+                        "lightgbm_wape": lgb_metrics["wape"],
+                        "random_forest_wape": rf_metrics["wape"],
+                        "gradient_boosting_wape": gb_metrics["wape"],
+                        "ridge_elasticnet_wape": enet_metrics["wape"],
+                        "p50_wape": lgb_metrics["wape"],
+                    })
+
                     results_summary.append({
                         "split": split_idx + 1,
                         "period": f"{test_start[:7]} to {test_end[:7]}",
@@ -311,6 +330,7 @@ class ContainerModelTrainer:
                     })
 
                     if split_idx == len(splits) - 1:
+                        final_imputer = imputer
                         final_models = {
                             "p10": model_p10,
                             "p50": model_p50,
@@ -330,13 +350,37 @@ class ContainerModelTrainer:
                     "avg_rmse": round(float(np.mean([m["rmse"] for m in m_list])), 2),
                     "avg_r2": round(float(np.mean([m["r2"] for m in m_list])), 4),
                     "avg_latency_ms": round(float(np.mean([m["latency_ms"] for m in m_list])), 3),
-                    "status": "Champion" if algo == "lightgbm" else "Challenger"
+                    "status": "Candidate"
                 }
+
+            eligible = {
+                algo: metrics for algo, metrics in benchmark_table.items()
+                if np.isfinite(metrics["avg_wape"]) and metrics["avg_wape"] <= 0.15 and metrics["avg_r2"] >= 0.0
+            }
+            champion_algorithm = min(eligible, key=lambda name: eligible[name]["avg_wape"]) if eligible else None
+            for algo, metrics in benchmark_table.items():
+                metrics["status"] = "Champion" if algo == champion_algorithm else (
+                    "Challenger" if algo in eligible else "Rejected"
+                )
+                metrics["promotion_gate"] = {
+                    "wape_lte": 0.15,
+                    "r2_gte": 0.0,
+                    "passed": algo in eligible,
+                }
+                metrics["evidence"] = "models\\model_benchmark.json"
+            mlflow.log_metric("p50_wape", benchmark_table["lightgbm"]["avg_wape"])
+            mlflow.log_param("point_forecast_champion", champion_algorithm or "none")
 
             # Statistical Diagnostics: Residual Distribution for Champion
             latest_test_mask = (df["date"] >= splits[-1][2]) & (df["date"] <= splits[-1][3])
             test_df_latest = df.loc[latest_test_mask].copy()
-            X_latest = test_df_latest[feature_cols].fillna(0)
+            if final_imputer is None:
+                raise RuntimeError("No valid temporal split produced a fitted preprocessing pipeline")
+            X_latest = pd.DataFrame(
+                final_imputer.transform(test_df_latest[feature_cols]),
+                columns=feature_cols,
+                index=test_df_latest.index,
+            )
             y_latest = test_df_latest[target_col].values
             p50_latest = final_models["p50"].predict(X_latest)
             residuals = y_latest - p50_latest
@@ -434,6 +478,9 @@ class ContainerModelTrainer:
             model_bundle_path = MODELS_DIR / "champion_models.joblib"
             bundle = {
                 "models": final_models,
+                "champion_algorithm": champion_algorithm,
+                "preprocessor": final_imputer,
+                "missing_value_policy": "median fitted on each training window",
                 "feature_cols": feature_cols,
                 "target_col": target_col,
                 "metrics_summary": results_summary,
@@ -449,6 +496,7 @@ class ContainerModelTrainer:
                 json.dump({
                     "author": "Desarrollado v1.0.0 Miguel Benítez",
                     "benchmark_comparison": benchmark_table,
+                    "champion_algorithm": champion_algorithm,
                     "splits_summary": results_summary,
                     "diagnostics": diagnostics_bundle
                 }, f, indent=2)

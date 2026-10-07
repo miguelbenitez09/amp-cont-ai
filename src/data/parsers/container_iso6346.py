@@ -78,7 +78,7 @@ class ISO6346ContainerValidator:
         serial_number = clean[4:10]
         check_digit = clean[10]
 
-        if not owner_code.isalpha():
+        if not re.fullmatch(r"[A-Z]{3}", owner_code):
             return {"valid": False, "container_id": clean, "reason": "Owner code must be 3 alphabetic letters."}
 
         if category_id not in ['U', 'J', 'Z']:
@@ -88,10 +88,10 @@ class ISO6346ContainerValidator:
                 "reason": f"Category identifier '{category_id}' invalid. Must be 'U' (freight), 'J' (detachable), or 'Z' (trailers)."
             }
 
-        if not serial_number.isdigit():
+        if not re.fullmatch(r"[0-9]{6}", serial_number):
             return {"valid": False, "container_id": clean, "reason": "Serial number must be 6 numeric digits."}
 
-        if not check_digit.isdigit():
+        if not re.fullmatch(r"[0-9]", check_digit):
             return {"valid": False, "container_id": clean, "reason": "Check digit must be numeric."}
 
         expected_digit = cls.calculate_check_digit(clean[:10])
@@ -123,25 +123,24 @@ class ISO6346ContainerValidator:
         cls,
         container_id: str,
         size_type: str = "45G1",
-        gross_weight_kg: float = 24500.0,
-        tare_weight_kg: float = 3850.0,
-        seal_number: str = "PA-SEC-99214",
-        vessel_name: str = "MSC PAMELA",
-        voyage_number: str = "2409W",
-        terminal_code: str = "PA-BAL",  # Puerto Balboa
-        stowage_bay_row_tier: str = "010382",
-        status: str = "FULL_IMPORT",
+        gross_weight_kg: Optional[float] = None,
+        tare_weight_kg: Optional[float] = None,
+        seal_number: Optional[str] = None,
+        vessel_name: Optional[str] = None,
+        voyage_number: Optional[str] = None,
+        terminal_code: Optional[str] = None,
+        stowage_bay_row_tier: Optional[str] = None,
+        status: Optional[str] = None,
         hazard_imo_class: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Parses and structures a full maritime container terminal record.
         """
         val_result = cls.validate_container_id(container_id)
-        type_info = cls.ISO_TYPE_CODES.get(size_type, {
-            "length_ft": 40, "height_ft": 8.5, "type": "Generic Container", "teus": 2.0, "is_reefer": False
-        })
-
-        net_weight = max(0.0, gross_weight_kg - tare_weight_kg)
+        type_info = cls.ISO_TYPE_CODES.get(size_type)
+        net_weight = None
+        if gross_weight_kg is not None and tare_weight_kg is not None:
+            net_weight = round(max(0.0, gross_weight_kg - tare_weight_kg), 2)
 
         terminal_names = {
             "PA-BAL": "Puerto Balboa (Pacífico)",
@@ -157,22 +156,22 @@ class ISO6346ContainerValidator:
             "container_id": val_result.get("container_id", container_id),
             "size_type_code": size_type,
             "equipment_spec": type_info,
-            "teus": type_info["teus"],
+            "teus": type_info["teus"] if type_info else None,
             "weights": {
                 "gross_weight_kg": gross_weight_kg,
                 "tare_weight_kg": tare_weight_kg,
-                "net_cargo_weight_kg": round(net_weight, 2)
+                "net_cargo_weight_kg": net_weight
             },
             "manifest": {
                 "vessel_name": vessel_name,
                 "voyage_number": voyage_number,
                 "terminal_code": terminal_code,
-                "terminal_name": terminal_names.get(terminal_code, terminal_code),
+                "terminal_name": terminal_names.get(terminal_code, terminal_code) if terminal_code else None,
                 "bay_stowage_coordinate": stowage_bay_row_tier,
                 "seal_number": seal_number,
                 "cargo_status": status,
                 "hazardous_material": hazard_imo_class is not None,
-                "imo_class": hazard_imo_class or "NONE"
+                "imo_class": hazard_imo_class
             },
             "timestamp": datetime.now(timezone.utc).isoformat()
         }

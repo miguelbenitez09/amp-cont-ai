@@ -19,20 +19,21 @@
 
 ## 📑 Tabla de Contenidos General
 - 📘 **Tratado Maestro de Pipeline y Extensibilidad:** [`MANUAL_TECNICO_Y_ARQUITECTURA_MLOPS.md`](MANUAL_TECNICO_Y_ARQUITECTURA_MLOPS.md) *(Manual detallado con glosario para todo público, fórmulas, paso a paso e ingesta de APIs externas)*.
+- 🧠 **Project Brain & LOOP Engineering:** [`project_brain/`](project_brain/) *(Fuente de Verdad, Catálogo de Modelos y Registro de Brechas)*.
 1. [Misión Cívica, Educativa y Marco Normativo (Ley 6 de 2002)](#1-misión-cívica-educativa-y-marco-normativo-ley-6-de-2002)
-2. [Arquitectura del Ecosistema y Pipeline Medallion](#2-arquitectura-del-ecosistema-y-pipeline-medallion)
+2. [Arquitectura del Ecosistema, Gateway Go y Pipeline Medallion](#2-arquitectura-del-ecosistema-y-pipeline-medallion)
 3. [Fundamentos Teóricos, Inferencia Causal (DAGs) y Limpieza Robusta](#3-fundamentos-teóricos-inferencia-causal-dags-y-limpieza-robusta)
 4. [Benchmarking Multi-Algoritmo y Optimización Cuantílica](#4-benchmarking-multi-algoritmo-y-optimización-cuantílica)
 5. [Motor de Simulación Estocástica de Monte Carlo y Stress Testing](#5-motor-de-simulación-estocástica-de-monte-carlo-y-stress-testing)
 6. [Hoja de Ruta para Integración de Datos No Publicados (AIS, El Niño)](#6-hoja-de-ruta-para-integración-de-datos-no-publicados-ais-el-niño)
 7. [Guía de Inicio Rápido: Descarga, Entrenamiento y Ejecución](#7-guía-de-inicio-rápido-descarga-entrenamiento-y-ejecución)
 8. [Consola Interactiva de Integración API y Manejo de Secretos](#8-consola-interactiva-de-integración-api-y-manejo-de-secretos)
-9. [Infraestructura Empresarial: Adaptadores DB, Servidor MCP, RAG y Kubernetes](#9-infraestructura-empresarial-adaptadores-db-servidor-mcp-rag-y-kubernetes)
+9. [Infraestructura Empresarial: Go Gateway, Adaptadores DB, Servidor MCP, RAG y Kubernetes](#9-infraestructura-empresarial-adaptadores-db-servidor-mcp-rag-y-kubernetes)
 10. [Lakehouse Nacional de Panamá: Scraper de los 17 Ministerios, Tráfico ACP y Clima IMHPA](#10-lakehouse-nacional-de-panamá-scraper-de-los-17-ministerios-tráfico-acp-y-clima-imhpa)
 11. [Gobernanza Gubernamental: Matriz de Cumplimiento Normativo ISO (27001, 42001, 27701, 22301)](#11-gobernanza-gubernamental-matriz-de-cumplimiento-normativo-iso-27001-42001-27701-22301)
 12. [Guía de Despliegue en GitHub, Seguridad y CI/CD](#12-guía-de-despliegue-en-github-seguridad-y-cicd)
-13. [Arquitectura v1.0 Enterprise: IAM, Plataforma de Datos, Model Registry y WORM Ledger](#13-arquitectura-v10-enterprise-iam-plataforma-de-datos-model-registry-y-worm-ledger)
-14. [Ecosistema Agéntico Industrial, Estación de Control Streamlit, Inferencia y Aranceles Aduaneros](#14-ecosistema-agéntico-industrial-estación-de-control-streamlit-inferencia-y-aranceles-aduaneros)
+13. [Arquitectura v2.0 Enterprise: IAM, Project Brain, Model Registry y WORM Ledger](#13-arquitectura-v10-enterprise-iam-plataforma-de-datos-model-registry-y-worm-ledger)
+14. [Ecosistema Agéntico Industrial, Estación de Control, Inferencia y Aranceles Aduaneros](#14-ecosistema-agéntico-industrial-estación-de-control-streamlit-inferencia-y-aranceles-aduaneros)
 15. [Licencia, Atribución Obligatoria y Citación Académica](#15-licencia-atribución-obligatoria-y-citación-académica)
 
 ---

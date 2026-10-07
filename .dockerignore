@@ -1,17 +1,26 @@
-# Deny by default: only the canonical framework enters the context.
+# Deny by default; allow framework and production serving build inputs.
 **
 !Dockerfile
+!Dockerfile.production
+!Dockerfile.gateway
+!go.mod
+!cmd/
+!cmd/**
 !requirements-framework.txt
+!requirements.txt
+!config/
+!config/**
+!configs/
+!configs/**
 !src/
-!src/framework/
-!src/framework/**
-!src/serving/
-!src/serving/static/
-!src/serving/static/framework/
-!src/serving/static/framework/**
-!src/serving/static/landing.html
+!src/**
 **/__pycache__/**
 **/*.pyc
 **/.env*
 **/*.db
 **/*.sqlite*
+data/**
+models/**
+logs/**
+.bootstrap/**
+.local/**

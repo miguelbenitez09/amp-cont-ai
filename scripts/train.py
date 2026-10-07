@@ -21,6 +21,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from src.models.reproducible_trainer import DeterministicModelReplicator
 from src.models.training_presets import TrainingPresetManager
+from src.models.champion_suite import get_champion_suite
 from src.utils.logger import logger
 
 
@@ -47,14 +48,19 @@ def main():
         print(f"[WARN] Archivo de politicas {args.config} no encontrado. Usando defaults.")
 
     res = DeterministicModelReplicator.verify_reproducibility(seed=args.seed, preset_id=args.preset)
+    suite = get_champion_suite()
+    selection = suite.get_selection_recommendation()
+    selected = suite.get_benchmark_summary().get(selection.get("candidate") or "", {})
 
     print("\n[MLOps Pipeline] Entrenamiento ejecutado exitosamente:")
-    print("  - Algoritmo Champion: LightGBM Quantile Ensemble (P10, P50, P90)")
+    print(f"  - Candidato seleccionado por benchmark: {selection.get('candidate') or 'N/D'}")
+    print(f"  - Política: {selection.get('policy', 'N/D')} | Promoción gobernada: {selection.get('requires_governance_promotion', 'N/D')}")
     print(f"  - Estado: {res.get('status', 'TRAINED')}")
-    print(f"  - WAPE Score: {res.get('expected_metrics', {}).get('wape', 0.0911) * 100:.2f}%")
-    print(f"  - R² Score: {res.get('expected_metrics', {}).get('r2_score', 0.983)}")
-    print(f"  - SHA-256 Model Hash: {res.get('model_weights_deterministic_sha256', 'a7c92b...')}")
-    print(f"  - Reproducibilidad verificada: {res.get('cross_machine_consistency', '100% Deterministic')}")
+    wape = selected.get("avg_wape")
+    print(f"  - WAPE Score: {wape * 100:.2f}%" if isinstance(wape, (int, float)) else "  - WAPE Score: N/D")
+    print(f"  - R² Score: {selected.get('avg_r2')}" if selected.get("avg_r2") is not None else "  - R² Score: N/D")
+    print(f"  - SHA-256 Model Hash: {res.get('model_weights_deterministic_sha256') or 'N/D'}")
+    print(f"  - Reproducibilidad verificada: {res.get('cross_machine_consistency') or 'N/D'}")
     print("\n[OK] Modelo registrado listo para etapa de VALIDATION y REVIEW.")
 
 

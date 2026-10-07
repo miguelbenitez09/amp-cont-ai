@@ -64,7 +64,7 @@ class LagAndRollingFeatureExtractor:
                 # Rolling Mean
                 df_out[f"{col}_rolling_mean_{window}m"] = shifted.rolling(window=window, min_periods=1).mean()
                 # Rolling Standard Deviation (Volatility)
-                df_out[f"{col}_rolling_std_{window}m"] = shifted.rolling(window=window, min_periods=1).std().fillna(0)
+                df_out[f"{col}_rolling_std_{window}m"] = shifted.rolling(window=window, min_periods=2).std()
                 # Rolling Min and Max
                 df_out[f"{col}_rolling_min_{window}m"] = shifted.rolling(window=window, min_periods=1).min()
                 df_out[f"{col}_rolling_max_{window}m"] = shifted.rolling(window=window, min_periods=1).max()
@@ -78,8 +78,12 @@ class LagAndRollingFeatureExtractor:
             lag1 = grouped.shift(1)
             lag2 = grouped.shift(2)
             lag12 = grouped.shift(12)
-            df_out[f"{col}_growth_mom"] = (lag1 - lag2) / (lag2.abs() + 1e-4)
-            df_out[f"{col}_growth_yoy"] = (lag1 - lag12) / (lag12.abs() + 1e-4)
+            # Growth from a zero denominator is undefined. Adding epsilon used
+            # to create extreme artifacts that destabilized linear models.
+            mom_denominator = lag2.abs().where(lag2.abs() > 1e-9)
+            yoy_denominator = lag12.abs().where(lag12.abs() > 1e-9)
+            df_out[f"{col}_growth_mom"] = (lag1 - lag2) / mom_denominator
+            df_out[f"{col}_growth_yoy"] = (lag1 - lag12) / yoy_denominator
 
         df_out = df_out.sort_values(by=[date_col, group_col]).reset_index(drop=True)
         return df_out

@@ -43,18 +43,19 @@ def main():
     # benchmark is dict of dicts
     for key, m in benchmark.items():
         algo = m.get("name", key)
-        wape = f"{m.get('avg_wape', m.get('wape', 0.0)) * 100:.2f}%"
-        mae = f"{m.get('avg_mae', m.get('mae', 0.0)):,.0f}"
-        r2 = f"{m.get('avg_r2', m.get('r2', 0.0)):.4f}"
-        lat = f"{m.get('avg_latency_ms', m.get('latency_ms', 0.0)):.1f} ms"
+        wape_value = m.get('avg_wape', m.get('wape'))
+        mae_value = m.get('avg_mae', m.get('mae'))
+        r2_value = m.get('avg_r2', m.get('r2'))
+        lat_value = m.get('avg_latency_ms', m.get('latency_ms'))
+        wape = f"{wape_value * 100:.2f}%" if isinstance(wape_value, (int, float)) else "N/D"
+        mae = f"{mae_value:,.0f}" if isinstance(mae_value, (int, float)) else "N/D"
+        r2 = f"{r2_value:.4f}" if isinstance(r2_value, (int, float)) else "N/D"
+        lat = f"{lat_value:.1f} ms" if isinstance(lat_value, (int, float)) else "N/D"
         status = f" [{m.get('status', '').upper()}]" if m.get("status") else ""
         print(f"{(algo + status)[:36]:<36} | {wape:<8} | {mae:<10} | {r2:<8} | {lat:<8}")
 
     print("\n[Verificación de Invariantes Cuantílicos]:")
-    print("  [OK] Condición de No-Cruzamiento Cuantílico: P10 <= P50 <= P90 (100% satisfecha)")
-    print("  [OK] Cobertura de Intervalo de Predicción: 80.2% empírico vs 80.0% nominal")
-    print("  [OK] Ancho de Intervalo Promedio: 32,850 TEUs")
-    print("  [OK] Calibración de Residuos: Media residual +7,788 TEUs (Insesgadez verificada)")
+    print("  [i] No-cruzamiento, cobertura, ancho y calibración: requieren un reporte de evaluación registrado; no se infieren del catálogo.")
 
     print("\n[OK] Evaluación completada con éxito. El modelo satisface las políticas de promoción de config/model_policies.yaml.")
 
