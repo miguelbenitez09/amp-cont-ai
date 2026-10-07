@@ -1,0 +1,9 @@
+{
+  "classification": "OBSERVED",
+  "source_name": "Autoridad del Canal de Panama (ACP)",
+  "source_url": "https://micanaldepanama.com/telemetria-hidrologica",
+  "retrieved_at": "2026-10-07T20:00:00Z",
+  "sha256": "848befcdc0ad15c3ec82c17952d340e06a5aca9ae99c9ccef3a35938290c2b03",
+  "records": 140,
+  "author": "Desarrollado v1.0.0 Miguel Benitez"
+}

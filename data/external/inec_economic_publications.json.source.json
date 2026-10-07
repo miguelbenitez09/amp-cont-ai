@@ -1,0 +1,9 @@
+{
+  "classification": "OBSERVED",
+  "source_name": "Instituto Nacional de Estadística y Censo (INEC) de Panamá",
+  "source_url": "https://www.inec.gob.pa/publicaciones/Default2.aspx?ID_CATEGORIA=1&ID_SUBCATEGORIA=1",
+  "retrieved_at": "2026-10-07T20:09:26.226020+00:00",
+  "sha256": "6eb9724c91f9a0706ff9bbc2cbd4c16d64579a41bf87c2b45de37a1e7d6021ea",
+  "records": 118,
+  "author": "Desarrollado v1.0.0 Miguel Benítez"
+}

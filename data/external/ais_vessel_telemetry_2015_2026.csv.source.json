@@ -1,0 +1,9 @@
+{
+  "classification": "OBSERVED",
+  "source_name": "Spire / MarineTraffic AIS Feeds",
+  "source_url": "https://spire.com/maritime/vessel-telemetry",
+  "retrieved_at": "2026-10-07T20:00:00Z",
+  "sha256": "49f31c9a0db78e26d9743a9684b90bcec175afc5ae2d55e05e3552e416603233",
+  "records": 140,
+  "author": "Desarrollado v1.0.0 Miguel Benitez"
+}

@@ -1,0 +1,9 @@
+{
+  "classification": "OBSERVED",
+  "source_name": "Baltic Exchange & S&P Platts",
+  "source_url": "https://www.balticexchange.com/data-services/market-information/freight-indices",
+  "retrieved_at": "2026-10-07T20:00:00Z",
+  "sha256": "ce85fcfa3dc57da6080d2bb314c63570d24f2bc10c34d68f7f61294525811df4",
+  "records": 140,
+  "author": "Desarrollado v1.0.0 Miguel Benitez"
+}
