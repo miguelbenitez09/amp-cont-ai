@@ -239,11 +239,7 @@
 
   document.addEventListener("click", (event) => {
     if (event.target.closest?.("#btn-auth-iam")) {
-      if (window.activeSession && window.activeSession.token) {
-        window.openAuthModal("atab-inspector");
-      } else {
-        window.openAuthModal("atab-login");
-      }
+      window.openAuthModal("atab-login");
     }
   }, true);
 

@@ -367,6 +367,15 @@
             </div>
             <h3>Inferencia Cuantílica en Tiempo Real</h3>
             <p>Pronóstico condicional a 1–6 meses para las 6 terminales portuarias con bandas de incertidumbre operacional (P10 Suelo, P50 Mediana, P90 Techo de Capacidad) y semáforo de vacíos.</p>
+            <div class="card-hover-preview">
+              <div class="card-hover-badge">⚡ TELEMETRÍA & METADATA OPERACIONAL</div>
+              <p class="card-hover-desc">Inferencia de sub-segundo (&lt;25ms) con cuantiles calibrados P10/P50/P90. Supervisión de saturación en patios marítimos.</p>
+              <div class="card-hover-tags">
+                <span class="hover-tag">6 Terminales</span>
+                <span class="hover-tag">Ventana: 1 a 6 Meses</span>
+                <span class="hover-tag">Pinball Loss</span>
+              </div>
+            </div>
             <div class="cap-footer">
               <span>Probar Pronósticos →</span>
             </div>
@@ -379,6 +388,15 @@
             </div>
             <h3>Benchmarking Multi-Algoritmo</h3>
             <p>Expanding Window Backtesting empírico comparando 8 arquitecturas. La selección se calcula con la política configurada y requiere promoción gobernada.</p>
+            <div class="card-hover-preview">
+              <div class="card-hover-badge">🔬 METODOLOGÍA & AUDITORÍA DE MODELOS</div>
+              <p class="card-hover-desc">Validación temporal continua Rolling Window sin data leakage. Torneo determinista comparando WAPE, MAE y RMSE.</p>
+              <div class="card-hover-tags">
+                <span class="hover-tag">8 Arquitecturas</span>
+                <span class="hover-tag">MLflow Registry</span>
+                <span class="hover-tag">Promoción con Firma</span>
+              </div>
+            </div>
             <div class="cap-footer">
               <span>Ver Matriz Comparativa (8 Modelos) →</span>
             </div>
@@ -391,6 +409,15 @@
             </div>
             <h3>Diagnóstico de Residuos & Causalidad</h3>
             <p>Auditoría de residuos reales ($y_t - \hat{y}_t$), Factor de Inflación de la Varianza (VIF) y tratamiento formal de variables confusoras (Año Nuevo Chino, sequía del Canal).</p>
+            <div class="card-hover-preview">
+              <div class="card-hover-badge">📐 FUNDAMENTO ESTADÍSTICO & CAUSAL</div>
+              <p class="card-hover-desc">Test Durbin-Watson de independencia temporal, diagnóstico de heterocedasticidad y detección de multicolinealidad con VIF &lt; 5.0.</p>
+              <div class="card-hover-tags">
+                <span class="hover-tag">85 Variables Gold</span>
+                <span class="hover-tag">Durbin-Watson d ≈ 2.0</span>
+                <span class="hover-tag">Control de Shocks</span>
+              </div>
+            </div>
             <div class="cap-footer">
               <span>Inspeccionar Residuos →</span>
             </div>
@@ -403,6 +430,15 @@
             </div>
             <h3>Monte Carlo & Reverse Stress Testing</h3>
             <p>Cópulas gaussianas vía factorización de Cholesky, saltos de Poisson de Merton (1976) y optimización Powell para encontrar vectores mínimos de colapso de patio.</p>
+            <div class="card-hover-preview">
+              <div class="card-hover-badge">🎲 MOTOR ESTOCÁSTICO DE RIESGO</div>
+              <p class="card-hover-desc">Procesos de Wiener acoplados mediante matriz de covarianza de Cholesky. Cuantificación de colapso portuario y estrés financiero.</p>
+              <div class="card-hover-tags">
+                <span class="hover-tag">Saltos de Poisson</span>
+                <span class="hover-tag">VaR / CVaR 95%</span>
+                <span class="hover-tag">500 a 1000 Rutas</span>
+              </div>
+            </div>
             <div class="cap-footer">
               <span>Ejecutar Simulación →</span>
             </div>
@@ -2178,7 +2214,7 @@
               <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Plataforma blindada con hashing PBKDF2-HMAC-SHA256, MFA TOTP RFC 6238, tokens firmados HS256 y libro inmutable WORM.</p>
             </div>
             <div style="display: flex; gap: 0.5rem; align-items: center;">
-              <button class="btn btn-primary" onclick="window.openAuthModal('tab-login')">
+              <button class="btn btn-primary" onclick="window.openAuthModal('atab-login')">
                 <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
                 Gestión de Sesión & IAM
               </button>
@@ -2626,19 +2662,34 @@
 
       <div class="settings-tabs-nav">
         <button class="settings-tab-btn active" data-settings-tab="stab-config">🎯 Presets & Hiperparámetros</button>
-        <button class="settings-tab-btn" data-settings-tab="stab-deploy-verify">🚀 Deploy & Root Admin</button>
-        <button class="settings-tab-btn" data-settings-tab="stab-vllm-secrets">⚡ vLLM, Volúmenes & Secretos</button>
-        <button class="settings-tab-btn" data-settings-tab="stab-user-guardrails">🛡️ Guardrails & Cuotas</button>
+        <button class="settings-tab-btn admin-requires-auth" data-settings-tab="stab-deploy-verify" style="display: none;">🚀 Deploy & Root Admin</button>
+        <button class="settings-tab-btn admin-requires-auth" data-settings-tab="stab-vllm-secrets" style="display: none;">⚡ vLLM, Volúmenes & Secretos</button>
+        <button class="settings-tab-btn admin-requires-auth" data-settings-tab="stab-user-guardrails" style="display: none;">🛡️ Guardrails & Cuotas</button>
         <button class="settings-tab-btn" data-settings-tab="stab-reproducibility">🔬 Replicación (Seed 42)</button>
         <button class="settings-tab-btn" data-settings-tab="stab-privacy">🛡️ Anonimización Ley 81</button>
-        <button class="settings-tab-btn" data-settings-tab="stab-gov-admin">🏛️ Gobernanza & RBAC</button>
-        <button class="settings-tab-btn" data-settings-tab="stab-mcp-souls">🤖 MCP Runner & Almas</button>
-        <button class="settings-tab-btn" data-settings-tab="stab-extensibility">🔌 Ingesta Nuevas APIs & Adaptadores</button>
+        <button class="settings-tab-btn admin-requires-auth" data-settings-tab="stab-gov-admin" style="display: none;">🏛️ Gobernanza & RBAC</button>
+        <button class="settings-tab-btn admin-requires-auth" data-settings-tab="stab-mcp-souls" style="display: none;">🤖 MCP Runner & Almas</button>
+        <button class="settings-tab-btn admin-requires-auth" data-settings-tab="stab-extensibility" style="display: none;">🔌 Ingesta Nuevas APIs & Adaptadores</button>
         <button class="settings-tab-btn" data-settings-tab="stab-glossary">📖 Glosario ML</button>
         <button class="settings-tab-btn" data-settings-tab="stab-export">📥 Exportar Datos</button>
       </div>
       
       <div class="modal-body settings-body">
+
+        <!-- Banner de Modo Invitado / Consulta Pública (Oculto al iniciar sesión) -->
+        <div id="settings-guest-alert-banner" class="settings-guest-banner" style="background: rgba(14, 165, 233, 0.08); border-left: 4px solid #00E5FF; padding: 0.85rem 1.25rem; border-radius: 8px; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <div style="font-weight: 700; color: #00E5FF; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem;">
+              <span>🔒</span> <span>Modo Consulta Pública (Invitado)</span>
+            </div>
+            <p style="font-size: 0.8rem; color: #CBD5E1; margin: 0.25rem 0 0 0; line-height: 1.45;">
+              Navegación en solo lectura. Para configurar API Keys, conectar endpoints de inferencia (vLLM/Ollama), ejecutar herramientas MCP, ajustar volúmenes o rotar credenciales, inicie sesión con credenciales autorizadas.
+            </p>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" onclick="window.closeSettingsModal && window.closeSettingsModal(); window.openAuthModal('atab-login');" style="padding: 0.45rem 1.2rem; font-size: 0.82rem; font-weight: 600; white-space: nowrap;">
+            🔑 Iniciar Sesión para Configurar ↗
+          </button>
+        </div>
         
         <!-- Tab 1: Presets & Hiperparámetros -->
         <div id="stab-config" class="settings-tab-content active">
@@ -3987,26 +4038,59 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
       </div>
 
       <div class="auth-tabs-nav">
-        <button class="auth-tab-btn active" data-atab="atab-login" onclick="window.switchAuthTab('atab-login')">🔑 Iniciar Sesión / MFA</button>
-        <button class="auth-tab-btn" data-atab="atab-password" onclick="window.switchAuthTab('atab-password')">🛡️ Cambio Clave (NIST)</button>
-        <button class="auth-tab-btn" data-atab="atab-mfa" onclick="window.switchAuthTab('atab-mfa')">📱 Configurar MFA</button>
-        <button class="auth-tab-btn" data-atab="atab-inspector" onclick="window.switchAuthTab('atab-inspector')">🔍 Inspector de Tokens & Sesión</button>
+        <button class="auth-tab-btn active" data-atab="atab-login" onclick="window.switchAuthTab('atab-login')">🔑 Iniciar Sesión / Perfil</button>
+        <button class="auth-tab-btn auth-requires-login" data-atab="atab-password" onclick="window.switchAuthTab('atab-password')" style="display: none;">🛡️ Cambio Clave (NIST)</button>
+        <button class="auth-tab-btn auth-requires-login" data-atab="atab-mfa" onclick="window.switchAuthTab('atab-mfa')" style="display: none;">📱 Configurar MFA</button>
+        <button class="auth-tab-btn auth-requires-login" data-atab="atab-inspector" onclick="window.switchAuthTab('atab-inspector')" style="display: none;">🔍 Inspector de Tokens & Sesión</button>
       </div>
 
       <div class="modal-body" style="padding: 0;">
         <!-- Tab 1: Login & MFA -->
         <div id="atab-login" class="auth-tab-content active">
-          <div class="auth-notice-box" style="border-left: 4px solid var(--accent-primary); background: rgba(0, 229, 255, 0.06); padding: 0.85rem 1rem; border-radius: 6px; margin-bottom: 1.25rem;">
-            <div style="font-weight: 700; color: #00E5FF; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.25rem;">
-              <span>🛡️</span> <span>Acceso Corporativo Soberano (Zero Trust MLOps)</span>
+          <!-- Vista para Usuario Autenticado (Oculta por defecto si no hay sesión iniciada) -->
+          <div id="auth-session-profile-view" style="display: none; padding: 1.25rem 1.5rem;">
+            <div class="auth-notice-box" style="border-left: 4px solid var(--emerald-success); background: rgba(16, 185, 129, 0.08); padding: 1rem 1.25rem; border-radius: 8px; margin-bottom: 1.25rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <div style="font-weight: 700; color: #10B981; font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem;">
+                  <span>🟢</span> <span>Sesión Oficial Activa & Verificada</span>
+                </div>
+                <span class="badge" id="auth-profile-role-badge" style="background: rgba(16, 185, 129, 0.2); color: #10B981; border: 1px solid #10B981;">ROL: root</span>
+              </div>
+              <p style="font-size: 0.82rem; color: #CBD5E1; margin: 0.4rem 0 0 0; line-height: 1.5;">
+                Usuario: <strong id="auth-profile-username" style="color: #F8FAFC;">root</strong> • Nivel de Autorización: <strong id="auth-profile-perms" style="color: #38BDF8;">31 Capacidades MLOps Activas</strong>
+              </p>
             </div>
-            <p style="font-size: 0.8rem; color: #cbd5e1; margin: 0; line-height: 1.45;">
-              Para acceder a la consola de personalización de modelos, Lakehouse y administración del framework, introduzca sus credenciales oficiales.
-              En despliegues nuevos o primer inicio, utilice el usuario <code>root</code> y la clave temporal generada en <code>.bootstrap/root-credentials.txt</code>.
-            </p>
+
+            <h4 style="font-size: 0.88rem; color: #94A3B8; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Acciones de Seguridad y Configuración Personal:</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.75rem; margin-bottom: 1.25rem;">
+              <button type="button" class="btn btn-secondary" onclick="window.switchAuthTab('atab-password')" style="padding: 0.65rem 1rem; font-size: 0.82rem; justify-content: flex-start; gap: 0.5rem;">
+                <span>🛡️</span> <span>Cambiar Contraseña (NIST)</span>
+              </button>
+              <button type="button" class="btn btn-secondary" onclick="window.switchAuthTab('atab-mfa')" style="padding: 0.65rem 1rem; font-size: 0.82rem; justify-content: flex-start; gap: 0.5rem;">
+                <span>📱</span> <span>Configurar Segundo Factor (MFA)</span>
+              </button>
+              <button type="button" class="btn btn-secondary" onclick="window.switchAuthTab('atab-inspector')" style="padding: 0.65rem 1rem; font-size: 0.82rem; justify-content: flex-start; gap: 0.5rem;">
+                <span>🔍</span> <span>Inspeccionar Token JWT</span>
+              </button>
+              <button type="button" class="btn btn-secondary" onclick="window.executeLogout()" style="padding: 0.65rem 1rem; font-size: 0.82rem; color: #EF4444; border-color: rgba(239, 68, 68, 0.4); justify-content: flex-start; gap: 0.5rem;">
+                <span>🚪</span> <span>Cerrar Sesión Activa</span>
+              </button>
+            </div>
           </div>
 
-          <div id="auth-login-view">
+          <!-- Vista para Iniciar Sesión (Mostrada si no hay sesión autenticada) -->
+          <div id="auth-login-box-wrapper" style="padding: 1.25rem 1.5rem;">
+            <div class="auth-notice-box" style="border-left: 4px solid var(--accent-primary); background: rgba(0, 229, 255, 0.06); padding: 0.85rem 1rem; border-radius: 6px; margin-bottom: 1.25rem;">
+              <div style="font-weight: 700; color: #00E5FF; font-size: 0.88rem; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.25rem;">
+                <span>🛡️</span> <span>Acceso Corporativo Soberano (Zero Trust MLOps)</span>
+              </div>
+              <p style="font-size: 0.8rem; color: #cbd5e1; margin: 0; line-height: 1.45;">
+                Para acceder a la consola de personalización de modelos, Lakehouse y administración del framework, introduzca sus credenciales oficiales.
+                En despliegues nuevos o primer inicio, utilice el usuario <code>root</code> y la clave temporal generada en <code>.bootstrap/root-credentials.txt</code>.
+              </p>
+            </div>
+
+            <div id="auth-login-view">
 
             <div class="auth-input-group">
               <label for="auth-input-username">Usuario:</label>
@@ -4044,6 +4128,7 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
               </button>
               <span id="auth-mfa-status" style="font-size: 0.8rem; color: #94a3b8;"></span>
             </div>
+          </div>
           </div>
         </div>
 
@@ -4139,7 +4224,7 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
   <!-- ========================================================================= -->
   <!-- MODAL DE CONFIGURACIÓN INICIAL OBLIGATORIA (FIRST-RUN SETUP WIZARD)      -->
   <!-- ========================================================================= -->
-  <div id="first-run-setup-modal" class="modal-backdrop" style="z-index: 10000; background: rgba(2, 6, 23, 0.96); backdrop-filter: blur(12px);">
+  <div id="first-run-setup-modal" class="modal-backdrop" style="display: none; z-index: 10000; background: rgba(2, 6, 23, 0.96); backdrop-filter: blur(12px);">
     <div class="modal-dialog" style="max-width: 1420px; width: 96vw; min-height: 84vh; max-height: 94vh; display: flex; flex-direction: column; border: 1px solid #00E5FF; box-shadow: 0 0 50px rgba(0, 229, 255, 0.25); border-radius: 16px; background: linear-gradient(150deg, #090e1d 0%, #030712 100%);">
       
       <!-- Modal Header -->

@@ -4651,7 +4651,7 @@ executePortForecast();`;
   window.syncSessionUI = function() {
     const isAuth = !!(window.activeSession && window.activeSession.token && window.activeSession.user);
     const user = isAuth ? window.activeSession.user : null;
-    const role = isAuth ? (window.activeSession.roles[0] || "admin") : "Invitado";
+    const role = isAuth ? (window.activeSession.roles[0] || "root") : "Invitado";
 
     // Nav HUD Role Pill
     const hudActiveRole = document.getElementById("hud-active-role");
@@ -4702,6 +4702,69 @@ executePortForecast();`;
       permissionSub.textContent = `${label}: ${count === null ? "N/D" : count}`;
     }
 
+    // Auth IAM Modal Tabs Visibility (Hide Change Password, MFA, and Token Inspector when not logged in)
+    const authReqTabs = document.querySelectorAll(".auth-requires-login");
+    authReqTabs.forEach(tab => {
+      tab.style.display = isAuth ? "inline-flex" : "none";
+    });
+
+    const authSessionProfileView = document.getElementById("auth-session-profile-view");
+    const authLoginBox = document.getElementById("auth-login-box-wrapper");
+    const authProfileUser = document.getElementById("auth-profile-username");
+    const authProfileRole = document.getElementById("auth-profile-role-badge");
+    const authProfilePerms = document.getElementById("auth-profile-perms");
+
+    if (isAuth && user) {
+      if (authSessionProfileView) authSessionProfileView.style.display = "block";
+      if (authLoginBox) authLoginBox.style.display = "none";
+      if (authProfileUser) authProfileUser.textContent = user.username;
+      if (authProfileRole) authProfileRole.textContent = `ROL: ${role}`;
+      if (authProfilePerms) {
+        const pCount = Array.isArray(window.activeSession?.permissions) ? window.activeSession.permissions.length : 31;
+        authProfilePerms.textContent = `${pCount} Capacidades MLOps Activas`;
+      }
+    } else {
+      if (authSessionProfileView) authSessionProfileView.style.display = "none";
+      if (authLoginBox) authLoginBox.style.display = "block";
+    }
+
+    // Settings Modal Sensitive Tabs Visibility (Deploy, vLLM/Endpoints/API Keys, Guardrails, RBAC, MCP Runner, APIs)
+    const sensitiveSettingsTabs = document.querySelectorAll(".settings-tab-btn.admin-requires-auth");
+    sensitiveSettingsTabs.forEach(tab => {
+      tab.style.display = isAuth ? "inline-flex" : "none";
+    });
+
+    const settingsGuestBanner = document.getElementById("settings-guest-alert-banner");
+    if (settingsGuestBanner) {
+      settingsGuestBanner.style.display = isAuth ? "none" : "flex";
+    }
+
+    // Role Perspective Select in Settings
+    const perspectiveSelect = document.getElementById("settings-role-perspective-select");
+    const perspectiveBadge = document.getElementById("perspective-badge");
+    if (perspectiveSelect) {
+      if (!isAuth) {
+        perspectiveSelect.value = "readonly_viewer";
+        if (perspectiveBadge) perspectiveBadge.textContent = "Vista: Visualizador Cívico (Modo Consulta)";
+      } else if (perspectiveSelect.value === "readonly_viewer") {
+        perspectiveSelect.value = role === "root" ? "root" : (role === "admin_maritimo" ? "admin_maritimo" : "mlops_engineer");
+        if (perspectiveBadge) perspectiveBadge.textContent = `Vista: ${perspectiveSelect.options[perspectiveSelect.selectedIndex]?.text || role}`;
+      }
+    }
+
+    // If guest, ensure active tab isn't an unauthorized one
+    if (!isAuth) {
+      const activeSettingsTab = document.querySelector(".settings-tab-btn.active");
+      if (activeSettingsTab && activeSettingsTab.classList.contains("admin-requires-auth")) {
+        const configBtn = document.querySelector('[data-settings-tab="stab-config"]');
+        if (configBtn) configBtn.click();
+      }
+      const activeAuthTab = document.querySelector(".auth-tab-btn.active");
+      if (activeAuthTab && activeAuthTab.classList.contains("auth-requires-login")) {
+        window.switchAuthTab("atab-login");
+      }
+    }
+
     // Lock Banners in Settings & Admin Areas
     const lockBanners = document.querySelectorAll(".admin-lock-card, #admin-guest-lock-banner");
     lockBanners.forEach(b => {
@@ -4711,6 +4774,7 @@ executePortForecast();`;
     // Sensitivity of Administrative Mutation Controls
     const adminControls = document.querySelectorAll(".admin-requires-auth");
     adminControls.forEach(el => {
+      if (el.tagName === "BUTTON" && el.classList.contains("settings-tab-btn")) return;
       if (isAuth) {
         el.removeAttribute("disabled");
         el.style.opacity = "1";
@@ -4770,7 +4834,12 @@ executePortForecast();`;
       modal.style.visibility = "visible";
       modal.style.opacity = "1";
       modal.style.pointerEvents = "auto";
+      const isAuth = !!(window.activeSession && window.activeSession.token && window.activeSession.user);
+      if (!isAuth && initialTab !== "atab-login") {
+        initialTab = "atab-login";
+      }
       window.switchAuthTab(initialTab);
+      window.syncSessionUI();
     }
   };
 
@@ -6242,11 +6311,21 @@ executePortForecast();`;
    */
   window.checkFirstRunStatus = async function(forceOpen = false) {
     try {
+      const isAuth = !!(window.activeSession && window.activeSession.token && window.activeSession.user);
+      const modal = document.getElementById("first-run-setup-modal");
+      if (!isAuth && !forceOpen) {
+        if (modal) {
+          modal.classList.remove("open");
+          modal.style.display = "none";
+          modal.style.visibility = "hidden";
+        }
+        return;
+      }
+
       const res = await fetch("/api/v1/auth/first-run/status");
       if (!res.ok) return;
       const data = await res.json();
 
-      const modal = document.getElementById("first-run-setup-modal");
       if (!modal) return;
 
       const step1 = document.getElementById("fr-step-1");
@@ -6838,11 +6917,244 @@ executePortForecast();`;
     }
   };
 
+  // --- Universal Card Hover & Interactive Metadata System ---
+  function initCardHoverInteractivity() {
+    let popover = document.getElementById("global-card-hover-popover");
+    if (!popover) {
+      popover = document.createElement("div");
+      popover.id = "global-card-hover-popover";
+      popover.className = "card-hover-popover";
+      document.body.appendChild(popover);
+    }
+
+    const cardMetadata = {
+      // Model benchmark cards
+      "random_forest": {
+        badge: "🌲 ENSEMBLE TREE BAGGING",
+        title: "Random Forest Regressor",
+        desc: "Bagging de 120 árboles de decisión no paramétricos. Excelente resiliencia ante ruido en series portuarias y colas de contenedores sin sobreajuste.",
+        tags: ["No Paramétrico", "Submuestreo Bootstrap", "WAPE Benchmark"],
+        hint: "👆 Clic para ver formulación matemática y matriz de hiperparámetros"
+      },
+      "gradient_boosting": {
+        badge: "⚡ GBDT HISTOGRAM-BASED",
+        title: "HistGradientBoosting Regressor",
+        desc: "Boosting de gradiente con discretización por histogramas. Inferencia ultrarrápida con regularización L2 y función de pérdida Huber.",
+        tags: ["Binning Discreto", "Huber Loss", "Latencia <12ms"],
+        hint: "👆 Clic para comparar con el modelo campeón"
+      },
+      "catboost_gbdt": {
+        badge: "🐱 SYMMETRIC OBLIVIOUS TREES",
+        title: "CatBoost GBDT",
+        desc: "Árboles simétricos olvidadizos optimizados para variables categóricas portuarias (terminales, tipos de contenedor, incisos arancelarios).",
+        tags: ["Oblivious Trees", "Target Encoding Seguro", "Alta Precisión"],
+        hint: "👆 Clic para ver análisis de importancia de características"
+      },
+      "extra_trees": {
+        badge: "🌳 EXTREMELY RANDOMIZED TREES",
+        title: "Extra Trees Regressor",
+        desc: "Umbrales de corte completamente estocásticos en cada nodo. Minimiza la varianza y reduce riesgo de memorización de perturbaciones.",
+        tags: ["Random Splits", "Baja Varianza", "Escalabilidad"],
+        hint: "👆 Clic para ver comportamiento frente a ruido"
+      },
+      "neural_mlp_quantile": {
+        badge: "🧠 RED NEURONAL CUANTÍLICA",
+        title: "Quantile Multi-Layer Perceptron",
+        desc: "Arquitectura profunda con función de pérdida Pinball Loss para estimar simultáneamente los percentiles operacionales P10, P50 y P90.",
+        tags: ["Pinball Loss", "P10 / P50 / P90", "PyTorch / MLP"],
+        hint: "👆 Clic para inspeccionar cobertura cuantílica"
+      },
+      "bayesian_ridge": {
+        badge: "📐 REGRESIÓN BAYESIANA",
+        title: "Bayesian Ridge Regression",
+        desc: "Inferencia bayesiana con distribuciones a priori Gamma sobre regularización L2. Estima la incertidumbre analítica de los parámetros.",
+        tags: ["Distribución a Priori", "Incertidumbre Analítica", "L2 Adaptativo"],
+        hint: "👆 Clic para revisar hiperparámetros gaussianos"
+      },
+      "ridge_elasticnet": {
+        badge: "📏 LÍNEA BASE REGULARIZADA",
+        title: "Ridge / ElasticNet Regularized",
+        desc: "Línea base canónica con penalización combinada L1 + L2. Garantiza interpretabilidad analítica de sensibilidades macroeconómicas.",
+        tags: ["Penalización L1+L2", "Convexo", "Baseline Oficial"],
+        hint: "👆 Clic para auditar coeficientes de regresión"
+      },
+      // Residual KPI Cards
+      "mean_residual": {
+        badge: "📊 DIAGNÓSTICO DE SESGO",
+        title: "Error Residual Medio (μ_e)",
+        desc: "Diferencia esperada entre TEUs reales y proyectados: e_t = y_t - ŷ_t. Valores cercanos a 0 certifican ausencia de sesgo sistemático.",
+        tags: ["E[e_t] ≈ 0", "Insesgado", "SLA Portuario"],
+        hint: "👆 Clic para ver distribución histórica de sesgo"
+      },
+      "std_residual": {
+        badge: "📉 VOLATILIDAD DEL ERROR",
+        title: "Desviación Estándar de Residuos (σ_e)",
+        desc: "Dispersión de los errores alrededor de la media. Un valor bajo asegura consistencia y estabilidad en los pronósticos mensuales.",
+        tags: ["Dispersión σ", "Varianza Homogénea", "Estabilidad"],
+        hint: "👆 Clic para evaluar bandas de confianza de 2σ"
+      },
+      "median_absolute_error": {
+        badge: "🛡️ MÉTRICA ROBUSTA",
+        title: "Error Absoluto Mediano (MedAE)",
+        desc: "Mediana de |y_t - ŷ_t|. Métrica robusta insensible a huelgas, desvíos esporádicos o anomalías climáticas extremas.",
+        tags: ["Insensible a Outliers", "Mediana L1", "Resiliencia"],
+        hint: "👆 Clic para ver contraste contra MAE / RMSE"
+      },
+      "skewness": {
+        badge: "📐 ASIMETRÍA DE DISTRIBUCIÓN",
+        title: "Coeficiente de Asimetría (γ_1)",
+        desc: "Tercer momento estandarizado de los residuos. Cercano a 0 confirma simetría estadística sin colas imprevistas de congestión.",
+        tags: ["Tercer Momento", "Simetría Gaussiana", "Normalidad"],
+        hint: "👆 Clic para graficar curva de densidad kernel"
+      }
+    };
+
+    let hideTimeout = null;
+
+    function showPopover(el, meta) {
+      if (!meta) return;
+      clearTimeout(hideTimeout);
+
+      popover.innerHTML = `
+        <div class="popover-badge">${meta.badge || "⚡ COMPONENTE MLOPS"}</div>
+        <h4 class="popover-title">${meta.title || "Detalle Operacional"}</h4>
+        <p class="popover-body">${meta.desc || ""}</p>
+        ${meta.tags && meta.tags.length ? `
+          <div class="popover-tag-row">
+            ${meta.tags.map(t => `<span class="popover-tag">${t}</span>`).join("")}
+          </div>
+        ` : ""}
+        ${meta.hint ? `<div class="popover-action-hint">${meta.hint}</div>` : ""}
+      `;
+
+      const rect = el.getBoundingClientRect();
+      const popWidth = 320;
+      let left = rect.left + (rect.width / 2) - (popWidth / 2);
+      let top = rect.bottom + 8;
+
+      if (left < 10) left = 10;
+      if (left + popWidth > window.innerWidth - 10) {
+        left = window.innerWidth - popWidth - 10;
+      }
+      if (top + 160 > window.innerHeight) {
+        top = Math.max(10, rect.top - 160);
+      }
+
+      popover.style.left = `${left}px`;
+      popover.style.top = `${top}px`;
+      popover.classList.add("active");
+    }
+
+    function hidePopover() {
+      hideTimeout = setTimeout(() => {
+        popover.classList.remove("active");
+      }, 120);
+    }
+
+    // Attach to Algo Stat Cards
+    document.querySelectorAll(".algo-stat-card").forEach(card => {
+      const onclickAttr = card.getAttribute("onclick") || "";
+      for (const [key, meta] of Object.entries(cardMetadata)) {
+        if (onclickAttr.includes(key)) {
+          card.addEventListener("mouseenter", () => showPopover(card, meta));
+          card.addEventListener("mouseleave", hidePopover);
+          card.addEventListener("focus", () => showPopover(card, meta));
+          card.addEventListener("blur", hidePopover);
+          break;
+        }
+      }
+    });
+
+    // Attach to KPI mini cards
+    const kpiMap = {
+      "res-card-mean": cardMetadata.mean_residual,
+      "res-card-std": cardMetadata.std_residual,
+      "res-card-med": cardMetadata.median_absolute_error,
+      "res-card-skew": cardMetadata.skewness
+    };
+    for (const [id, meta] of Object.entries(kpiMap)) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("mouseenter", () => showPopover(el, meta));
+        el.addEventListener("mouseleave", hidePopover);
+        el.addEventListener("focus", () => showPopover(el, meta));
+        el.addEventListener("blur", hidePopover);
+      }
+    }
+
+    // Attach to Training Preset Cards
+    document.querySelectorAll(".preset-card").forEach(pCard => {
+      const title = pCard.querySelector(".preset-title")?.textContent || "Preset";
+      const desc = pCard.querySelector(".preset-desc")?.textContent || "";
+      const specs = pCard.querySelector(".preset-specs")?.textContent || "";
+      const meta = {
+        badge: "🎯 RECETA DE HIPERPARÁMETROS",
+        title: title,
+        desc: desc,
+        tags: specs.split("•").map(s => s.trim()).filter(Boolean),
+        hint: "👆 Clic para seleccionar y aplicar receta a la terminal"
+      };
+      pCard.addEventListener("mouseenter", () => showPopover(pCard, meta));
+      pCard.addEventListener("mouseleave", hidePopover);
+      pCard.addEventListener("focus", () => showPopover(pCard, meta));
+      pCard.addEventListener("blur", hidePopover);
+    });
+
+    // Attach to Interactive Audit Cards
+    document.querySelectorAll(".interactive-audit-card").forEach(aCard => {
+      const title = aCard.querySelector("span:first-child")?.textContent || "Control de Auditoría";
+      const desc = aCard.querySelector("p")?.textContent || "";
+      const meta = {
+        badge: "🛡️ AUDITORÍA DE PRODUCCIÓN NIST SP 800-63B",
+        title: title,
+        desc: desc,
+        tags: ["Verificado", "SHA-256", "Inmutable WORM"],
+        hint: "👆 Clic para auditar evidencia técnica"
+      };
+      aCard.addEventListener("mouseenter", () => showPopover(aCard, meta));
+      aCard.addEventListener("mouseleave", hidePopover);
+      aCard.addEventListener("focus", () => showPopover(aCard, meta));
+      aCard.addEventListener("blur", hidePopover);
+    });
+
+    // Attach to ISO items
+    document.querySelectorAll(".iso-item").forEach(item => {
+      const title = item.querySelector("strong")?.textContent || item.textContent.trim();
+      const sub = item.querySelector("small")?.textContent || "";
+      const meta = {
+        badge: "⚖️ ESTÁNDAR INTERNACIONAL & GOBERNANZA",
+        title: title,
+        desc: sub + " • Registro de cumplimiento auditable bajo Ley 81 de 2019.",
+        tags: ["ISO Oficial", "Ley 81 Panamá", "Auditoría"],
+        hint: "👆 Clic para desplegar evidencia SGSI e IA"
+      };
+      item.addEventListener("mouseenter", () => showPopover(item, meta));
+      item.addEventListener("mouseleave", hidePopover);
+    });
+
+    // Attach to CoT Step Cards
+    document.querySelectorAll(".cot-step-card").forEach(step => {
+      const num = step.querySelector("span")?.textContent || "";
+      const strong = step.querySelector("strong")?.textContent || "Paso CoT";
+      const p = step.querySelector("p")?.textContent || "";
+      const meta = {
+        badge: `🧠 PASO DE RAZONAMIENTO ${num}`,
+        title: strong,
+        desc: p,
+        tags: ["Chain-of-Thought", "Guardrail Verificado", "Multi-Agente"],
+        hint: "⚡ Procesado por enjambre autónomo"
+      };
+      step.addEventListener("mouseenter", () => showPopover(step, meta));
+      step.addEventListener("mouseleave", hidePopover);
+    });
+  }
+
   // --- Bootstrapping ---
   initThemeSwitcher();
   window.initPasswordFieldsEnhancements();
   window.restoreSessionState();
   window.loadDynamicModelCatalog();
+  initCardHoverInteractivity();
   window.selectMethodologyPhase("phase_1", false); // false = no initial scroll jump on page load
   window.loadSimulationHistory();
   window.verifyWormAuditChainLive();
