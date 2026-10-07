@@ -19,6 +19,7 @@
 
 ## 📑 Tabla de Contenidos General
 - 📘 **Tratado Maestro de Pipeline y Extensibilidad:** [`MANUAL_TECNICO_Y_ARQUITECTURA_MLOPS.md`](MANUAL_TECNICO_Y_ARQUITECTURA_MLOPS.md) *(Manual detallado con glosario para todo público, fórmulas, paso a paso e ingesta de APIs externas)*.
+- 🗺️ **Mapa Técnico y Auditoría Integral de Arquitectura:** [`MAPA_TECNICO_Y_ARQUITECTURA_DETALLADA.md`](MAPA_TECNICO_Y_ARQUITECTURA_DETALLADA.md) *(Auditoría completa de archivos, funciones, interfaces, seguridad y trazabilidad)*.
 - 🧠 **Project Brain & LOOP Engineering:** [`project_brain/`](project_brain/) *(Fuente de Verdad, Catálogo de Modelos y Registro de Brechas)*.
 1. [Misión Cívica, Educativa y Marco Normativo (Ley 6 de 2002)](#1-misión-cívica-educativa-y-marco-normativo-ley-6-de-2002)
 2. [Arquitectura del Ecosistema, Gateway Go y Pipeline Medallion](#2-arquitectura-del-ecosistema-y-pipeline-medallion)

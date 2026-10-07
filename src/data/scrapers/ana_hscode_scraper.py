@@ -1,4 +1,4 @@
-"""
+﻿"""
 Panama Customs & Tariff Scraper (HS Codes / Incisos Arancelarios de Panamá)
 Extracts and normalizes the National Customs Tariff (Arancel de Importación de la República de Panamá).
 Supports 6-digit WCO international HS codes up to 8, 10, and 12-digit national subheadings (ANA / SIECA).
@@ -573,6 +573,12 @@ class PanamaTariffDatabase:
                 ranked.append((0 if code_match else 1, -matched, item.get("historical_observation", False), item))
         ranked.sort(key=lambda row: (row[0], row[1], row[2], row[3].get("hs_code_panama", "")))
         return [row[3] for row in ranked]
+
+    @classmethod
+    def search_by_description(cls, term: str, limit: int = 10) -> List[Dict[str, Any]]:
+        """Alias for search_by_text with optional result limit."""
+        results = cls.search_by_text(term)
+        return results[:limit] if limit else results
 
     @classmethod
     def calculate_landed_customs_cost(
