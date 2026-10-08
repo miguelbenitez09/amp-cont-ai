@@ -32,8 +32,10 @@ class PostgresAuditManager:
         self._init_database()
 
     def _get_connection(self) -> sqlite3.Connection:
-        conn = sqlite3.connect(str(self.db_path))
+        conn = sqlite3.connect(str(self.db_path), timeout=30.0)
         conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA journal_mode=WAL;")
+        conn.execute("PRAGMA busy_timeout=30000;")
         return conn
 
     def _init_database(self) -> None:
@@ -314,12 +316,24 @@ class PostgresAuditManager:
 
             expected_prev = "0" * 64
             for idx, b in enumerate(blocks):
+                # 1. Verify block link to previous block hash
                 if b["prev_block_hash"] != expected_prev:
                     return {
                         "valid": False,
                         "tampering_detected": True,
                         "failed_block_id": b["block_id"],
-                        "reason": f"Hash chain broken at block {b['block_id']}"
+                        "reason": f"Hash chain broken at block {b['block_id']}: expected prev {expected_prev}, got {b['prev_block_hash']}"
+                    }
+                # 2. Recompute and verify content hash from payload, actor, and timestamp
+                expected_content_hash = hashlib.sha256(
+                    f"{b['prev_block_hash']}|{b['actor_username']}|{b['payload_json']}|{b['created_at']}".encode()
+                ).hexdigest()
+                if b["block_hash"] != expected_content_hash:
+                    return {
+                        "valid": False,
+                        "tampering_detected": True,
+                        "failed_block_id": b["block_id"],
+                        "reason": f"Cryptographic tamper detected at block {b['block_id']}: content hash mismatch."
                     }
                 expected_prev = b["block_hash"]
 

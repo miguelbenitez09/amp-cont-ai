@@ -140,20 +140,25 @@ func generateRequestID() string {
 }
 
 func getClientIP(r *http.Request) string {
-	xRealIP := r.Header.Get("X-Real-IP")
-	if xRealIP != "" {
-		return strings.TrimSpace(xRealIP)
-	}
-	xff := r.Header.Get("X-Forwarded-For")
-	if xff != "" {
-		parts := strings.Split(xff, ",")
-		return strings.TrimSpace(parts[0])
-	}
 	ip := r.RemoteAddr
 	if colon := strings.LastIndex(ip, ":"); colon != -1 {
 		ip = ip[:colon]
 	}
-	return strings.Trim(ip, "[]")
+	rawIP := strings.Trim(ip, "[]")
+
+	// Only trust forwarded proxy headers if the remote connection comes from loopback or private network
+	if rawIP == "127.0.0.1" || rawIP == "::1" || strings.HasPrefix(rawIP, "10.") || strings.HasPrefix(rawIP, "192.168.") {
+		xRealIP := r.Header.Get("X-Real-IP")
+		if xRealIP != "" {
+			return strings.TrimSpace(xRealIP)
+		}
+		xff := r.Header.Get("X-Forwarded-For")
+		if xff != "" {
+			parts := strings.Split(xff, ",")
+			return strings.TrimSpace(parts[0])
+		}
+	}
+	return rawIP
 }
 
 func NewGatewayServer(port, upstreamStr, staticDir string) (*GatewayServer, error) {
@@ -163,6 +168,14 @@ func NewGatewayServer(port, upstreamStr, staticDir string) (*GatewayServer, erro
 	}
 
 	proxy := httputil.NewSingleHostReverseProxy(parsedUpstream)
+	proxy.Transport = &http.Transport{
+		Proxy:                 http.ProxyFromEnvironment,
+		MaxIdleConns:          1000,
+		MaxIdleConnsPerHost:   200,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
+	}
 	originalDirector := proxy.Director
 	proxy.Director = func(req *http.Request) {
 		originalDirector(req)
@@ -211,13 +224,23 @@ func (s *GatewayServer) securityHeadersMiddleware(next http.Handler) http.Handle
 		w.Header().Set("X-Platform-Author", PlatformAuthor)
 		w.Header().Set("X-Platform-License", PlatformLicense)
 
-		// CORS headers
+		// CORS headers: allow local/same-origin or specific trusted origins
 		origin := r.Header.Get("Origin")
 		if origin != "" {
-			w.Header().Set("Access-Control-Allow-Origin", origin)
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-Request-ID")
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			isAllowed := false
+			if strings.HasPrefix(origin, "http://localhost:") ||
+				strings.HasPrefix(origin, "http://127.0.0.1:") ||
+				strings.HasPrefix(origin, "https://localhost:") ||
+				strings.HasPrefix(origin, "https://127.0.0.1:") ||
+				origin == "http://localhost" || origin == "http://127.0.0.1" {
+				isAllowed = true
+			}
+			if isAllowed {
+				w.Header().Set("Access-Control-Allow-Origin", origin)
+				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS")
+				w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-Request-ID")
+				w.Header().Set("Access-Control-Allow-Credentials", "true")
+			}
 			if r.Method == http.MethodOptions {
 				w.WriteHeader(http.StatusNoContent)
 				return

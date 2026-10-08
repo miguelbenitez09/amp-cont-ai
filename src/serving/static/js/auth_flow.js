@@ -316,7 +316,41 @@
     }
   }, true);
 
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", async () => {
+    const savedToken = localStorage.getItem("portops_token");
+    if (savedToken) {
+      try {
+        const probe = await fetch("/api/v1/auth/me", {
+          headers: { "Authorization": `Bearer ${savedToken}` }
+        });
+        if (probe.ok) {
+          const sessionState = await probe.json();
+          if (sessionState.is_authenticated && sessionState.user_id) {
+            window.activeSession.token = savedToken;
+            window.activeSession.user = {
+              user_id: sessionState.user_id,
+              username: sessionState.username,
+              email: sessionState.email,
+              is_root: sessionState.is_root,
+              must_change_password: sessionState.must_change_password
+            };
+            window.activeSession.roles = sessionState.roles || [];
+            window.activeSession.permissions = sessionState.permissions || [];
+            window.syncSessionUI();
+          } else {
+            localStorage.removeItem("portops_token");
+            window.activeSession = guestSession();
+            window.syncSessionUI();
+          }
+        } else {
+          localStorage.removeItem("portops_token");
+          window.activeSession = guestSession();
+          window.syncSessionUI();
+        }
+      } catch (e) {
+        console.warn("Error rehidratando sesión PortOps:", e);
+      }
+    }
     if (new URLSearchParams(window.location.search).get("auth") === "1") window.openAuthModal("atab-login");
   });
 })();

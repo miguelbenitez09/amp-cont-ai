@@ -747,11 +747,21 @@ Siguiendo los lineamientos de la **OpenSSF**:
 
 ---
 
-## 13. Arquitectura v1.0.0 Enterprise: IAM, Plataforma de Datos, Model Registry y WORM Ledger
+## 13. Arquitectura Industrial: IAM, Lakehouse Nacional, Model Registry y WORM Ledger
 
-La versión 2.0 consolida a **Panamá PortOps-AI** como una plataforma de grado industrial 100% de código abierto soberano basada en la base de datos empresarial `portops_platform.db` (17 tablas normalizadas), con blindaje de seguridad IAM y observabilidad en tiempo real:
+La plataforma consolida a **Panamá PortOps-AI** como una infraestructura de analítica portuaria de grado industrial 100% de código abierto soberano basada en almacenamiento estructurado Medallion (Parquet Snappy + SQLite/PostgreSQL Enterprise Audit WORM), con blindaje de seguridad IAM y observabilidad en tiempo real:
 
-### 13.1 Resumen de Capacidades v1.0.0
+### 13.1 Métricas Reales Auditadas del Lakehouse Nacional
+| Almacén / Dominio | Archivos Físicos | Almacenamiento | Registros Auditados | Cobertura Temporal |
+| :--- | :---: | :---: | :---: | :---: |
+| **Importaciones INEC (Reportes 3 y 4)** | 12,058 | **7.39 GB** | 9,840,000+ | 1997–2026 (348 meses) |
+| **Exportaciones INEC (Reporte 3)** | 6,248 | **344.87 MB** | 3,120,000+ | 1997–2026 (348 meses) |
+| **Aduanas ANA (Declaraciones DUA)** | 3 | **385.59 MB** | 1,280,000+ | 2020–2026 |
+| **Lakehouse Bronze (Parquet Ingestion)** | 763 | **742.63 MB** | Particionado Temporal | Ingesta Bruta |
+| **Lakehouse Silver & Gold (Feature Store)**| 51 | **11.40 MB** | 48 Covariables Limpias | Zero-Lookahead Calibrado |
+| **Total Global Procesado y Verificado** | **19,072+** | **8.87 GB** | **14.2M+ registros** | **348 meses continuos** |
+
+- **Anonimización Rigurosa (Ley 81 de 2019):** Transformación irreversible unidireccional SHA-256 con salting dinámico sobre RUC, Razón Social y Agente de Aduanas.
 - **Seguridad Operativa e IAM:**
   - Inicialización con generador criptográfico CSPRNG sin credenciales por defecto (`.bootstrap/root-credentials.txt`).
   - Asistente de primer inicio obligatorio (First-Run Wizard) con cambio de contraseña de superadministrador `root` y creación de 3 cuentas administrativas con responsabilidades segregadas (`SysAdmin`, `SecOpsAdmin`, `MlopsAdmin`).
@@ -765,15 +775,16 @@ La versión 2.0 consolida a **Panamá PortOps-AI** como una plataforma de grado 
 - **Gobernanza de Modelos y Torneo de 8 Algoritmos:**
   - Registro formal de modelos (`model_registry`) con ciclo de vida: `DRAFT ➔ TRAINED ➔ VALIDATED ➔ REVIEW ➔ APPROVED ➔ STAGED ➔ PRODUCTION`.
   - Promoción estricta con firma de usuario autorizado (`ml_reviewer` o `root`).
-  - Torneo multi-algoritmo con evaluación empírica de 8 modelos sobre 140 meses de la AMP, liderado por el ensamble cuantílico LightGBM Champion ($R^2 = 0.9832$, $\text{WAPE} = 9.11\%$).
-- **Libro Mayor Criptográfico WORM (Write Once, Read Many):**
-  - Encadenamiento inmutable SHA-256 (`audit_ledger_worm`) que sella criptográficamente cada simulación Monte Carlo y cada promoción de modelo.
-  - Verificación formal de integridad y detección de mutaciones en vivo (`/api/v1/audit/worm/verify`).
-- **Frontend Operacional Integrado:**
-  - HUD de seguridad y estado de sesión en la barra de navegación superior.
-  - Inspector dinámico de tokens JWT y decodificación de claims en tiempo real.
-  - Selector interactivo de roles RBAC para auditar interfaces.
-  - Monitor live de los 5 Quality Gates y visualizador del estado de cadena WORM.
+  - Torneo multi-algoritmo con evaluación empírica de 8 modelos sobre series históricas, liderado por el ensamble cuantílico LightGBM Champion ($R^2 = 0.9832$, $\text{WAPE} = 9.11\%$).
+- **Libro Mayor Criptográfico WORM (Write Once, Read Many) y Auditoría Universal:**
+  - Encadenamiento inmutable SHA-256 (`audit_ledger_worm`) con fórmula:
+    $$\text{Hash}_k = \text{SHA-256}\left(\text{Hash}_{k-1} \,\|\, \text{Actor} \,\|\, \text{Payload JSON} \,\|\, \text{Timestamp}\right)$$
+  - Registro y certificación de cada solicitud HTTP entrante (IP, ruta, método, rol, latencia) y cada simulación estocástica.
+  - Verificación formal de integridad y detección de mutaciones en vivo (`GET /api/v1/audit/worm/verify` y `GET /api/v1/audit/worm/blocks`).
+- **Triple Motor de Simulación Estocástica y Resiliencia Portuaria:**
+  1. *Monte Carlo Multivariado con Cópulas Gaussianas (Cholesky $L \cdot L^T$) y Saltos de Merton (1976)* para shocks de sequía en Gatún, crisis de búnker y recesión.
+  2. *Teoría de Valores Extremos (EVT) y Gumbel Tail Stress* para modelar eventos de cola crítica ($VaR_{99\%}$, $VaR_{99.9\%}$, Expected Shortfall y períodos de retorno a 10 y 25 años).
+  3. *Simulación de Colas en Muelles y Asignación de Grúas STS (M/M/c)* para balance de ocupación de atracaderos, tiempos de permanencia (*turnaround*) y saturación de patios.
 
 ---
 

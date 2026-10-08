@@ -273,8 +273,28 @@ async def apply_gateway_security_headers(request: Request, call_next):
     if not (req_path.startswith("/static/") or req_path.endswith((".png", ".jpg", ".svg", ".ico", ".css", ".js"))):
         try:
             client_ip = request.client.host if request.client else "127.0.0.1"
-            auth_role = request.headers.get("x-auth-role", "invitado")
-            user_type = "authenticated_user" if auth_role != "invitado" else "guest_user"
+            
+            # Secure token verification: prevent header spoofing of roles
+            auth_header = request.headers.get("authorization", "")
+            cookie_token = request.cookies.get("portops_session", "")
+            token = None
+            if auth_header.startswith("Bearer "):
+                token = auth_header.split(" ")[1].strip()
+            elif cookie_token:
+                token = cookie_token.strip()
+
+            user_type = "guest_user"
+            actor_role = "invitado"
+            if token:
+                try:
+                    from src.auth.authentication import AuthenticationEngine
+                    is_valid, payload, _ = AuthenticationEngine.verify_token(token)
+                    if is_valid and payload:
+                        user_type = payload.get("username", "authenticated_user")
+                        actor_role = payload.get("role", "authenticated_user")
+                except Exception:
+                    pass
+
             audit_manager.record_request_audit(
                 ip_origin=client_ip,
                 path=req_path,
@@ -282,7 +302,7 @@ async def apply_gateway_security_headers(request: Request, call_next):
                 query_params=str(request.query_params),
                 user_agent=request.headers.get("user-agent", ""),
                 user_type=user_type,
-                actor_role=auth_role,
+                actor_role=actor_role,
                 status_code=response.status_code,
                 latency_ms=latency_ms
             )

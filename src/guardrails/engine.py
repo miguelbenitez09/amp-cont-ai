@@ -30,10 +30,15 @@ class PortOpsGuardrails:
     MAX_HISTORICAL_MONTHLY_TEU_MANZANILLO = 500000.0
     MIN_ALLOWED_TEU = 0.0
 
-    # Prompt injection signatures
+    # Prompt injection signatures (bilingual English / Spanish & jailbreak terms)
     INJECTION_PATTERNS = [
-        r"(?i)\bignore\s+(all\s+)?(previous|prior)\s+instructions\b",
+        r"(?i)\b(ignore|disregard|forget|omit)\s+(all\s+)?(previous|prior|past)\s+(instructions|prompts|rules|directives)\b",
+        r"(?i)\b(ignora|olvida|descarta|omite)\s+(todas\s+las\s+|las\s+)?(instrucciones|directivas|reglas|órdenes)\s*(previas|anteriores|del\s+sistema)?\b",
         r"(?i)\bsystem\s+override\b",
+        r"(?i)\b(sobreescribir|anular|saltarse)\s+(el\s+sistema|las\s+reglas|la\s+seguridad)\b",
+        r"(?i)\b(act\s+as|pretend\s+to\s+be|you\s+are\s+now)\s+(a\s+)?(superadmin|root|jailbreak|dan|unrestricted)\b",
+        r"(?i)\b(actúa\s+como|finge\s+ser|ahora\s+eres)\s+(un\s+)?(superadmin|root|jailbreak|sin\s+restricciones)\b",
+        r"(?i)\b(bypass|disable|evade)\s+(security|guardrails|safety|filters)\b",
         r"(?i)\bdrop\s+table\b",
         r"(?i)\bexec(\s+|\()",
         r"(?i)<\s*script\b"
@@ -134,9 +139,17 @@ class PortOpsGuardrails:
             "mlops", "pronóstico", "forecast", "monte carlo", "var", "cvar", "riesgo", "worm"
         ]
 
-        # Check if at least one domain keyword matches or if query contains numbers/codes
-        matches = [kw for kw in domain_keywords if kw in q_lower]
-        if not matches and len(query_text.split()) > 4:
+        # Check domain keywords using word boundaries for short acronyms to avoid false positives
+        matches = []
+        for kw in domain_keywords:
+            if len(kw) <= 4:
+                if re.search(r'\b' + re.escape(kw) + r'\b', q_lower):
+                    matches.append(kw)
+            else:
+                if kw in q_lower:
+                    matches.append(kw)
+
+        if not matches and len(query_text.split()) >= 3:
             # Query is out of domain
             return GuardrailResult(
                 is_valid=False,

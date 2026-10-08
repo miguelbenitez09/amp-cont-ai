@@ -168,8 +168,14 @@ class MCPSoulManager:
             "immutable_hash": soul_dict.get("immutable_hash"),
             "encrypted_seal": soul_dict.get("encrypted_seal"),
             "anti_tamper_verified": True if (is_hash_valid and is_seal_valid) else False,
+            "tampering_detected": not (is_hash_valid and is_seal_valid),
             "reason": None if (is_hash_valid and is_seal_valid) else "Violación de integridad criptográfica en la definición del Soul."
         }
+
+    @classmethod
+    def verify_soul_integrity(cls, soul_id: str) -> Dict[str, Any]:
+        """Alias for verify_soul_seal."""
+        return cls.verify_soul_seal(soul_id)
 
     @classmethod
     def save_or_update_soul(
