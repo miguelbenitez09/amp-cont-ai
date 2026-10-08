@@ -2085,14 +2085,63 @@ class ContainerValidateRequest(BaseModel):
 
 @v1_router.get("/customs/tariff/search")
 def search_customs_tariff(query: Optional[str] = None):
-    """Búsqueda de subpartidas arancelarias oficiales de Panamá (ANA / SIECA)."""
+    """Búsqueda de subpartidas arancelarias oficiales de Panamá (ANA / SIECA / OMA)."""
     from src.data.scrapers.ana_hscode_scraper import PanamaTariffDatabase
+    from src.data.hs_code_lineage_engine import HSCodeLineageEngine
     request_id = str(uuid.uuid4())
     started = time.perf_counter()
     if query:
         items = PanamaTariffDatabase.search_by_text(query)
     else:
         items = PanamaTariffDatabase.get_tariff_catalog()
+
+    engine = HSCodeLineageEngine.get_instance()
+    if query and not items:
+        lin = engine.query_code(query)
+        if lin:
+            taxes = lin.get("taxes", {})
+            permits = lin.get("permits", [])
+            entities = [p.get("institucion") for p in permits if p.get("institucion")] or ["Aduanas-ANA"]
+            items.append({
+                "hs_code_panama": lin.get("hs12") or lin.get("hs_code"),
+                "hs_code_6": lin.get("subpartida_6", ""),
+                "descripcion": lin.get("descripcion", ""),
+                "lineage_tag": lin.get("lineage_tag", "VIGENTE"),
+                "derivation_notes": lin.get("derivation_notes", ""),
+                "is_active_2025": lin.get("is_active_2025", True),
+                "historical_observation": not lin.get("is_active_2025", True),
+                "evidence_status": "verified_document_evidence" if lin.get("is_active_2025") else "historical_trade_observation",
+                "arancel_dai_pct": float(taxes.get("dai_pct", 0.0) or 0.0),
+                "itbms_pct": float(taxes.get("itbms_pct", 7.0) or 7.0),
+                "isc_pct": float(taxes.get("isc_pct", 0.0) or 0.0),
+                "entidades_reguladoras": entities,
+                "regulatory_entity_sources": [{"entity": e, "verification_status": "official_homepage_reference"} for e in entities],
+                "permiso_requerido": permits[0].get("permiso") if permits else "Despacho Ordinario DUA / SIGA",
+                "procedimiento_importacion": lin.get("derivation_notes", "Conforme al Manual de Procesos y Procedimientos MPP-ANA"),
+                "base_legal": "Arancel Nacional de Importación SAC 2022/2025 - ANA",
+                "amendment_timeline": lin.get("amendment_timeline", {}),
+                "trade_agreements": lin.get("trade_agreements", []),
+                "recintos_autorizados": lin.get("recintos_autorizados", [])
+            })
+
+    for item in items:
+        raw_code = item.get("hs_code_panama") or item.get("hs_code_6") or ""
+        lin = engine.query_code(raw_code)
+        if lin:
+            item.setdefault("lineage_tag", lin.get("lineage_tag", "VIGENTE"))
+            item.setdefault("derivation_notes", lin.get("derivation_notes", ""))
+            item.setdefault("amendment_timeline", lin.get("amendment_timeline", {}))
+            if "trade_agreements" not in item:
+                item["trade_agreements"] = lin.get("trade_agreements", [])
+            if "recintos_autorizados" not in item:
+                item["recintos_autorizados"] = lin.get("recintos_autorizados", [])
+        else:
+            item.setdefault("lineage_tag", "HISTORICO_OBSERVADO" if item.get("historical_observation") else "VIGENTE")
+            item.setdefault("derivation_notes", "")
+            item.setdefault("amendment_timeline", {})
+            item.setdefault("trade_agreements", [])
+            item.setdefault("recintos_autorizados", [])
+
     historical = sum(1 for item in items if item.get("historical_observation"))
     latency_ms = round((time.perf_counter() - started) * 1000, 3)
     Path("logs").mkdir(parents=True, exist_ok=True)
@@ -2102,6 +2151,7 @@ def search_customs_tariff(query: Optional[str] = None):
         "request_id": request_id,
         "author": "Desarrollado v1.0.0 Miguel Benítez",
         "total_matches": len(items),
+        "total_results": len(items),
         "historical_matches": historical,
         "current_rule_matches": len(items) - historical,
         "source": "ANA curated rules + INEC Comercio Exterior report 05 historical descriptions",

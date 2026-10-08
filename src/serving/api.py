@@ -49,6 +49,7 @@ from src.infrastructure.db.factory import DatabaseFactory
 from src.mcp.tools import get_available_tools_schema
 from src.rag.engine import MaritimeRAGEngine
 from src.data.scrapers.ana_hscode_scraper import PanamaTariffDatabase
+from src.data.hs_code_lineage_engine import HSCodeLineageEngine
 from src.guardrails.engine import PortOpsGuardrails
 from src.infrastructure.secrets.manager import SecretManager
 from src.infrastructure.db.postgres_audit import audit_manager
@@ -1577,8 +1578,14 @@ def query_maritime_legal_rag(req: RAGQueryRequest):
 
     clean_query = sanitization.sanitized_payload.get("sanitized_query", req.query)
     result = rag_engine.query(clean_query, top_k=req.top_k)
-    tariff_hint = any(token in clean_query.lower() for token in ("hs", "arancel", "subpartida", "mercanc", "permiso", "tarifa", "lápiz", "lapiz", "borrador", "bunker", "banano"))
+    tariff_hint = any(token in clean_query.lower() for token in ("hs", "arancel", "subpartida", "mercanc", "permiso", "tarifa", "lápiz", "lapiz", "borrador", "bunker", "banano", "recinto", "sac"))
     tariff_matches = PanamaTariffDatabase.search_by_text(clean_query) if tariff_hint else []
+    
+    # Enrichment with HSCodeLineageEngine across WCO amendments and ANA tariff
+    lineage_engine = HSCodeLineageEngine.get_instance()
+    lineage_direct = lineage_engine.query_code(clean_query)
+    lineage_keyword = lineage_engine.search_by_keyword(clean_query, limit=5) if not lineage_direct and tariff_hint else []
+
     return {
         "status": "success",
         "author": "Desarrollado v1.0.0 Miguel Benítez",
@@ -1588,7 +1595,130 @@ def query_maritime_legal_rag(req: RAGQueryRequest):
             "total_matches": len(tariff_matches),
             "source": "ANA curated rules + INEC Comercio Exterior report 05",
             "historical_matches": sum(1 for item in tariff_matches if item.get("historical_observation")),
+            "lineage_match": lineage_direct,
+            "keyword_lineage_matches": lineage_keyword
         }
+    }
+
+
+@app.get("/api/v1/customs/lineage/{hs_code}", tags=["Panama Customs & Tariff Intelligence"])
+def get_customs_hs_code_lineage(hs_code: str):
+    """
+    Consulta la trazabilidad, cronología de enmiendas OMA y linaje de un código arancelario.
+    Cruza el Arancel SAC 2025, el histórico Comext INEC 1997-2025 y las declaraciones aduaneras reales.
+    """
+    engine = HSCodeLineageEngine.get_instance()
+    lineage_info = engine.query_code(hs_code)
+    if not lineage_info:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Código arancelario {hs_code} no encontrado en la base de conocimiento arancelario de Panamá."
+        )
+    return {
+        "status": "success",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
+        "query": hs_code,
+        "lineage": lineage_info
+    }
+
+
+@app.get("/api/v1/customs/knowledge-base/summary", tags=["Panama Customs & Tariff Intelligence"])
+def get_customs_knowledge_base_summary():
+    """
+    Retorna métricas consolidadas de la Base de Conocimiento de Aduanas de Panamá.
+    Total de códigos clasificados, distribución de enmiendas OMA y recintos aduaneros.
+    """
+    engine = HSCodeLineageEngine.get_instance()
+    summary = engine.get_summary()
+    return {
+        "status": "success",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
+        "summary": summary
+    }
+
+
+@app.get("/api/v1/customs/recintos", tags=["Panama Customs & Tariff Intelligence"])
+def get_customs_recintos(zona: Optional[str] = None):
+    """
+    Retorna las estaciones y recintos aduaneros oficiales (Georgia Tech / ANA)
+    con coordenadas de geolocalización, horarios, teléfonos y secciones operativas.
+    """
+    engine = HSCodeLineageEngine.get_instance()
+    recintos = engine.recintos_catalog
+    if zona:
+        recintos = [r for r in recintos if zona.lower() in r.get("zona", "").lower()]
+    return {
+        "status": "success",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
+        "total_recintos": len(recintos),
+        "recintos": recintos
+    }
+
+
+@app.get("/api/v1/customs/tariff/search", tags=["Panama Customs & Tariff Intelligence"])
+def search_customs_tariff(query: Optional[str] = None, limit: int = 25):
+    """
+    Búsqueda integrada en el Arancel Nacional de Panamá con trazabilidad de linaje y cronología.
+    Permite buscar por código numérico (2, 4, 6, 8, 10, 12 dígitos) o por descripción/palabra clave.
+    """
+    engine = HSCodeLineageEngine.get_instance()
+    items = []
+    
+    if not query or not query.strip():
+        # Default top active commodities
+        sample_codes = ["010121", "0201", "0803", "0901", "1006", "271019", "8471", "8703"]
+        for sc in sample_codes:
+            m = engine.query_code(sc)
+            if m:
+                items.append(m)
+    else:
+        q = query.strip()
+        # Direct code match
+        direct = engine.query_code(q)
+        if direct:
+            items.append(direct)
+        
+        # Keyword search
+        kw_matches = engine.search_by_keyword(q, limit=limit)
+        for kw in kw_matches:
+            if not any(it.get("hs_code") == kw.get("hs_code") for it in items):
+                items.append(kw)
+                
+    # Normalize for UI format expected by customs_rag.js
+    formatted_items = []
+    for it in items[:limit]:
+        taxes = it.get("taxes", {})
+        permits = it.get("permits", [])
+        entities = [p.get("institucion") for p in permits if p.get("institucion")] or ["Aduanas-ANA"]
+        
+        formatted_items.append({
+            "hs_code_panama": it.get("hs12") or it.get("hs_code"),
+            "hs_code_6": it.get("subpartida_6", ""),
+            "descripcion": it.get("descripcion", ""),
+            "lineage_tag": it.get("lineage_tag", "VIGENTE"),
+            "derivation_notes": it.get("derivation_notes", ""),
+            "is_active_2025": it.get("is_active_2025", True),
+            "historical_observation": not it.get("is_active_2025", True),
+            "evidence_status": "verified_document_evidence" if it.get("is_active_2025") else "historical_trade_observation",
+            "arancel_dai_pct": float(taxes.get("dai_pct", 0.0) or 0.0),
+            "itbms_pct": float(taxes.get("itbms_pct", 7.0) or 7.0),
+            "isc_pct": float(taxes.get("isc_pct", 0.0) or 0.0),
+            "entidades_reguladoras": entities,
+            "regulatory_entity_sources": [{"entity": e, "verification_status": "official_homepage_reference"} for e in entities],
+            "permiso_requerido": permits[0].get("permiso") if permits else "Despacho Ordinario DUA / SIGA",
+            "procedimiento_importacion": it.get("derivation_notes", "Conforme al Manual de Procesos y Procedimientos MPP-ANA"),
+            "base_legal": "Arancel Nacional de Importación SAC 2022/2025 - ANA",
+            "amendment_timeline": it.get("amendment_timeline", {}),
+            "trade_agreements": it.get("trade_agreements", []),
+            "recintos_autorizados": it.get("recintos_autorizados", [])
+        })
+
+    return {
+        "status": "success",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
+        "query": query,
+        "total_items": len(formatted_items),
+        "items": formatted_items
     }
 
 
