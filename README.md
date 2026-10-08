@@ -46,9 +46,15 @@ El sistema portuario interoceánico de la República de Panamá canaliza anualme
 
 ### Soberanía Tecnológica y Transparencia Pública
 Históricamente, los modelos de pronóstico y auditoría de la demanda portuaria en Panamá han estado confinados a consultoras extranjeras o herramientas privativas de alto costo. **Panamá PortOps-AI** nace para democratizar esta capacidad técnica:
-- **Amparo Legal:** Basado en la **Ley 6 de 22 de enero de 2002 (Ley de Transparencia de Panamá)**, que consagra el derecho de todo ciudadano y entidad jurídica a acceder a la información de gestión pública y promueve el aprovechamiento social de los datos abiertos.
+- **Amparo Legal:** Basado en la **Ley 6 de 22 de enero de 2002 (Ley de Transparencia de Panamá)**, que consagra el derecho de todo ciudadano y entidad jurídica a acceder a la información de gestión pública y promueve el aprovechamiento social de los datos abiertos con fines educativos, de investigación científica y cívica.
 - **Empoderamiento Productivo:** Brinda a las personas jurídicas y nacionales panameñas (transportistas de carga terrestre, pymes logísticas, agencias navieras, operadores de patio, universidades y servidores públicos) una herramienta predictiva rigurosa, de código abierto y libre de costos de licenciamiento privativo.
-- **Transparencia Absoluta (Zero Mocks):** Todo el sistema se nutre exclusivamente de microdatos reales publicados por la **Autoridad Marítima de Panamá (AMP)** en el portal oficial `datosabiertos.gob.pa`, abarcando 140 meses continuos (2015–2026). No se utiliza ninguna métrica simulada artificialmente.
+- **Transparencia Absoluta (Zero Mocks):** Todo el sistema se nutre exclusivamente de microdatos reales publicados por la **Autoridad Marítima de Panamá (AMP)**, el **Instituto Nacional de Estadística y Censo (INEC)** y la **Autoridad Nacional de Aduanas (ANA)** en portales oficiales, abarcando series históricas continuas (2015–2026). No se utiliza ninguna métrica simulada artificialmente.
+
+### Protección de la Infraestructura Pública y Adquisición Ética de Datos
+Debido a que muchas plataformas de datos abiertos del Estado carecen de endpoints de descarga masiva para los usuarios, implementé scripts automatizados en Python (`tools/scrapers/`, `src/data/scrapers/`) orientados a materializar el derecho ciudadano de acceso a la información protegiendo proactivamente los servidores gubernamentales:
+1. **Simulación de Comportamiento Humano:** Los extractores incorporan pausas de cortesía estocásticas (*jitter* de 2 a 4 segundos), simulando la navegación manual de un usuario real para no saturar los balanceadores ni WAFs de las entidades públicas.
+2. **Prohibición de Uso Lesivo:** Queda terminantemente prohibido el uso de estas herramientas para ataques de denegación de servicio (DDoS), sobrecarga intencional o cualquier actividad que comprometa la disponibilidad de los servicios del Estado. Su diseño técnico garantiza una huella de red imperceptible.
+3. **Política Zero Raw Bloat (Higiene de Repositorio):** Los microdatos crudos agregados superan los **8.74 GB** y más de **23,000 archivos**. Para mantener el repositorio ágil, portable y libre de archivos gigantes que violen las cuotas de Git, **los datos crudos masivos no se almacenan en el repositorio remoto**. En su lugar, el repositorio expone el pipeline reproducible determinístico que compila y valida las capas estructuradas Silver y Gold (`data/silver/`, `data/gold/`), garantizando total reproducibilidad analítica.
 
 ---
 
