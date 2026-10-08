@@ -4,7 +4,7 @@
 **Autor:** Desarrollado v1.0.0 Miguel Benítez / Ing. Miguel Antonio Benítez González (UTP)  
 **Licencia:** GNU General Public License v3.0 (GPL-3.0) con Atribución Obligatoria (Sección 7)  
 **Fecha de Publicación:** Octubre 2026  
-**Estado Operativo:** Producción Local & Cluster Híbrido Validado (258 pruebas pasando, 1 omitida)
+**Estado Operativo:** Producción Local & Cluster Híbrido Validado (275 pruebas pasando, 1 omitida en Python + 7 en Go)
 
 ---
 
@@ -261,6 +261,10 @@ La interfaz de usuario ha sido implementada como una Single Page Application (SP
 6. **Gobernanza Visual de Vistas por Rol:**
    - Modo Invitado / Consulta Pública bloquea visualmente las pestañas de administración de despliegue, secretos vLLM, cuotas de guardrails, gestión de funcionarios y MCP.
    - El formulario de cambio de clave, configuración de MFA e inspector de tokens del modal IAM se mantienen ocultos hasta que el usuario inicie sesión oficialmente.
+7. **Prioridad Visual del Asistente Conversacional & Traza CoT Colapsable:**
+   - En la pestaña de Inteligencia Agéntica (`#tab-cot-swarm`), la ventana de chat conversacional (`#cot-chat-thread`) se ubica en el primer plano superior con una barra de interacción directa (`#cot-inline-chat-input`, botón Enviar y captura de tecla `Enter` sin recarga).
+   - Los 5 hitos de auditoría de la Cadena de Razonamiento (Guardrails, Alma Criptográfica SHA-256, RAG Normativo/Aduanero, Inferencia Cuantílica y Síntesis) se concentran en un contenedor colapsable interactivo (`<details id="cot-trace-details-card">`) con telemetría en tiempo real, permitiendo una experiencia limpia centrada en la conversación y auditoría profunda a demanda.
+   - El RAG aduanero incorpora 27,764 subpartidas arancelarias oficiales (ANA / SIECA) con soporte para regímenes especiales de importación y sanidad agropecuaria (MIDA/APA).
 
 ---
 

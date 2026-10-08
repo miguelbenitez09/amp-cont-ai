@@ -141,7 +141,7 @@ class PortOpsGuardrails:
             "arancel", "aranceles", "arancelario", "tarifa", "dai", "itbms", "isc", "tasa", "aduanas",
             "aduana", "aduanero", "aduanal", "ana", "sieca", "hs code", "hs", "subpartida", "partida",
             "inciso", "cif", "fob", "dua", "duca", "declaración", "declaracion", "despacho", "aforo",
-            "nacionalización", "nacionalizacion", "comercio", "exterior", "importar", "importación",
+            "nacionalización", "nacionalizacion", "comercio exterior", "comercio internacional", "importar", "importación",
             "importacion", "exportar", "exportación", "exportacion", "traer", "ingreso", "introducir",
             "embarcar", "reexportar", "zona libre", "zlc", "tránsito", "transito", "mercancía", "mercancias",
             "mercancia", "mercancías", "carga", "cajas", "bultos", "lote", "producto", "productos",

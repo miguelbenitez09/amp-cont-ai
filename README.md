@@ -848,6 +848,13 @@ Implementación completa de esquemas **Model Context Protocol (JSON-RPC 2.0)** p
 - **Perfiles Reproducibles de Docker Compose:** `core`, `ml`, `rag`, `mcp`, `security`, `observability` y `full`, fijados en versiones estables LTS (Wazuh 4.9.0, MinIO RELEASE.2024-11-07, Redis 7.2.5, TimescaleDB PG16, vLLM 0.6.3).
 - **Módulos de Terraform (`infra/terraform/`):** Despliegue modular de servicios para entornos `local` y `production` con políticas de seguridad y exclusión estricta de archivos `.tfstate`.
 
+### 14.7 Asistente Conversacional Prioritario, Traza CoT Plegable y RAG Ampliado de Comercio Exterior
+- **Chat Interactivo en Primer Plano (`#cot-chat-thread`):** La interfaz web sitúa la ventana de diálogo con el asistente en la parte superior derecha de forma inmediata al acceder a la pestaña de Inteligencia Agéntica (`#tab-cot-swarm`).
+- **Barra de Entrada Directa (`#cot-inline-chat-bar`):** Permite escribir y enviar consultas operacionales directamente mediante la caja `#cot-inline-chat-input`, con botón de envío y ejecución nativa con la tecla `Enter` (sin recargas de página).
+- **Traza CoT de 5 Hitos Plegable (`<details id="cot-trace-details-card">`):** La evidencia técnica de los 5 hitos normativos (1. Guardrails de seguridad, 2. Alma criptográfica SHA-256, 3. RAG aduanero/normativo, 4. Inferencia cuantílica $P_{10} \le P_{50} \le P_{90}$, 5. Síntesis ejecutiva) se mantiene concentrada en un panel desplegable con telemetría de latencia, tokens y sellos digitales en tiempo real.
+- **RAG de Comercio Exterior & Cuarentena Agropecuaria:** Expansión del catálogo a 27,764 subpartidas arancelarias oficiales (ANA / SIECA) con soporte para regímenes especiales de importación y sanidad agropecuaria (MIDA/APA), incluyendo partidas de fauna y apicultura (ej. `0106.41.00.00.00` para abejas vivas y `0409.00.00.00.00` para miel natural) libres de DAI e ITBMS bajo licencias zoosanitarias oficiales.
+- **Hardening de Guardrails Adversariables:** Blindaje de expresiones regulares y límites de palabras para evitar colisiones en ataques adversariales de inyección de prompts, preservando la apertura para términos de comercio internacional y logística de aduanas.
+
 ---
 
 ## 15. Licencia, Atribución Obligatoria y Citación Académica
