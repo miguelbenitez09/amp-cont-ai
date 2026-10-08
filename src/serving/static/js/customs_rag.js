@@ -75,7 +75,7 @@
         const entities = (item.regulatory_entity_sources || (item.entidades_reguladoras || []).map(e => ({entity: e}))).map(source => {
           const label = escapeHtml(source.entity || 'N/D');
           const url = source.official_url ? escapeHtml(source.official_url) : '';
-          const content = url ? `<a href="${url}" target="_blank" rel="noopener noreferrer">🏛️ ${label} ↗</a>` : `🏛️ ${label}`;
+          const content = url ? `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #00E5FF !important; text-decoration: none; font-weight: 600;">🏛️ ${label} ↗</a>` : `🏛️ ${label}`;
           const status = source.verification_status === 'official_homepage_reference' ? 'Fuente institucional de referencia; no prueba aplicabilidad legal.' : 'Fuente oficial pendiente de verificación.';
           return `<span class="badge" title="${escapeHtml(status)}" style="background: rgba(0, 229, 255, 0.12); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.3); font-size: 0.72rem; padding: 0.2rem 0.5rem;">${content}</span>`;
         }).join(" ");
@@ -161,7 +161,7 @@
                 <strong style="color: #38BDF8;">📤 ${tr("customs.export_procedure", "Procedimiento de Exportación / Transbordo:")}</strong>
                 <p style="color: var(--text-muted); margin: 3px 0 0 0; line-height: 1.45;">${displayValue(item.procedimiento_exportacion)}</p>
               </div>
-              <div style="font-size: 0.75rem; color: #64748B;">
+              <div style="font-size: 0.78rem; color: var(--text-dim, #CBD5E1); line-height: 1.45;">
                 <strong>⚖️ ${tr("customs.legal_basis", "Base Legal y Resoluciones:")}</strong> ${displayValue(item.base_legal)}
               </div>
               <div style="font-size: 0.75rem; color: #FFD166; background: rgba(255,209,102,0.08); border-radius: 5px; padding: 0.45rem 0.55rem;">

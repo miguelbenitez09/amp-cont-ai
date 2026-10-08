@@ -167,88 +167,107 @@
   <header>
     <div class="nav-container">
       <div class="logo-group">
-        <div class="logo-icon-wrapper" title="Panamá PortOps-AI • MLOps & Logística Portuaria">
-          <svg class="nav-svg-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <div class="logo-icon-wrapper" title="Panamá PortOps-AI • Hub Marítimo & MLOps Soberano">
+          <svg class="nav-svg-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <linearGradient id="logoShipGrad" x1="4" y1="18" x2="32" y2="30" gradientUnits="userSpaceOnUse">
+              <linearGradient id="logoShipGrad" x1="4" y1="20" x2="36" y2="34" gradientUnits="userSpaceOnUse">
                 <stop offset="0%" stop-color="#00E5FF"/>
+                <stop offset="50%" stop-color="#0284C7"/>
+                <stop offset="100%" stop-color="#070D1E"/>
+              </linearGradient>
+              <linearGradient id="logoWaterGrad" x1="2" y1="34" x2="38" y2="38" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#00F5D4"/>
                 <stop offset="100%" stop-color="#0077B6"/>
               </linearGradient>
-              <linearGradient id="logoAiGrad" x1="18" y1="3" x2="18" y2="15" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#00F5D4"/>
-                <stop offset="100%" stop-color="#00E5FF"/>
-              </linearGradient>
             </defs>
-            <!-- Neural Network / AI Apex Radar Constellation -->
-            <circle cx="18" cy="6" r="2.8" fill="url(#logoAiGrad)" />
-            <circle cx="10" cy="11" r="2" fill="#00E5FF" opacity="0.9" />
-            <circle cx="26" cy="11" r="2" fill="#00E5FF" opacity="0.9" />
-            <line x1="18" y1="6" x2="10" y2="11" stroke="#00F5D4" stroke-width="1.8" />
-            <line x1="18" y1="6" x2="26" y2="11" stroke="#00F5D4" stroke-width="1.8" />
-            <line x1="10" y1="11" x2="18" y2="15" stroke="rgba(0,229,255,0.7)" stroke-width="1.5" />
-            <line x1="26" y1="11" x2="18" y2="15" stroke="rgba(0,229,255,0.7)" stroke-width="1.5" />
-            <circle cx="18" cy="15" r="2.2" fill="#38BDF8" />
-            <!-- Modular Cargo Container Blocks -->
-            <rect x="9" y="17" width="5.5" height="4.5" rx="1" fill="#00F5D4" stroke="#0B192C" stroke-width="1" />
-            <rect x="15.25" y="17" width="5.5" height="4.5" rx="1" fill="#00E5FF" stroke="#0B192C" stroke-width="1" />
-            <rect x="21.5" y="17" width="5.5" height="4.5" rx="1" fill="#38BDF8" stroke="#0B192C" stroke-width="1" />
-            <rect x="12" y="12.5" width="5.5" height="4.5" rx="1" fill="#00E5FF" stroke="#0B192C" stroke-width="1" />
-            <rect x="18.5" y="12.5" width="5.5" height="4.5" rx="1" fill="#00F5D4" stroke="#0B192C" stroke-width="1" />
-            <!-- Container Vessel Hull (Solid High Contrast Geometry) -->
-            <path d="M4 22 L32 22 L27.5 30 L8.5 30 Z" fill="url(#logoShipGrad)" stroke="#00E5FF" stroke-width="1.6" stroke-linejoin="round" />
-            <!-- Bow Bulb / Canal Water Dynamic Vector -->
-            <path d="M2 32 C 10 30, 26 30, 34 32" stroke="#00F5D4" stroke-width="2" stroke-linecap="round" />
+            <!-- Panama Canal Lock Gates Wall Representation -->
+            <path d="M4 14 L4 32 M36 14 L36 32" stroke="rgba(0, 229, 255, 0.4)" stroke-width="2" stroke-linecap="round"/>
+            <line x1="2" y1="18" x2="8" y2="18" stroke="rgba(0, 229, 255, 0.3)" stroke-width="1.5"/>
+            <line x1="32" y1="18" x2="38" y2="18" stroke="rgba(0, 229, 255, 0.3)" stroke-width="1.5"/>
+            <!-- Port STS Gantry Crane Silhouette -->
+            <path d="M28 4 L34 4 L31 16 M31 7 L21 7" stroke="#38BDF8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="24" y1="7" x2="24" y2="11" stroke="#00F5D4" stroke-width="1.2"/>
+            <!-- Stood Containers (TEU Stacks) -->
+            <rect x="10" y="16" width="5" height="4" rx="0.8" fill="#00F5D4" stroke="#060913" stroke-width="0.8"/>
+            <rect x="15.5" y="16" width="5" height="4" rx="0.8" fill="#00E5FF" stroke="#060913" stroke-width="0.8"/>
+            <rect x="21" y="16" width="5" height="4" rx="0.8" fill="#38BDF8" stroke="#060913" stroke-width="0.8"/>
+            <rect x="12.5" y="11.5" width="5" height="4" rx="0.8" fill="#38BDF8" stroke="#060913" stroke-width="0.8"/>
+            <rect x="18" y="11.5" width="5" height="4" rx="0.8" fill="#00F5D4" stroke="#060913" stroke-width="0.8"/>
+            <!-- Container Vessel Neo-Panamax Hull -->
+            <path d="M5 22 L35 22 L29.5 32 L10.5 32 Z" fill="url(#logoShipGrad)" stroke="#00E5FF" stroke-width="1.8" stroke-linejoin="round"/>
+            <!-- Canal Waterway Flow -->
+            <path d="M2 34 C 12 32, 28 32, 38 34" stroke="url(#logoWaterGrad)" stroke-width="2.2" stroke-linecap="round"/>
+            <circle cx="20" cy="5" r="2.2" fill="#00E5FF"/>
           </svg>
         </div>
         <div class="logo-text">
-          <h1>Panamá PortOps-AI <span class="version-badge">v1.0.0</span></h1>
-          <p class="author-signature" data-i18n="nav.developed_by">developed by Miguel Benítez</p>
+          <div class="logo-title-row" style="display: flex; align-items: center; gap: 0.5rem;">
+            <span class="panama-flag-pill" title="República de Panamá • Centro Logístico y Portuario Mundial" style="font-size: 0.72rem; font-weight: 700; background: rgba(0, 229, 255, 0.12); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.35); padding: 0.15rem 0.45rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;">
+              <span>🇵🇦</span> <span>PANAMÁ</span>
+            </span>
+            <h1 style="margin: 0; font-size: 1.25rem;">PortOps-AI <span class="version-badge">v1.0.0</span></h1>
+          </div>
+          <p class="author-signature" data-i18n="nav.developed_by" style="margin: 2px 0 0 0; font-size: 0.76rem; color: #94A3B8;">
+            Desarrollado v1.0.0 Miguel Benítez • Ing. Miguel Antonio Benítez González (UTP) - GNU GPL-3.0
+          </p>
         </div>
       </div>
 
       <div class="nav-badges">
-        <div class="theme-selector-group" title="Seleccionar idioma / Select language">
-          <span style="font-size: 0.85rem;">🌐</span>
-          <select id="nav-lang-select" class="theme-select" onchange="window.I18n && window.I18n.setLanguage(this.value)" style="font-weight: 600; padding: 0.28rem 0.5rem; background: rgba(0, 229, 255, 0.1); border-color: rgba(0, 229, 255, 0.4); color: #00E5FF;">
-            <option value="es" selected>🇪🇸 ES</option>
-            <option value="en">🇺🇸 EN</option>
-            <option value="pt">🇧🇷 PT</option>
-          </select>
+        <!-- Global Environment & Language Controls -->
+        <div class="nav-control-group" style="display: flex; align-items: center; gap: 0.4rem;">
+          <div class="theme-selector-group" title="Seleccionar idioma / Select language">
+            <span style="font-size: 0.85rem;">🌐</span>
+            <select id="nav-lang-select" class="theme-select" onchange="window.I18n && window.I18n.setLanguage(this.value)" style="font-weight: 600; padding: 0.28rem 0.5rem; background: rgba(0, 229, 255, 0.1); border-color: rgba(0, 229, 255, 0.4); color: #00E5FF; cursor: pointer;">
+              <option value="es" selected>🇪🇸 ES</option>
+              <option value="en">🇺🇸 EN</option>
+              <option value="pt">🇧🇷 PT</option>
+            </select>
+          </div>
+          <div class="theme-selector-group" title="Personalizar tonalidad de interfaz marítima">
+            <span style="font-size: 0.82rem;">🎨</span>
+            <select id="theme-selector" class="theme-select" style="cursor: pointer;">
+              <option value="theme-cyber-ocean" selected>Atlántico Night (Cian)</option>
+              <option value="theme-radar-amber">Radar Balboa (Ámbar)</option>
+              <option value="theme-canal-emerald">Cuenca Canal (Esmeralda)</option>
+              <option value="theme-tactical-mono">Titanio Táctico (Mono)</option>
+              <option value="theme-pacific-sunset">Pacífico Sunset (Coral / Neón)</option>
+              <option value="theme-midnight-cobalt">Midnight Cobalt (Azul Profundo)</option>
+            </select>
+          </div>
         </div>
-        <div class="theme-selector-group" title="Personalizar tonalidad de interfaz marítima">
-          <span style="font-size: 0.82rem;">🎨</span>
-          <select id="theme-selector" class="theme-select">
-            <option value="theme-cyber-ocean" selected>Atlántico Night (Cian)</option>
-            <option value="theme-radar-amber">Radar Balboa (Ámbar)</option>
-            <option value="theme-canal-emerald">Cuenca Canal (Esmeralda)</option>
-            <option value="theme-tactical-mono">Titanio Táctico (Mono)</option>
-            <option value="theme-pacific-sunset">Pacífico Sunset (Coral / Neón)</option>
-            <option value="theme-midnight-cobalt">Midnight Cobalt (Azul Profundo)</option>
-          </select>
-        </div>
-        <button type="button" class="badge btn-security-hud" id="btn-auth-iam" onclick="window.openAuthModal('atab-login')" title="Centro de Autenticación, MFA RFC 6238 y Seguridad Operativa">
-          <span class="status-dot green"></span> <span id="nav-user-label" data-i18n="nav.login_iam">Iniciar Sesión | Login In</span>
-        </button>
-        <span class="badge" id="hud-env-badge" style="background: rgba(14, 165, 233, 0.15); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4); font-size: 0.74rem;">ENTORNO: CANDIDATE</span>
-        <span class="badge role-pill" id="hud-active-role" title="Rol RBAC activo en el sistema" onclick="window.openAuthModal('atab-roles')" style="cursor: pointer;">Modo: Invitado</span>
-        <span class="badge" id="hud-cap-badge" title="Capacidades vigentes del rol" style="background: rgba(0, 245, 212, 0.1); color: #00F5D4; font-size: 0.72rem; border: 1px solid rgba(0, 245, 212, 0.3);">Cap: 2/31</span>
-        <button type="button" class="badge btn-security-hud" id="btn-nav-chat" onclick="document.getElementById('cot-reasoning-section').scrollIntoView({behavior: 'smooth'})" title="Abrir Asistente Conversacional MLOps & RAG Aduanas" style="background: rgba(0, 245, 212, 0.12); color: #00F5D4; border-color: rgba(0, 245, 212, 0.4);">
-          <span>💬</span> <span>Asistente IA & RAG</span>
-        </button>
-        <button class="badge worm-badge" id="hud-worm-status" title="Auditoría WORM Criptográfica SHA-256">
-          <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> <span data-i18n="nav.worm_valid">WORM: Válido</span>
-        </button>
-        <span class="badge healthy" id="health-badge"><span class="status-dot"></span> <span data-i18n="nav.verifying">Verificando...</span></span>
-        <button class="badge btn-gear" id="btn-settings-gear" title="Abrir panel de configuración del modelo y simulación de nuevas variables">
-          <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-          <span id="algo-badge-text">Modelo activo</span>
-          <span class="gear-badge-tag" data-i18n="nav.settings">⚙️ Ajustes</span>
-        </button>
-        <span class="badge" id="latency-badge"><svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> -- ms</span>
 
-        <a href="/docs" target="_blank" class="badge link-badge">
-          <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg> OpenAPI Docs
-        </a>
+        <!-- Security & IAM Group -->
+        <div class="nav-control-group" style="display: flex; align-items: center; gap: 0.4rem;">
+          <button type="button" class="badge btn-security-hud" id="btn-auth-iam" onclick="window.openAuthModal('atab-login')" title="Centro de Autenticación, MFA RFC 6238 y Seguridad Operativa" style="cursor: pointer;">
+            <span class="status-dot green"></span> <span id="nav-user-label" data-i18n="nav.login_iam">Iniciar Sesión | Login</span>
+          </button>
+          <span class="badge role-pill" id="hud-active-role" title="Rol RBAC activo en el sistema" onclick="window.openAuthModal('atab-roles')" style="cursor: pointer;">Modo: Invitado</span>
+          <span class="badge" id="hud-cap-badge" title="Capacidades vigentes del rol" style="background: rgba(0, 245, 212, 0.1); color: #00F5D4; font-size: 0.72rem; border: 1px solid rgba(0, 245, 212, 0.3);">Cap: 2/31</span>
+        </div>
+
+        <!-- Telemetry & Integrity HUD Group -->
+        <div class="nav-control-group" style="display: flex; align-items: center; gap: 0.4rem;">
+          <button class="badge worm-badge" id="hud-worm-status" title="Auditoría WORM Criptográfica SHA-256" style="cursor: pointer;">
+            <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> <span data-i18n="nav.worm_valid">WORM SHA-256</span>
+          </button>
+          <span class="badge healthy" id="health-badge"><span class="status-dot"></span> <span data-i18n="nav.verifying">API: Saludable</span></span>
+          <span class="badge" id="latency-badge"><svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> -- ms</span>
+        </div>
+
+        <!-- Direct Actions Group -->
+        <div class="nav-control-group" style="display: flex; align-items: center; gap: 0.4rem;">
+          <button type="button" class="badge btn-security-hud" id="btn-nav-chat" onclick="document.getElementById('cot-reasoning-section') ? document.getElementById('cot-reasoning-section').scrollIntoView({behavior: 'smooth'}) : document.querySelector('[data-tab=tab-cot-swarm]').click()" title="Abrir Asistente Conversacional MLOps & RAG Aduanas" style="background: rgba(0, 245, 212, 0.12); color: #00F5D4; border-color: rgba(0, 245, 212, 0.4); cursor: pointer;">
+            <span>💬</span> <span>Asistente IA</span>
+          </button>
+          <button class="badge btn-gear" id="btn-settings-gear" title="Abrir panel de configuración del modelo y variables" style="cursor: pointer;">
+            <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span class="gear-badge-tag" data-i18n="nav.settings">⚙️ Ajustes</span>
+          </button>
+          <a href="/docs" target="_blank" class="badge link-badge" style="cursor: pointer;">
+            <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg> OpenAPI Docs
+          </a>
+        </div>
       </div>
     </div>
   </header>
@@ -310,25 +329,67 @@
           <div class="hero-badge-row">
             <span class="badge hero-law-badge interactive-nav-badge" role="button" tabindex="0" data-nav-tab="tab-data-platform" title="Abrir fuentes y datos">
               <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-              Ley 6 de 2002 de Transparencia de Panamá • Datos Abiertos AMP (2015–2026)
+              Ley 6 de 2002 de Transparencia de Panamá • Datos Abiertos AMP & INEC (2015–2026)
             </span>
-            <span class="badge hero-author-badge interactive-nav-badge" role="button" tabindex="0" data-nav-tab="tab-methodology" title="Abrir metodología">Desarrollado v1.0.0 Miguel Benítez</span>
-            <span class="badge hero-license-badge interactive-nav-badge" role="button" tabindex="0" data-nav-tab="tab-security-iam" title="Abrir gobernanza y licencia">GNU GPL-3.0 Copyleft</span>
+            <span class="badge hero-author-badge interactive-nav-badge" role="button" tabindex="0" data-nav-tab="tab-methodology" title="Abrir metodología">
+              Desarrollado v1.0.0 Miguel Benítez (UTP)
+            </span>
+            <span class="badge hero-license-badge interactive-nav-badge" role="button" tabindex="0" data-nav-tab="tab-security-iam" title="Abrir gobernanza y licencia">
+              GNU GPL-3.0 Copyleft
+            </span>
           </div>
 
-          <h1 class="hero-title">Panamá PortOps-AI <span class="version-highlight">v1.0</span></h1>
-          <p class="hero-subtitle">
-            Plataforma industrial de MLOps, benchmarking multi-algoritmo y simulación estocástica multivariada sobre el sistema portuario y logístico de la República de Panamá.
-          </p>
-
-          <div class="hero-description-box">
-            <p>
-              <strong>Propósito Cívico y Educativo:</strong> Diseñado para empoderar a personas naturales y jurídicas en Panamá (transportistas de carga terrestre, terminales portuarias, agencias navieras, estudiantes universitarios y servidores públicos), facilitando una herramienta soberana, verificable y 100% de código abierto que elimina la dependencia de costosas licencias privativas.
+          <div class="hero-title-container">
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+              <span class="panama-flag-pill" style="font-size: 0.78rem; font-weight: 700; background: rgba(0, 229, 255, 0.12); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.35); padding: 0.2rem 0.6rem; border-radius: 4px;">
+                🇵🇦 REPÚBLICA DE PANAMÁ • HUB LOGÍSTICO INTEROCEÁNICO
+              </span>
+              <span class="badge" style="background: rgba(0, 245, 212, 0.1); color: #00F5D4; font-size: 0.75rem; border: 1px solid rgba(0, 245, 212, 0.3);">
+                ⚡ MLOps Industrial & Modelos de Frontera
+              </span>
+            </div>
+            <h1 class="hero-title">Panamá PortOps-AI <span class="version-highlight">v1.0</span></h1>
+            <p class="hero-subtitle">
+              Plataforma industrial de analítica logística, orquestación de agentes de IA de frontera, benchmarking multi-algoritmo y simulación estocástica multivariada sobre el sistema portuario y de comercio exterior de Panamá.
             </p>
-            <p class="hero-stat-line">
-              <span>⚓ <strong id="hero-coverage-value">N/D</strong> de cobertura temporal registrada</span> •
-              <span>📦 <strong>353 boletines oficiales</strong> procesados con deduplicación bitemporal</span> • 
-              <span>🎯 <strong>Procedencia:</strong> Los estados y resultados muestran la fuente y la fecha de verificación disponibles</span>
+          </div>
+
+          <div class="hero-description-box" style="background: rgba(10, 18, 36, 0.85); border-left: 4px solid #00E5FF; padding: 1.25rem 1.4rem; border-radius: 8px; margin-top: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.65rem;">
+              <span style="font-size: 1.3rem;">⚓</span>
+              <h3 style="color: #00E5FF; font-size: 1.05rem; margin: 0; font-weight: 700;">Misión del Proyecto, Motivación Ingenieril & Transferencia Tecnológica</h3>
+            </div>
+            <p style="margin: 0 0 0.65rem 0; line-height: 1.6; color: #E2E8F0; font-size: 0.88rem;">
+              Este framework de código abierto fue concebido y desarrollado por el <strong>Ing. Miguel Antonio Benítez González (Universidad Tecnológica de Panamá - UTP)</strong> con el objetivo fundamental de poner capacidades avanzadas de Inteligencia Artificial de frontera, razonamiento agéntico y MLOps industrial al servicio de la matriz productiva de Panamá. Su propósito es democratizar la analítica logística y aduanera de alto impacto tanto para <strong>pequeñas y medianas empresas (PyMEs)</strong> como para <strong>grandes operadores logísticos, agencias navieras y terminales portuarias</strong>, eliminando barreras de costo y dependencia tecnológica extranjera.
+            </p>
+            <p style="margin: 0 0 0.85rem 0; line-height: 1.6; color: #CBD5E1; font-size: 0.86rem;">
+              La plataforma permite realizar consultas estratégicas del sector logístico, diagnósticos macroeconómicos de la balanza comercial de Panamá para identificar productos y subpartidas arancelarias viables de importación, pronósticos de TEU por cuantil ($P_{10}, P_{50}, P_{90}$) para las 6 terminales portuarias y simulación de shocks de combustible búnker o calado del Canal. Al mismo tiempo, este proyecto constituye una demostración pública y verificable de destreza profesional en diseño de sistemas complejos, rigor matemático y orquestación de modelos de lenguaje para empresas e instituciones globales.
+            </p>
+            
+            <!-- 4 Pillars Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.75rem; padding-top: 0.85rem; border-top: 1px solid rgba(0, 229, 255, 0.2); margin-bottom: 0.85rem;">
+              <div style="background: rgba(0, 229, 255, 0.05); padding: 0.6rem 0.75rem; border-radius: 6px; border: 1px solid rgba(0, 229, 255, 0.15);">
+                <span style="color: #00E5FF; font-weight: 700; font-size: 0.84rem; display: block;">🏢 PyMEs & Grandes Empresas</span>
+                <p style="font-size: 0.76rem; color: #94A3B8; margin: 3px 0 0 0;">Liquidación arancelaria RAG, costos DUA/ITBMS y detección de oportunidades de importación comercial.</p>
+              </div>
+              <div style="background: rgba(0, 245, 212, 0.05); padding: 0.6rem 0.75rem; border-radius: 6px; border: 1px solid rgba(0, 245, 212, 0.15);">
+                <span style="color: #00F5D4; font-weight: 700; font-size: 0.84rem; display: block;">🚢 6 Terminales Portuarias</span>
+                <p style="font-size: 0.76rem; color: #94A3B8; margin: 3px 0 0 0;">Pronósticos de patio a 1-6 meses para Balboa, MIT, PSA, Cristóbal, CCT y Bocas con semáforo de vacíos.</p>
+              </div>
+              <div style="background: rgba(56, 189, 248, 0.05); padding: 0.6rem 0.75rem; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.15);">
+                <span style="color: #38BDF8; font-weight: 700; font-size: 0.84rem; display: block;">🔬 Investigación & MLOps</span>
+                <p style="font-size: 0.76rem; color: #94A3B8; margin: 3px 0 0 0;">Torneo determinista de 8 algoritmos, Zero Lookahead y diagnóstico formal de residuos Durbin-Watson.</p>
+              </div>
+              <div style="background: rgba(255, 209, 102, 0.05); padding: 0.6rem 0.75rem; border-radius: 6px; border: 1px solid rgba(255, 209, 102, 0.15);">
+                <span style="color: #FFD166; font-weight: 700; font-size: 0.84rem; display: block;">🏛️ Transparencia & WORM</span>
+                <p style="font-size: 0.76rem; color: #94A3B8; margin: 3px 0 0 0;">Cumplimiento Ley 6 de 2002, anonimización Ley 81 de 2019 e integridad criptográfica SHA-256.</p>
+              </div>
+            </div>
+
+            <p class="hero-stat-line" style="margin: 0; font-size: 0.8rem; color: #94A3B8;">
+              <span>⚓ <strong id="hero-coverage-value">2015–2026</strong> de cobertura temporal oficial</span> •
+              <span>📦 <strong>353 boletines estadísticos</strong> procesados con deduplicación bitemporal</span> • 
+              <span>🎯 <strong>Auditoría Criptográfica:</strong> Integridad WORM SHA-256 en tiempo real</span>
             </p>
           </div>
 
@@ -4292,14 +4353,17 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
 
       <!-- Navigation Step Tabs -->
       <div class="fr-nav-tabs" id="fr-wizard-tabs">
-        <button type="button" class="fr-nav-tab active" id="fr-tab-1" onclick="window.switchFirstRunStep(1)">
+        <button type="button" class="fr-nav-tab active" id="fr-tab-0" onclick="window.switchFirstRunStep(0)">
+          <span>🎯</span> <span>Fase 0: Perfil & Caso de Uso</span>
+        </button>
+        <button type="button" class="fr-nav-tab" id="fr-tab-1" onclick="window.switchFirstRunStep(1)">
           <span>🔐</span> <span>Fase 1: Credencial Root</span>
         </button>
         <button type="button" class="fr-nav-tab" id="fr-tab-2" onclick="window.switchFirstRunStep(2)">
           <span>👥</span> <span>Fase 2: Tríada de Administradores</span>
         </button>
         <button type="button" class="fr-nav-tab" id="fr-tab-3" onclick="window.switchFirstRunStep(3)">
-          <span>⚡</span> <span>Fase 3: Infraestructura & Motores</span>
+          <span>⚡</span> <span>Fase 3: Infraestructura & Conectores</span>
         </button>
         <button type="button" class="fr-nav-tab" id="fr-tab-4" onclick="window.switchFirstRunStep(4)">
           <span>🛡️</span> <span>Fase 4: Consola IAM & CRUD de Usuarios</span>
@@ -4310,9 +4374,96 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
       <div class="modal-body" style="padding: 1.5rem 2rem; overflow-y: auto; flex: 1;">
         
         <!-- ========================================================================= -->
+        <!-- FASE 0: Definición del Caso de Uso y Perfil del Framework                -->
+        <!-- ========================================================================= -->
+        <div id="fr-step-0" class="fr-step-view">
+          <div style="background: rgba(0, 229, 255, 0.08); border-left: 4px solid #00E5FF; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.25rem;">
+            <div style="font-weight: 700; color: #00E5FF; font-size: 1rem;">🎯 Fase 0: Definición del Caso de Uso & Perfil Operativo del Framework</div>
+            <p style="font-size: 0.85rem; color: #E2E8F0; margin: 0.35rem 0 0 0; line-height: 1.45;">
+              Defina el propósito fundamental con el que implementará Panamá PortOps-AI. Esta selección adaptará los módulos prioritarios, los parámetros predeterminados y facilitará una puesta en marcha inmediata del ecosistema soberano.
+            </p>
+          </div>
+
+          <div class="fr-profile-grid">
+            
+            <div class="fr-profile-card selected" id="profile-card-terminal_portuaria" onclick="window.selectFrameworkProfile('terminal_portuaria')">
+              <div class="fr-profile-check">✓</div>
+              <div class="fr-profile-icon">🚢</div>
+              <div class="fr-profile-title">Terminal Portuaria & Operador Marítimo</div>
+              <div class="fr-profile-target">Terminales del Atlántico y Pacífico, Operadores de Muelle y Patios</div>
+              <p class="fr-profile-desc">
+                Planificación de operaciones de patio, capacidad de atraque, gestión de transbordo y semáforo de balance de vacíos. Prioriza pronósticos por cuantil P10/P50/P90 de TEU y monitoreo de tránsitos del Canal de Panamá.
+              </p>
+              <div class="fr-profile-kpis">
+                <span class="fr-kpi-chip">TEU Mensual P10/P50/P90</span>
+                <span class="fr-kpi-chip">Semáforo de Vacíos</span>
+                <span class="fr-kpi-chip">Sensibilidad Búnker</span>
+                <span class="fr-kpi-chip">Calado ACP</span>
+              </div>
+            </div>
+
+            <div class="fr-profile-card" id="profile-card-pyme_comercio" onclick="window.selectFrameworkProfile('pyme_comercio')">
+              <div class="fr-profile-check">✓</div>
+              <div class="fr-profile-icon">🏢</div>
+              <div class="fr-profile-title">Comercio Exterior & PyME Importadora/Exportadora</div>
+              <div class="fr-profile-target">Pequeñas, Medianas y Grandes Empresas de Carga, Agencias Aduaneras</div>
+              <p class="fr-profile-desc">
+                Consultas de clasificación arancelaria por HS Code, liquidación de DAI/ITBMS/DUA con evidencia legal oficial y análisis macroeconómico de importaciones para identificar oportunidades de negocio en Panamá.
+              </p>
+              <div class="fr-profile-kpis">
+                <span class="fr-kpi-chip">RAG Aranceles Oficial</span>
+                <span class="fr-kpi-chip">Liquidación DUA / ITBMS</span>
+                <span class="fr-kpi-chip">Comercio Exterior INEC</span>
+                <span class="fr-kpi-chip">Oportunidades PyME</span>
+              </div>
+            </div>
+
+            <div class="fr-profile-card" id="profile-card-investigacion_mlops" onclick="window.selectFrameworkProfile('investigacion_mlops')">
+              <div class="fr-profile-check">✓</div>
+              <div class="fr-profile-icon">🔬</div>
+              <div class="fr-profile-title">Investigación Científica, Universidad & MLOps</div>
+              <div class="fr-profile-target">Universidades (UTP), Equipos de Ciencia de Datos y MLOps</div>
+              <p class="fr-profile-desc">
+                Diseñado para experimentación y verificación formal. Despliega la matriz comparativa de 8 arquitecturas de aprendizaje automático, validación Rolling Window sin data leakage, diagnóstico de residuos e inferencia causal.
+              </p>
+              <div class="fr-profile-kpis">
+                <span class="fr-kpi-chip">Torneo 8 Algoritmos</span>
+                <span class="fr-kpi-chip">Backtesting Expansivo</span>
+                <span class="fr-kpi-chip">Durbin-Watson & VIF</span>
+                <span class="fr-kpi-chip">Monte Carlo Powell</span>
+              </div>
+            </div>
+
+            <div class="fr-profile-card" id="profile-card-auditoria_gobierno" onclick="window.selectFrameworkProfile('auditoria_gobierno')">
+              <div class="fr-profile-check">✓</div>
+              <div class="fr-profile-icon">🏛️</div>
+              <div class="fr-profile-title">Auditoría Estatal, Aduanas & Transparencia</div>
+              <div class="fr-profile-target">Entidades Públicas, ANTAI, Contraloría General y Auditores ISO</div>
+              <p class="fr-profile-desc">
+                Trazabilidad rigurosa bajo la Ley 6 de 2002 de Transparencia, cumplimiento ISO 27001 / 42001, anonimización irreversible bajo Ley 81 de 2019 y auditoría criptográfica inmutable WORM con digests SHA-256.
+              </p>
+              <div class="fr-profile-kpis">
+                <span class="fr-kpi-chip">WORM Ledger SHA-256</span>
+                <span class="fr-kpi-chip">Anonimización Ley 81</span>
+                <span class="fr-kpi-chip">Matriz ISO 27001/42001</span>
+                <span class="fr-kpi-chip">Linaje 5D de Calidad</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <span id="fr-step0-status" style="font-size: 0.85rem; color: #00F5D4;">Perfil seleccionado: Terminal Portuaria & Operador Marítimo</span>
+            <button type="button" class="btn btn-primary" onclick="window.confirmFrameworkProfileAndNext()" style="padding: 0.75rem 2rem; font-weight: 700; background: linear-gradient(135deg, #0284C7 0%, #00E5FF 100%); color: #020617; border: none; border-radius: 8px; cursor: pointer;">
+              Confirmar Perfil y Avanzar a Fase 1: Credencial Root →
+            </button>
+          </div>
+        </div>
+
+        <!-- ========================================================================= -->
         <!-- FASE 1: Root Password Change                                             -->
         <!-- ========================================================================= -->
-        <div id="fr-step-1" class="fr-step-view">
+        <div id="fr-step-1" class="fr-step-view" style="display: none;">
           <div class="fr-split-layout">
             
             <!-- Left Column: Security Briefing -->
@@ -4583,6 +4734,126 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
               <div style="font-size: 0.72rem; color: #38BDF8; font-family: var(--font-mono);">vLLM Runtime • Budget: 2048 Tokens</div>
             </div>
 
+          <!-- Real Infrastructure Configuration Forms (DB, MinIO, Wazuh) -->
+          <div style="margin-top: 1.25rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem; margin-bottom: 1.25rem;">
+            
+            <!-- 1. Database Configuration Card -->
+            <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(0, 229, 255, 0.25); border-radius: 10px; padding: 1.1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+                <h4 style="margin: 0; color: #00E5FF; font-size: 0.92rem; display: flex; align-items: center; gap: 6px;">
+                  <span>🗄️</span> <span>Base de Datos Relacional</span>
+                </h4>
+                <span class="badge" id="fr-db-status-badge" style="background: rgba(0, 245, 212, 0.12); color: #00F5D4; font-size: 0.7rem;">Configurado</span>
+              </div>
+              <p style="font-size: 0.76rem; color: #94A3B8; margin: 0 0 0.65rem 0;">Establezca la contraseña y credenciales para la creación y conexión de la BD del sistema.</p>
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <div>
+                  <label style="font-size: 0.74rem; color: #94A3B8; display: block; margin-bottom: 2px;">Motor BD:</label>
+                  <select id="cfg-db-type" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 5px; color: #fff; font-size: 0.8rem; cursor: pointer;">
+                    <option value="sqlite" selected>SQLite Enterprise (portops_platform.db)</option>
+                    <option value="postgresql">PostgreSQL 16+ (pgvector)</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.74rem; color: #94A3B8; display: block; margin-bottom: 2px;">Host & Puerto:</label>
+                  <input type="text" id="cfg-db-host" value="127.0.0.1:5432" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 5px; color: #fff; font-size: 0.8rem;">
+                </div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <div>
+                  <label style="font-size: 0.74rem; color: #94A3B8; display: block; margin-bottom: 2px;">Usuario BD:</label>
+                  <input type="text" id="cfg-db-user" value="portops_admin" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 5px; color: #fff; font-size: 0.8rem;">
+                </div>
+                <div>
+                  <label style="font-size: 0.74rem; color: #94A3B8; display: block; margin-bottom: 2px;">Nombre BD:</label>
+                  <input type="text" id="cfg-db-name" value="portops_platform.db" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 5px; color: #fff; font-size: 0.8rem;">
+                </div>
+              </div>
+              <div style="margin-bottom: 0.75rem;">
+                <label style="font-size: 0.74rem; color: #94A3B8; display: block; margin-bottom: 2px;">Contraseña de la Base de Datos:</label>
+                <div class="password-input-wrapper">
+                  <input type="password" id="cfg-db-pass" value="PortOpsSecureDB2026!" placeholder="Contraseña de la BD" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 5px; color: #fff; font-size: 0.8rem;">
+                  <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('cfg-db-pass')">👁️</button>
+                </div>
+              </div>
+              <button type="button" class="btn btn-primary btn-sm" onclick="window.saveDatabaseConfig()" style="width: 100%; font-size: 0.78rem; padding: 0.45rem; background: #0284C7; border: none; cursor: pointer;">
+                💾 Guardar Credenciales de BD
+              </button>
+            </div>
+
+            <!-- 2. MinIO S3 Object Storage Card -->
+            <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(0, 245, 212, 0.25); border-radius: 10px; padding: 1.1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+                <h4 style="margin: 0; color: #00F5D4; font-size: 0.92rem; display: flex; align-items: center; gap: 6px;">
+                  <span>🪣</span> <span>MinIO S3 / Lakehouse</span>
+                </h4>
+                <span class="badge" id="fr-minio-status-badge" style="background: rgba(0, 245, 212, 0.12); color: #00F5D4; font-size: 0.7rem;">Operativo</span>
+              </div>
+              <p style="font-size: 0.76rem; color: #94A3B8; margin: 0 0 0.65rem 0;">Configuración de almacenamiento de objetos para capas Bronze, Silver y Gold.</p>
+              
+              <div style="margin-bottom: 0.5rem;">
+                <label style="font-size: 0.74rem; color: #94A3B8; display: block; margin-bottom: 2px;">Endpoint MinIO S3:</label>
+                <input type="text" id="cfg-minio-endpoint" value="http://127.0.0.1:9000" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 5px; color: #fff; font-size: 0.8rem;">
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <div>
+                  <label style="font-size: 0.74rem; color: #94A3B8; display: block; margin-bottom: 2px;">Access Key:</label>
+                  <input type="text" id="cfg-minio-access" value="minioadmin" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 5px; color: #fff; font-size: 0.8rem;">
+                </div>
+                <div>
+                  <label style="font-size: 0.74rem; color: #94A3B8; display: block; margin-bottom: 2px;">Secret Key:</label>
+                  <div class="password-input-wrapper">
+                    <input type="password" id="cfg-minio-secret" value="minioadmin" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 5px; color: #fff; font-size: 0.8rem;">
+                    <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('cfg-minio-secret')">👁️</button>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-bottom: 0.75rem;">
+                <label style="font-size: 0.74rem; color: #94A3B8; display: block; margin-bottom: 2px;">Buckets Medallion:</label>
+                <input type="text" id="cfg-minio-buckets" value="amp-bronze, amp-silver, amp-gold" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 5px; color: #fff; font-size: 0.8rem;">
+              </div>
+              <button type="button" class="btn btn-primary btn-sm" onclick="window.saveMinioConfig()" style="width: 100%; font-size: 0.78rem; padding: 0.45rem; background: #059669; border: none; cursor: pointer;">
+                💾 Guardar Configuración MinIO S3
+              </button>
+            </div>
+
+            <!-- 3. Wazuh SIEM Security Card -->
+            <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 10px; padding: 1.1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+                <h4 style="margin: 0; color: #F59E0B; font-size: 0.92rem; display: flex; align-items: center; gap: 6px;">
+                  <span>🛡️</span> <span>Wazuh SIEM & Ciberdefensa</span>
+                </h4>
+                <span class="badge" id="fr-wazuh-status-badge" style="background: rgba(245, 158, 11, 0.12); color: #F59E0B; font-size: 0.7rem;">Monitoreo</span>
+              </div>
+              <p style="font-size: 0.76rem; color: #94A3B8; margin: 0 0 0.65rem 0;">Telemetría de seguridad, detección de intrusiones y cumplimiento NIST/ISO.</p>
+              
+              <div style="margin-bottom: 0.5rem;">
+                <label style="font-size: 0.74rem; color: #94A3B8; display: block; margin-bottom: 2px;">Wazuh Manager / API URL:</label>
+                <input type="text" id="cfg-wazuh-url" value="https://127.0.0.1:55000" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 5px; color: #fff; font-size: 0.8rem;">
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <div>
+                  <label style="font-size: 0.74rem; color: #94A3B8; display: block; margin-bottom: 2px;">API User:</label>
+                  <input type="text" id="cfg-wazuh-user" value="wazuh-wui" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 5px; color: #fff; font-size: 0.8rem;">
+                </div>
+                <div>
+                  <label style="font-size: 0.74rem; color: #94A3B8; display: block; margin-bottom: 2px;">API Password / Token:</label>
+                  <div class="password-input-wrapper">
+                    <input type="password" id="cfg-wazuh-pass" value="WazuhApiSecretKey2026!" style="padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 5px; color: #fff; font-size: 0.8rem;">
+                    <button type="button" class="btn-toggle-eye" onclick="window.togglePasswordEye('cfg-wazuh-pass')">👁️</button>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-bottom: 0.75rem;">
+                <label style="font-size: 0.74rem; color: #94A3B8; display: block; margin-bottom: 2px;">Grupo de Agentes:</label>
+                <input type="text" id="cfg-wazuh-group" value="portops-security-cluster" style="width: 100%; padding: 0.45rem; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 5px; color: #fff; font-size: 0.8rem;">
+              </div>
+              <button type="button" class="btn btn-primary btn-sm" onclick="window.saveWazuhConfig()" style="width: 100%; font-size: 0.78rem; padding: 0.45rem; background: #D97706; border: none; cursor: pointer;">
+                💾 Guardar Configuración Wazuh SIEM
+              </button>
+            </div>
+
           </div>
 
           <!-- Diagnostic output log -->
@@ -4810,7 +5081,38 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
         <p class="footer-copyright">© 2026 Panamá PortOps-AI · Cada fuente se muestra con su manifiesto y estado de verificación.</p>
       </div>
     </div>
-  </footer>
+  <!-- Modal de Inspección Detallada de Elementos de Tablas (Forecast, Splits, Lakehouse, WORM) -->
+  <div id="table-row-detail-modal" class="modal-backdrop" style="display: none; z-index: 10050; background: rgba(3, 7, 18, 0.95); backdrop-filter: blur(12px);">
+    <div class="modal-dialog" style="max-width: 850px; width: 92vw; border: 1px solid #00E5FF; box-shadow: 0 0 45px rgba(0, 229, 255, 0.25); border-radius: 14px; background: #070e1f;">
+      <div class="modal-header" style="background: rgba(0, 229, 255, 0.08); border-bottom: 1px solid rgba(0, 229, 255, 0.25); padding: 1.1rem 1.6rem; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <span class="modal-badge" id="row-detail-badge" style="background: rgba(0, 245, 212, 0.15); color: #00F5D4; border: 1px solid rgba(0, 245, 212, 0.4); font-size: 0.72rem;">
+            INSPECCIÓN DE REGISTRO • TELEMETRÍA OPERATIVA
+          </span>
+          <h3 style="font-size: 1.25rem; color: #F8FAFC; margin: 0.35rem 0 0 0;" id="row-detail-title">Detalle del Registro Seleccionado</h3>
+        </div>
+        <button type="button" onclick="window.closeTableRowDetailModal()" style="background: none; border: none; color: #94A3B8; font-size: 1.5rem; cursor: pointer; padding: 0.2rem 0.5rem;">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 1.4rem 1.6rem; max-height: 75vh; overflow-y: auto;">
+        <div id="row-detail-summary-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0.75rem; margin-bottom: 1.2rem;">
+          <!-- Populated dynamically -->
+        </div>
+        <div style="background: rgba(11, 19, 38, 0.9); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <strong style="color: #00E5FF; font-size: 0.82rem;">Estructura de Datos & Metadata Oficial (JSON):</strong>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="window.copyRowDetailJson()" style="font-size: 0.72rem; padding: 0.25rem 0.6rem; cursor: pointer;">📋 Copiar JSON</button>
+          </div>
+          <pre id="row-detail-json-pre" style="max-height: 240px; overflow-y: auto; font-family: var(--font-mono); font-size: 0.78rem; color: #CBD5E1; margin: 0; background: transparent;"></pre>
+        </div>
+        <div id="row-detail-recommendation-box" style="background: rgba(0, 245, 212, 0.08); border-left: 4px solid #00F5D4; border-radius: 6px; padding: 0.85rem 1rem; font-size: 0.82rem; color: #E2E8F0;">
+          <!-- Recommendation text -->
+        </div>
+      </div>
+      <div class="modal-footer" style="padding: 0.9rem 1.6rem; border-top: 1px solid rgba(255, 255, 255, 0.08); display: flex; justify-content: flex-end;">
+        <button type="button" class="btn btn-secondary" onclick="window.closeTableRowDetailModal()" style="padding: 0.5rem 1.4rem; cursor: pointer;">Cerrar Inspección</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Modular i18n Localization Engine -->
   <script src="/static/js/i18n/es.js?v=1.0.0"></script>

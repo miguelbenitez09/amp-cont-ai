@@ -2359,6 +2359,96 @@ def get_system_first_run_status():
     return PanamaSecurityGovernancePanel.check_first_run_status()
 
 
+class FrameworkProfileRequest(BaseModel):
+    profile_id: str = Field(..., description="ID del perfil del framework (terminal_portuaria, pyme_comercio, investigacion_mlops, auditoria_gobierno)")
+    updated_by: Optional[str] = Field("root", description="Usuario que aplica la configuración")
+
+
+class DatabaseConfigRequest(BaseModel):
+    db_type: str = Field("sqlite", description="Motor de base de datos (sqlite, postgresql)")
+    host: Optional[str] = Field("127.0.0.1", description="Host de la base de datos")
+    port: Optional[int] = Field(5432, description="Puerto de la base de datos")
+    db_name: Optional[str] = Field("portops_platform.db", description="Nombre de la base de datos")
+    username: Optional[str] = Field("portops_admin", description="Usuario de la base de datos")
+    password: str = Field(..., description="Contraseña de la base de datos a establecer")
+
+
+class MinioConfigRequest(BaseModel):
+    endpoint: str = Field("http://127.0.0.1:9000", description="Endpoint de MinIO S3")
+    access_key: str = Field(..., description="Access Key de MinIO")
+    secret_key: str = Field(..., description="Secret Key de MinIO")
+    buckets: Optional[str] = Field("amp-bronze,amp-silver,amp-gold", description="Lista de buckets separados por coma")
+    secure: Optional[bool] = Field(False, description="Usar HTTPS / TLS")
+
+
+class WazuhConfigRequest(BaseModel):
+    api_url: str = Field("https://127.0.0.1:55000", description="URL del Manager / API de Wazuh")
+    api_user: str = Field("wazuh-wui", description="Usuario de la API de Wazuh")
+    api_password: str = Field(..., description="Contraseña o Token de la API de Wazuh")
+    agent_group: Optional[str] = Field("portops-security-cluster", description="Grupo de agentes asignado")
+
+
+@app.get("/api/v1/framework/profile", tags=["System Health & Infrastructure"])
+def get_framework_profile_endpoint():
+    """Retorna el perfil de uso activo del framework y las opciones disponibles."""
+    from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
+    return PanamaSecurityGovernancePanel.get_framework_profile()
+
+
+@app.post("/api/v1/framework/profile", tags=["System Health & Infrastructure"])
+def set_framework_profile_endpoint(req: FrameworkProfileRequest):
+    """Establece y persiste el perfil de uso del framework."""
+    from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
+    return PanamaSecurityGovernancePanel.set_framework_profile(profile_id=req.profile_id, updated_by=req.updated_by or "root")
+
+
+@app.get("/api/v1/infra/config", tags=["System Health & Infrastructure"])
+def get_infra_config_endpoint():
+    """Retorna el estado y configuración de la infraestructura soberana."""
+    from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
+    return PanamaSecurityGovernancePanel.get_infra_configuration()
+
+
+@app.post("/api/v1/infra/config/db", tags=["System Health & Infrastructure"])
+def save_database_config_endpoint(req: DatabaseConfigRequest):
+    """Configura y persiste las credenciales y parámetros de la base de datos."""
+    from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
+    return PanamaSecurityGovernancePanel.save_database_config(
+        db_type=req.db_type,
+        host=req.host or "127.0.0.1",
+        port=req.port or 5432,
+        db_name=req.db_name or "portops_platform.db",
+        username=req.username or "portops_admin",
+        password=req.password
+    )
+
+
+@app.post("/api/v1/infra/config/minio", tags=["System Health & Infrastructure"])
+def save_minio_config_endpoint(req: MinioConfigRequest):
+    """Configura y persiste los parámetros del Lakehouse MinIO S3."""
+    from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
+    return PanamaSecurityGovernancePanel.save_minio_config(
+        endpoint=req.endpoint,
+        access_key=req.access_key,
+        secret_key=req.secret_key,
+        buckets=req.buckets or "amp-bronze,amp-silver,amp-gold",
+        secure=bool(req.secure)
+    )
+
+
+@app.post("/api/v1/infra/config/wazuh", tags=["System Health & Infrastructure"])
+def save_wazuh_config_endpoint(req: WazuhConfigRequest):
+    """Configura y persiste los parámetros de telemetría y SIEM Wazuh."""
+    from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
+    return PanamaSecurityGovernancePanel.save_wazuh_config(
+        api_url=req.api_url,
+        api_user=req.api_user,
+        api_password=req.api_password,
+        agent_group=req.agent_group or "portops-security-cluster"
+    )
+
+
+
 # ==============================================================================
 # MCP (MODEL CONTEXT PROTOCOL) SOULS & TOOL RUNNER ENDPOINTS
 # ==============================================================================

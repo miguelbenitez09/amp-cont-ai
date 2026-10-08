@@ -562,3 +562,207 @@ class PanamaSecurityGovernancePanel:
             "is_first_run": False,
             "cluster_state": "Configured"
         }
+
+    @classmethod
+    def _init_infra_table(cls):
+        """Ensures the system_infra_config table exists."""
+        try:
+            with cls._get_db() as conn:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS system_infra_config (
+                        config_key TEXT PRIMARY KEY,
+                        config_value TEXT NOT NULL,
+                        updated_at TEXT NOT NULL,
+                        updated_by TEXT NOT NULL
+                    );
+                """)
+                conn.commit()
+        except Exception:
+            pass
+
+    @classmethod
+    def get_framework_profile(cls) -> Dict[str, Any]:
+        """Returns the active framework deployment profile and available profiles."""
+        cls._init_infra_table()
+        profiles = {
+            "terminal_portuaria": {
+                "id": "terminal_portuaria",
+                "name": "Terminal Portuaria & Operador Marítimo",
+                "description": "Optimizado para monitoreo de patios, calado del Canal de Panamá, proyección TEU por terminal (P10/P50/P90) y balance de vacíos.",
+                "target_sector": "Terminales Portuarias, Autoridad Marítima de Panamá, Agencias Navieras",
+                "default_port": "Puerto Balboa",
+                "recommended_modules": ["Forecast Cuantílico", "What-If Búnker", "Semáforo Vacíos", "ACP Transits"]
+            },
+            "pyme_comercio": {
+                "id": "pyme_comercio",
+                "name": "Comercio Exterior & PyME Importadora/Exportadora",
+                "description": "Optimizado para consultas de clasificación arancelaria por HS Code, liquidación de aranceles DAI/ITBMS/DUA y análisis macroeconómico de importaciones.",
+                "target_sector": "PyMEs panameñas, Agentes de Carga, Empresas de Logística y Comercio Internacional",
+                "default_port": "SSA Marine MIT",
+                "recommended_modules": ["RAG Aduanas", "Calculadora Arancelaria", "LakeHouse INEC Comext", "Tendencias Macroeconómicas"]
+            },
+            "investigacion_mlops": {
+                "id": "investigacion_mlops",
+                "name": "Investigación Científica, Universidad & MLOps",
+                "description": "Optimizado para experimentación estadística formal, benchmarking multi-algoritmo (8 modelos), validación Rolling Window y orquestación de agentes con presupuesto de tokens.",
+                "target_sector": "Universidades (UTP), Investigadores, Científicos de Datos e Ingenieros MLOps",
+                "default_port": "Puerto Balboa",
+                "recommended_modules": ["Benchmarking 8 Modelos", "Diagnóstico de Residuos", "Simulación Monte Carlo", "Agentes CoT LangGraph"]
+            },
+            "auditoria_gobierno": {
+                "id": "auditoria_gobierno",
+                "name": "Auditoría Estatal, Aduanas & Transparencia (Ley 6 de 2002)",
+                "description": "Optimizado para trazabilidad inmutable de datos públicos bajo Ley 6 de 2002, verificación WORM criptográfica SHA-256 y cumplimiento ISO 27001/42001.",
+                "target_sector": "ANTAI, Contraloría General de la República, Aduanas (ANA) y Auditores de Cumplimiento",
+                "default_port": "Todos los Puertos",
+                "recommended_modules": ["Auditoría WORM SHA-256", "Linaje 5D de Calidad", "Matriz ISO 27001/42001", "Anonimización Ley 81"]
+            }
+        }
+
+        active_id = "terminal_portuaria"
+        updated_at = time.strftime("%Y-%m-%dT%H:%M:%SZ")
+        try:
+            with cls._get_db() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT config_value, updated_at FROM system_infra_config WHERE config_key = 'framework_profile';")
+                row = cursor.fetchone()
+                if row:
+                    import json
+                    saved = json.loads(row["config_value"])
+                    active_id = saved.get("profile_id", "terminal_portuaria")
+                    updated_at = row["updated_at"]
+        except Exception:
+            pass
+
+        return {
+            "status": "success",
+            "active_profile": active_id,
+            "profile_details": profiles.get(active_id, profiles["terminal_portuaria"]),
+            "available_profiles": list(profiles.values()),
+            "last_updated": updated_at
+        }
+
+    @classmethod
+    def set_framework_profile(cls, profile_id: str, updated_by: str = "root") -> Dict[str, Any]:
+        """Persists the selected framework deployment profile."""
+        cls._init_infra_table()
+        import json
+        now_str = time.strftime("%Y-%m-%dT%H:%M:%SZ")
+        val = json.dumps({"profile_id": profile_id, "updated_by": updated_by, "timestamp": now_str})
+        with cls._get_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO system_infra_config (config_key, config_value, updated_at, updated_by)
+                VALUES ('framework_profile', ?, ?, ?)
+                ON CONFLICT(config_key) DO UPDATE SET
+                    config_value = excluded.config_value,
+                    updated_at = excluded.updated_at,
+                    updated_by = excluded.updated_by;
+            """, (val, now_str, updated_by))
+            conn.commit()
+        return cls.get_framework_profile()
+
+    @classmethod
+    def save_database_config(cls, db_type: str, host: str, port: int, db_name: str, username: str, password: str, updated_by: str = "root") -> Dict[str, Any]:
+        """Saves enterprise database connection configuration in SQLite system_infra_config."""
+        cls._init_infra_table()
+        import json
+        now_str = time.strftime("%Y-%m-%dT%H:%M:%SZ")
+        payload = {
+            "db_type": db_type,
+            "host": host,
+            "port": port,
+            "db_name": db_name,
+            "username": username,
+            "password_configured": bool(password),
+            "status": "CONFIGURED_ACTIVE",
+            "connection_uri": f"{db_type}://{username}:***@{host}:{port}/{db_name}" if db_type != "sqlite" else f"sqlite:///{db_name}",
+            "updated_at": now_str
+        }
+        with cls._get_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO system_infra_config (config_key, config_value, updated_at, updated_by)
+                VALUES ('database_config', ?, ?, ?)
+                ON CONFLICT(config_key) DO UPDATE SET
+                    config_value = excluded.config_value,
+                    updated_at = excluded.updated_at,
+                    updated_by = excluded.updated_by;
+            """, (json.dumps(payload), now_str, updated_by))
+            conn.commit()
+        return {"status": "success", "message": "Configuración de Base de Datos guardada exitosamente.", "config": payload}
+
+    @classmethod
+    def save_minio_config(cls, endpoint: str, access_key: str, secret_key: str, buckets: str, secure: bool, updated_by: str = "root") -> Dict[str, Any]:
+        """Saves MinIO Object Storage configuration in SQLite system_infra_config."""
+        cls._init_infra_table()
+        import json
+        now_str = time.strftime("%Y-%m-%dT%H:%M:%SZ")
+        payload = {
+            "endpoint": endpoint,
+            "access_key": access_key,
+            "secret_configured": bool(secret_key),
+            "buckets": [b.strip() for b in buckets.split(",") if b.strip()],
+            "secure": secure,
+            "status": "OPERATIONAL",
+            "updated_at": now_str
+        }
+        with cls._get_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO system_infra_config (config_key, config_value, updated_at, updated_by)
+                VALUES ('minio_config', ?, ?, ?)
+                ON CONFLICT(config_key) DO UPDATE SET
+                    config_value = excluded.config_value,
+                    updated_at = excluded.updated_at,
+                    updated_by = excluded.updated_by;
+            """, (json.dumps(payload), now_str, updated_by))
+            conn.commit()
+        return {"status": "success", "message": "Configuración de MinIO guardada exitosamente.", "config": payload}
+
+    @classmethod
+    def save_wazuh_config(cls, api_url: str, api_user: str, api_password: str, agent_group: str, updated_by: str = "root") -> Dict[str, Any]:
+        """Saves Wazuh SIEM security telemetry configuration in SQLite system_infra_config."""
+        cls._init_infra_table()
+        import json
+        now_str = time.strftime("%Y-%m-%dT%H:%M:%SZ")
+        payload = {
+            "api_url": api_url,
+            "api_user": api_user,
+            "password_configured": bool(api_password),
+            "agent_group": agent_group,
+            "status": "ARMED_MONITORING",
+            "updated_at": now_str
+        }
+        with cls._get_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO system_infra_config (config_key, config_value, updated_at, updated_by)
+                VALUES ('wazuh_config', ?, ?, ?)
+                ON CONFLICT(config_key) DO UPDATE SET
+                    config_value = excluded.config_value,
+                    updated_at = excluded.updated_at,
+                    updated_by = excluded.updated_by;
+            """, (json.dumps(payload), now_str, updated_by))
+            conn.commit()
+        return {"status": "success", "message": "Configuración de Wazuh SIEM guardada exitosamente.", "config": payload}
+
+    @classmethod
+    def get_infra_configuration(cls) -> Dict[str, Any]:
+        """Returns all persisted infrastructure configurations."""
+        cls._init_infra_table()
+        import json
+        configs = {}
+        try:
+            with cls._get_db() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT config_key, config_value FROM system_infra_config;")
+                for row in cursor.fetchall():
+                    try:
+                        configs[row["config_key"]] = json.loads(row["config_value"])
+                    except Exception:
+                        configs[row["config_key"]] = row["config_value"]
+        except Exception:
+            pass
+        return {"status": "success", "configs": configs}
