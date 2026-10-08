@@ -1,4 +1,4 @@
-﻿"""
+"""
 Panama Customs & Tariff Scraper (HS Codes / Incisos Arancelarios de Panamá)
 Extracts and normalizes the National Customs Tariff (Arancel de Importación de la República de Panamá).
 Supports 6-digit WCO international HS codes up to 8, 10, and 12-digit national subheadings (ANA / SIECA).
