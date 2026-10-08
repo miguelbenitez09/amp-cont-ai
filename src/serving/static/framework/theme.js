@@ -9,15 +9,21 @@ export function initializeTheme(){
   let preference='ocean';
   try{preference=localStorage.getItem('amp-theme')||'ocean'}catch{}
   if(!themes.includes(preference))preference='ocean'; save(preference);
-  const host=document.querySelector('.portal-header nav')||document.querySelector('.header-actions');
-  if(host&&!document.querySelector('#theme-select')){
-    const select=document.createElement('select'); select.id='theme-select'; select.className='theme-select';
-    select.setAttribute('aria-label','Tema visual');
-    select.innerHTML=themes.map(theme=>'<option value="'+theme+'">'+labels[theme]+'</option>').join('');
-    select.value=preference; select.addEventListener('change',()=>save(select.value)); host.prepend(select);
+  const landingSelect = document.querySelector('#landing-theme-select');
+  if(landingSelect){
+    landingSelect.value=preference;
+    landingSelect.addEventListener('change',()=>save(landingSelect.value));
+  } else {
+    const host=document.querySelector('.header-actions');
+    if(host&&!document.querySelector('#theme-select')){
+      const select=document.createElement('select'); select.id='theme-select'; select.className='theme-select';
+      select.setAttribute('aria-label','Tema visual');
+      select.innerHTML=themes.map(theme=>'<option value="'+theme+'">'+labels[theme]+'</option>').join('');
+      select.value=preference; select.addEventListener('change',()=>save(select.value)); host.prepend(select);
+    }
   }
   document.querySelectorAll('[data-theme-toggle]').forEach(button=>{
     const label=()=>{const current=document.documentElement.dataset.theme;button.setAttribute('aria-label','Cambiar tema visual: '+labels[current]);button.title='Tema activo: '+labels[current]+' · clic para cambiar';button.innerHTML='<span class="theme-swatch swatch-'+current+'"></span><span class="theme-button-label">'+labels[current]+'</span>'};
-    button.classList.add('theme-cycle'); label(); button.addEventListener('click',()=>{const next=themes[(themes.indexOf(document.documentElement.dataset.theme)+1)%themes.length];save(next);const select=document.querySelector('#theme-select');if(select)select.value=next;label()});
+    button.classList.add('theme-cycle'); label(); button.addEventListener('click',()=>{const next=themes[(themes.indexOf(document.documentElement.dataset.theme)+1)%themes.length];save(next);const select=document.querySelector('#landing-theme-select')||document.querySelector('#theme-select');if(select)select.value=next;label()});
   });
 }
