@@ -354,7 +354,7 @@ Todo el código generado se actualiza de manera reactiva en cURL, Python y JavaS
    - `RedisCacheAdapter`: Capa de caché en memoria para almacenar resultados de inferencias cuantílicas con latencias inferiores a 2 milisegundos, incluyendo fallback automático en memoria local cuando el cluster Redis no está activo.
 2. **Servidor MCP Nativo (Model Context Protocol) (`src/mcp/`):**
    - Implementa el estándar oficial MCP 2024-11-05 sobre transporte stdio y HTTP/SSE.
-   - Expone 5 herramientas seguras (`get_port_forecast`, `run_monte_carlo_risk_simulation`, `compare_model_benchmarks`, `simulate_external_feature`, `query_maritime_knowledge`) para Claude Desktop, Cursor, Antigravity y agentes autónomos.
+   - Expone 5 herramientas seguras (`get_port_forecast`, `run_monte_carlo_risk_simulation`, `compare_model_benchmarks`, `simulate_external_feature`, `query_maritime_knowledge`) para entornos agénticos, consolas de análisis y automatización soberana.
 3. **Motor RAG y Base de Conocimiento Jurídico-Portuaria (`src/rag/`):**
    - Indexa vectorialmente decretos de la Ley 56 de 2008 (General de Puertos), Ley 6 de 2002 (Transparencia) y avisos a la navegación de la ACP.
    - Resuelve preguntas de operadores logísticos generando respuestas contextualmente ancladas (*context-grounded*) sin alucinaciones.

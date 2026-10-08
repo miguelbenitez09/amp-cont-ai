@@ -1,9 +1,11 @@
 cff-version: 1.2.0
 message: "If you use this software, models, or simulation engine, please cite it as below."
 authors:
-  - family-names: "Benítez"
-    given-names: "Miguel"
-    alias: "mbeni"
+  - family-names: "Benítez González"
+    given-names: "Miguel Antonio"
+    affiliation: "Universidad Tecnológica de Panamá (UTP)"
+    alias: "miguelbenitez09"
+    website: "https://github.com/miguelbenitez09"
 title: "Panama PortOps-AI: Production MLOps Ecosystem & Stochastic Simulation Engine for Panamanian Port Logistics"
 version: 1.0.0
 date-released: 2026-09-25

@@ -7,7 +7,7 @@ name = "amp-maritime-mlops"
 version = "1.0.0"
 description = "Industrial MLOps Pipeline for Maritime Logistics & Container Analytics (AMP Panama)"
 authors = [
-    { name = "MLOps Engineering Team" }
+    { name = "Ing. Miguel Antonio Benítez González (UTP)", email = "mbenitezg01@gmail.com" }
 ]
 readme = "README.md"
 requires-python = ">=3.10"

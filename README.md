@@ -9,7 +9,7 @@
 [![Autor](https://img.shields.io/badge/Autor-developed_by_Miguel_Benítez-informational.svg)](https://github.com/miguelbenitez09)
 
 > **Firma Oficial del Proyecto:** **`Panamá PortOps-AI v1.0.0 • developed by Miguel Benítez`**  
-> **Autor Principal:** **Miguel Benítez** (`miguelbenitez09`) (<https://github.com/miguelbenitez09>)  
+> **Autor Principal:** **Ing. Miguel Antonio Benítez González (UTP)** (`miguelbenitez09`) (<https://github.com/miguelbenitez09>)  
 > **Licencia:** GNU General Public License v3.0 (GPL-3.0) con Atribución Obligatoria (Sección 7)  
 > **Arquitectura:** **100% Código Abierto Soberano (Zero Closed-Source / Zero Microsoft Fabric)**  
 > **Marco Legal:** **Ley 6 de 22 de enero de 2002 de la República de Panamá** (Normas para la transparencia en la gestión pública y datos abiertos).  
@@ -552,14 +552,14 @@ La versión 1.0 incorpora una arquitectura desacoplada y modular diseñada para 
 - **Factoría Unificada (`DatabaseFactory`):** Selección automática del motor de almacenamiento mediante la variable de entorno `DATABASE_URL`.
 
 ### 9.2 Servidor MCP Nativo (Model Context Protocol) (`src/mcp/`)
-El sistema expone un servidor MCP compatible con la especificación JSON-RPC 2.0 (noviembre 2024), permitiendo a agentes de IA (**Claude Desktop, Cursor, Antigravity**) invocar directamente herramientas del modelo:
-- `get_port_forecast`: Inferencia probabilística por terminal.
+Diseñé e implementé un servidor MCP compatible con la especificación estándar JSON-RPC 2.0 (noviembre 2024) para interoperar con cualquier entorno de ejecución, consola analítica y orquestador agéntico:
+- `get_port_forecast`: Inferencia probabilística por terminal con cuantiles calibrados P10, P50 y P90.
 - `run_monte_carlo_risk_simulation`: Evaluación estocástica de trayectorias con factor de Cholesky y saltos de Merton.
-- `compare_model_benchmarks`: Consulta de métricas multi-algoritmo.
+- `compare_model_benchmarks`: Consulta de métricas multi-algoritmo y evaluación empírica.
 - `simulate_external_feature`: Evaluación de Quality Gates y normalización matemática.
-- `query_maritime_knowledge`: Búsqueda semántica con base documental.
+- `query_maritime_knowledge`: Búsqueda semántica con base documental sobre normativas panameñas.
 
-*Configuración lista para Claude Desktop:* `src/mcp/claude_desktop_config.json`.
+*Configuración estandarizada del cliente MCP:* `src/mcp/mcp_client_config.json`.
 
 ### 9.3 Asistente RAG Marítimo y Jurídico de Panamá (`src/rag/`)
 Motor de búsqueda semántica con TF-IDF y similitud coseno sobre el marco legal y operativo panameño:
@@ -708,12 +708,13 @@ El panel de gobernanza (`src/infrastructure/security/governance_panel.py`) imple
   - Protocolo anti-ransomware WORM (Write Once Read Many) con RPO < 1 hora y RTO < 15 minutos.
   - Botón de revocación instantánea de sesiones activas ante alertas de intrusión.
 
-### 11.5 Servidor MCP (Model Context Protocol) & Almas de IA
-El proyecto expone herramientas nativas para agentes de inteligencia artificial (Claude, Cursor, Antigravity) bajo el protocolo estándar MCP y JSON-RPC 2.0:
-- **Almas Preconfiguradas (`src/mcp/soul_manager.py`):**
+### 11.5 Servidor MCP (Model Context Protocol) & Almas Soberanas de IA
+Implementé herramientas analíticas y almas de agentes bajo el protocolo estándar MCP y JSON-RPC 2.0 para garantizar modularidad e interoperabilidad absoluta:
+- **Almas Preconfiguradas y Selladas (`src/mcp/soul_manager.py`):**
   - `auditor_maritimo`: Enfoque riguroso en cumplimiento de Ley 56 de 2008, Ley 6 de 2002 y precisión de residuos.
   - `operador_muelle`: Orientado a la optimización de patios, grúas pórtico STS y semáforo de contenedores vacíos.
   - `cientifico_causal`: Especialista en econometría portuaria, do-calculus de Pearl y cópulas estocásticas.
+  - `agente_aduanero`: Especialista en el Arancel Nacional del SAC, liquidación DAI/ITBMS y notas de capítulo.
 - **Herramientas MCP Ejecutables:** `get_port_forecast`, `run_monte_carlo_risk_simulation`, `compare_model_benchmarks`, `simulate_external_feature`, `query_maritime_knowledge`.
 
 ---
@@ -830,7 +831,7 @@ Orquestación colaborativa con 4 agentes con roles definidos bajo principio de m
 - **Análisis de Sensibilidad What-If:** Multiplicadores paramétricos para shocks de búnker, calado y trasbordo.
 
 ### 14.4 Herramientas Estandarizadas MCP (`src/mcp/tools.py`)
-Implementación completa de esquemas **Model Context Protocol (JSON-RPC 2.0)** para interoperabilidad agéntica con Claude Desktop, Cursor y agentes externos:
+Implementé esquemas formales bajo el estándar **Model Context Protocol (JSON-RPC 2.0)** para máxima interoperabilidad y automatización de procesos analíticos:
 - `lookup_panama_customs_tariff`: Búsqueda y liquidación arancelaria.
 - `validate_iso6346_container`: Validación de contenedores y desglose de tipo/tamaño.
 - `get_port_forecast`: Pronósticos probabilísticos de TEUs.
@@ -874,13 +875,13 @@ Basado en Panamá PortOps-AI developed by Miguel Benítez (https://github.com/mi
 ### Formato de Citación Académica / Técnica (BibTeX):
 ```bibtex
 @software{benitez2026portops_v2,
-  author       = {Benítez, Miguel},
+  author       = {Benítez González, Miguel Antonio},
   title        = {{Panamá PortOps-AI v1.0.0: Ecosistema Abierto MLOps, Benchmarking de 8 Algoritmos y Motor de Inferencia Causal para Logística Portuaria}},
   year         = {2026},
   publisher    = {GitHub},
   journal      = {GitHub repository},
   howpublished = {\url{https://github.com/miguelbenitez09/amp-cont-ai}},
-  note         = {developed by Miguel Benítez. Fines Cívicos y Educativos (Ley 6 de 2002). Licensed under GNU GPL v3.0 with mandatory attribution}
+  note         = {developed by Miguel Benítez (UTP). Fines Cívicos y Educativos (Ley 6 de 2002). Licensed under GNU GPL v3.0 with mandatory attribution}
 }
 ```
 

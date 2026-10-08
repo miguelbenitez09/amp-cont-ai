@@ -1,9 +1,9 @@
 """
 Model Context Protocol (MCP) Server for Panama Maritime PortOps AI.
-Implements the JSON-RPC 2.0 protocol over stdio for Claude Desktop, Cursor, Antigravity,
-and other agentic AI orchestrators.
+Implements the JSON-RPC 2.0 protocol over stdio for sovereign agentic orchestrators,
+analytical clients, and maritime intelligence automation.
 
-Author: Desarrollado v1.0.0 Miguel Benítez
+Author: Desarrollado v1.0.0 Miguel Benítez / Ing. Miguel Antonio Benítez González (UTP)
 License: GNU GPL-3.0 with Section 7 Mandatory Attribution
 """
 

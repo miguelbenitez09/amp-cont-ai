@@ -3705,7 +3705,7 @@ executePortForecast();`;
       "title": "Gobernanza Estatal RBAC, Protocolo WORM & Servidor MCP",
       "badge": "FASE 8: GOVERNANCE & MCP",
       "sub": "Auditoría inmutable para AIG/Contraloría e interoperabilidad abierta con agentes de IA",
-      "simple": "Hicimos que el sistema se comunique con cualquier inteligencia artificial moderna (Claude, Cursor, Antigravity) mediante un estándar abierto (MCP), dejando una bitácora digital blindada que ningún funcionario puede borrar ni alterar.",
+      "simple": "Diseñé el sistema para que se comunique con cualquier cliente u orquestador agéntico mediante el estándar abierto Model Context Protocol (MCP), respaldado por una bitácora WORM blindada que ningún usuario puede alterar.",
       "context": {
         "title": "La Realidad Operativa Sin Maquillaje: El Desafío de Auditoría en el Sector Público",
         "text": "Los sistemas informáticos gubernamentales en América Latina suelen fallar por dos razones opuestas: o son 'cajas negras' cerradas cuyos funcionarios ocultan el código, o son sistemas sin bitácoras donde cualquier administrador puede modificar registros en base de datos sin dejar rastro. Para este proyecto exigimos un estándar de arquitectura que satisfaga a la Autoridad Nacional para la Innovación Gubernamental (AIG) y la Contraloría General de la República: registros de inferencia inmutables Write-Once-Read-Many (WORM), validación constante de firmas de servicio y un servidor nativo Model Context Protocol (MCP) que expone las herramientas analíticas mediante el protocolo estándar JSON-RPC 2.0."
@@ -3750,7 +3750,7 @@ executePortForecast();`;
         "provenance": "Servidor MCP & Capa de Gobernanza Estatal (src/mcp/server.py)",
         "url": "https://www.datosabiertos.gob.pa/dataset/?organization=autoridad-maritima-de-panama-amp",
         "coverage": "5 herramientas analíticas MCP expuestas con tipado JSON Schema",
-        "format": "JSON-RPC 2.0 estándar / Claude Desktop Config",
+        "format": "JSON-RPC 2.0 estándar / MCP Client Config",
         "hash": "Protocolo WORM con Hash Chaining validado para auditoría pública"
       }
     }

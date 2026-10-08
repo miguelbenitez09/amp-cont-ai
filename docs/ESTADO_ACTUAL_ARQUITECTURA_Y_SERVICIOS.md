@@ -59,8 +59,8 @@ La plataforma está diseñada siguiendo un patrón de desacoplamiento desacoplad
 flowchart TB
     subgraph ClientLayer["Capa de Cliente & Presentación"]
         UI["SPA Moderna en Vanilla JS / CSS Custom"]
-        CLI["Antigravity CLI / Scripts Python"]
-        MCPClient["Clientes MCP / Asistentes IA"]
+        CLI["PortOps CLI / Scripts Python Automatizados"]
+        MCPClient["Clientes MCP / Consolas Agénticas Soberanas"]
     end
 
     subgraph GatewayLayer["Capa de Enrutamiento & Seguridad"]
