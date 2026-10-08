@@ -131,12 +131,38 @@ class PortOpsGuardrails:
 
         q_lower = query_text.lower()
         domain_keywords = [
+            # Puertos y Operaciones Marítimas
             "puerto", "port", "terminal", "balboa", "cristóbal", "cristobal", "manzanillo", "mit",
             "psa", "rodman", "cct", "bocas fruit", "teu", "contenedor", "container", "bunkering",
-            "combustible", "calado", "draft", "canal", "acp", "amp", "fondeadero", "grúa", "sts",
-            "patio", "yard", "arancel", "hs code", "dai", "itbms", "aduanas", "ana", "mida",
-            "minsa", "apa", "cif", "edifact", "baplie", "coarri", "iso 6346", "ley 6", "ley 56",
-            "mlops", "pronóstico", "forecast", "monte carlo", "var", "cvar", "riesgo", "worm"
+            "combustible", "calado", "draft", "canal", "acp", "amp", "fondeadero", "grúa", "grua", "sts",
+            "patio", "yard", "atraque", "muelle", "buque", "barco", "navío", "navio", "embarcación",
+            "flete", "fletes", "embarque", "desembarque", "estiba", "tos", "baplie", "coarri", "iso 6346",
+            # Aduanas, Aranceles y Comercio Exterior
+            "arancel", "aranceles", "arancelario", "tarifa", "dai", "itbms", "isc", "tasa", "aduanas",
+            "aduana", "aduanero", "aduanal", "ana", "sieca", "hs code", "hs", "subpartida", "partida",
+            "inciso", "cif", "fob", "dua", "duca", "declaración", "declaracion", "despacho", "aforo",
+            "nacionalización", "nacionalizacion", "comercio", "exterior", "importar", "importación",
+            "importacion", "exportar", "exportación", "exportacion", "traer", "ingreso", "introducir",
+            "embarcar", "reexportar", "zona libre", "zlc", "tránsito", "transito", "mercancía", "mercancias",
+            "mercancia", "mercancías", "carga", "cajas", "bultos", "lote", "producto", "productos",
+            # Requisitos, Permisos y Entidades Reguladoras (OGA)
+            "permiso", "permisos", "licencia", "licencias", "requisito", "requisitos", "trámite",
+            "tramite", "trámites", "tramites", "autorización", "autorizacion", "documento", "documentos",
+            "mida", "minsa", "apa", "aupsa", "miambiente", "diasp", "arap", "asep", "acodeco", "mici",
+            "sanitario", "fitosanitario", "zoosanitario", "cuarentena", "inspección", "inspeccion",
+            "salud animal", "salud vegetal", "inocuidad", "certificación", "certificacion", "certificado",
+            # Mercancías y Rubros Específicos
+            "abeja", "abejas", "reina", "reinas", "miel", "apicultura", "colmena", "colmenas",
+            "animal", "animales", "ganado", "carne", "bovino", "bovina", "aves", "pollo", "pescado",
+            "atún", "atun", "mariscos", "fruta", "frutas", "banano", "bananos", "plátano", "platano",
+            "café", "cafe", "granos", "arroz", "maíz", "maiz", "harina", "azúcar", "azucar",
+            "medicamento", "medicamentos", "fármaco", "farmaco", "vacuna", "vacunas",
+            "vehículo", "vehiculo", "vehículos", "vehiculos", "auto", "autos", "carro", "carros",
+            "acero", "hierro", "cemento", "químico", "quimico", "búnker", "bunker", "petróleo", "petroleo",
+            "electrónica", "electronica", "computadora", "laptop", "celular", "calzado", "textil",
+            # MLOps, Modelos y Normativa
+            "ley 6", "ley 56", "ley 23", "ley 206", "mlops", "pronóstico", "pronostico", "forecast",
+            "monte carlo", "var", "cvar", "riesgo", "worm", "cholesky", "merton", "gumbel", "isotónica"
         ]
 
         # Check domain keywords using word boundaries for short acronyms to avoid false positives

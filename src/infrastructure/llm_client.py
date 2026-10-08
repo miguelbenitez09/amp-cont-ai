@@ -380,7 +380,8 @@ class UnifiedLLMClient:
         has_customs_kw = any(w in msg for w in [
             "arancel", "tarifa", "dai", "itbms", "hs", "subpartida", "aduan", "ana",
             "importa", "exporta", "permiso", "tratado", "cif", "carne", "banano", "bunker",
-            "medicamento", "café", "cafe", "tlc", "sieca", "duca"
+            "medicamento", "café", "cafe", "tlc", "sieca", "duca", "abeja", "abejas", "miel",
+            "animal", "traer", "requisito", "requisitos", "salud animal", "cuarentena"
         ])
 
         if has_customs_kw:
@@ -393,7 +394,11 @@ class UnifiedLLMClient:
                     tariff = PanamaTariffDatabase.lookup_by_hs_code(code_clean)
 
             if not tariff:
-                if "carne" in msg or "bovina" in msg or "0201" in msg:
+                if any(b in msg for b in ["abeja", "abejas", "reina", "apicultura", "0106"]):
+                    tariff = PanamaTariffDatabase.lookup_by_hs_code("010641")
+                elif any(b in msg for b in ["miel", "0409"]):
+                    tariff = PanamaTariffDatabase.lookup_by_hs_code("040900")
+                elif "carne" in msg or "bovina" in msg or "0201" in msg:
                     tariff = PanamaTariffDatabase.lookup_by_hs_code("020110")
                 elif any(b in msg for b in ["banana", "banano", "plátano", "platano", "0803"]):
                     tariff = PanamaTariffDatabase.lookup_by_hs_code("080390")
@@ -406,8 +411,7 @@ class UnifiedLLMClient:
                 elif "auto" in msg or "vehiculo" in msg or "8703" in msg:
                     tariff = PanamaTariffDatabase.lookup_by_hs_code("870323")
                 else:
-                    # Attempt text search in database
-                    results = PanamaTariffDatabase.search_by_description(user_message, limit=1)
+                    results = PanamaTariffDatabase.search_by_text(user_message)
                     if results:
                         tariff = results[0]
             if not tariff:

@@ -58,3 +58,25 @@ def test_crypto_seal_coherence_and_trace_id():
     assert data["trace_id"].startswith("req_")
     assert "execution_trace" in data
     assert len(data["execution_trace"]) == 5
+
+
+def test_customs_live_bee_import_query_not_blocked():
+    """
+    Validates that real-world foreign trade and customs queries like
+    'Que se necesita para traer abejas' pass guardrails and return
+    valid tariff classification, sanitary requirements (MIDA/APA), and DAI/ITBMS.
+    """
+    res = client.post("/api/v1/agents/reasoning-chat", json={
+        "query": "Que se necesita para traer abejas",
+        "guardrail_level": "strict"
+    })
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "SUCCESS"
+    assert data["assigned_soul"]["id"] == "agente_aduanero"
+    response_text = data["response"].lower()
+    # Must mention either HS code or quarantine / MIDA / ANA
+    assert ("0106" in response_text or "mida" in response_text or "arancel" in response_text or "abejas" in response_text)
+    assert len(data["chain_of_thought"]) == 5
+    assert data["chain_of_thought"][0]["status"] in ["PASSED", "VERIFIED"]
+

@@ -821,98 +821,14 @@
             </button>
           </div>
 
-          <!-- Right Column: Step by Step Chain of Thought & Output -->
+          <!-- Right Column: Conversational Chat Priority & Collapsible CoT Audit Trace -->
           <div>
             
-            <!-- Telemetry & Verdict Banner -->
-            <div id="cot-telemetry-banner" class="card" style="margin-bottom: 1.25rem; padding: 0.85rem 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; border: 1px solid rgba(0, 229, 255, 0.3);">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span id="cot-status-icon" style="font-size: 1.2rem;">⏱️</span>
-                <span id="cot-verdict-text" style="font-weight: bold; color: #F8FAFC; font-size: 0.88rem;">Listo para inferencia interactiva</span>
-              </div>
-              <div style="display: flex; gap: 0.75rem; font-size: 0.78rem; font-family: var(--font-mono); color: #94A3B8;">
-                <span>Latencia: <strong id="cot-metric-latency" style="color: #00E5FF;">-- ms</strong></span>
-                <span>Inferencia: <strong id="cot-metric-inf" style="color: #00F5D4;">-- ms</strong></span>
-                <span>Tokens: <strong id="cot-metric-tokens" style="color: #FFD166;">--</strong></span>
-                <span id="cot-metric-seal" class="badge" style="background: rgba(0,245,212,0.15); color: #00F5D4; font-size: 0.7rem;">Sello: Pendiente</span>
-              </div>
-            </div>
-
-            <!-- Milestones Progress Container -->
-            <div class="card" style="margin-bottom: 1.25rem;">
-              <div class="card-header" style="margin-bottom: 1rem;">
-                <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                <h2>Traza de Ejecución, Evidencia y Decisiones (Auditoría Soberana)</h2>
-              </div>
-              
-              <div id="cot-steps-container" style="display: flex; flex-direction: column; gap: 0.75rem;">
-                <!-- Step 1 -->
-                <div class="cot-step-card" id="cot-card-step-1" style="padding: 0.85rem; border-radius: 8px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); display: flex; gap: 1rem; align-items: flex-start;">
-                  <div class="cot-step-num" id="cot-num-step-1" style="width: 28px; height: 28px; border-radius: 50%; background: #00E5FF; color: #070D1E; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; flex-shrink: 0;">1</div>
-                  <div style="flex: 1;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                      <strong style="color: #F8FAFC; font-size: 0.88rem;">Evaluación de Contexto & Guardrails de Seguridad</strong>
-                      <span class="badge cot-step-status" id="cot-status-step-1" style="background: rgba(255,255,255,0.08); color: #94A3B8;">Pendiente</span>
-                    </div>
-                    <p class="cot-step-details" id="cot-details-step-1" style="color: #94A3B8; font-size: 0.8rem; margin: 0;">Valida el dominio marítimo y portuario panameño, bloqueando prompt injections.</p>
-                  </div>
-                </div>
-
-                <!-- Step 2 -->
-                <div class="cot-step-card" id="cot-card-step-2" style="padding: 0.85rem; border-radius: 8px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); display: flex; gap: 1rem; align-items: flex-start;">
-                  <div class="cot-step-num" id="cot-num-step-2" style="width: 28px; height: 28px; border-radius: 50%; background: #00E5FF; color: #070D1E; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; flex-shrink: 0;">2</div>
-                  <div style="flex: 1;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                      <strong style="color: #F8FAFC; font-size: 0.88rem;">Verificación Criptográfica de Soul Inmutable</strong>
-                      <span class="badge cot-step-status" id="cot-status-step-2" style="background: rgba(255,255,255,0.08); color: #94A3B8;">Pendiente</span>
-                    </div>
-                    <p class="cot-step-details" id="cot-details-step-2" style="color: #94A3B8; font-size: 0.8rem; margin: 0;">Comprueba el hash SHA-256 inmutable y el sello digital anti-tamper del agente.</p>
-                  </div>
-                </div>
-
-                <!-- Step 3 -->
-                <div class="cot-step-card" id="cot-card-step-3" style="padding: 0.85rem; border-radius: 8px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); display: flex; gap: 1rem; align-items: flex-start;">
-                  <div class="cot-step-num" id="cot-num-step-3" style="width: 28px; height: 28px; border-radius: 50%; background: #00E5FF; color: #070D1E; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; flex-shrink: 0;">3</div>
-                  <div style="flex: 1;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                      <strong style="color: #F8FAFC; font-size: 0.88rem;">Recuperación de Evidencia Normativa y RAG Marítimo</strong>
-                      <span class="badge cot-step-status" id="cot-status-step-3" style="background: rgba(255,255,255,0.08); color: #94A3B8;">Pendiente</span>
-                    </div>
-                    <p class="cot-step-details" id="cot-details-step-3" style="color: #94A3B8; font-size: 0.8rem; margin: 0;">Recupera fuentes jurídicas oficiales: Ley 6 de 2002, Ley 56 de 2008 y Aranceles ANA/SIECA.</p>
-                  </div>
-                </div>
-
-                <!-- Step 4 -->
-                <div class="cot-step-card" id="cot-card-step-4" style="padding: 0.85rem; border-radius: 8px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); display: flex; gap: 1rem; align-items: flex-start;">
-                  <div class="cot-step-num" id="cot-num-step-4" style="width: 28px; height: 28px; border-radius: 50%; background: #00E5FF; color: #070D1E; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; flex-shrink: 0;">4</div>
-                  <div style="flex: 1;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                      <strong style="color: #F8FAFC; font-size: 0.88rem;">Inferencia Numérica & Garantía Isotónica (P10 <= P50 <= P90)</strong>
-                      <span class="badge cot-step-status" id="cot-status-step-4" style="background: rgba(255,255,255,0.08); color: #94A3B8;">Pendiente</span>
-                    </div>
-                    <p class="cot-step-details" id="cot-details-step-4" style="color: #94A3B8; font-size: 0.8rem; margin: 0;">Calcula cuantiles con garantía matemática estricta de no cruce.</p>
-                  </div>
-                </div>
-
-                <!-- Step 5 -->
-                <div class="cot-step-card" id="cot-card-step-5" style="padding: 0.85rem; border-radius: 8px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); display: flex; gap: 1rem; align-items: flex-start;">
-                  <div class="cot-step-num" id="cot-num-step-5" style="width: 28px; height: 28px; border-radius: 50%; background: #00E5FF; color: #070D1E; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; flex-shrink: 0;">5</div>
-                  <div style="flex: 1;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                      <strong style="color: #F8FAFC; font-size: 0.88rem;">Síntesis Ejecutiva y Formateo Formal</strong>
-                      <span class="badge cot-step-status" id="cot-status-step-5" style="background: rgba(255,255,255,0.08); color: #94A3B8;">Pendiente</span>
-                    </div>
-                    <p class="cot-step-details" id="cot-details-step-5" style="color: #94A3B8; font-size: 0.8rem; margin: 0;">Generación de la respuesta estructurada con citas normativas y justificación.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Conversational Chat Thread Window -->
-            <div class="card" style="border-left: 4px solid #00F5D4; display: flex; flex-direction: column;">
+            <!-- Conversational Chat Thread Window (PRIMARY VISUAL PRIORITY) -->
+            <div class="card" style="border-left: 4px solid #00F5D4; display: flex; flex-direction: column; margin-bottom: 1.25rem;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                  <span style="font-size: 1.2rem;">💬</span>
+                  <span style="font-size: 1.25rem;">💬</span>
                   <h3 style="font-size: 1.05rem; margin: 0; color: #00F5D4;">Conversación con el Asistente MLOps & RAG Aduanas</h3>
                   <span class="badge" style="background: rgba(0, 245, 212, 0.15); color: #00F5D4; font-size: 0.72rem; border: 1px solid rgba(0, 245, 212, 0.3);">27,764 Partidas Indexadas</span>
                 </div>
@@ -947,10 +863,19 @@
                       <li><strong>Marco Normativo:</strong> Ley 6 de 2002 (Transparencia) y Ley 56 de 2008 (Ley General de Puertos).</li>
                     </ul>
                     <p style="margin: 0; font-size: 0.82rem; color: #00E5FF;">
-                      💡 <em>Escribe tu pregunta abajo o usa una de las consultas de prueba rápida del panel lateral. Puedes pulsar Enter para enviar.</em>
+                      💡 <em>Escribe tu pregunta en la barra inferior o usa el panel lateral. Puedes pulsar Enter para enviar directamente.</em>
                     </p>
                   </div>
                 </div>
+              </div>
+
+              <!-- Direct Inline Chat Input Bar -->
+              <div id="cot-inline-chat-bar" style="margin-top: 0.85rem; display: flex; gap: 0.5rem; align-items: center; background: rgba(15, 23, 42, 0.75); padding: 0.5rem 0.65rem; border-radius: 8px; border: 1px solid rgba(0, 245, 212, 0.35);">
+                <input type="text" id="cot-inline-chat-input" placeholder="Escribe aquí tu consulta (ej. ¿Qué se necesita para traer abejas?)..." style="flex: 1; padding: 0.6rem 0.85rem; background: var(--bg-input, #070D1E); border: 1px solid var(--border-color, #1E293B); border-radius: 6px; color: #F8FAFC; font-size: 0.88rem; outline: none;" />
+                <button type="button" id="btn-send-inline-chat" class="btn btn-primary" onclick="window.sendInlineChatMessage()" style="padding: 0.6rem 1.2rem; font-weight: bold; background: #00F5D4; color: #070D1E; border: none; border-radius: 6px; white-space: nowrap; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                  <span>Enviar</span>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
               </div>
 
               <!-- Fallback and Raw Response Box (Preserved for compatibility and copying) -->
@@ -1018,6 +943,104 @@
                 <div id="feedback-status-msg" style="margin-top: 0.5rem; font-size: 0.76rem; display: none;"></div>
               </div>
             </div>
+
+            <!-- Collapsible Execution Trace & Verification Details Card -->
+            <details id="cot-trace-details-card" class="card" style="border: 1px solid rgba(0, 229, 255, 0.3); background: rgba(15, 23, 42, 0.45); margin-bottom: 1.25rem;">
+              <summary style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; color: #00E5FF; padding: 0.25rem 0.2rem; user-select: none;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 1.15rem;">⚡</span>
+                  <span style="font-size: 0.92rem; color: #F8FAFC;">Traza de Ejecución CoT, Telemetría y Auditoría Normativa</span>
+                  <span id="cot-trace-summary-badge" class="badge" style="background: rgba(0, 245, 212, 0.15); color: #00F5D4; font-size: 0.7rem;">5 Hitos Verificables</span>
+                </div>
+                <span style="font-size: 0.8rem; color: #00E5FF;">Detalles Técnicos ▾</span>
+              </summary>
+
+              <div style="margin-top: 1rem;">
+                <!-- Telemetry & Verdict Banner -->
+                <div id="cot-telemetry-banner" class="card" style="margin-bottom: 1.25rem; padding: 0.85rem 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; border: 1px solid rgba(0, 229, 255, 0.3); background: rgba(7, 13, 30, 0.75);">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span id="cot-status-icon" style="font-size: 1.2rem;">⏱️</span>
+                    <span id="cot-verdict-text" style="font-weight: bold; color: #F8FAFC; font-size: 0.88rem;">Listo para inferencia interactiva</span>
+                  </div>
+                  <div style="display: flex; gap: 0.75rem; font-size: 0.78rem; font-family: var(--font-mono); color: #94A3B8; flex-wrap: wrap;">
+                    <span>Latencia: <strong id="cot-metric-latency" style="color: #00E5FF;">-- ms</strong></span>
+                    <span>Inferencia: <strong id="cot-metric-inf" style="color: #00F5D4;">-- ms</strong></span>
+                    <span>Tokens: <strong id="cot-metric-tokens" style="color: #FFD166;">--</strong></span>
+                    <span id="cot-metric-seal" class="badge" style="background: rgba(0,245,212,0.15); color: #00F5D4; font-size: 0.7rem;">Sello: Pendiente</span>
+                  </div>
+                </div>
+
+                <!-- Milestones Progress Container -->
+                <div class="card" style="margin-bottom: 0.5rem; background: rgba(7, 13, 30, 0.5);">
+                  <div class="card-header" style="margin-bottom: 1rem;">
+                    <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    <h2>Traza de Ejecución, Evidencia y Decisiones (Auditoría Soberana)</h2>
+                  </div>
+                  
+                  <div id="cot-steps-container" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <!-- Step 1 -->
+                    <div class="cot-step-card" id="cot-card-step-1" style="padding: 0.85rem; border-radius: 8px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); display: flex; gap: 1rem; align-items: flex-start;">
+                      <div class="cot-step-num" id="cot-num-step-1" style="width: 28px; height: 28px; border-radius: 50%; background: #00E5FF; color: #070D1E; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; flex-shrink: 0;">1</div>
+                      <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                          <strong style="color: #F8FAFC; font-size: 0.88rem;">Evaluación de Contexto & Guardrails de Seguridad</strong>
+                          <span class="badge cot-step-status" id="cot-status-step-1" style="background: rgba(255,255,255,0.08); color: #94A3B8;">Pendiente</span>
+                        </div>
+                        <p class="cot-step-details" id="cot-details-step-1" style="color: #94A3B8; font-size: 0.8rem; margin: 0;">Valida el dominio marítimo y portuario panameño, bloqueando prompt injections.</p>
+                      </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="cot-step-card" id="cot-card-step-2" style="padding: 0.85rem; border-radius: 8px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); display: flex; gap: 1rem; align-items: flex-start;">
+                      <div class="cot-step-num" id="cot-num-step-2" style="width: 28px; height: 28px; border-radius: 50%; background: #00E5FF; color: #070D1E; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; flex-shrink: 0;">2</div>
+                      <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                          <strong style="color: #F8FAFC; font-size: 0.88rem;">Verificación Criptográfica de Soul Inmutable</strong>
+                          <span class="badge cot-step-status" id="cot-status-step-2" style="background: rgba(255,255,255,0.08); color: #94A3B8;">Pendiente</span>
+                        </div>
+                        <p class="cot-step-details" id="cot-details-step-2" style="color: #94A3B8; font-size: 0.8rem; margin: 0;">Comprueba el hash SHA-256 inmutable y el sello digital anti-tamper del agente.</p>
+                      </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="cot-step-card" id="cot-card-step-3" style="padding: 0.85rem; border-radius: 8px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); display: flex; gap: 1rem; align-items: flex-start;">
+                      <div class="cot-step-num" id="cot-num-step-3" style="width: 28px; height: 28px; border-radius: 50%; background: #00E5FF; color: #070D1E; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; flex-shrink: 0;">3</div>
+                      <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                          <strong style="color: #F8FAFC; font-size: 0.88rem;">Recuperación de Evidencia Normativa y RAG Marítimo</strong>
+                          <span class="badge cot-step-status" id="cot-status-step-3" style="background: rgba(255,255,255,0.08); color: #94A3B8;">Pendiente</span>
+                        </div>
+                        <p class="cot-step-details" id="cot-details-step-3" style="color: #94A3B8; font-size: 0.8rem; margin: 0;">Recupera fuentes jurídicas oficiales: Ley 6 de 2002, Ley 56 de 2008 y Aranceles ANA/SIECA.</p>
+                      </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="cot-step-card" id="cot-card-step-4" style="padding: 0.85rem; border-radius: 8px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); display: flex; gap: 1rem; align-items: flex-start;">
+                      <div class="cot-step-num" id="cot-num-step-4" style="width: 28px; height: 28px; border-radius: 50%; background: #00E5FF; color: #070D1E; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; flex-shrink: 0;">4</div>
+                      <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                          <strong style="color: #F8FAFC; font-size: 0.88rem;">Inferencia Numérica & Garantía Isotónica (P10 <= P50 <= P90)</strong>
+                          <span class="badge cot-step-status" id="cot-status-step-4" style="background: rgba(255,255,255,0.08); color: #94A3B8;">Pendiente</span>
+                        </div>
+                        <p class="cot-step-details" id="cot-details-step-4" style="color: #94A3B8; font-size: 0.8rem; margin: 0;">Calcula cuantiles con garantía matemática estricta de no cruce.</p>
+                      </div>
+                    </div>
+
+                    <!-- Step 5 -->
+                    <div class="cot-step-card" id="cot-card-step-5" style="padding: 0.85rem; border-radius: 8px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); display: flex; gap: 1rem; align-items: flex-start;">
+                      <div class="cot-step-num" id="cot-num-step-5" style="width: 28px; height: 28px; border-radius: 50%; background: #00E5FF; color: #070D1E; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.82rem; flex-shrink: 0;">5</div>
+                      <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                          <strong style="color: #F8FAFC; font-size: 0.88rem;">Síntesis Ejecutiva y Formateo Formal</strong>
+                          <span class="badge cot-step-status" id="cot-status-step-5" style="background: rgba(255,255,255,0.08); color: #94A3B8;">Pendiente</span>
+                        </div>
+                        <p class="cot-step-details" id="cot-details-step-5" style="color: #94A3B8; font-size: 0.8rem; margin: 0;">Generación de la respuesta estructurada con citas normativas y justificación.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
 
           </div>
 

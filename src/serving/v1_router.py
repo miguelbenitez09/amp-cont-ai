@@ -1798,7 +1798,7 @@ def chat_with_reasoning_cot(
         intent = "simulation"
     selected_soul_id = req.target_soul_id
     if not selected_soul_id:
-        if any(w in q_lower for w in ["arancel", "dai", "itbms", "aduanas", "partida", "cif", "mida", "minsa"]):
+        if any(w in q_lower for w in ["arancel", "dai", "itbms", "aduanas", "partida", "cif", "mida", "minsa", "apa", "traer", "importar", "exportar", "mercancia", "abeja", "abejas", "miel", "permiso", "requisito", "animal"]):
             selected_soul_id = "agente_aduanero"
         elif any(w in q_lower for w in ["var", "cvar", "monte carlo", "estrés", "cholesky", "merton", "riesgo"]):
             selected_soul_id = "cientifico_causal"
@@ -1840,7 +1840,11 @@ def chat_with_reasoning_cot(
         tariff_match = PanamaTariffDatabase.lookup_by_hs_code(code_clean)
 
     if not tariff_match:
-        if any(w in q_lower for w in ["carne", "bovina", "bovino"]):
+        if any(w in q_lower for w in ["abeja", "abejas", "reina", "apicultura", "0106"]):
+            tariff_match = PanamaTariffDatabase.lookup_by_hs_code("010641")
+        elif any(w in q_lower for w in ["miel", "0409"]):
+            tariff_match = PanamaTariffDatabase.lookup_by_hs_code("040900")
+        elif any(w in q_lower for w in ["carne", "bovina", "bovino"]):
             tariff_match = PanamaTariffDatabase.lookup_by_hs_code("020130")
         elif any(w in q_lower for w in ["banan", "plátano", "fruta"]):
             tariff_match = PanamaTariffDatabase.lookup_by_hs_code("080390")
@@ -1850,6 +1854,12 @@ def chat_with_reasoning_cot(
             tariff_match = PanamaTariffDatabase.lookup_by_hs_code("300490")
         elif any(w in q_lower for w in ["computador", "tecnología", "laptop"]):
             tariff_match = PanamaTariffDatabase.lookup_by_hs_code("847130")
+        elif any(w in q_lower for w in ["café", "cafe"]):
+            tariff_match = PanamaTariffDatabase.lookup_by_hs_code("090121")
+        else:
+            text_matches = PanamaTariffDatabase.search_by_text(req.query)
+            if text_matches:
+                tariff_match = text_matches[0]
 
     if tariff_match:
         citations.append(f"Arancel Nacional de Importación (ANA/SIECA): Partida {tariff_match['hs_code_panama']} (DAI {tariff_match['arancel_dai_pct']}%, ITBMS {tariff_match['itbms_pct']}%)")

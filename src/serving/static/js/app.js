@@ -5678,9 +5678,18 @@ executePortForecast();`;
     }
   };
 
-  window.executeCoTReasoning = async function() {
+  window.executeCoTReasoning = async function(customQuery = null) {
     const inputEl = document.getElementById("cot-prompt-input");
-    const query = inputEl ? inputEl.value.trim() : "";
+    const inlineInputEl = document.getElementById("cot-inline-chat-input");
+    let query = "";
+    if (typeof customQuery === "string" && customQuery.trim()) {
+      query = customQuery.trim();
+    } else if (inlineInputEl && inlineInputEl.value.trim()) {
+      query = inlineInputEl.value.trim();
+    } else if (inputEl && inputEl.value.trim()) {
+      query = inputEl.value.trim();
+    }
+
     if (!query) {
       alert("Por favor ingrese una consulta operacional o seleccione una de las pruebas rápidas.");
       return;
@@ -5689,6 +5698,7 @@ executePortForecast();`;
     const soulSelect = document.getElementById("cot-soul-select");
     const targetSoul = soulSelect ? soulSelect.value : "agente_aduanero";
     const btnRun = document.getElementById("btn-run-cot");
+    const btnInlineSend = document.getElementById("btn-send-inline-chat");
     const statusIcon = document.getElementById("cot-status-icon");
     const verdictText = document.getElementById("cot-verdict-text");
     const latencyEl = document.getElementById("cot-metric-latency");
@@ -5698,15 +5708,24 @@ executePortForecast();`;
     const responseBox = document.getElementById("cot-final-response-box");
     const citationsRow = document.getElementById("cot-citations-row");
     const citationsTags = document.getElementById("cot-citations-tags");
+    const traceSummaryBadge = document.getElementById("cot-trace-summary-badge");
 
     // UI Loading state
     if (btnRun) {
       btnRun.disabled = true;
       btnRun.textContent = "⏳ Ejecutando Cadena de Razonamiento CoT...";
     }
+    if (btnInlineSend) {
+      btnInlineSend.disabled = true;
+      btnInlineSend.innerHTML = `<span>⏳ Procesando...</span>`;
+    }
     if (statusIcon) statusIcon.textContent = "⚙️";
     if (verdictText) verdictText.textContent = "Analizando con Guardrails y Almas Criptográficas...";
     if (responseBox) responseBox.textContent = "Evaluando consulta paso a paso...";
+    if (traceSummaryBadge) {
+      traceSummaryBadge.textContent = "Analizando 5 hitos...";
+      traceSummaryBadge.style.color = "#00E5FF";
+    }
 
     // Reset steps
     for (let i = 1; i <= 5; i++) {
@@ -5845,6 +5864,15 @@ executePortForecast();`;
             : "✓ Razonamiento CoT Completado Exitosamente";
           verdictText.style.color = data.status === "GUARDRAIL_BLOCKED" ? "#FF5A5F" : "#00F5D4";
         }
+        if (traceSummaryBadge) {
+          if (data.status === "GUARDRAIL_BLOCKED") {
+            traceSummaryBadge.textContent = "Bloqueado por Guardrail";
+            traceSummaryBadge.style.color = "#FF5A5F";
+          } else {
+            traceSummaryBadge.textContent = `5 Hitos Verificados (${m.total_latency_ms || elapsedTotal} ms)`;
+            traceSummaryBadge.style.color = "#00F5D4";
+          }
+        }
 
         // Response box fallback
         const rawResponse = data.response || "Inferencia procesada.";
@@ -5930,6 +5958,9 @@ executePortForecast();`;
         if (inputEl && data.status !== "GUARDRAIL_BLOCKED") {
           inputEl.value = "";
         }
+        if (inlineInputEl && data.status !== "GUARDRAIL_BLOCKED") {
+          inlineInputEl.value = "";
+        }
       } else {
         const errorMsg = data.detail || data.message || `Error del servidor (código HTTP ${res.status})`;
         throw new Error(errorMsg);
@@ -5940,6 +5971,10 @@ executePortForecast();`;
       if (verdictText) {
         verdictText.textContent = "Error al ejecutar inferencia";
         verdictText.style.color = "#FF5A5F";
+      }
+      if (traceSummaryBadge) {
+        traceSummaryBadge.textContent = "Error en Inferencia";
+        traceSummaryBadge.style.color = "#FF5A5F";
       }
       if (latencyEl) latencyEl.textContent = `${Math.round(performance.now() - tStart)} ms`;
       if (infEl) infEl.textContent = "0 ms";
@@ -5995,7 +6030,25 @@ executePortForecast();`;
         btnRun.disabled = false;
         btnRun.textContent = "⚡ Ejecutar Inferencia CoT en Tiempo Real";
       }
+      if (btnInlineSend) {
+        btnInlineSend.disabled = false;
+        btnInlineSend.innerHTML = `
+          <span>Enviar</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        `;
+      }
     }
+  };
+
+  window.sendInlineChatMessage = function() {
+    const inlineInputEl = document.getElementById("cot-inline-chat-input");
+    if (!inlineInputEl) return;
+    const query = inlineInputEl.value.trim();
+    if (!query) return;
+    const mainInputEl = document.getElementById("cot-prompt-input");
+    if (mainInputEl) mainInputEl.value = query;
+    window.executeCoTReasoning(query);
+    inlineInputEl.value = "";
   };
 
   window.clearChatThread = function() {
@@ -6022,6 +6075,16 @@ executePortForecast();`;
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
         window.executeCoTReasoning();
+      }
+    });
+  }
+
+  const cotInlineChatInput = document.getElementById("cot-inline-chat-input");
+  if (cotInlineChatInput) {
+    cotInlineChatInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        window.sendInlineChatMessage();
       }
     });
   }
@@ -7658,10 +7721,12 @@ executePortForecast();`;
     if (cotTabBtn) {
       cotTabBtn.click();
       setTimeout(() => {
+        const inlineInput = document.getElementById('cot-inline-chat-input');
         const promptInput = document.getElementById('cot-prompt-input');
-        if (promptInput) {
-          promptInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          promptInput.focus();
+        const target = inlineInput || promptInput;
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          target.focus();
         }
       }, 150);
     }
