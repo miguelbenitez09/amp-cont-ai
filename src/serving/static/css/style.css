@@ -6669,4 +6669,169 @@ body:not(.is-authenticated) .settings-tab-btn.admin-requires-auth {
   cursor: not-allowed !important;
 }
 
+/* =====================================================================
+   PORTAL OPERACIONAL: MOTOR DE RECORRIDO GUIADO INTERACTIVO (TOUR)
+   Desarrollado v1.0.0 Miguel Benítez / UTP - GNU GPL-3.0
+   ===================================================================== */
+#portops-tour-overlay-container {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  pointer-events: auto;
+}
+
+.portops-tour-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 15, 29, 0.72);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 1;
+}
+
+.portops-tour-focal-ring {
+  position: absolute;
+  z-index: 2;
+  border-radius: 12px;
+  border: 2px solid var(--cyan-bright);
+  box-shadow: 0 0 0 9999px rgba(8, 14, 28, 0.68), 0 0 28px rgba(0, 229, 255, 0.75), inset 0 0 16px rgba(0, 229, 255, 0.35);
+  pointer-events: none;
+  transition: top 0.25s cubic-bezier(0.16, 1, 0.3, 1), left 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: tourPulse 2s infinite ease-in-out;
+}
+
+@keyframes tourPulse {
+  0% {
+    box-shadow: 0 0 0 9999px rgba(8, 14, 28, 0.68), 0 0 20px rgba(0, 229, 255, 0.5), inset 0 0 10px rgba(0, 229, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 9999px rgba(8, 14, 28, 0.68), 0 0 32px rgba(0, 229, 255, 0.85), inset 0 0 20px rgba(0, 229, 255, 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 9999px rgba(8, 14, 28, 0.68), 0 0 20px rgba(0, 229, 255, 0.5), inset 0 0 10px rgba(0, 229, 255, 0.2);
+  }
+}
+
+.portops-tour-popover {
+  position: absolute;
+  z-index: 3;
+  width: min(440px, calc(100vw - 32px));
+  background: var(--bg-card) !important;
+  border: 1px solid var(--cyan-bright) !important;
+  border-radius: 14px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55), 0 0 24px rgba(0, 229, 255, 0.25) !important;
+  padding: 1.25rem 1.4rem;
+  box-sizing: border-box;
+  outline: none;
+  transition: top 0.28s cubic-bezier(0.16, 1, 0.3, 1), left 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.portops-tour-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.portops-tour-step-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: color-mix(in srgb, var(--cyan-bright) 15%, transparent);
+  border: 1px solid var(--cyan-bright);
+  color: var(--cyan-bright);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  letter-spacing: 0.03em;
+}
+
+.tour-beacon-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--cyan-bright);
+  box-shadow: 0 0 8px var(--cyan-bright);
+}
+
+.portops-tour-btn-close {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1.15rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  line-height: 1;
+  transition: all 0.18s ease;
+}
+
+.portops-tour-btn-close:hover {
+  color: var(--rose-alert, #ef4444);
+  background: rgba(239, 68, 68, 0.15);
+  transform: scale(1.1);
+}
+
+.portops-tour-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.portops-tour-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan-primary), var(--cyan-bright));
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 8px var(--cyan-bright);
+}
+
+.portops-tour-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.35;
+}
+
+.portops-tour-desc {
+  margin: 0 0 1.25rem 0;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.portops-tour-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 0.85rem;
+}
+
+.portops-tour-nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-finish-highlight {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.45) !important;
+}
+
+.btn-tour-interactive:hover {
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.3), rgba(99, 102, 241, 0.35)) !important;
+  border-color: var(--cyan-bright) !important;
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.45) !important;
+  transform: translateY(-1px);
+}
+
+
 

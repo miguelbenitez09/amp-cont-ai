@@ -1,0 +1,25 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.3, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\mbeni\Downloads\amp-cont-ai
+configfile: pyproject.toml
+plugins: anyio-4.12.1, Faker-40.11.0, langsmith-0.11.1, locust-2.43.3, asyncio-1.3.0, cov-7.0.0, timeout-2.4.0, xdist-3.8.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 45 items
+
+tests\test_audit_20261008_security.py ...........................        [ 60%]
+tests\test_security_gateway.py ..                                        [ 64%]
+tests\test_frontend_auth_and_hover_ui.py ...........                     [ 88%]
+tests\test_js_package_guardrails.py ..                                   [ 93%]
+tests\test_ui_state_machine.py ...                                       [100%]
+
+============================== warnings summary ===============================
+tests/test_audit_20261008_security.py::test_browser_cookie_login_reload_admin_write_and_logout
+  C:\Users\mbeni\AppData\Local\Programs\Python\Python312\Lib\site-packages\websockets\legacy\__init__.py:6: DeprecationWarning: websockets.legacy is deprecated; see https://websockets.readthedocs.io/en/stable/howto/upgrade.html for upgrade instructions
+    warnings.warn(  # deprecated in 14.0 - 2024-11-09
+
+tests/test_audit_20261008_security.py::test_browser_cookie_login_reload_admin_write_and_logout
+  C:\Users\mbeni\AppData\Local\Programs\Python\Python312\Lib\site-packages\uvicorn\protocols\websockets\websockets_impl.py:17: DeprecationWarning: websockets.server.WebSocketServerProtocol is deprecated
+    from websockets.server import WebSocketServerProtocol
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 45 passed, 2 warnings in 14.45s =======================

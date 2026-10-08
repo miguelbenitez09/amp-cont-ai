@@ -14,6 +14,27 @@ import base64
 import hashlib
 import secrets
 from typing import Dict, Any, Optional, Tuple
+from pathlib import Path
+
+
+def _session_signing_key():
+    configured = os.getenv('PORTOPS_AUTH_SECRET')
+    if configured:
+        if len(configured) < 32:
+            raise RuntimeError('PORTOPS_AUTH_SECRET debe tener al menos 32 caracteres.')
+        return configured
+    path = Path(__file__).resolve().parents[2] / 'data/enterprise_db/session-signing.key'
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(descriptor, 'w', encoding='ascii') as stream:
+            stream.write(secrets.token_urlsafe(64))
+    except FileExistsError:
+        pass
+    key = path.read_text(encoding='ascii').strip()
+    if len(key) < 32:
+        raise RuntimeError('Clave de firma de sesión inválida; revise el archivo protegido.')
+    return key
 
 
 class AuthenticationEngine:
@@ -21,7 +42,7 @@ class AuthenticationEngine:
 
     SALT_BYTES = 32
     ITERATIONS = 120_000
-    SECRET_KEY = os.getenv("PORTOPS_AUTH_SECRET", "panama_portops_jwt_secret_key_v2_2026_miguel_benitez")
+    SECRET_KEY = _session_signing_key()
 
     @classmethod
     def hash_password(cls, password: str, salt: Optional[str] = None) -> Tuple[str, str]:

@@ -24,7 +24,8 @@ class ViewportResult:
     quick_filter_count: int
     has_undefined_text: bool
     operational_badge: str
-    evidence_badges: dict[str, str]
+    translated_titles: dict[str, str]
+    auth_dialog_accessible: bool
 
 
 def run(url: str) -> list[ViewportResult]:
@@ -36,6 +37,22 @@ def run(url: str) -> list[ViewportResult]:
             page = browser.new_page(viewport={"width": width, "height": height})
             page.goto(url, wait_until="domcontentloaded")
             page.wait_for_timeout(900)
+            page.locator("#btn-auth-iam").click()
+            auth_dialog_accessible = page.evaluate("""() => {
+                const modal = document.querySelector('#auth-iam-modal');
+                return modal.getAttribute('role') === 'dialog' && modal.getAttribute('aria-modal') === 'true'
+                    && !!modal.getAttribute('aria-labelledby') && modal.contains(document.activeElement);
+            }""")
+            for _ in range(18):
+                page.keyboard.press("Tab")
+                auth_dialog_accessible &= page.evaluate("document.querySelector('#auth-iam-modal').contains(document.activeElement)")
+            auth_dialog_accessible &= page.locator("#nav-lang-select").get_attribute("aria-label") is not None
+            auth_dialog_accessible &= page.locator("#theme-selector").get_attribute("aria-label") is not None
+            page.keyboard.press("Escape")
+            auth_dialog_accessible &= not page.locator("#auth-iam-modal").is_visible()
+            auth_dialog_accessible &= page.evaluate("document.activeElement.id === 'btn-auth-iam'")
+            if page.locator("#workspace-navigation-toggle").is_visible():
+                page.locator("#workspace-navigation-toggle").click()
             page.locator("#tab-btn-customs").click()
             page.locator("#btn-calc-customs").click()
             calculator_validation = page.locator("#customs-calc-results").inner_text()
@@ -47,11 +64,11 @@ def run(url: str) -> list[ViewportResult]:
             page.locator("#btn-validate-container").click()
             container_validation = page.locator("#container-validation-results").inner_text()
             languages = {}
-            evidence_badges = {}
+            translated_titles = {}
             for lang in ("es", "en", "pt"):
                 page.locator("#nav-lang-select").select_option(lang)
                 languages[lang] = page.locator("html").get_attribute("lang") or ""
-                evidence_badges[lang] = page.locator("[data-i18n='landing.evidence_badge']").inner_text()
+                translated_titles[lang] = page.locator("[data-i18n='customs.calc_title']").inner_text()
             body_text = page.locator("body").inner_text()
             results.append(ViewportResult(
                 width=width,
@@ -64,7 +81,8 @@ def run(url: str) -> list[ViewportResult]:
                 quick_filter_count=page.locator("#customs-quick-filters button").count(),
                 has_undefined_text="undefined" in body_text.lower(),
                 operational_badge=page.locator("#health-badge").inner_text(),
-                evidence_badges=evidence_badges,
+                translated_titles=translated_titles,
+                auth_dialog_accessible=auth_dialog_accessible,
             ))
             page.close()
         browser.close()
@@ -92,8 +110,10 @@ def main() -> int:
             failures.append(f"{result.width}: quick filters incomplete")
         if result.has_undefined_text:
             failures.append(f"{result.width}: visible undefined value")
-        if len(set(result.evidence_badges.values())) != 3:
-            failures.append(f"{result.width}: evidence badge was not translated per language")
+        if len(set(result.translated_titles.values())) != 3:
+            failures.append(f"{result.width}: customs title was not translated per language")
+        if not result.auth_dialog_accessible:
+            failures.append(f"{result.width}: auth dialog semantics or focus")
     print(json.dumps({"viewports": [asdict(result) for result in results], "passed": not failures, "failures": failures}, ensure_ascii=False, indent=2))
     return 1 if failures else 0
 

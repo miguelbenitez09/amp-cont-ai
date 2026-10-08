@@ -21,19 +21,20 @@ window.I18N_PT = {
     healthy: "Estado operacional",
     settings: "Ajustes",
     openapi_docs: "OpenAPI Docs",
-    lang_label: "Idioma:"
+    lang_label: "Idioma:",
+    guided_tour: "Tour Guiado"
   },
   tabs: {
     landing: "Início & Visão Geral",
-    cot_swarm: "🧠 Raciocínio CoT & Agentes",
-    customs_lakehouse: "🛃 RAG Alfândega, Tarifas & Lakehouse",
+    cot_swarm: "Agentes e análise",
+    customs_lakehouse: "Aduana e dados",
     forecast: "Previsão & What-If",
     benchmark: "Comparativo Multi-Algoritmo",
     diagnostics: "Diagnóstico Estatístico & Erros",
     simulation: "Simulação Monte Carlo",
     methodology: "Metodologia & Arquitetura",
     data_platform: "Data Platform & 5D Qualidade",
-    security_iam: "Segurança, IAM & WORM"
+    security_iam: "Segurança e auditoria"
   },
   landing: {
     hero_title: "Inteligência Artificial Portuária, Inferência Quantílica e MLOps para o Hub Logístico do Panamá",
@@ -112,6 +113,32 @@ window.I18N_PT = {
   footer: {
     legal: "Desenvolvido por Miguel Benítez • Engenheiro em Sistemas e Computação • Universidade Tecnológica do Panamá (UTP) • Licença GNU GPL v3.0 com Atribuição Obrigatória (Seção 7).",
     disclaimer: "Dados abertos protegidos pela Lei 6 de 2002 da República do Panamá."
+  },
+  tour: {
+    btn_label: "Tour Guiado",
+    btn_title: "Iniciar percurso interativo / Walkthrough",
+    step_prefix: "Passo",
+    of: "de",
+    next: "Próximo →",
+    prev: "← Anterior",
+    finish: "✓ Concluir Tour",
+    skip: "Pular",
+    step_hero_title: "Hub Marítimo & MLOps Soberano do Panamá",
+    step_hero_desc: "Bem-vindo à plataforma industrial de análise logística, orquestração de agentes de IA e benchmarking multi-algoritmo. Supervisione os 6 portos nacionais, o canal interoceânico e o comércio exterior.",
+    step_controls_title: "Idiomas & Esquemas Visuais Náuticos",
+    step_controls_desc: "Personalize seu ambiente em tempo real. Alterne entre Espanhol, Inglês e Português, e escolha entre 6 temas marítimos de alto contraste (Atlântico Ciano, Radar Âmbar, Bacia Esmeralda, Pôr do Sol no Pacífico, etc.).",
+    step_iam_title: "Centro de Segurança IAM & Perfis RBAC",
+    step_iam_desc: "Motor de autorização rigorosa com 31 capacidades auditáveis, autenticação de dois fatores MFA (RFC 6238 TOTP) e funções segmentadas para auditores, operadores e cientistas de dados.",
+    step_worm_title: "Integridade Criptográfica WORM SHA-256",
+    step_worm_desc: "Livro-razão imutável Write-Once-Read-Many encadeado por hashes SHA-256. Cada inferência, consulta fiscal e transação é selada contra adulterações sob a Lei 6 de 2002.",
+    step_cot_title: "Enxame de Agentes & Raciocínio CoT",
+    step_cot_desc: "Orquestração de agentes autônomos com almas criptográficas (Aduaneiro, Logístico, Quantílico, Segurança). Inspecione traços CoT passo a passo, guardrails anti-injeção e fontes fundamentadas.",
+    step_customs_title: "Aduana, RAG Tarifário & Lakehouse 5D",
+    step_customs_desc: "Busca vetorial e semântica sobre a Tarifa Nacional SAC e declarações DUA. Calcula impostos DAI/ITBMS e audita microdados reais em camadas Bronze, Silver e Gold.",
+    step_forecast_title: "Inferência Quantílica & Cenários What-If",
+    step_forecast_desc: "Modelos preditivos Champion para 1 a 6 meses com quantis calibrados P10 (Piso), P50 (Mediana) e P90 (Teto). Simule impactos de variações no preço do bunker e transbordo.",
+    step_simulation_title: "Simulação Estocástica & Risco Portuário",
+    step_simulation_desc: "Avaliação de resiliência usando Monte Carlo com 5.000 trajetórias, Teoria de Valores Extremos (EVT Gumbel) e filas M/M/c para estimar espera de navios e calado do Canal."
   },
   _coverage: {
     nav_theme_sunset: "Pacífico Sunset (Coral / Neon)", nav_theme_cobalt: "Cobalto da Meia-Noite (Azul profundo)",

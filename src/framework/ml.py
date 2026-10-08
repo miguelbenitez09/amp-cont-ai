@@ -47,8 +47,9 @@ def solve(matrix: list[list[float]], vector: list[float]) -> list[float]:
 
 
 class ModelService:
-    def __init__(self, db_path: Path, state_dir: Path):
+    def __init__(self, db_path: Path, state_dir: Path, max_rows: int = 10000):
         self.db_path, self.state_dir = Path(db_path), Path(state_dir)
+        self.max_rows = max(10, min(10000, max_rows))
 
     def connect(self):
         conn = sqlite3.connect(self.db_path, timeout=15)
@@ -95,8 +96,8 @@ class ModelService:
             raise ValueError("El archivo contiene campos potencialmente identificadores; elimínelos antes de importar")
         rows = []
         for raw in reader:
-            if len(rows) >= 10000 or None in raw or any(value is None for value in raw.values()):
-                raise ValueError("CSV inválido o más de 10000 filas")
+            if len(rows) >= self.max_rows or None in raw or any(value is None for value in raw.values()):
+                raise ValueError(f"CSV inválido o más de {self.max_rows} filas")
             try:
                 # Canonical dates avoid ambiguous ordering and locale-dependent parsing.
                 date = datetime.strptime(raw[date_column], "%Y-%m-%d").date().isoformat()

@@ -1,0 +1,72 @@
+{
+  "viewports": [
+    {
+      "width": 390,
+      "height": 844,
+      "horizontal_overflow": false,
+      "languages": {
+        "es": "es",
+        "en": "en",
+        "pt": "pt"
+      },
+      "calculator_validation": "Completa un código HS y un valor CIF mayor que cero.",
+      "calculator_blocked_message": "Liquidación bloqueada\nLa regla candidata no tiene evidencia documental verificable; no se permite liquidar\nSiguiente paso: Clasifique la subpartida con una regla ANA vigente antes de liquidar.",
+      "container_validation": "Completa el identificador ISO 6346 de 11 caracteres.",
+      "quick_filter_count": 8,
+      "has_undefined_text": false,
+      "operational_badge": "Estado operacional",
+      "translated_titles": {
+        "es": "Calculadora de Liquidación Fiscal y Permisos de Entrada",
+        "en": "Customs Tax Liquidation & Entry Permits Calculator",
+        "pt": "Calculadora aduaneira"
+      },
+      "auth_dialog_accessible": true
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "horizontal_overflow": false,
+      "languages": {
+        "es": "es",
+        "en": "en",
+        "pt": "pt"
+      },
+      "calculator_validation": "Completa un código HS y un valor CIF mayor que cero.",
+      "calculator_blocked_message": "Liquidación bloqueada\nLa regla candidata no tiene evidencia documental verificable; no se permite liquidar\nSiguiente paso: Clasifique la subpartida con una regla ANA vigente antes de liquidar.",
+      "container_validation": "Completa el identificador ISO 6346 de 11 caracteres.",
+      "quick_filter_count": 8,
+      "has_undefined_text": false,
+      "operational_badge": "Estado operacional",
+      "translated_titles": {
+        "es": "Calculadora de Liquidación Fiscal y Permisos de Entrada",
+        "en": "Customs Tax Liquidation & Entry Permits Calculator",
+        "pt": "Calculadora aduaneira"
+      },
+      "auth_dialog_accessible": true
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "horizontal_overflow": false,
+      "languages": {
+        "es": "es",
+        "en": "en",
+        "pt": "pt"
+      },
+      "calculator_validation": "Completa un código HS y un valor CIF mayor que cero.",
+      "calculator_blocked_message": "Liquidación bloqueada\nLa regla candidata no tiene evidencia documental verificable; no se permite liquidar\nSiguiente paso: Clasifique la subpartida con una regla ANA vigente antes de liquidar.",
+      "container_validation": "Completa el identificador ISO 6346 de 11 caracteres.",
+      "quick_filter_count": 8,
+      "has_undefined_text": false,
+      "operational_badge": "Estado operacional",
+      "translated_titles": {
+        "es": "Calculadora de Liquidación Fiscal y Permisos de Entrada",
+        "en": "Customs Tax Liquidation & Entry Permits Calculator",
+        "pt": "Calculadora aduaneira"
+      },
+      "auth_dialog_accessible": true
+    }
+  ],
+  "passed": true,
+  "failures": []
+}

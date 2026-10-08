@@ -10,6 +10,7 @@ from fastapi.testclient import TestClient
 from src.serving.api import app
 from src.simulation.advanced_simulations import GumbelStressTester, BerthCraneQueueSimulator
 from src.infrastructure.db.postgres_audit import audit_manager
+from tests.test_workspace_control_plane import control, login
 
 
 @pytest.fixture
@@ -80,7 +81,13 @@ def test_simulate_endpoint_berth_queue(client):
     assert "audit_block" in data
 
 
-def test_worm_request_audit_blocks_endpoint(client):
+def test_worm_request_audit_blocks_endpoint(control, tmp_path, monkeypatch):
+    from src.serving import api
+    from src.infrastructure.db.postgres_audit import PostgresAuditManager
+    client, _ = control
+    monkeypatch.setattr(api, 'audit_manager', PostgresAuditManager(tmp_path/'audit.db'))
+    assert client.get('/api/v1/audit/worm/blocks?limit=5').status_code == 401
+    login(client)
     # Perform a request to generate audit record
     client.get("/api/health")
     response = client.get("/api/v1/audit/worm/blocks?limit=5")

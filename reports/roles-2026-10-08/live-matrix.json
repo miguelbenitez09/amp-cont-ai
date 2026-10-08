@@ -1,0 +1,494 @@
+[
+  {
+    "username": "root",
+    "role": "root",
+    "login": "passed",
+    "workflow": "ready",
+    "access_checks": [
+      {
+        "path": "/configuration",
+        "status": 200
+      },
+      {
+        "path": "/identity",
+        "status": 200
+      },
+      {
+        "path": "/services",
+        "status": 200
+      },
+      {
+        "path": "/secrets",
+        "status": 200
+      },
+      {
+        "path": "/modules",
+        "status": 200
+      },
+      {
+        "path": "/datasets",
+        "status": 200
+      },
+      {
+        "path": "/models",
+        "status": 200
+      },
+      {
+        "path": "/security",
+        "status": 200
+      }
+    ],
+    "logout": "passed"
+  },
+  {
+    "username": "plataforma",
+    "role": "platform_admin",
+    "login": "passed",
+    "workflow": "ready",
+    "access_checks": [
+      {
+        "path": "/configuration",
+        "status": 200
+      },
+      {
+        "path": "/identity",
+        "status": 200
+      },
+      {
+        "path": "/services",
+        "status": 200
+      },
+      {
+        "path": "/secrets",
+        "status": 403
+      },
+      {
+        "path": "/modules",
+        "status": 200
+      },
+      {
+        "path": "/datasets",
+        "status": 200
+      },
+      {
+        "path": "/models",
+        "status": 200
+      },
+      {
+        "path": "/security",
+        "status": 200
+      }
+    ],
+    "logout": "passed"
+  },
+  {
+    "username": "seguridad",
+    "role": "security_admin",
+    "login": "passed",
+    "workflow": "ready",
+    "access_checks": [
+      {
+        "path": "/configuration",
+        "status": 200
+      },
+      {
+        "path": "/identity",
+        "status": 200
+      },
+      {
+        "path": "/services",
+        "status": 200
+      },
+      {
+        "path": "/secrets",
+        "status": 200
+      },
+      {
+        "path": "/modules",
+        "status": 403
+      },
+      {
+        "path": "/datasets",
+        "status": 403
+      },
+      {
+        "path": "/models",
+        "status": 403
+      },
+      {
+        "path": "/security",
+        "status": 200
+      }
+    ],
+    "logout": "passed"
+  },
+  {
+    "username": "datos",
+    "role": "data_engineer",
+    "login": "passed",
+    "workflow": "ready",
+    "access_checks": [
+      {
+        "path": "/configuration",
+        "status": 403
+      },
+      {
+        "path": "/identity",
+        "status": 403
+      },
+      {
+        "path": "/services",
+        "status": 403
+      },
+      {
+        "path": "/secrets",
+        "status": 403
+      },
+      {
+        "path": "/modules",
+        "status": 403
+      },
+      {
+        "path": "/datasets",
+        "status": 200
+      },
+      {
+        "path": "/models",
+        "status": 200
+      },
+      {
+        "path": "/security",
+        "status": 200
+      }
+    ],
+    "logout": "passed"
+  },
+  {
+    "username": "custodio",
+    "role": "data_steward",
+    "login": "passed",
+    "workflow": "ready",
+    "access_checks": [
+      {
+        "path": "/configuration",
+        "status": 403
+      },
+      {
+        "path": "/identity",
+        "status": 403
+      },
+      {
+        "path": "/services",
+        "status": 403
+      },
+      {
+        "path": "/secrets",
+        "status": 403
+      },
+      {
+        "path": "/modules",
+        "status": 403
+      },
+      {
+        "path": "/datasets",
+        "status": 200
+      },
+      {
+        "path": "/models",
+        "status": 403
+      },
+      {
+        "path": "/security",
+        "status": 200
+      }
+    ],
+    "logout": "passed"
+  },
+  {
+    "username": "mlops",
+    "role": "mlops_engineer",
+    "login": "passed",
+    "workflow": "ready",
+    "access_checks": [
+      {
+        "path": "/configuration",
+        "status": 403
+      },
+      {
+        "path": "/identity",
+        "status": 403
+      },
+      {
+        "path": "/services",
+        "status": 403
+      },
+      {
+        "path": "/secrets",
+        "status": 403
+      },
+      {
+        "path": "/modules",
+        "status": 200
+      },
+      {
+        "path": "/datasets",
+        "status": 200
+      },
+      {
+        "path": "/models",
+        "status": 200
+      },
+      {
+        "path": "/security",
+        "status": 200
+      }
+    ],
+    "logout": "passed"
+  },
+  {
+    "username": "revisor",
+    "role": "ml_reviewer",
+    "login": "passed",
+    "workflow": "ready",
+    "access_checks": [
+      {
+        "path": "/configuration",
+        "status": 403
+      },
+      {
+        "path": "/identity",
+        "status": 403
+      },
+      {
+        "path": "/services",
+        "status": 403
+      },
+      {
+        "path": "/secrets",
+        "status": 403
+      },
+      {
+        "path": "/modules",
+        "status": 403
+      },
+      {
+        "path": "/datasets",
+        "status": 200
+      },
+      {
+        "path": "/models",
+        "status": 200
+      },
+      {
+        "path": "/security",
+        "status": 200
+      }
+    ],
+    "logout": "passed"
+  },
+  {
+    "username": "operador",
+    "role": "port_operator",
+    "login": "passed",
+    "workflow": "ready",
+    "access_checks": [
+      {
+        "path": "/configuration",
+        "status": 403
+      },
+      {
+        "path": "/identity",
+        "status": 403
+      },
+      {
+        "path": "/services",
+        "status": 403
+      },
+      {
+        "path": "/secrets",
+        "status": 403
+      },
+      {
+        "path": "/modules",
+        "status": 403
+      },
+      {
+        "path": "/datasets",
+        "status": 200
+      },
+      {
+        "path": "/models",
+        "status": 403
+      },
+      {
+        "path": "/security",
+        "status": 200
+      }
+    ],
+    "logout": "passed"
+  },
+  {
+    "username": "simulacion",
+    "role": "simulation_analyst",
+    "login": "passed",
+    "workflow": "ready",
+    "access_checks": [
+      {
+        "path": "/configuration",
+        "status": 403
+      },
+      {
+        "path": "/identity",
+        "status": 403
+      },
+      {
+        "path": "/services",
+        "status": 403
+      },
+      {
+        "path": "/secrets",
+        "status": 403
+      },
+      {
+        "path": "/modules",
+        "status": 403
+      },
+      {
+        "path": "/datasets",
+        "status": 200
+      },
+      {
+        "path": "/models",
+        "status": 403
+      },
+      {
+        "path": "/security",
+        "status": 200
+      }
+    ],
+    "logout": "passed"
+  },
+  {
+    "username": "auditor",
+    "role": "compliance_auditor",
+    "login": "passed",
+    "workflow": "ready",
+    "access_checks": [
+      {
+        "path": "/configuration",
+        "status": 200
+      },
+      {
+        "path": "/identity",
+        "status": 403
+      },
+      {
+        "path": "/services",
+        "status": 403
+      },
+      {
+        "path": "/secrets",
+        "status": 403
+      },
+      {
+        "path": "/modules",
+        "status": 403
+      },
+      {
+        "path": "/datasets",
+        "status": 200
+      },
+      {
+        "path": "/models",
+        "status": 200
+      },
+      {
+        "path": "/security",
+        "status": 200
+      }
+    ],
+    "logout": "passed"
+  },
+  {
+    "username": "api",
+    "role": "api_consumer",
+    "login": "passed",
+    "workflow": "ready",
+    "access_checks": [
+      {
+        "path": "/configuration",
+        "status": 403
+      },
+      {
+        "path": "/identity",
+        "status": 403
+      },
+      {
+        "path": "/services",
+        "status": 403
+      },
+      {
+        "path": "/secrets",
+        "status": 403
+      },
+      {
+        "path": "/modules",
+        "status": 403
+      },
+      {
+        "path": "/datasets",
+        "status": 403
+      },
+      {
+        "path": "/models",
+        "status": 403
+      },
+      {
+        "path": "/security",
+        "status": 403
+      }
+    ],
+    "logout": "passed"
+  },
+  {
+    "username": "lector",
+    "role": "readonly_viewer",
+    "login": "passed",
+    "workflow": "ready",
+    "access_checks": [
+      {
+        "path": "/configuration",
+        "status": 403
+      },
+      {
+        "path": "/identity",
+        "status": 403
+      },
+      {
+        "path": "/services",
+        "status": 403
+      },
+      {
+        "path": "/secrets",
+        "status": 403
+      },
+      {
+        "path": "/modules",
+        "status": 403
+      },
+      {
+        "path": "/datasets",
+        "status": 200
+      },
+      {
+        "path": "/models",
+        "status": 200
+      },
+      {
+        "path": "/security",
+        "status": 403
+      }
+    ],
+    "logout": "passed"
+  }
+]

@@ -1,0 +1,35 @@
+[
+  {
+    "surface": "operations",
+    "width": 390,
+    "motion": "no-preference",
+    "frames": 60,
+    "passed": true
+  },
+  {
+    "surface": "operations",
+    "width": 390,
+    "motion": "reduce",
+    "frames": 60,
+    "passed": true
+  },
+  {
+    "surface": "operations",
+    "width": 1440,
+    "motion": "no-preference",
+    "frames": 60,
+    "passed": true
+  },
+  {
+    "surface": "operations",
+    "width": 1440,
+    "motion": "reduce",
+    "frames": 60,
+    "passed": true
+  },
+  {
+    "surface": "framework",
+    "lateResponseIgnored": true,
+    "passed": true
+  }
+]

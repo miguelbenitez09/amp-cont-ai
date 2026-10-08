@@ -1,0 +1,272 @@
+[
+  {
+    "role": "root",
+    "capabilities": [
+      "workspace.read",
+      "config.read",
+      "config.write",
+      "iam.write",
+      "audit.read",
+      "audit.verify",
+      "secrets.write",
+      "services.write",
+      "agents.write",
+      "modules.write",
+      "datasets.read",
+      "datasets.write",
+      "datasets.review",
+      "models.read",
+      "models.train",
+      "models.predict",
+      "models.review",
+      "forecast.read",
+      "simulation.run",
+      "simulation.export"
+    ],
+    "management_screens": [
+      "overview",
+      "configuration",
+      "services",
+      "modules",
+      "identity",
+      "datasets",
+      "models",
+      "agents",
+      "secrets",
+      "security"
+    ],
+    "operations_navigation": "passed",
+    "javascript_errors": []
+  },
+  {
+    "role": "platform_admin",
+    "capabilities": [
+      "workspace.read",
+      "config.read",
+      "config.write",
+      "iam.write",
+      "audit.read",
+      "audit.verify",
+      "services.write",
+      "agents.write",
+      "modules.write",
+      "datasets.read",
+      "models.read",
+      "forecast.read",
+      "simulation.run",
+      "simulation.export"
+    ],
+    "management_screens": [
+      "overview",
+      "configuration",
+      "services",
+      "modules",
+      "identity",
+      "datasets",
+      "models",
+      "agents",
+      "security"
+    ],
+    "operations_navigation": "passed",
+    "javascript_errors": []
+  },
+  {
+    "role": "security_admin",
+    "capabilities": [
+      "workspace.read",
+      "config.read",
+      "iam.write",
+      "audit.read",
+      "audit.verify",
+      "secrets.write",
+      "services.write"
+    ],
+    "management_screens": [
+      "overview",
+      "services",
+      "identity",
+      "agents",
+      "secrets",
+      "security"
+    ],
+    "operations_navigation": "passed",
+    "javascript_errors": []
+  },
+  {
+    "role": "mlops_engineer",
+    "capabilities": [
+      "workspace.read",
+      "datasets.read",
+      "datasets.write",
+      "datasets.review",
+      "models.read",
+      "models.train",
+      "models.predict",
+      "agents.write",
+      "modules.write",
+      "audit.read",
+      "forecast.read",
+      "simulation.run"
+    ],
+    "management_screens": [
+      "overview",
+      "modules",
+      "datasets",
+      "models",
+      "agents",
+      "security"
+    ],
+    "operations_navigation": "passed",
+    "javascript_errors": []
+  },
+  {
+    "role": "data_engineer",
+    "capabilities": [
+      "workspace.read",
+      "datasets.read",
+      "datasets.write",
+      "models.read",
+      "audit.read",
+      "forecast.read"
+    ],
+    "management_screens": [
+      "overview",
+      "datasets",
+      "models",
+      "agents",
+      "security"
+    ],
+    "operations_navigation": "passed",
+    "javascript_errors": []
+  },
+  {
+    "role": "data_steward",
+    "capabilities": [
+      "workspace.read",
+      "datasets.read",
+      "datasets.review",
+      "audit.read"
+    ],
+    "management_screens": [
+      "overview",
+      "datasets",
+      "agents",
+      "security"
+    ],
+    "operations_navigation": "passed",
+    "javascript_errors": []
+  },
+  {
+    "role": "ml_reviewer",
+    "capabilities": [
+      "workspace.read",
+      "datasets.read",
+      "models.read",
+      "models.review",
+      "audit.read",
+      "audit.verify"
+    ],
+    "management_screens": [
+      "overview",
+      "datasets",
+      "models",
+      "agents",
+      "security"
+    ],
+    "operations_navigation": "passed",
+    "javascript_errors": []
+  },
+  {
+    "role": "port_operator",
+    "capabilities": [
+      "workspace.read",
+      "datasets.read",
+      "audit.read",
+      "forecast.read",
+      "simulation.run"
+    ],
+    "management_screens": [
+      "overview",
+      "datasets",
+      "agents",
+      "security"
+    ],
+    "operations_navigation": "passed",
+    "javascript_errors": []
+  },
+  {
+    "role": "simulation_analyst",
+    "capabilities": [
+      "workspace.read",
+      "datasets.read",
+      "audit.read",
+      "forecast.read",
+      "simulation.run",
+      "simulation.export"
+    ],
+    "management_screens": [
+      "overview",
+      "datasets",
+      "agents",
+      "security"
+    ],
+    "operations_navigation": "passed",
+    "javascript_errors": []
+  },
+  {
+    "role": "api_consumer",
+    "capabilities": [
+      "workspace.read",
+      "forecast.read"
+    ],
+    "management_screens": [
+      "overview",
+      "agents"
+    ],
+    "operations_navigation": "passed",
+    "javascript_errors": []
+  },
+  {
+    "role": "readonly_viewer",
+    "capabilities": [
+      "workspace.read",
+      "datasets.read",
+      "models.read",
+      "forecast.read",
+      "audit.verify"
+    ],
+    "management_screens": [
+      "overview",
+      "datasets",
+      "models",
+      "agents"
+    ],
+    "operations_navigation": "passed",
+    "javascript_errors": []
+  },
+  {
+    "role": "compliance_auditor",
+    "capabilities": [
+      "workspace.read",
+      "config.read",
+      "audit.read",
+      "audit.verify",
+      "datasets.read",
+      "models.read",
+      "models.review"
+    ],
+    "management_screens": [
+      "overview",
+      "datasets",
+      "models",
+      "agents",
+      "security"
+    ],
+    "operations_navigation": "passed",
+    "javascript_errors": []
+  },
+  {
+    "mfa_enrollment_browser": "passed",
+    "reload_preserves_required_factor": true
+  }
+]

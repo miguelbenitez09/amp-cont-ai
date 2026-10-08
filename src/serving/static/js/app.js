@@ -1334,6 +1334,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Monte Carlo Simulation Tab ---
   async function runSimulation() {
+    if (btnSimulate.disabled) return;
+    let status = document.getElementById("simulation-request-status");
+    if (!status) {
+      status = document.createElement("p"); status.id = "simulation-request-status";
+      status.className = "status-message"; status.setAttribute("role", "status");
+      status.setAttribute("aria-live", "polite"); btnSimulate.after(status);
+    }
+    status.textContent = "Calculando el escenario…"; status.dataset.state = "loading";
     btnSimulate.disabled = true;
     btnSimulate.innerHTML = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle></svg> Simulando Caminos...`;
 
@@ -1351,6 +1359,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const res = await fetch("/api/simulation/run", {
+        signal: AbortSignal.timeout(60000),
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1369,7 +1378,12 @@ document.addEventListener("DOMContentLoaded", () => {
         throw new Error(simData.detail || "Error en la simulación");
       }
 
+      if (![simData.expected_volume, simData.var_95_volume, simData.cvar_95_expected_shortfall, simData.prob_severe_drop_25pct].every(Number.isFinite) || !simData.trajectory_profile?.length) {
+        throw new Error("El servidor devolvió resultados incompletos");
+      }
       hideSimulationSkeleton();
+      status.textContent = "Simulación completada. Resultados y registro actualizados.";
+      status.dataset.state = "success";
 
       simKpiExpected.textContent = `${Math.round(simData.expected_volume || 0).toLocaleString()} TEUs`;
       simKpiVar95.textContent = `${Math.round(simData.var_95_volume || 0).toLocaleString()} TEUs`;
@@ -1392,7 +1406,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     } catch (err) {
       hideSimulationSkeleton();
-      alert(`Error en simulación Monte Carlo: ${err.message}`);
+      console.error("Simulation request failed", err);
+      status.dataset.state = "error";
+      status.textContent = err.name === "TimeoutError" ? "El cálculo tardó demasiado. Puedes volver a intentarlo." : `No se pudo completar la simulación: ${err.message}. Puedes volver a intentarlo.`;
     } finally {
       hideSimulationSkeleton();
       btnSimulate.disabled = false;
@@ -1536,6 +1552,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const auth = apiCtrlAuth ? apiCtrlAuth.value : "bearer";
     const bunker = apiCtrlBunker ? parseFloat(apiCtrlBunker.value) : 0.0;
     const trans = apiCtrlTrans ? parseFloat(apiCtrlTrans.value) : 0.0;
+    const apiBase = (typeof window !== "undefined" && window.location && window.location.origin) ? window.location.origin : "http://127.0.0.1:8000";
 
     const payloadJson = JSON.stringify({
       port: port,
@@ -1562,7 +1579,7 @@ TOKEN=$(vault kv get -field=api_token secret/amp-portops)`;
       return `${authComment}
 
 # 2. Petición HTTP al Microservicio de Inferencia
-curl -X POST "http://127.0.0.1:8000/predict" \\
+curl -X POST "${apiBase}/predict" \\
 ${authHeader}  -H "Content-Type: application/json" \\
   -d '${payloadJson}'`;
     }
@@ -1589,7 +1606,7 @@ headers = {"Authorization": f"Bearer {api_token}", "Content-Type": "application/
 import requests
 
 # URL del microservicio FastAPI de Panamá PortOps-AI
-url = "http://127.0.0.1:8000/predict"
+url = "${apiBase}/predict"
 
 ${authComment}
 ${auth === "open" ? authPython : ""}
@@ -1654,7 +1671,7 @@ const payload = {
 async function executePortForecast() {
   try {
     const startTime = performance.now();
-    const res = await fetch("http://127.0.0.1:8000/predict", {
+    const res = await fetch(\`${apiBase}/predict\`, {
       method: "POST",
       headers,
       body: JSON.stringify(payload)
@@ -1896,6 +1913,12 @@ executePortForecast();`;
   if (btnSettingsGear) btnSettingsGear.addEventListener("click", openSettingsModal);
   if (settingsCloseBtn) settingsCloseBtn.addEventListener("click", closeSettingsModal);
   if (settingsActionBtn) settingsActionBtn.addEventListener("click", closeSettingsModal);
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && settingsModal?.classList.contains("open")) {
+      closeSettingsModal();
+      if (!settingsModal.classList.contains("open")) btnSettingsGear?.focus();
+    }
+  });
   if (settingsModal) {
     settingsModal.addEventListener("click", (e) => {
       if (e.target === settingsModal) closeSettingsModal();
@@ -2677,11 +2700,16 @@ executePortForecast();`;
   window.loadGovAdminData = async function() {
     const table = document.getElementById("gov-users-table");
     if (!table) return;
+    const session = window.activeSession;
+    if (!session?.user || !(session.user.is_root || session.roles?.some(role => ["platform_admin", "root_owner", "root"].includes(role)))) {
+      table.innerHTML = '<tbody><tr><td>La gestión de usuarios requiere una sesión administrativa autorizada.</td></tr></tbody>';
+      return;
+    }
     try {
       let users = [];
       try {
-        const curToken = window.activeSession?.token || localStorage.getItem("portops_token");
-        const res1 = curToken ? await fetch("/api/v1/auth/users", { headers: { "Authorization": `Bearer ${curToken}` } }) : { ok: false };
+        const curToken = window.activeSession?.token || null;
+        const res1 = await fetch("/api/v1/auth/users", { headers: curToken ? { "Authorization": `Bearer ${curToken}` } : {} });
         if (res1.ok) {
           const d1 = await res1.json();
           users = d1.users || [];
@@ -2691,6 +2719,7 @@ executePortForecast();`;
       if (!users.length) {
         const res2 = await fetch("/api/admin/governance");
         const d2 = await res2.json();
+        if (!res2.ok) throw new Error(d2.detail || "No se pudo consultar el inventario de usuarios.");
         users = d2.active_users || [];
       }
 
@@ -3199,11 +3228,14 @@ executePortForecast();`;
     const themeSelect = document.getElementById("theme-selector");
     if (!themeSelect) return;
     const savedTheme = localStorage.getItem("portops_theme") || "theme-cyber-ocean";
-    document.body.className = savedTheme;
+    document.body.classList.add(savedTheme);
     themeSelect.value = savedTheme;
     themeSelect.addEventListener("change", (e) => {
       const selected = e.target.value;
-      document.body.className = selected;
+      for (const name of [...document.body.classList]) {
+        if (name.startsWith("theme-")) document.body.classList.remove(name);
+      }
+      document.body.classList.add(selected);
       localStorage.setItem("portops_theme", selected);
     });
   }
@@ -4815,7 +4847,7 @@ executePortForecast();`;
   // =========================================================================
 
   window.activeSession = {
-    token: localStorage.getItem("portops_token") || null,
+    token: null,
     user: null,
     roles: ["readonly_viewer"],
     permissions: []
@@ -4930,9 +4962,9 @@ executePortForecast();`;
    * Synchronize UI Elements Across Guest vs Authenticated Mode
    */
   window.syncSessionUI = function() {
-    const isAuth = !!(window.activeSession && window.activeSession.token && window.activeSession.user);
+    const isAuth = !!(window.activeSession && window.activeSession.user);
     const user = isAuth ? window.activeSession.user : null;
-    const role = isAuth ? (window.activeSession.roles[0] || "root") : "Invitado";
+    const role = isAuth ? (window.activeSession.roles[0] || "readonly_viewer") : "Invitado";
 
     // Nav HUD Role Pill
     const hudActiveRole = document.getElementById("hud-active-role");
@@ -5068,44 +5100,9 @@ executePortForecast();`;
   };
 
   /**
-   * Restore Session State from Local Storage / Backend Session Probe
+   * Restore Session State from HttpOnly Cookie / Backend Session Probe
    */
-  window.restoreSessionState = async function() {
-    const token = localStorage.getItem("portops_token");
-    if (!token) {
-      window.activeSession = { token: null, user: null, roles: ["readonly_viewer"], permissions: [] };
-      window.syncSessionUI();
-      return;
-    }
-
-    try {
-      const res = await fetch("/api/v1/auth/me", {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.is_authenticated) {
-          window.activeSession.token = token;
-          window.activeSession.user = {
-            user_id: data.user_id,
-            username: data.username,
-            email: data.email
-          };
-          window.activeSession.roles = data.roles || ["root"];
-          window.activeSession.permissions = data.permissions || [];
-          window.syncSessionUI();
-          return;
-        }
-      }
-    } catch (e) {
-      console.warn("Restoring session error:", e);
-    }
-
-    // Token invalid or expired
-    window.activeSession = { token: null, user: null, roles: ["readonly_viewer"], permissions: [] };
-    localStorage.removeItem("portops_token");
-    window.syncSessionUI();
-  };
+  window.restoreSessionState = window.refreshPortOpsSession;
 
   window.openAuthModal = function(initialTab = "atab-login") {
     const modal = document.getElementById("auth-iam-modal");
@@ -5115,12 +5112,13 @@ executePortForecast();`;
       modal.style.visibility = "visible";
       modal.style.opacity = "1";
       modal.style.pointerEvents = "auto";
-      const isAuth = !!(window.activeSession && window.activeSession.token && window.activeSession.user);
+      const isAuth = !!(window.activeSession && window.activeSession.user);
       if (!isAuth && initialTab !== "atab-login") {
         initialTab = "atab-login";
       }
       window.switchAuthTab(initialTab);
       window.syncSessionUI();
+      window.focusPortOpsAuthDialog?.();
     }
   };
 
@@ -5137,6 +5135,7 @@ executePortForecast();`;
       const cleanUrl = `${window.location.pathname}${window.location.hash || ""}`;
       window.history.replaceState({}, document.title, cleanUrl);
     }
+    window.releasePortOpsAuthDialog?.();
   };
 
   window.closeFirstRunModal = function() {
@@ -5222,12 +5221,12 @@ executePortForecast();`;
     window.activeSession.user = data.user;
     window.activeSession.roles = data.roles || [];
     window.activeSession.permissions = data.permissions || [];
-    localStorage.setItem("portops_token", data.session_token);
 
     const probe = await fetch("/api/v1/auth/me", {
       headers: { "Authorization": `Bearer ${data.session_token}` }
     });
     const sessionState = await probe.json().catch(() => ({}));
+    window.portopsCsrfToken = sessionState.csrf_token || null;
     if (!probe.ok || !sessionState.is_authenticated) {
       window.activeSession = { token: null, user: null, roles: ["readonly_viewer"], permissions: [] };
       localStorage.removeItem("portops_token");
@@ -5343,7 +5342,6 @@ executePortForecast();`;
       if (!res.ok) throw new Error(data.detail || "Error al actualizar contraseña.");
 
       if (data.session_token) {
-        localStorage.setItem("portops_token", data.session_token);
         window.activeSession.token = data.session_token;
       }
       if (window.activeSession.user) {
@@ -5405,21 +5403,16 @@ executePortForecast();`;
   window.executeLogout = async function() {
     try {
       const headers = {};
-      if (window.activeSession.token) headers["Authorization"] = `Bearer ${window.activeSession.token}`;
-      await fetch("/api/v1/auth/logout", { method: "POST", headers });
-    } catch (e) {}
-
-    window.activeSession = { token: null, user: null, roles: ["readonly_viewer"], permissions: [] };
-    localStorage.removeItem("portops_token");
-
-    window.syncSessionUI();
-
-    const rawEl = document.getElementById("inspector-token-raw");
-    if (rawEl) rawEl.textContent = "No hay sesión activa autenticada.";
-    const claimsEl = document.getElementById("inspector-token-claims");
-    if (claimsEl) claimsEl.textContent = "{}";
-
-    alert("Sesión finalizada exitosamente. Ha regresado a Modo Invitado.");
+      if (window.activeSession.token) headers.Authorization = `Bearer ${window.activeSession.token}`;
+      const response = await fetch("/api/v1/auth/logout", { method: "POST", headers });
+      if (!response.ok) throw new Error("No se pudo revocar la sesión. Intente de nuevo.");
+      window.portopsCsrfToken = null;
+      window.activeSession = { token: null, user: null, roles: ["readonly_viewer"], permissions: [] };
+      window.syncSessionUI();
+      document.getElementById("inspector-token-raw").textContent = "No hay sesión activa autenticada.";
+      document.getElementById("inspector-token-claims").textContent = "{}";
+      alert("Sesión finalizada exitosamente. Ha regresado a Modo Invitado.");
+    } catch (error) { alert(error.message); }
   };
 
   window.selectRbacRoleSimulation = async function(roleId) {
@@ -5766,7 +5759,7 @@ executePortForecast();`;
     const tStart = performance.now();
 
     try {
-      const activeToken = window.activeSession?.token || localStorage.getItem("portops_token");
+      const activeToken = window.activeSession?.token || null;
       const headers = { "Content-Type": "application/json" };
       if (activeToken) {
         headers["Authorization"] = `Bearer ${activeToken}`;
@@ -6655,7 +6648,7 @@ executePortForecast();`;
    */
   window.checkFirstRunStatus = async function(forceOpen = false) {
     try {
-      const isAuth = !!(window.activeSession && window.activeSession.token && window.activeSession.user);
+      const isAuth = !!(window.activeSession && window.activeSession.user);
       const modal = document.getElementById("first-run-setup-modal");
       if (!isAuth && !forceOpen) {
         if (modal) {
@@ -6728,6 +6721,7 @@ executePortForecast();`;
         }
       }
     }
+    window.presentInterfacePanel?.(document.getElementById(`fr-step-${stepNumber}`));
     if (stepNumber === 3 && window.runInfraDiagnostics) {
       window.runInfraDiagnostics();
     }
@@ -7016,7 +7010,6 @@ executePortForecast();`;
 
       // Persist active session immediately
       if (data.session_token) {
-        localStorage.setItem("portops_token", data.session_token);
         window.activeSession = {
           token: data.session_token,
           user: data.user || { username: "root", email: "root@portops.pa" },
@@ -7081,7 +7074,7 @@ executePortForecast();`;
     }
 
     try {
-      const activeToken = localStorage.getItem("portops_token") || "";
+      const activeToken = (window.activeSession?.token || null) || "";
       const headers = { "Content-Type": "application/json" };
       if (activeToken) {
         headers["Authorization"] = `Bearer ${activeToken}`;
@@ -7101,8 +7094,8 @@ executePortForecast();`;
         throw new Error(data.detail || "Error al crear administradores obligatorios");
       }
 
-      const returnedToken = data.session_token || (data.session && data.session.token) || activeToken || "root-session-active";
-      localStorage.setItem("portops_token", returnedToken);
+      const returnedToken = data.session_token || (data.session && data.session.token) || activeToken || null;
+
       window.activeSession = {
         token: returnedToken,
         user: data.user || { username: "root", email: "root@portops.pa" },
@@ -7181,11 +7174,15 @@ executePortForecast();`;
   window.loadRealUsersList = async function() {
     const tbody = document.getElementById("fr-users-table-body");
     if (!tbody) return;
+    if (!window.activeSession?.user) {
+      tbody.innerHTML = '<tr><td colspan="7">Inicia sesión para consultar las identidades autorizadas.</td></tr>';
+      return;
+    }
 
     tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #38BDF8; padding: 1.25rem;">Consultando base de datos de identidades...</td></tr>`;
 
     try {
-      const token = localStorage.getItem("portops_token") || (window.activeSession && window.activeSession.token) || "";
+      const token = window.activeSession?.token || "";
       const headers = {};
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
@@ -7272,7 +7269,7 @@ executePortForecast();`;
     }
 
     try {
-      const token = localStorage.getItem("portops_token") || (window.activeSession && window.activeSession.token) || "";
+      const token = window.activeSession?.token || "";
       const headers = { "Content-Type": "application/json" };
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
@@ -7368,7 +7365,7 @@ executePortForecast();`;
     }
 
     try {
-      const token = localStorage.getItem("portops_token") || (window.activeSession && window.activeSession.token) || "";
+      const token = window.activeSession?.token || "";
       const headers = { "Content-Type": "application/json" };
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
@@ -7418,7 +7415,7 @@ executePortForecast();`;
     }
 
     try {
-      const token = localStorage.getItem("portops_token") || (window.activeSession && window.activeSession.token) || "";
+      const token = window.activeSession?.token || "";
       const headers = {};
       if (token) headers["Authorization"] = `Bearer ${token}`;
 

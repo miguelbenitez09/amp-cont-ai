@@ -8,7 +8,12 @@
 
   function setStatus(id, html) {
     const el = document.getElementById(id);
-    if (el) el.innerHTML = html;
+    if (!el) return;
+    const match = html.match(/^<span style="([^"]*)">([\s\S]*)<\/span>$/);
+    const span = document.createElement("span");
+    if (match) span.style.cssText = match[1];
+    span.textContent = match ? match[2] : html;
+    el.replaceChildren(span);
   }
 
   async function readPortOpsResponse(response) {
@@ -27,7 +32,7 @@
   }
 
   window.switchAuthTab = function (tabId) {
-    const isAuth = !!(window.activeSession && window.activeSession.token && window.activeSession.user);
+    const isAuth = !!(window.activeSession && window.activeSession.user);
     if (!isAuth && tabId !== "atab-login") {
       tabId = "atab-login";
     }
@@ -48,12 +53,13 @@
       modal.style.opacity = "1";
       modal.style.pointerEvents = "auto";
     }
-    const isAuth = !!(window.activeSession && window.activeSession.token && window.activeSession.user);
+    const isAuth = !!(window.activeSession && window.activeSession.user);
     if (!isAuth) {
       initialTab = "atab-login";
     }
     window.switchAuthTab(initialTab);
     window.syncSessionUI();
+    window.focusPortOpsAuthDialog?.();
   };
 
   window.closeAuthModal = function () {
@@ -68,6 +74,7 @@
     if (new URLSearchParams(window.location.search).get("auth") === "1") {
       window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash || ""}`);
     }
+    window.releasePortOpsAuthDialog?.();
   };
 
   window.closeFirstRunModal = function () {
@@ -82,7 +89,7 @@
   };
 
   window.syncSessionUI = function () {
-    const isAuth = !!(window.activeSession && window.activeSession.token && window.activeSession.user);
+    const isAuth = !!(window.activeSession && window.activeSession.user);
     const user = isAuth ? window.activeSession.user : null;
     const role = isAuth ? (window.activeSession.roles[0] || "root") : "Invitado";
 
@@ -168,12 +175,12 @@
     window.activeSession.user = data.user;
     window.activeSession.roles = data.roles || [];
     window.activeSession.permissions = data.permissions || [];
-    localStorage.setItem("portops_token", data.session_token);
 
     const probe = await fetch("/api/v1/auth/me", {
       headers: { "Authorization": `Bearer ${data.session_token}` }
     });
     const sessionState = await probe.json().catch(() => ({}));
+    window.portopsCsrfToken = sessionState.csrf_token || null;
     if (!probe.ok || !sessionState.is_authenticated) {
       window.activeSession = guestSession();
       localStorage.removeItem("portops_token");
@@ -291,7 +298,6 @@
       const data = await readPortOpsResponse(res);
       if (!res.ok) throw new Error(data.detail || "Error al actualizar contraseña.");
       if (data.session_token) {
-        localStorage.setItem("portops_token", data.session_token);
         window.activeSession.token = data.session_token;
       }
       if (window.activeSession.user) {
@@ -317,40 +323,7 @@
   }, true);
 
   document.addEventListener("DOMContentLoaded", async () => {
-    const savedToken = localStorage.getItem("portops_token");
-    if (savedToken) {
-      try {
-        const probe = await fetch("/api/v1/auth/me", {
-          headers: { "Authorization": `Bearer ${savedToken}` }
-        });
-        if (probe.ok) {
-          const sessionState = await probe.json();
-          if (sessionState.is_authenticated && sessionState.user_id) {
-            window.activeSession.token = savedToken;
-            window.activeSession.user = {
-              user_id: sessionState.user_id,
-              username: sessionState.username,
-              email: sessionState.email,
-              is_root: sessionState.is_root,
-              must_change_password: sessionState.must_change_password
-            };
-            window.activeSession.roles = sessionState.roles || [];
-            window.activeSession.permissions = sessionState.permissions || [];
-            window.syncSessionUI();
-          } else {
-            localStorage.removeItem("portops_token");
-            window.activeSession = guestSession();
-            window.syncSessionUI();
-          }
-        } else {
-          localStorage.removeItem("portops_token");
-          window.activeSession = guestSession();
-          window.syncSessionUI();
-        }
-      } catch (e) {
-        console.warn("Error rehidratando sesión PortOps:", e);
-      }
-    }
+    await window.refreshPortOpsSession();
     if (new URLSearchParams(window.location.search).get("auth") === "1") window.openAuthModal("atab-login");
   });
 })();

@@ -1,0 +1,95 @@
+/* Card surfaces inherit the active palette; semantic status colors stay distinct. */
+.ops-app { --ui-accent: var(--cyan-bright); --ui-line: var(--border-color); }
+.portal { --ui-accent: var(--portal-focus); --ui-line: var(--portal-border); }
+.workspace { --ui-accent: var(--focus); --ui-line: var(--border); }
+.ops-app :is(.card,.capability-card,.algo-stat-card,.stat-card,.cot-step-card,.data-gate-card,.diag-metric-card,.fr-admin-card,.fr-infra-card,.fr-profile-card,.infra-card,.inner-card,.interactive-audit-card,.interactive-db-card,.interactive-kpi-card,.item-inspector-card,.kpi-card,.method-phase-card,.ministry-link-card,.overview-nav-card,.preset-card,.provenance-card,.rbac-role-card,.worm-result-card,.clickable-kpi-card,.cp-formula-card,.math-step-card,.obstacle-card,.pedagogical-card,.real-context-card,.solution-card,.soul-card,.split-detail-panel,.fr-form-panel,.fr-briefing-panel,.export-controls-panel) {
+  min-width: 0; max-width: 100%; border-radius: 14px;
+  background: var(--bg-card) !important; color: var(--text-main);
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 4px 18px rgb(0 0 0 / .12) !important;
+  overflow-wrap: anywhere;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.ops-app :is(.card,.capability-card,.algo-stat-card,.stat-card,.cot-step-card,.data-gate-card,.diag-metric-card,.fr-admin-card,.fr-infra-card,.fr-profile-card,.infra-card,.inner-card,.interactive-audit-card,.interactive-db-card,.interactive-kpi-card,.item-inspector-card,.kpi-card,.method-phase-card,.ministry-link-card,.overview-nav-card,.preset-card,.provenance-card,.rbac-role-card,.worm-result-card,.clickable-kpi-card,.cp-formula-card,.math-step-card,.obstacle-card,.pedagogical-card,.real-context-card,.solution-card,.soul-card,.split-detail-panel,.fr-form-panel,.fr-briefing-panel,.export-controls-panel):is(:hover,:focus-within) {
+  background: var(--bg-card-hover) !important;
+  border-color: var(--cyan-bright) !important;
+  box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.32), 0 0 16px rgba(0, 229, 255, 0.22) !important;
+  transform: translateY(-2px);
+}
+.ops-app :is(.card,.capability-card,.overview-nav-card,.preset-card,.clickable-kpi-card)[tabindex="0"]:focus-visible,
+.ops-app :is(button,select,input,a):focus-visible {
+  outline: 2px solid var(--cyan-bright) !important;
+  outline-offset: 3px !important;
+}
+.ops-app .capabilities-grid {
+  display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,260px),1fr));
+  gap: 20px; align-items: stretch;
+}
+.ops-app .capability-card {
+  display: grid; grid-template-rows: auto auto auto 1fr auto;
+  gap: 16px; padding: 24px; align-content: start;
+}
+.ops-app .cap-header { gap: 16px; margin: 0; min-height: 42px; }
+.ops-app .cap-metric { max-width: 70%; font-size: 11px; line-height: 1.5; color: var(--cyan-bright); }
+.ops-app .capability-card h3 { margin: 0; font-size: 18px; line-height: 1.45; color: var(--text-main); }
+.ops-app .capability-card > p { margin: 0; font-size: 14px; line-height: 1.65; color: var(--text-muted); }
+.ops-app .card-hover-preview {
+  display: flex; flex-direction: column; gap: 12px; margin: 0;
+  padding: 16px; background: var(--bg-input) !important;
+  border: 1px solid var(--border-color) !important; border-radius: 10px;
+  box-shadow: none !important; transform: none !important;
+}
+.ops-app .card-hover-badge { color: var(--cyan-bright) !important; font-size: 11px; line-height: 1.6; letter-spacing: .04em; }
+.ops-app .card-hover-desc { color: var(--text-muted) !important; font-size: 13px; line-height: 1.65; margin: 0 !important; flex-grow: 0 !important; }
+.ops-app .card-hover-tags { margin-top: auto; padding-top: 8px; gap: 6px; }
+.ops-app .hover-tag {
+  white-space: normal; overflow-wrap: anywhere; line-height: 1.5;
+  background: color-mix(in srgb,var(--cyan-bright) 10%,var(--bg-input)) !important;
+  color: var(--cyan-bright) !important;
+  border-color: color-mix(in srgb,var(--cyan-bright) 35%,transparent) !important;
+}
+.ops-app .cap-footer { color: var(--cyan-bright); padding-top: 2px; min-height: 24px; }
+.ops-app .modal-dialog { background: var(--bg-surface) !important; color: var(--text-main); border-color: var(--border-color) !important; }
+.ops-app :is(.modal-header,.settings-tabs-nav,.auth-tabs-nav,.modal-footer) { background: var(--bg-surface) !important; border-color: var(--border-color) !important; }
+.ops-app :is(.modal-body,.settings-body) { background: var(--bg-base) !important; }
+.ops-app .theme-select { background: var(--bg-input) !important; border-color: var(--border-color) !important; color: var(--text-main) !important; }
+.portal :is(.feature-card,.port-card,.telemetry-card,.vision-card,.medallion-card,.cta-inner-card,.editorial-card,.panel) {
+  min-width: 0; max-width: 100%; background: var(--portal-surface-card) !important;
+  color: var(--portal-text-body) !important; border: 1px solid var(--portal-border) !important;
+  border-radius: 14px; box-shadow: none !important; overflow-wrap: anywhere;
+}
+.portal :is(.feature-card,.port-card,.telemetry-card,.vision-card,.medallion-card,.cta-inner-card):is(:hover,:focus-within) {
+  background: var(--portal-surface-hover) !important; border-color: var(--portal-border-hover) !important; transform: none;
+}
+.portal :is(.feature-card,.port-card,.telemetry-card,.vision-card,.medallion-card,.cta-inner-card) :is(h2,h3,h4) { color: var(--portal-text-title) !important; }
+.portal :is(.feature-card,.port-card,.telemetry-card,.vision-card,.medallion-card,.cta-inner-card) p { color: var(--portal-text-body) !important; }
+.portal .telemetry-label { color: var(--portal-text-muted) !important; }
+.portal .hero-diagram { background: var(--portal-surface-card) !important; border-color: var(--portal-border) !important; }
+.workspace :is(.card,.interactive-card,.admin-card,.login-context,.card-details,.status-row) {
+  min-width: 0; max-width: 100%; background: var(--surface); color: var(--body);
+  border-color: var(--border); border-radius: 14px; overflow-wrap: anywhere;
+}
+.workspace :is(.card,.interactive-card):is(:hover,:focus-within) { background: var(--surface2); border-color: var(--info); transform: none; }
+.workspace .card :is(h2,h3,h4) { color: var(--title); }
+.workspace .card p { color: var(--body); }
+@media(min-width:801px) {
+  @supports(grid-template-rows:subgrid) {
+    .ops-app .capability-card { grid-row: span 5; grid-template-rows: subgrid; }
+  }
+}
+@media(max-width:800px) {
+  .ops-app .capability-card { padding: 20px; }
+  .ops-app .capabilities-grid { grid-template-columns: minmax(0,1fr); }
+}
+
+/* Legacy inline decorations must use theme colors too; status colors are untouched. */
+.ops-app :is(.card,.modal-dialog,.inner-card,.fr-profile-card,.preset-card) :is([style*="color: #00E5FF"],[style*="color:#00E5FF"],[style*="color: #38BDF8"],[style*="color: #00e5ff"]) { color: var(--cyan-bright) !important; }
+.ops-app :is(.card,.modal-dialog,.inner-card,.preset-card) :is([style*="background: rgba(0, 229, 255"],[style*="background:rgba(0,229,255"]) { background: color-mix(in srgb,var(--cyan-bright) 8%,var(--bg-input)) !important; border-color: var(--border-color) !important; }
+.ops-app :is(.card,.modal-dialog,.inner-card,.preset-card) :is([style*="color: #E2E8F0"],[style*="color: #CBD5E1"],[style*="color: #94A3B8"]) { color: var(--text-muted) !important; }
+
+/* Readable secondary text in the light palette and all alternate palettes. */
+.workspace :is(.hero p,.section-lead,.sidebar nav a,.breadcrumb,.sidebar-bottom,.nav-label) { color: var(--support) !important; }
+.workspace .sidebar nav a.active { color: var(--title) !important; background: var(--surface2) !important; }
+.portal .portal-nav { background: transparent !important; box-shadow: none !important; }
+.portal .portal-nav a { color: var(--portal-text-nav) !important; }
+.portal :is(.feature-card,.port-card,.vision-card,.medallion-card,.cta-inner-card) :is(.muted,small) { color: var(--portal-text-muted) !important; }

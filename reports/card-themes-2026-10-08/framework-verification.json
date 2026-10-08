@@ -1,0 +1,725 @@
+{
+  "results": [
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "ocean",
+      "route": "login"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 7,
+      "failures": [],
+      "width": 390,
+      "theme": "ocean",
+      "route": "overview"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "ocean",
+      "route": "models"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "ocean",
+      "route": "datasets"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "ocean",
+      "route": "training"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "ocean",
+      "route": "agents"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "ocean",
+      "route": "setup"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "ocean",
+      "route": "security"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "ocean",
+      "route": "backups"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "obsidian",
+      "route": "login"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 7,
+      "failures": [],
+      "width": 390,
+      "theme": "obsidian",
+      "route": "overview"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "obsidian",
+      "route": "models"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "obsidian",
+      "route": "datasets"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "obsidian",
+      "route": "training"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "obsidian",
+      "route": "agents"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "obsidian",
+      "route": "setup"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "obsidian",
+      "route": "security"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "obsidian",
+      "route": "backups"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "forest",
+      "route": "login"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 7,
+      "failures": [],
+      "width": 390,
+      "theme": "forest",
+      "route": "overview"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "forest",
+      "route": "models"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "forest",
+      "route": "datasets"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "forest",
+      "route": "training"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "forest",
+      "route": "agents"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "forest",
+      "route": "setup"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "forest",
+      "route": "security"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "forest",
+      "route": "backups"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "amber",
+      "route": "login"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 7,
+      "failures": [],
+      "width": 390,
+      "theme": "amber",
+      "route": "overview"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "amber",
+      "route": "models"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "amber",
+      "route": "datasets"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "amber",
+      "route": "training"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "amber",
+      "route": "agents"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "amber",
+      "route": "setup"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "amber",
+      "route": "security"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "amber",
+      "route": "backups"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "light",
+      "route": "login"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 7,
+      "failures": [],
+      "width": 390,
+      "theme": "light",
+      "route": "overview"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "light",
+      "route": "models"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "light",
+      "route": "datasets"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "light",
+      "route": "training"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 0,
+      "failures": [],
+      "width": 390,
+      "theme": "light",
+      "route": "agents"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "light",
+      "route": "setup"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "light",
+      "route": "security"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 1,
+      "failures": [],
+      "width": 390,
+      "theme": "light",
+      "route": "backups"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "ocean",
+      "route": "login"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 7,
+      "failures": [],
+      "width": 1440,
+      "theme": "ocean",
+      "route": "overview"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "ocean",
+      "route": "models"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "ocean",
+      "route": "datasets"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "ocean",
+      "route": "training"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "ocean",
+      "route": "agents"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "ocean",
+      "route": "setup"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "ocean",
+      "route": "security"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "ocean",
+      "route": "backups"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "obsidian",
+      "route": "login"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 7,
+      "failures": [],
+      "width": 1440,
+      "theme": "obsidian",
+      "route": "overview"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "obsidian",
+      "route": "models"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "obsidian",
+      "route": "datasets"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "obsidian",
+      "route": "training"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "obsidian",
+      "route": "agents"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "obsidian",
+      "route": "setup"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "obsidian",
+      "route": "security"
+    },
+    {
+      "expected": "rgb(20, 21, 36)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "obsidian",
+      "route": "backups"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "forest",
+      "route": "login"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 7,
+      "failures": [],
+      "width": 1440,
+      "theme": "forest",
+      "route": "overview"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "forest",
+      "route": "models"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "forest",
+      "route": "datasets"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "forest",
+      "route": "training"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "forest",
+      "route": "agents"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "forest",
+      "route": "setup"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "forest",
+      "route": "security"
+    },
+    {
+      "expected": "rgb(8, 38, 28)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "forest",
+      "route": "backups"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "amber",
+      "route": "login"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 7,
+      "failures": [],
+      "width": 1440,
+      "theme": "amber",
+      "route": "overview"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "amber",
+      "route": "models"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "amber",
+      "route": "datasets"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "amber",
+      "route": "training"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "amber",
+      "route": "agents"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "amber",
+      "route": "setup"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "amber",
+      "route": "security"
+    },
+    {
+      "expected": "rgb(34, 22, 7)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "amber",
+      "route": "backups"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "light",
+      "route": "login"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 7,
+      "failures": [],
+      "width": 1440,
+      "theme": "light",
+      "route": "overview"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "light",
+      "route": "models"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "light",
+      "route": "datasets"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "light",
+      "route": "training"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 0,
+      "failures": [],
+      "width": 1440,
+      "theme": "light",
+      "route": "agents"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "light",
+      "route": "setup"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "light",
+      "route": "security"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "count": 1,
+      "failures": [],
+      "width": 1440,
+      "theme": "light",
+      "route": "backups"
+    }
+  ],
+  "issues": []
+}

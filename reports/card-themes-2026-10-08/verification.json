@@ -1,0 +1,1275 @@
+{
+  "results": [
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 6,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-landing"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 11,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-cot-swarm"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 26,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-customs-lakehouse"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-forecast"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 3,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-benchmark"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 8,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-diagnostics"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-simulation"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-methodology"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-data-platform"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 13,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-security-iam"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 6,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-radar-amber",
+      "tab": "tab-landing"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 11,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-radar-amber",
+      "tab": "tab-cot-swarm"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 26,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-radar-amber",
+      "tab": "tab-customs-lakehouse"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-radar-amber",
+      "tab": "tab-forecast"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 3,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-radar-amber",
+      "tab": "tab-benchmark"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 8,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-radar-amber",
+      "tab": "tab-diagnostics"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-radar-amber",
+      "tab": "tab-simulation"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-radar-amber",
+      "tab": "tab-methodology"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-radar-amber",
+      "tab": "tab-data-platform"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 13,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-radar-amber",
+      "tab": "tab-security-iam"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 6,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-landing"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 11,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-cot-swarm"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 26,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-customs-lakehouse"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-forecast"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 3,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-benchmark"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 8,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-diagnostics"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-simulation"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-methodology"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-data-platform"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 13,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-security-iam"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 6,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-landing"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 11,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-cot-swarm"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 26,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-customs-lakehouse"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-forecast"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 3,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-benchmark"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 8,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-diagnostics"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-simulation"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-methodology"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-data-platform"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 13,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-security-iam"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 6,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-landing"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 11,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-cot-swarm"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 26,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-customs-lakehouse"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-forecast"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 3,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-benchmark"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 8,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-diagnostics"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-simulation"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-methodology"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-data-platform"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 13,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-security-iam"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 6,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-landing"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 11,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-cot-swarm"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 26,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-customs-lakehouse"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-forecast"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 3,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-benchmark"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 8,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-diagnostics"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-simulation"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-methodology"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-data-platform"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 13,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 390,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-security-iam"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "failures": [],
+      "surface": "portal",
+      "width": 390,
+      "theme": "ocean"
+    },
+    {
+      "expected": "rgb(40, 27, 9)",
+      "failures": [],
+      "surface": "portal",
+      "width": 390,
+      "theme": "amber"
+    },
+    {
+      "expected": "rgb(12, 51, 37)",
+      "failures": [],
+      "surface": "portal",
+      "width": 390,
+      "theme": "forest"
+    },
+    {
+      "expected": "rgb(25, 27, 46)",
+      "failures": [],
+      "surface": "portal",
+      "width": 390,
+      "theme": "obsidian"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "failures": [],
+      "surface": "portal",
+      "width": 390,
+      "theme": "light"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 6,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-landing"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 11,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-cot-swarm"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 26,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-customs-lakehouse"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-forecast"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 3,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-benchmark"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 8,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-diagnostics"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-simulation"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-methodology"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-data-platform"
+    },
+    {
+      "expected": "rgba(16, 26, 48, 0.75)",
+      "nested": "rgba(10, 18, 36, 0.95)",
+      "count": 13,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-cyber-ocean",
+      "tab": "tab-security-iam"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 6,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-radar-amber",
+      "tab": "tab-landing"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 11,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-radar-amber",
+      "tab": "tab-cot-swarm"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 26,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-radar-amber",
+      "tab": "tab-customs-lakehouse"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-radar-amber",
+      "tab": "tab-forecast"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 3,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-radar-amber",
+      "tab": "tab-benchmark"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 8,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-radar-amber",
+      "tab": "tab-diagnostics"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-radar-amber",
+      "tab": "tab-simulation"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-radar-amber",
+      "tab": "tab-methodology"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-radar-amber",
+      "tab": "tab-data-platform"
+    },
+    {
+      "expected": "rgba(28, 24, 18, 0.8)",
+      "nested": "rgba(20, 16, 12, 0.95)",
+      "count": 13,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-radar-amber",
+      "tab": "tab-security-iam"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 6,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-landing"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 11,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-cot-swarm"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 26,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-customs-lakehouse"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-forecast"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 3,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-benchmark"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 8,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-diagnostics"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-simulation"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-methodology"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-data-platform"
+    },
+    {
+      "expected": "rgba(14, 34, 26, 0.8)",
+      "nested": "rgba(8, 24, 18, 0.95)",
+      "count": 13,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-canal-emerald",
+      "tab": "tab-security-iam"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 6,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-landing"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 11,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-cot-swarm"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 26,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-customs-lakehouse"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-forecast"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 3,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-benchmark"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 8,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-diagnostics"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-simulation"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-methodology"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-data-platform"
+    },
+    {
+      "expected": "rgba(20, 24, 32, 0.85)",
+      "nested": "rgba(14, 18, 24, 0.95)",
+      "count": 13,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-tactical-mono",
+      "tab": "tab-security-iam"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 6,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-landing"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 11,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-cot-swarm"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 6,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-customs-lakehouse"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-forecast"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 3,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-benchmark"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 8,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-diagnostics"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-simulation"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-methodology"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-data-platform"
+    },
+    {
+      "expected": "rgba(28, 16, 52, 0.8)",
+      "nested": "rgba(20, 10, 38, 0.95)",
+      "count": 13,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-pacific-sunset",
+      "tab": "tab-security-iam"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 6,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-landing"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 11,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-cot-swarm"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 26,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-customs-lakehouse"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-forecast"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 3,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-benchmark"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 8,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-diagnostics"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 7,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-simulation"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-methodology"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 9,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-data-platform"
+    },
+    {
+      "expected": "rgba(12, 28, 68, 0.8)",
+      "nested": "rgba(6, 16, 42, 0.95)",
+      "count": 13,
+      "failures": [],
+      "previewFailures": 0,
+      "width": 1440,
+      "theme": "theme-midnight-cobalt",
+      "tab": "tab-security-iam"
+    },
+    {
+      "expected": "rgb(8, 28, 51)",
+      "failures": [],
+      "surface": "portal",
+      "width": 1440,
+      "theme": "ocean"
+    },
+    {
+      "expected": "rgb(40, 27, 9)",
+      "failures": [],
+      "surface": "portal",
+      "width": 1440,
+      "theme": "amber"
+    },
+    {
+      "expected": "rgb(12, 51, 37)",
+      "failures": [],
+      "surface": "portal",
+      "width": 1440,
+      "theme": "forest"
+    },
+    {
+      "expected": "rgb(25, 27, 46)",
+      "failures": [],
+      "surface": "portal",
+      "width": 1440,
+      "theme": "obsidian"
+    },
+    {
+      "expected": "rgb(255, 255, 255)",
+      "failures": [],
+      "surface": "portal",
+      "width": 1440,
+      "theme": "light"
+    }
+  ],
+  "issues": []
+}

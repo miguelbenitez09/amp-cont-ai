@@ -5,6 +5,7 @@ Author: Desarrollado v1.0.0 Miguel Benítez - GNU GPL-3.0
 """
 
 import sqlite3
+import json
 from typing import Dict, Any, List, Optional, Tuple
 
 
@@ -22,6 +23,14 @@ class AuthorizationEngine:
     def get_user_permissions(cls, conn: sqlite3.Connection, user_id: str) -> List[str]:
         """Retrieves combined permissions assigned through all roles of a user."""
         cursor = conn.cursor()
+        if cursor.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='workspace_roles'").fetchone():
+            from src.auth.capability_permissions import permission_names
+            root=cursor.execute('SELECT is_root FROM users WHERE user_id=?',(user_id,)).fetchone()
+            if root and root[0]:
+                from src.serving.workspace_router import CAPABILITIES
+                return permission_names(CAPABILITIES)
+            rows=cursor.execute('SELECT wr.capabilities FROM workspace_roles wr JOIN user_roles ur ON ur.role_id=wr.role_id WHERE ur.user_id=? AND wr.role_id<>?',(user_id,'root')).fetchall()
+            return permission_names({cap for row in rows for cap in json.loads(row[0])})
         cursor.execute("""
         SELECT DISTINCT rp.permission_id
         FROM user_roles ur

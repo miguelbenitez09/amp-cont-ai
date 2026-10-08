@@ -11,6 +11,7 @@ import os
 import json
 import base64
 import hashlib
+import threading
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -20,6 +21,7 @@ VAULT_FILE = ROOT_DIR / "data" / "enterprise_db" / "secrets_vault.json"
 
 class SecretManager:
     """Centralized enterprise secrets manager with cryptographic masking and local vault storage."""
+    _write_lock = threading.RLock()
 
     _SYSTEM_KEYS = [
         "DATABASE_URL",
@@ -77,30 +79,36 @@ class SecretManager:
         return b"panama_portops_mlops_sovereignty_2026_salt"
 
     @classmethod
+    def _fernet(cls):
+        from cryptography.fernet import Fernet
+        configured = os.environ.get("PORTOPS_VAULT_KEY")
+        if configured:
+            return Fernet(configured.encode())
+        key_file = VAULT_FILE.with_suffix(".key")
+        key_file.parent.mkdir(parents=True, exist_ok=True)
+        if not key_file.exists():
+            try:
+                descriptor = os.open(str(key_file), os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+                with os.fdopen(descriptor, "wb") as stream:
+                    stream.write(Fernet.generate_key())
+            except FileExistsError:
+                pass
+        return Fernet(key_file.read_bytes())
+
+    @classmethod
     def _obfuscate(cls, plain_text: str) -> str:
-        """Lightweight XOR + Base64 obfuscation for local vault storage."""
-        if not plain_text:
-            return ""
-        key = hashlib.sha256(cls._get_master_salt()).digest()
-        data = plain_text.encode("utf-8")
-        out = bytearray(len(data))
-        for i in range(len(data)):
-            out[i] = data[i] ^ key[i % len(key)]
-        return base64.b64encode(out).decode("utf-8")
+        return "fernet:v1:" + cls._fernet().encrypt(plain_text.encode()).decode() if plain_text else ""
 
     @classmethod
     def _deobfuscate(cls, cipher_b64: str) -> str:
         if not cipher_b64:
             return ""
-        try:
-            data = base64.b64decode(cipher_b64.encode("utf-8"))
-            key = hashlib.sha256(cls._get_master_salt()).digest()
-            out = bytearray(len(data))
-            for i in range(len(data)):
-                out[i] = data[i] ^ key[i % len(key)]
-            return out.decode("utf-8", errors="ignore")
-        except Exception:
-            return ""
+        if cipher_b64.startswith("fernet:v1:"):
+            return cls._fernet().decrypt(cipher_b64[len("fernet:v1:"):].encode()).decode()
+        # Read legacy values only for migration. All subsequent saves encrypt the full vault.
+        data = base64.b64decode(cipher_b64.encode())
+        key = hashlib.sha256(cls._get_master_salt()).digest()
+        return bytes(value ^ key[index % len(key)] for index, value in enumerate(data)).decode()
 
     @classmethod
     def _load_vault(cls) -> Dict[str, str]:
@@ -110,15 +118,24 @@ class SecretManager:
             with open(VAULT_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
             return {k: cls._deobfuscate(v) for k, v in data.items()}
-        except Exception:
-            return {}
+        except Exception as error:
+            raise RuntimeError("No se pudo abrir la bóveda. Revise la clave maestra y el archivo; no se sobrescribirá.") from error
 
     @classmethod
     def _save_vault(cls, vault_data: Dict[str, str]) -> None:
         VAULT_FILE.parent.mkdir(parents=True, exist_ok=True)
         obfuscated = {k: cls._obfuscate(v) for k, v in vault_data.items() if v}
-        with open(VAULT_FILE, "w", encoding="utf-8") as f:
-            json.dump(obfuscated, f, indent=2)
+        import tempfile
+        descriptor, temp_name = tempfile.mkstemp(dir=VAULT_FILE.parent, prefix="vault-", suffix=".tmp")
+        try:
+            with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+                json.dump(obfuscated, stream, indent=2)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temp_name, VAULT_FILE)
+        finally:
+            if os.path.exists(temp_name):
+                os.unlink(temp_name)
 
     @classmethod
     def get_secret(cls, key: str, default: Optional[str] = None) -> Optional[str]:
@@ -146,10 +163,11 @@ class SecretManager:
     def set_secret(cls, key: str, value: str) -> None:
         """Stores a secret in the encrypted local vault and updates runtime env."""
         val_clean = value.strip()
-        os.environ[key] = val_clean
-        vault = cls._load_vault()
-        vault[key] = val_clean
-        cls._save_vault(vault)
+        with cls._write_lock:
+            vault = cls._load_vault()
+            vault[key] = val_clean
+            cls._save_vault(vault)
+            os.environ[key] = val_clean
 
     @classmethod
     def mask_secret(cls, value: Optional[str]) -> str:

@@ -24,6 +24,7 @@ import uuid
 import hashlib
 import secrets
 import sqlite3
+import logging
 from pathlib import Path
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, asdict
@@ -193,6 +194,7 @@ class PanamaSecurityGovernancePanel:
     def get_security_overview(cls) -> Dict[str, Any]:
         """Provides full enterprise security status and real active users from SQLite."""
         real_users = []
+        inventory_verified = True
         try:
             with cls._get_db() as conn:
                 cursor = conn.cursor()
@@ -224,36 +226,43 @@ class PanamaSecurityGovernancePanel:
                         "auth_method": "MFA_TOTP" if r_dict.get("mfa_enabled") else ("Certificado_Digital" if is_root else "Bearer_Token"),
                         "created_at": r_dict.get("created_at", time.strftime("%Y-%m-%d %H:%M UTC"))
                     })
-        except Exception as e:
-            # Fallback for transient errors
-            pass
+        except sqlite3.Error:
+            inventory_verified = False
+            logging.getLogger(__name__).error("No se pudo consultar el inventario de seguridad.")
 
+        setup_state = cls.check_first_run_status().get("cluster_state") if inventory_verified else "Not_Verified"
         return {
-            "status": "operational",
+            "status": "partially_verified" if inventory_verified else "degraded",
+            "inventory_verified": inventory_verified,
             "author": "Desarrollado v1.0.0 Miguel Benítez",
             "architecture": "Enterprise RBAC (6 Tiers) & WORM Disaster Recovery",
             "tls_certificate": {
-                "protocol": "TLS 1.3 (RFC 8446)",
-                "cipher_suite": "TLS_AES_256_GCM_SHA384",
-                "issuer": "Autoridad de Innovación Gubernamental (AIG) / Entidad Emisora Oficial",
-                "validity": "Válido hasta 2027-12-31",
-                "key_exchange": "ECDHE con Curva P-256 (PFS Activo)"
+                "status": "not_verified",
+                "protocol": None,
+                "cipher_suite": None,
+                "issuer": None,
+                "validity": None,
+                "key_exchange": None,
+                "message": "El certificado y transporte deben verificarse en el endpoint desplegado."
             },
             "cookie_hardening": {
                 "http_only": True,
-                "secure": True,
-                "same_site": "Strict",
-                "cookie_name": "AMP_SESSION_TOKEN_SECURE",
-                "anti_xss_protection": "Activa (Content-Security-Policy estricta)"
+                "secure": "conditional_on_https_or_PORTOPS_SECURE_COOKIES",
+                "same_site": "Lax",
+                "cookie_name": "portops_session",
+                "status": "configured_not_runtime_verified",
+                "anti_xss_protection": "CSP configurada; verificar cabeceras del endpoint desplegado"
             },
             "anti_ransomware_and_dr": {
                 "strategy": "Arquitectura WORM (Write Once, Read Many) en Medallion Bronze",
-                "rpo_recovery_point_objective": "< 1 hora (Copia bitemporal inmutable)",
-                "rto_recovery_time_objective": "< 15 minutos (Reconstrucción determinista automática)",
-                "tamper_detection": "Monitoreo continuo de sumas SHA-256 en Parquet Gold",
-                "air_gapped_backups": "Respaldos desconectados en frío cifrados con AES-256"
+                "status": "not_verified",
+                "rpo_recovery_point_objective": "Objetivo < 1 hora; resultado no verificado",
+                "rto_recovery_time_objective": "Objetivo < 15 minutos; resultado no verificado",
+                "tamper_detection": "No verificado por este endpoint",
+                "air_gapped_backups": "No verificado por este endpoint"
             },
             "active_guardrails": {
+                "status": "configured_not_runtime_verified",
                 "physical_limit_max_teu": 600000,
                 "monotonic_quantiles_enforced": True,
                 "prompt_injection_sanitization": True,
@@ -261,52 +270,28 @@ class PanamaSecurityGovernancePanel:
             },
             "roles_matrix": cls.ROLES_MATRIX,
             "active_users": real_users,
-            "first_run_initialized": True
+            "first_run_initialized": setup_state == "Configured" if setup_state != "Not_Verified" else None
         }
 
     @classmethod
     def verify_action_permission(cls, user_or_role: str, action: str) -> bool:
-        """
-        Verifies if a specific user or role has rights to execute an action.
-        Actions: 'retrain_model', 'modify_config', 'create_preset', 'manage_users', etc.
-        """
-        target = user_or_role.strip().lower()
-        role_id = None
-        
-        # Check SQLite DB for user
+        """Query effective capabilities across all roles, failing closed for inactive users."""
+        import json
+        aliases={'retrain_model':'models.train','modify_config':'config.write','create_preset':'config.write',
+                 'manage_users':'iam.write','view_audit':'audit.read','run_simulation':'simulation.run'}
+        cap=aliases.get(action,action)
         try:
             with cls._get_db() as conn:
-                cursor = conn.cursor()
-                cursor.execute("""
-                    SELECT u.is_root, COALESCE(r.role_id, 'readonly_viewer') as role_id
-                    FROM users u
-                    LEFT JOIN user_roles ur ON u.user_id = ur.user_id
-                    LEFT JOIN roles r ON ur.role_id = r.role_id
-                    WHERE LOWER(u.username) = ?;
-                """, (target,))
-                row = cursor.fetchone()
+                row=conn.execute('SELECT user_id,is_active,is_root FROM users WHERE LOWER(username)=?',(user_or_role.strip().lower(),)).fetchone()
                 if row:
-                    if row["is_root"]:
-                        return True
-                    role_id = cls.resolve_canonical_role(row["role_id"])
-        except Exception:
-            pass
-
-        if not role_id:
-            role_id = cls.resolve_canonical_role(target)
-
-        # Root override
-        if role_id == "root_owner":
-            return True
-
-        # Look up capabilities for role_id
-        for r in cls.ROLES_MATRIX:
-            if r["role_id"] == role_id:
-                if "*" in r.get("allowed_actions", []):
-                    return True
-                return action in r.get("allowed_actions", [])
-
-        return False
+                    if not row['is_active']:return False
+                    if row['is_root']:return True
+                    rows=conn.execute('SELECT wr.capabilities FROM workspace_roles wr JOIN user_roles ur ON ur.role_id=wr.role_id WHERE ur.user_id=? AND wr.role_id<>?',(row['user_id'],'root')).fetchall()
+                    return cap in {value for item in rows for value in json.loads(item[0])}
+                row=conn.execute('SELECT capabilities FROM workspace_roles WHERE role_id=?',(user_or_role.strip().lower(),)).fetchone()
+                return bool(row and cap in json.loads(row[0]))
+        except sqlite3.Error:
+            return False
 
     @classmethod
     def get_user_role(cls, user_or_role: str) -> str:
@@ -371,7 +356,7 @@ class PanamaSecurityGovernancePanel:
                         user_id, username, email, password_hash, salt, is_active,
                         is_root, must_change_password, mfa_enabled, failed_attempts,
                         created_at, updated_at
-                    ) VALUES (?, ?, ?, ?, ?, 1, 0, 0, 0, 0, ?, ?);
+                    ) VALUES (?, ?, ?, ?, ?, 1, 0, 1, 0, 0, ?, ?);
                 """, (
                     new_uid, clean_user, user_email, pwd_hash, salt_hex, now_str, now_str
                 ))
@@ -555,13 +540,10 @@ class PanamaSecurityGovernancePanel:
                         "is_first_run": must_change,
                         "cluster_state": "Pending_Password_Change" if must_change else "Configured"
                     }
-        except Exception:
-            pass
+        except sqlite3.Error:
+            logging.getLogger(__name__).error("No se pudo verificar el estado de instalación.")
 
-        return {
-            "is_first_run": False,
-            "cluster_state": "Configured"
-        }
+        return {"is_first_run": None, "cluster_state": "Not_Verified"}
 
     @classmethod
     def _init_infra_table(cls):

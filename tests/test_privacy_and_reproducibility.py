@@ -14,9 +14,21 @@ from src.models.training_presets import TrainingPresetManager
 from src.models.reproducible_trainer import DeterministicModelReplicator
 from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
 from src.mcp.soul_manager import MCPSoulManager
+from src.serving.v1_router import get_current_user_and_session
 
 
 client = TestClient(app)
+from tests.test_workspace_control_plane import control, login
+import sqlite3
+
+@pytest.fixture(autouse=True)
+def isolated_identity(control):
+    global client
+    original=client;client=control[0]
+    with sqlite3.connect(control[1]) as db:db.execute("UPDATE users SET username='root' WHERE username='root_test'")
+    yield
+    client=original
+
 
 
 class TestPanamaPrivacyAndAnonymization:
@@ -78,9 +90,10 @@ class TestModelPresetsAndReproducibility:
 class TestGovernmentSecurityAndMCPSouls:
     def test_security_overview(self):
         overview = PanamaSecurityGovernancePanel.get_security_overview()
-        assert overview["status"] == "operational"
+        assert overview["status"] == "partially_verified"
         assert "tls_certificate" in overview
-        assert overview["tls_certificate"]["protocol"] == "TLS 1.3 (RFC 8446)"
+        assert overview["tls_certificate"]["status"] == "not_verified"
+        assert overview["tls_certificate"]["protocol"] is None
         assert overview["cookie_hardening"]["http_only"] is True
         assert len(overview["roles_matrix"]) >= 4
 
@@ -115,6 +128,10 @@ class TestGovernmentSecurityAndMCPSouls:
 
 
 class TestNewServingApiEndpoints:
+    @pytest.fixture(autouse=True)
+    def authorized_endpoint_context(self, isolated_identity):
+        login(client,'root')
+
     def test_get_training_parameters(self):
         res = client.get("/api/models/training-parameters")
         assert res.status_code == 200
@@ -211,7 +228,7 @@ class TestNewServingApiEndpoints:
         res = client.get("/api/admin/governance")
         assert res.status_code == 200
         d = res.json()
-        assert d["status"] == "operational"
+        assert d["status"] == "partially_verified"
 
     def test_post_admin_users(self):
         PanamaSecurityGovernancePanel.delete_user("portal_admin_unit")
@@ -222,14 +239,14 @@ class TestNewServingApiEndpoints:
             "role_id": "platform_admin"
         }
         res = client.post("/api/admin/users", json=payload)
-        assert res.status_code == 200
-        assert res.json()["status"] == "success"
+        assert res.status_code == 410
+        assert res.json()["code"] == "administration_flow_retired"
 
 
     def test_post_revoke_sessions(self):
         res = client.post("/api/admin/revoke-sessions", json={"reason": "Auditoría Regular"})
-        assert res.status_code == 200
-        assert res.json()["status"] == "revoked"
+        assert res.status_code == 410
+        assert res.json()["code"] == "administration_flow_retired"
 
     def test_get_mcp_souls(self):
         res = client.get("/api/mcp/souls")

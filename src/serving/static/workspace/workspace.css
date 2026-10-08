@@ -1,0 +1,55 @@
+/* The active operational palette owns every surface and control. */
+.management-app{margin:0;background:var(--bg-base);color:var(--text-main);font:16px/1.65 "Segoe UI",system-ui,sans-serif;--accent:var(--cyan-bright);--line:var(--border-color)}
+.management-app *, .management-app *::before,.management-app *::after{box-sizing:border-box}
+.management-app header{position:relative;padding:18px 28px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:24px;background:var(--bg-surface)}
+.management-app .brand{display:flex;gap:12px;align-items:center;text-decoration:none;color:var(--text-main);font-size:19px;font-weight:700;white-space:nowrap}
+.management-app .brand small{display:block;font-size:12px;font-weight:400;color:var(--text-muted)}
+.management-app .header-controls{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap;font-size:13px}
+.management-app a{color:var(--cyan-bright)}
+.management-app .management-layout{display:grid;grid-template-columns:236px minmax(0,1fr);width:100%;max-width:1700px;margin:0 auto;gap:28px;padding:28px}
+.management-app .header-controls select{width:auto;max-width:220px}
+.management-app aside{position:sticky;top:20px;height:max-content;background:var(--bg-surface);border:1px solid var(--line);border-radius:14px;padding:12px}
+.management-app nav{display:grid;gap:6px;margin-top:8px}
+.management-app nav button{display:flex;gap:12px;align-items:center;text-align:left;border:1px solid transparent;padding:12px;min-height:46px;background:transparent;color:var(--text-muted);font-size:14px;border-radius:9px}
+.management-app nav button.active{background:color-mix(in srgb,var(--accent) 10%,var(--bg-surface));color:var(--accent);border-color:var(--line)}
+.management-app nav svg{width:19px;height:19px;flex:0 0 19px}
+.management-app main{min-width:0;width:100%;padding:0;max-width:none;margin:0}
+.management-app h1{font-size:clamp(27px,3vw,36px);line-height:1.25;margin:0 0 10px;letter-spacing:-.03em}
+.management-app h2{font-size:21px;line-height:1.4;margin:0 0 14px}
+.management-app h3{font-size:17px;margin:0 0 12px}
+.management-app p{margin:0 0 16px;color:var(--text-muted)}
+.management-app .lead{max-width:80ch;margin-bottom:24px;font-size:15px}
+.management-app .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:20px}
+.management-app .panel{background:var(--bg-card);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:20px;min-width:0;overflow-wrap:anywhere}
+.management-app .panel p,.management-app .panel small{color:var(--text-muted)}
+.management-app .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:18px}
+.management-app label{display:grid;gap:7px;font-size:14px;font-weight:600;color:var(--text-main);margin-bottom:16px}
+.management-app input,.management-app textarea,.management-app select{width:100%;min-width:0;min-height:44px;background:var(--bg-input);color:var(--text-main);border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-family:inherit;font-size:14px;line-height:1.5}
+.management-app :is(input,textarea,select){border-color:color-mix(in srgb,var(--text-muted) 55%,var(--bg-surface))}
+.management-app textarea{min-height:110px;resize:vertical}
+.management-app button{cursor:pointer;border-radius:9px;border:1px solid var(--line);background:var(--bg-input);color:var(--text-main);padding:10px 15px;min-height:42px;font:600 14px/1.5 "Segoe UI",sans-serif}
+.management-app button.primary{background:var(--cyan-bright);color:var(--bg-base);border-color:var(--cyan-bright)}
+.management-app button:disabled{opacity:.6;cursor:wait}
+.management-app :where(a,button,input,select,textarea):focus-visible{outline:3px solid var(--cyan-bright);outline-offset:3px}
+.management-app .check{display:flex;align-items:center;gap:10px;margin:10px 0;font-weight:400}
+.management-app input[type=checkbox]{width:18px;min-height:18px;height:18px;accent-color:var(--cyan-bright)}
+.management-app .toolbar{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+.management-app .table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:12px}
+.management-app table{width:100%;font-size:14px;border-collapse:collapse}
+.management-app th,.management-app td{padding:13px 16px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;overflow-wrap:anywhere}
+.management-app th{font-size:12px;color:var(--text-muted);white-space:nowrap}
+.management-app .tag{display:inline-block;font-family:inherit;font-size:12px;font-weight:600;line-height:1.5;background:var(--bg-input);border:1px solid var(--line);padding:4px 8px;border-radius:6px;margin:2px;color:var(--text-main)}
+.management-app pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:400px;overflow:auto;background:var(--bg-input);padding:18px;border-radius:10px;font-size:13px;color:var(--text-main)}
+.management-app dialog{border:1px solid var(--line);border-radius:16px;padding:28px;background:var(--bg-surface);color:var(--text-main);width:min(650px,calc(100vw - 32px));max-height:90dvh;overflow:auto}
+.management-app dialog::backdrop{background:rgb(0 0 0 / .75)}
+.management-app .dialog-actions{display:flex;gap:12px;justify-content:flex-end}
+.management-app #management-notice{position:fixed;bottom:20px;right:20px;z-index:11000;max-width:min(600px,calc(100vw - 40px));padding:16px 20px;background:var(--bg-surface);border:1px solid var(--cyan-bright);border-radius:12px;box-shadow:0 8px 30px #0004;font-size:14px}
+.management-app #management-sidebar-toggle{display:flex;justify-content:center;padding:8px;min-width:42px;opacity:0;transition:opacity .15s}
+.management-app aside:hover #management-sidebar-toggle,.management-app aside:focus-within #management-sidebar-toggle{opacity:1}
+.management-app.management-collapsed .management-layout{grid-template-columns:72px minmax(0,1fr)}
+.management-app.management-collapsed nav button{justify-content:center;padding:12px}
+.management-app.management-collapsed nav button span{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden}
+.management-app .skip{position:fixed;left:12px;top:-100px;background:var(--bg-surface);z-index:12000;padding:12px}
+.management-app .skip:focus{top:12px}
+@media(max-width:800px){.management-app header{padding:16px;align-items:flex-start;flex-direction:column;gap:16px}.management-app .header-controls{justify-content:flex-start}.management-app .management-layout{display:block;padding:16px}.management-app aside{position:static;margin-bottom:20px}.management-app nav{grid-template-columns:repeat(2,minmax(0,1fr))}.management-app #management-sidebar-toggle{opacity:1}.management-app.management-collapsed nav{display:none}.management-app .panel{padding:20px}.management-app .form-grid{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){.management-app *{transition:none!important;animation:none!important}}

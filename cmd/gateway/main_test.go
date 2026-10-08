@@ -143,7 +143,7 @@ func TestSecurityHeaders(t *testing.T) {
 	if rr.Header().Get("X-Content-Type-Options") != "nosniff" {
 		t.Errorf("Missing or invalid X-Content-Type-Options header")
 	}
-	if rr.Header().Get("X-Frame-Options") != "SAMEORIGIN" {
+	if rr.Header().Get("X-Frame-Options") != "DENY" {
 		t.Errorf("Missing or invalid X-Frame-Options header")
 	}
 	if rr.Header().Get("X-Platform-Author") != PlatformAuthor {
@@ -246,5 +246,92 @@ func TestRateLimiter(t *testing.T) {
 	// 4th immediate request should be rejected
 	if rl.Allow(ip) {
 		t.Errorf("Request 4 exceeded burst and should be rejected")
+	}
+}
+
+func TestAppBrowserPolicyAndUntrustedCORS(t *testing.T) {
+	staticDir, cleanup := setupTestEnvironment(t)
+	defer cleanup()
+	server, err := NewGatewayServer("8000", "http://127.0.0.1:8001", staticDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	handler := server.securityHeadersMiddleware(server)
+	for _, origin := range []string{"https://example.com", "http://localhost:8000.evil.example", "null"} {
+		rr := httptest.NewRecorder()
+		req := httptest.NewRequest(http.MethodOptions, "http://127.0.0.1:8000/api/config", nil)
+		req.Header.Set("Origin", origin)
+		handler.ServeHTTP(rr, req)
+		if rr.Code != http.StatusForbidden || rr.Header().Get("Access-Control-Allow-Origin") != "" {
+			t.Fatalf("trusted origin %s: %d", origin, rr.Code)
+		}
+	}
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, "/app", nil))
+	if rr.Code != 200 {
+		t.Fatal(rr.Code)
+	}
+	for name, value := range browserSecurityHeaders {
+		if rr.Header().Get(name) != value {
+			t.Fatalf("missing %s", name)
+		}
+	}
+	request := httptest.NewRequest(http.MethodOptions, "http://127.0.0.1:8000/api/config", nil)
+	request.Header.Set("Origin", "http://127.0.0.1:8000")
+	rr = httptest.NewRecorder()
+	handler.ServeHTTP(rr, request)
+	if rr.Code != 204 || rr.Header().Get("Access-Control-Allow-Origin") != "http://127.0.0.1:8000" {
+		t.Fatal("same origin rejected")
+	}
+}
+
+func TestProxyCannotRestorePermissiveCORSOrDuplicatePolicy(t *testing.T) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("X-Forwarded-Host") != "127.0.0.1:8000" || r.Header.Get("X-Forwarded-Proto") != "http" {
+			t.Error("incorrect forwarded origin")
+		}
+		w.Header().Set("Access-Control-Allow-Origin", "https://example.com")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("X-Frame-Options", "SAMEORIGIN")
+		w.Header().Set("Content-Security-Policy", "default-src *")
+		w.WriteHeader(200)
+	}))
+	defer upstream.Close()
+	server, err := NewGatewayServer("8000", upstream.URL, t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := httptest.NewRequest(http.MethodGet, "http://127.0.0.1:8000/api/config", nil)
+	request.Header.Set("Origin", "https://example.com")
+	request.Header.Set("X-Forwarded-Host", "evil.example")
+	rr := httptest.NewRecorder()
+	server.securityHeadersMiddleware(server).ServeHTTP(rr, request)
+	if rr.Header().Get("Access-Control-Allow-Origin") != "" {
+		t.Fatal("upstream CORS leaked")
+	}
+	for name, value := range browserSecurityHeaders {
+		if len(rr.Header().Values(name)) != 1 || rr.Header().Get(name) != value {
+			t.Fatalf("policy duplicated or replaced: %s", name)
+		}
+	}
+}
+
+func TestWorkspaceDocumentsDoNotRedirectToOperationalPage(t *testing.T) {
+	dir := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(dir, "workspace"), 0755); err != nil {
+		t.Fatal(err)
+	}
+	os.WriteFile(filepath.Join(dir, "index.html"), []byte("operations"), 0644)
+	os.WriteFile(filepath.Join(dir, "workspace", "index.html"), []byte("management"), 0644)
+	server, err := NewGatewayServer("8000", "http://127.0.0.1:8001", dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, url := range []string{"/static/workspace/", "/static/workspace/index.html"} {
+		rr := httptest.NewRecorder()
+		server.ServeHTTP(rr, httptest.NewRequest(http.MethodGet, url, nil))
+		if rr.Code != 200 || rr.Body.String() != "management" || rr.Header().Get("Location") != "" {
+			t.Fatalf("%s: %d %s", url, rr.Code, rr.Body.String())
+		}
 	}
 }

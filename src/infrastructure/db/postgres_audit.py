@@ -15,6 +15,7 @@ import json
 import uuid
 import hashlib
 import sqlite3
+import threading
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Any, List, Optional
@@ -26,6 +27,7 @@ SQLITE_AUDIT_PATH = DB_DIR / "portops_audit.db"
 
 class PostgresAuditManager:
     """Enterprise Audit and Simulation Execution Manager with WORM Immutability."""
+    _write_lock = threading.Lock()
 
     def __init__(self, db_path: Path = SQLITE_AUDIT_PATH):
         self.db_path = db_path
@@ -227,33 +229,34 @@ class PostgresAuditManager:
             WHERE username = ?;
             """, (latency / 1000.0, now_str, actor))
 
-            # 3. Retrieve Previous Block Hash for WORM Chain
-            cursor.execute("SELECT block_id, block_hash FROM audit_ledger_worm ORDER BY block_id DESC LIMIT 1")
-            prev_row = cursor.fetchone()
-            prev_hash = prev_row["block_hash"] if prev_row else "0" * 64
-            next_block_id = (prev_row["block_id"] + 1) if prev_row else 1
+            # 3. Retrieve Previous Block Hash for WORM Chain and insert block atomically
+            with self._write_lock:
+                cursor.execute("SELECT block_id, block_hash FROM audit_ledger_worm ORDER BY block_id DESC LIMIT 1")
+                prev_row = cursor.fetchone()
+                prev_hash = prev_row["block_hash"] if prev_row else "0" * 64
+                next_block_id = (prev_row["block_id"] + 1) if prev_row else 1
 
-            # 4. Compute New Cryptographic Hash
-            payload = {
-                "run_id": run_id,
-                "scenario": sc_key,
-                "port": target_port,
-                "expected_volume": round(exp_vol, 2),
-                "var_95": round(v95, 2),
-                "cvar_95": round(cv95, 2),
-                "duration_ms": round(latency, 2)
-            }
-            payload_str = json.dumps(payload, sort_keys=True)
-            new_hash = hashlib.sha256(f"{prev_hash}|{actor}|{payload_str}|{now_str}".encode()).hexdigest()
+                # 4. Compute New Cryptographic Hash
+                payload = {
+                    "run_id": run_id,
+                    "scenario": sc_key,
+                    "port": target_port,
+                    "expected_volume": round(exp_vol, 2),
+                    "var_95": round(v95, 2),
+                    "cvar_95": round(cv95, 2),
+                    "duration_ms": round(latency, 2)
+                }
+                payload_str = json.dumps(payload, sort_keys=True)
+                new_hash = hashlib.sha256(f"{prev_hash}|{actor}|{payload_str}|{now_str}".encode()).hexdigest()
 
-            # 5. Insert WORM Ledger Block
-            cursor.execute("""
-            INSERT INTO audit_ledger_worm (
-                prev_block_hash, block_hash, event_type, actor_username, actor_role, payload_json, ip_origin, created_at
-            ) VALUES (?, ?, 'SIMULATION_EXECUTION_CERTIFIED', ?, 'port_operator', ?, '127.0.0.1', ?);
-            """, (prev_hash, new_hash, actor, payload_str, now_str))
+                # 5. Insert WORM Ledger Block
+                cursor.execute("""
+                INSERT INTO audit_ledger_worm (
+                    prev_block_hash, block_hash, event_type, actor_username, actor_role, payload_json, ip_origin, created_at
+                ) VALUES (?, ?, 'SIMULATION_EXECUTION_CERTIFIED', ?, 'port_operator', ?, '127.0.0.1', ?);
+                """, (prev_hash, new_hash, actor, payload_str, now_str))
 
-            conn.commit()
+                conn.commit()
 
         return {
             "run_id": run_id,
@@ -342,7 +345,7 @@ class PostgresAuditManager:
                 "tampering_detected": False,
                 "verified_blocks": len(blocks),
                 "last_hash": expected_prev,
-                "integrity_status": "100% Cryptographically Sound (WORM Certified)"
+                "integrity_status": "Hash chain verified; storage retention and administrator protection are not certified"
             }
 
     def record_request_audit(
@@ -374,21 +377,22 @@ class PostgresAuditManager:
         }
         payload_str = json.dumps(payload, sort_keys=True)
 
-        with self._get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("SELECT block_id, block_hash FROM audit_ledger_worm ORDER BY block_id DESC LIMIT 1")
-            prev_row = cursor.fetchone()
-            prev_hash = prev_row["block_hash"] if prev_row else "0" * 64
-            next_block_id = (prev_row["block_id"] + 1) if prev_row else 1
+        with self._write_lock:
+            with self._get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT block_id, block_hash FROM audit_ledger_worm ORDER BY block_id DESC LIMIT 1")
+                prev_row = cursor.fetchone()
+                prev_hash = prev_row["block_hash"] if prev_row else "0" * 64
+                next_block_id = (prev_row["block_id"] + 1) if prev_row else 1
 
-            new_hash = hashlib.sha256(f"{prev_hash}|{user_type}|{payload_str}|{now_str}".encode()).hexdigest()
+                new_hash = hashlib.sha256(f"{prev_hash}|{user_type}|{payload_str}|{now_str}".encode()).hexdigest()
 
-            cursor.execute("""
-            INSERT INTO audit_ledger_worm (
-                prev_block_hash, block_hash, event_type, actor_username, actor_role, payload_json, ip_origin, created_at
-            ) VALUES (?, ?, 'HTTP_REQUEST_AUDIT', ?, ?, ?, ?, ?);
-            """, (prev_hash, new_hash, user_type, actor_role, payload_str, ip_origin, now_str))
-            conn.commit()
+                cursor.execute("""
+                INSERT INTO audit_ledger_worm (
+                    prev_block_hash, block_hash, event_type, actor_username, actor_role, payload_json, ip_origin, created_at
+                ) VALUES (?, ?, 'HTTP_REQUEST_AUDIT', ?, ?, ?, ?, ?);
+                """, (prev_hash, new_hash, user_type, actor_role, payload_str, ip_origin, now_str))
+                conn.commit()
 
         return {
             "block_id": next_block_id,

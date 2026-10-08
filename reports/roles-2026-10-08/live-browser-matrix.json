@@ -1,0 +1,174 @@
+[
+  {
+    "username": "root",
+    "role": "root",
+    "navigation": [
+      "overview",
+      "configuration",
+      "services",
+      "modules",
+      "identity",
+      "datasets",
+      "models",
+      "agents",
+      "secrets",
+      "security"
+    ],
+    "screens_verified": 10,
+    "javascript_errors": [],
+    "logout": "passed"
+  },
+  {
+    "username": "plataforma",
+    "role": "platform_admin",
+    "navigation": [
+      "overview",
+      "configuration",
+      "services",
+      "modules",
+      "identity",
+      "datasets",
+      "models",
+      "agents",
+      "security"
+    ],
+    "screens_verified": 9,
+    "javascript_errors": [],
+    "logout": "passed"
+  },
+  {
+    "username": "seguridad",
+    "role": "security_admin",
+    "navigation": [
+      "overview",
+      "services",
+      "identity",
+      "agents",
+      "secrets",
+      "security"
+    ],
+    "screens_verified": 6,
+    "javascript_errors": [],
+    "logout": "passed"
+  },
+  {
+    "username": "datos",
+    "role": "data_engineer",
+    "navigation": [
+      "overview",
+      "datasets",
+      "models",
+      "agents",
+      "security"
+    ],
+    "screens_verified": 5,
+    "javascript_errors": [],
+    "logout": "passed"
+  },
+  {
+    "username": "custodio",
+    "role": "data_steward",
+    "navigation": [
+      "overview",
+      "datasets",
+      "agents",
+      "security"
+    ],
+    "screens_verified": 4,
+    "javascript_errors": [],
+    "logout": "passed"
+  },
+  {
+    "username": "mlops",
+    "role": "mlops_engineer",
+    "navigation": [
+      "overview",
+      "modules",
+      "datasets",
+      "models",
+      "agents",
+      "security"
+    ],
+    "screens_verified": 6,
+    "javascript_errors": [],
+    "logout": "passed"
+  },
+  {
+    "username": "revisor",
+    "role": "ml_reviewer",
+    "navigation": [
+      "overview",
+      "datasets",
+      "models",
+      "agents",
+      "security"
+    ],
+    "screens_verified": 5,
+    "javascript_errors": [],
+    "logout": "passed"
+  },
+  {
+    "username": "operador",
+    "role": "port_operator",
+    "navigation": [
+      "overview",
+      "datasets",
+      "agents",
+      "security"
+    ],
+    "screens_verified": 4,
+    "javascript_errors": [],
+    "logout": "passed"
+  },
+  {
+    "username": "simulacion",
+    "role": "simulation_analyst",
+    "navigation": [
+      "overview",
+      "datasets",
+      "agents",
+      "security"
+    ],
+    "screens_verified": 4,
+    "javascript_errors": [],
+    "logout": "passed"
+  },
+  {
+    "username": "auditor",
+    "role": "compliance_auditor",
+    "navigation": [
+      "overview",
+      "datasets",
+      "models",
+      "agents",
+      "security"
+    ],
+    "screens_verified": 5,
+    "javascript_errors": [],
+    "logout": "passed"
+  },
+  {
+    "username": "api",
+    "role": "api_consumer",
+    "navigation": [
+      "overview",
+      "agents"
+    ],
+    "screens_verified": 2,
+    "javascript_errors": [],
+    "logout": "passed"
+  },
+  {
+    "username": "lector",
+    "role": "readonly_viewer",
+    "navigation": [
+      "overview",
+      "datasets",
+      "models",
+      "agents"
+    ],
+    "screens_verified": 4,
+    "javascript_errors": [],
+    "logout": "passed"
+  }
+]

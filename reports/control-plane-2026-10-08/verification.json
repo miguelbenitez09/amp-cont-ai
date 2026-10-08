@@ -1,0 +1,8 @@
+{
+  "test_count": 95,
+  "test_result": "passed",
+  "live_root_login": "verified",
+  "mandatory_password_gate": "verified",
+  "root_password_modified": false,
+  "external_services": "not_verified"
+}

@@ -1,0 +1,499 @@
+{
+  "http": [
+    {
+      "path": "/app",
+      "status": 200,
+      "headers": {
+        "Accept-Ranges": "bytes",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Content-Length": "373253",
+        "Content-Type": "text/html; charset=utf-8",
+        "Last-Modified": "Thu, 08 Oct 2026 08:59:17 GMT",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Server": "amp-cont-ai-gateway/2.0 (Go 1.26)",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "SAMEORIGIN",
+        "X-Platform-Author": "Ing. Miguel Antonio Benítez González (UTP)",
+        "X-Platform-License": "GNU General Public License v3.0 (GPL-3.0) with Section 7 Mandatory Attribution",
+        "X-Xss-Protection": "1; mode=block",
+        "Date": "Thu, 08 Oct 2026 09:25:28 GMT"
+      }
+    },
+    {
+      "path": "/health/ready",
+      "status": 200,
+      "headers": {
+        "Content-Length": "146",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; img-src 'self' data:; font-src 'self' https://cdn.jsdelivr.net data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "Content-Type": "application/json",
+        "Cross-Origin-Opener-Policy": "same-origin",
+        "Cross-Origin-Resource-Policy": "same-origin",
+        "Date": "Thu, 08 Oct 2026 09:25:27 GMT",
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), fullscreen=(self)",
+        "Referrer-Policy": "strict-origin-when-cross-origin, strict-origin-when-cross-origin",
+        "Server": "amp-cont-ai-gateway/2.0 (Go 1.26), uvicorn",
+        "X-Content-Type-Options": "nosniff, nosniff",
+        "X-Frame-Options": "SAMEORIGIN, DENY",
+        "X-Platform-Author": "Ing. Miguel Antonio Benítez González (UTP)",
+        "X-Platform-License": "GNU General Public License v3.0 (GPL-3.0) with Section 7 Mandatory Attribution",
+        "X-Xss-Protection": "1; mode=block"
+      }
+    },
+    {
+      "path": "/api/admin/governance",
+      "status": 200,
+      "headers": {
+        "Cache-Control": "no-store",
+        "Content-Length": "6515",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; img-src 'self' data:; font-src 'self' https://cdn.jsdelivr.net data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "Content-Type": "application/json",
+        "Cross-Origin-Opener-Policy": "same-origin",
+        "Cross-Origin-Resource-Policy": "same-origin",
+        "Date": "Thu, 08 Oct 2026 09:25:27 GMT",
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), fullscreen=(self)",
+        "Pragma": "no-cache",
+        "Referrer-Policy": "strict-origin-when-cross-origin, strict-origin-when-cross-origin",
+        "Server": "amp-cont-ai-gateway/2.0 (Go 1.26), uvicorn",
+        "X-Content-Type-Options": "nosniff, nosniff",
+        "X-Frame-Options": "SAMEORIGIN, DENY",
+        "X-Platform-Author": "Ing. Miguel Antonio Benítez González (UTP)",
+        "X-Platform-License": "GNU General Public License v3.0 (GPL-3.0) with Section 7 Mandatory Attribution",
+        "X-Xss-Protection": "1; mode=block"
+      }
+    },
+    {
+      "path": "/api/v1/infra/config",
+      "status": 200,
+      "headers": {
+        "Cache-Control": "no-store",
+        "Content-Length": "853",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; img-src 'self' data:; font-src 'self' https://cdn.jsdelivr.net data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "Content-Type": "application/json",
+        "Cross-Origin-Opener-Policy": "same-origin",
+        "Cross-Origin-Resource-Policy": "same-origin",
+        "Date": "Thu, 08 Oct 2026 09:25:27 GMT",
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), fullscreen=(self)",
+        "Pragma": "no-cache",
+        "Referrer-Policy": "strict-origin-when-cross-origin, strict-origin-when-cross-origin",
+        "Server": "amp-cont-ai-gateway/2.0 (Go 1.26), uvicorn",
+        "X-Content-Type-Options": "nosniff, nosniff",
+        "X-Frame-Options": "SAMEORIGIN, DENY",
+        "X-Platform-Author": "Ing. Miguel Antonio Benítez González (UTP)",
+        "X-Platform-License": "GNU General Public License v3.0 (GPL-3.0) with Section 7 Mandatory Attribution",
+        "X-Xss-Protection": "1; mode=block"
+      }
+    },
+    {
+      "path": "/api/config",
+      "status": 200,
+      "headers": {
+        "Cache-Control": "no-store",
+        "Content-Length": "1332",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; img-src 'self' data:; font-src 'self' https://cdn.jsdelivr.net data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+        "Content-Type": "application/json",
+        "Cross-Origin-Opener-Policy": "same-origin",
+        "Cross-Origin-Resource-Policy": "same-origin",
+        "Date": "Thu, 08 Oct 2026 09:25:27 GMT",
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), fullscreen=(self)",
+        "Pragma": "no-cache",
+        "Referrer-Policy": "strict-origin-when-cross-origin, strict-origin-when-cross-origin",
+        "Server": "amp-cont-ai-gateway/2.0 (Go 1.26), uvicorn",
+        "X-Content-Type-Options": "nosniff, nosniff",
+        "X-Frame-Options": "SAMEORIGIN, DENY",
+        "X-Platform-Author": "Ing. Miguel Antonio Benítez González (UTP)",
+        "X-Platform-License": "GNU General Public License v3.0 (GPL-3.0) with Section 7 Mandatory Attribution",
+        "X-Xss-Protection": "1; mode=block"
+      }
+    },
+    {
+      "path": "/api/v1/gateway/status",
+      "status": 200,
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Server": "amp-cont-ai-gateway/2.0 (Go 1.26)",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "SAMEORIGIN",
+        "X-Platform-Author": "Ing. Miguel Antonio Benítez González (UTP)",
+        "X-Platform-License": "GNU General Public License v3.0 (GPL-3.0) with Section 7 Mandatory Attribution",
+        "X-Xss-Protection": "1; mode=block",
+        "Date": "Thu, 08 Oct 2026 09:25:28 GMT",
+        "Content-Length": "278"
+      }
+    },
+    {
+      "origin": "http://localhost:8000.evil.example",
+      "status": 204,
+      "allow_origin": "http://localhost:8000.evil.example",
+      "allow_credentials": "true"
+    },
+    {
+      "method": "GET",
+      "origin": "http://localhost:8000.evil.example",
+      "status": 200,
+      "allow_origin": "http://localhost:8000.evil.example",
+      "allow_credentials": "true"
+    },
+    {
+      "origin": "http://127.0.0.1:8000.evil.example",
+      "status": 204,
+      "allow_origin": "http://127.0.0.1:8000.evil.example",
+      "allow_credentials": "true"
+    },
+    {
+      "method": "GET",
+      "origin": "http://127.0.0.1:8000.evil.example",
+      "status": 200,
+      "allow_origin": "http://127.0.0.1:8000.evil.example",
+      "allow_credentials": "true"
+    },
+    {
+      "origin": "https://example.com",
+      "status": 204,
+      "allow_origin": "https://example.com",
+      "allow_credentials": "true"
+    },
+    {
+      "method": "GET",
+      "origin": "https://example.com",
+      "status": 200,
+      "allow_origin": "https://example.com",
+      "allow_credentials": "true"
+    }
+  ],
+  "ui": [
+    {
+      "overflow": false,
+      "scrollWidth": 390,
+      "width": 390,
+      "unnamedButtons": [],
+      "unlabelledInputs": [
+        {
+          "id": "nav-lang-select",
+          "type": "select-one"
+        },
+        {
+          "id": "theme-selector",
+          "type": "select-one"
+        }
+      ],
+      "visibleDialogs": [],
+      "viewport": [
+        390,
+        844
+      ],
+      "errors": [],
+      "httpFailures": [
+        {
+          "url": "http://127.0.0.1:8000/api/v1/customs/tariff/calculate",
+          "status": 422
+        }
+      ],
+      "authModal": {
+        "role": null,
+        "ariaModal": null,
+        "focusInside": false,
+        "focusedId": "btn-auth-iam",
+        "escapeCloses": true
+      },
+      "emptyCalculator": "Completa un c�digo HS y un valor CIF mayor que cero.",
+      "calculator": "Liquidaci�n bloqueada\nLa regla candidata no tiene evidencia documental verificable; no se permite liquidar\nSiguiente paso: Clasifique la subpartida con una regla ANA vigente antes de liquidar.",
+      "emptyContainer": "Completa el identificador ISO 6346 de 11 caracteres.",
+      "customsLayout": {
+        "width": 390,
+        "documentWidth": 390,
+        "bodyWidth": 1036,
+        "height": 17609,
+        "overflows": [
+          {
+            "id": "",
+            "tag": "DIV",
+            "right": 420
+          },
+          {
+            "id": "latency-badge",
+            "tag": "SPAN",
+            "right": 420
+          },
+          {
+            "id": "",
+            "tag": "BUTTON",
+            "right": 498
+          },
+          {
+            "id": "",
+            "tag": "SPAN",
+            "right": 481
+          },
+          {
+            "id": "",
+            "tag": "BUTTON",
+            "right": 743
+          },
+          {
+            "id": "",
+            "tag": "svg",
+            "right": 544
+          },
+          {
+            "id": "",
+            "tag": "line",
+            "right": 539
+          },
+          {
+            "id": "",
+            "tag": "line",
+            "right": 534
+          },
+          {
+            "id": "",
+            "tag": "line",
+            "right": 529
+          },
+          {
+            "id": "",
+            "tag": "SPAN",
+            "right": 726
+          },
+          {
+            "id": "",
+            "tag": "BUTTON",
+            "right": 1002
+          },
+          {
+            "id": "",
+            "tag": "svg",
+            "right": 789
+          }
+        ]
+      },
+      "languages": {
+        "es": "es",
+        "en": "en",
+        "pt": "pt"
+      }
+    },
+    {
+      "overflow": false,
+      "scrollWidth": 768,
+      "width": 768,
+      "unnamedButtons": [],
+      "unlabelledInputs": [
+        {
+          "id": "nav-lang-select",
+          "type": "select-one"
+        },
+        {
+          "id": "theme-selector",
+          "type": "select-one"
+        }
+      ],
+      "visibleDialogs": [],
+      "viewport": [
+        768,
+        1024
+      ],
+      "errors": [],
+      "httpFailures": [
+        {
+          "url": "http://127.0.0.1:8000/api/v1/customs/tariff/calculate",
+          "status": 422
+        }
+      ],
+      "authModal": {
+        "role": null,
+        "ariaModal": null,
+        "focusInside": false,
+        "focusedId": "btn-auth-iam",
+        "escapeCloses": true
+      },
+      "emptyCalculator": "Completa un c�digo HS y un valor CIF mayor que cero.",
+      "calculator": "Liquidaci�n bloqueada\nLa regla candidata no tiene evidencia documental verificable; no se permite liquidar\nSiguiente paso: Clasifique la subpartida con una regla ANA vigente antes de liquidar.",
+      "emptyContainer": "Completa el identificador ISO 6346 de 11 caracteres.",
+      "customsLayout": {
+        "width": 768,
+        "documentWidth": 768,
+        "bodyWidth": 1036,
+        "height": 17371,
+        "overflows": [
+          {
+            "id": "",
+            "tag": "BUTTON",
+            "right": 929
+          },
+          {
+            "id": "",
+            "tag": "svg",
+            "right": 788
+          },
+          {
+            "id": "",
+            "tag": "polyline",
+            "right": 787
+          },
+          {
+            "id": "",
+            "tag": "SPAN",
+            "right": 912
+          },
+          {
+            "id": "",
+            "tag": "BUTTON",
+            "right": 1174
+          },
+          {
+            "id": "",
+            "tag": "svg",
+            "right": 975
+          },
+          {
+            "id": "",
+            "tag": "line",
+            "right": 970
+          },
+          {
+            "id": "",
+            "tag": "line",
+            "right": 965
+          },
+          {
+            "id": "",
+            "tag": "line",
+            "right": 960
+          },
+          {
+            "id": "",
+            "tag": "SPAN",
+            "right": 1157
+          },
+          {
+            "id": "",
+            "tag": "BUTTON",
+            "right": 1433
+          },
+          {
+            "id": "",
+            "tag": "svg",
+            "right": 1220
+          }
+        ]
+      },
+      "languages": {
+        "es": "es",
+        "en": "en",
+        "pt": "pt"
+      }
+    },
+    {
+      "overflow": false,
+      "scrollWidth": 1440,
+      "width": 1440,
+      "unnamedButtons": [],
+      "unlabelledInputs": [
+        {
+          "id": "nav-lang-select",
+          "type": "select-one"
+        },
+        {
+          "id": "theme-selector",
+          "type": "select-one"
+        }
+      ],
+      "visibleDialogs": [],
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "httpFailures": [
+        {
+          "url": "http://127.0.0.1:8000/api/v1/customs/tariff/calculate",
+          "status": 422
+        }
+      ],
+      "authModal": {
+        "role": null,
+        "ariaModal": null,
+        "focusInside": false,
+        "focusedId": "btn-auth-iam",
+        "escapeCloses": true
+      },
+      "emptyCalculator": "Completa un c�digo HS y un valor CIF mayor que cero.",
+      "calculator": "Liquidaci�n bloqueada\nLa regla candidata no tiene evidencia documental verificable; no se permite liquidar\nSiguiente paso: Clasifique la subpartida con una regla ANA vigente antes de liquidar.",
+      "emptyContainer": "Completa el identificador ISO 6346 de 11 caracteres.",
+      "customsLayout": {
+        "width": 1440,
+        "documentWidth": 1440,
+        "bodyWidth": 1440,
+        "height": 13004,
+        "overflows": [
+          {
+            "id": "",
+            "tag": "BUTTON",
+            "right": 1510
+          },
+          {
+            "id": "",
+            "tag": "SPAN",
+            "right": 1491
+          },
+          {
+            "id": "",
+            "tag": "BUTTON",
+            "right": 1737
+          },
+          {
+            "id": "",
+            "tag": "svg",
+            "right": 1557
+          },
+          {
+            "id": "",
+            "tag": "rect",
+            "right": 1556
+          },
+          {
+            "id": "",
+            "tag": "circle",
+            "right": 1546
+          },
+          {
+            "id": "",
+            "tag": "circle",
+            "right": 1552
+          },
+          {
+            "id": "",
+            "tag": "SPAN",
+            "right": 1718
+          },
+          {
+            "id": "",
+            "tag": "BUTTON",
+            "right": 1994
+          },
+          {
+            "id": "",
+            "tag": "svg",
+            "right": 1784
+          },
+          {
+            "id": "",
+            "tag": "path",
+            "right": 1781
+          },
+          {
+            "id": "",
+            "tag": "path",
+            "right": 1781
+          }
+        ]
+      },
+      "languages": {
+        "es": "es",
+        "en": "en",
+        "pt": "pt"
+      }
+    }
+  ]
+}

@@ -38,14 +38,24 @@ const (
 	DefaultStatic   = "src/serving/static"
 )
 
+var browserSecurityHeaders = map[string]string{
+	"X-Content-Type-Options":       "nosniff",
+	"X-Frame-Options":              "DENY",
+	"Referrer-Policy":              "strict-origin-when-cross-origin",
+	"Permissions-Policy":           "camera=(), microphone=(), geolocation=(), payment=(), usb=(), fullscreen=(self)",
+	"Cross-Origin-Opener-Policy":   "same-origin",
+	"Cross-Origin-Resource-Policy": "same-origin",
+	"Content-Security-Policy":      "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; img-src 'self' data:; font-src 'self' https://cdn.jsdelivr.net data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+}
+
 // Metrics counters.
 type Metrics struct {
-	TotalRequests   uint64
-	ProxyRequests   uint64
-	StaticRequests  uint64
-	FailedRequests  uint64
-	ActiveClients   int64
-	StartTime       time.Time
+	TotalRequests  uint64
+	ProxyRequests  uint64
+	StaticRequests uint64
+	FailedRequests uint64
+	ActiveClients  int64
+	StartTime      time.Time
 }
 
 var globalMetrics = &Metrics{
@@ -178,13 +188,31 @@ func NewGatewayServer(port, upstreamStr, staticDir string) (*GatewayServer, erro
 	}
 	originalDirector := proxy.Director
 	proxy.Director = func(req *http.Request) {
+		originalHost := req.Host
 		originalDirector(req)
 		req.Host = parsedUpstream.Host
 		if req.Header.Get("X-Request-ID") == "" {
 			req.Header.Set("X-Request-ID", generateRequestID())
 		}
-		req.Header.Set("X-Forwarded-Host", req.Header.Get("Host"))
+		req.Header.Set("X-Forwarded-Host", originalHost)
+		proto := "http"
+		if req.TLS != nil {
+			proto = "https"
+		}
+		req.Header.Set("X-Forwarded-Proto", proto)
 		req.Header.Set("X-Gateway-Engine", "Go-PortOps-v2.0")
+	}
+	proxy.ModifyResponse = func(response *http.Response) error {
+		// The edge owns browser policy; discard permissive upstream CORS and duplicates.
+		for name := range response.Header {
+			if strings.HasPrefix(strings.ToLower(name), "access-control-") {
+				response.Header.Del(name)
+			}
+		}
+		for name := range browserSecurityHeaders {
+			response.Header.Del(name)
+		}
+		return nil
 	}
 
 	proxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, proxyErr error) {
@@ -217,31 +245,40 @@ func NewGatewayServer(port, upstreamStr, staticDir string) (*GatewayServer, erro
 func (s *GatewayServer) securityHeadersMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
-		w.Header().Set("X-Frame-Options", "SAMEORIGIN")
+		for name, value := range browserSecurityHeaders {
+			w.Header().Set(name, value)
+		}
 		w.Header().Set("X-XSS-Protection", "1; mode=block")
 		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
 		w.Header().Set("Server", "amp-cont-ai-gateway/2.0 (Go 1.26)")
 		w.Header().Set("X-Platform-Author", PlatformAuthor)
 		w.Header().Set("X-Platform-License", PlatformLicense)
 
-		// CORS headers: allow local/same-origin or specific trusted origins
+		// CORS is denied by default. Additional origins must be explicitly configured.
 		origin := r.Header.Get("Origin")
 		if origin != "" {
-			isAllowed := false
-			if strings.HasPrefix(origin, "http://localhost:") ||
-				strings.HasPrefix(origin, "http://127.0.0.1:") ||
-				strings.HasPrefix(origin, "https://localhost:") ||
-				strings.HasPrefix(origin, "https://127.0.0.1:") ||
-				origin == "http://localhost" || origin == "http://127.0.0.1" {
-				isAllowed = true
+			scheme := "http"
+			if r.TLS != nil {
+				scheme = "https"
 			}
+			isAllowed := validOrigin(origin) && origin == scheme+"://"+r.Host
+			for _, configured := range strings.Split(os.Getenv("PORTOPS_CORS_ORIGINS"), ",") {
+				if validOrigin(origin) && origin == strings.TrimSpace(configured) {
+					isAllowed = true
+				}
+			}
+			w.Header().Add("Vary", "Origin")
 			if isAllowed {
 				w.Header().Set("Access-Control-Allow-Origin", origin)
 				w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS")
-				w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-Request-ID")
+				w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-Request-ID, X-CSRF-Token")
 				w.Header().Set("Access-Control-Allow-Credentials", "true")
 			}
 			if r.Method == http.MethodOptions {
+				if !isAllowed {
+					http.Error(w, "Origin not allowed", http.StatusForbidden)
+					return
+				}
 				w.WriteHeader(http.StatusNoContent)
 				return
 			}
@@ -249,6 +286,11 @@ func (s *GatewayServer) securityHeadersMiddleware(next http.Handler) http.Handle
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+func validOrigin(origin string) bool {
+	parsed, err := url.Parse(origin)
+	return err == nil && (parsed.Scheme == "http" || parsed.Scheme == "https") && parsed.Hostname() != "" && parsed.User == nil && parsed.Path == "" && parsed.RawQuery == "" && parsed.Fragment == ""
 }
 
 // Middleware: Rate Limiter.
@@ -267,9 +309,9 @@ func (s *GatewayServer) rateLimitMiddleware(next http.Handler) http.Handler {
 			w.Header().Set("Retry-After", "1")
 			w.WriteHeader(http.StatusTooManyRequests)
 			_ = json.NewEncoder(w).Encode(map[string]string{
-				"error":   "Rate limit exceeded. Too many requests.",
-				"hint":    "Limit is 100 requests/sec with burst of 200.",
-				"client":  clientIP,
+				"error":  "Rate limit exceeded. Too many requests.",
+				"hint":   "Limit is 100 requests/sec with burst of 200.",
+				"client": clientIP,
 			})
 			return
 		}
@@ -470,6 +512,10 @@ func (s *GatewayServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	cleanSubPath := strings.TrimPrefix(relPath, "static/")
 	targetPath := filepath.Join(s.staticDir, filepath.FromSlash(cleanSubPath))
 	fileInfo, err := os.Stat(targetPath)
+	if err == nil && fileInfo.IsDir() {
+		targetPath = filepath.Join(targetPath, "index.html")
+		fileInfo, err = os.Stat(targetPath)
+	}
 	if err != nil || fileInfo.IsDir() {
 		// Also check directly without trimming
 		targetPath = filepath.Join(s.staticDir, filepath.FromSlash(relPath))
@@ -501,7 +547,13 @@ func (s *GatewayServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		} else if strings.HasSuffix(targetPath, ".png") || strings.HasSuffix(targetPath, ".svg") || strings.HasSuffix(targetPath, ".ico") {
 			w.Header().Set("Cache-Control", "public, max-age=3600")
 		}
-		http.ServeFile(w, r, targetPath)
+		file, openErr := os.Open(targetPath)
+		if openErr != nil {
+			http.NotFound(w, r)
+			return
+		}
+		defer file.Close()
+		http.ServeContent(w, r, fileInfo.Name(), fileInfo.ModTime(), file)
 		return
 	}
 

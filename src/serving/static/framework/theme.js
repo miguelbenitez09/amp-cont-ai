@@ -6,6 +6,8 @@ export function initializeTheme(){
   if(!document.querySelector('#workspace-style')){const style=document.createElement('link');style.id='workspace-style';style.rel='stylesheet';style.href='/static/framework/workspace.css';document.head.appendChild(style)}
   if(!document.querySelector('#logo-style')){const style=document.createElement('link');style.id='logo-style';style.rel='stylesheet';style.href='/static/framework/logo.css';document.head.appendChild(style)}
   if(!document.querySelector('#controls-style')){const style=document.createElement('link');style.id='controls-style';style.rel='stylesheet';style.href='/static/framework/controls.css';document.head.appendChild(style)}
+  const cards=document.querySelector('link[href*="/static/css/cards.css"]');
+  if(cards)document.head.appendChild(cards);
   let preference='ocean';
   try{preference=localStorage.getItem('amp-theme')||'ocean'}catch{}
   if(!themes.includes(preference))preference='ocean'; save(preference);

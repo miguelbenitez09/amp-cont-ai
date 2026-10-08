@@ -4,15 +4,26 @@ Author: Desarrollado v1.0.0 Miguel Benítez • Ing. Miguel Antonio Benítez Gon
 """
 
 import re
+import pytest
 from pathlib import Path
 from fastapi.testclient import TestClient
 from src.serving.api import app
+from src.serving.v1_router import get_current_user_and_session
 
 client = TestClient(app)
+from tests.test_workspace_control_plane import control, login
 STATIC_DIR = Path("src/serving/static")
 
 
-def test_framework_profile_get_and_post():
+@pytest.fixture
+def admin_client(control):
+    client,_=control
+    login(client)
+    return client
+
+
+def test_framework_profile_get_and_post(admin_client):
+    client = admin_client
     # 1. Test GET framework profile
     res_get = client.get("/api/v1/framework/profile")
     assert res_get.status_code == 200
@@ -33,7 +44,9 @@ def test_framework_profile_get_and_post():
     assert "Terminal Portuaria" in data_post["profile_details"]["name"]
 
 
-def test_infra_config_db_minio_wazuh():
+def test_infra_config_db_minio_wazuh(admin_client):
+    client = admin_client
+    assert client.post("/api/v1/framework/profile", json={"profile_id": "terminal_portuaria"}).status_code == 200
     # Test DB config
     res_db = client.post("/api/v1/infra/config/db", json={
         "db_type": "sqlite",

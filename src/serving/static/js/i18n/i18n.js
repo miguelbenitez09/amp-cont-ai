@@ -15,7 +15,7 @@
       // to native groups. Materialize them once at boot so all runtime lookups
       // use the same `group.key` contract in ES, EN and PT.
       const groups = ["nav", "cot", "customs", "forecast", "benchmark", "simulation",
-        "data_platform", "security", "telemetry", "common", "footer"];
+        "data_platform", "security", "telemetry", "common", "footer", "tour"];
       const aliases = dictionary && dictionary._coverage;
       if (!aliases) return;
       Object.entries(aliases).forEach(([flatKey, value]) => {

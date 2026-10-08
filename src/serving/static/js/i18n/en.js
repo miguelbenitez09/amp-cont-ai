@@ -19,19 +19,20 @@ window.I18N_EN = {
     healthy: "Operational status",
     settings: "Settings",
     openapi_docs: "OpenAPI Docs",
-    lang_label: "Language:"
+    lang_label: "Language:",
+    guided_tour: "Guided Tour"
   },
   tabs: {
     landing: "Home & Overview",
-    cot_swarm: "🧠 CoT Reasoning & Agents",
-    customs_lakehouse: "🛃 RAG Customs, Tariffs & LakeHouse",
+    cot_swarm: "Agents & analysis",
+    customs_lakehouse: "Customs & data",
     forecast: "Forecast & What-If",
     benchmark: "Multi-Algorithm Benchmark",
     diagnostics: "Statistical Diagnostics & Errors",
     simulation: "Monte Carlo Simulation",
     methodology: "Methodology & Architecture",
     data_platform: "Data Platform & 5D Quality",
-    security_iam: "Security, IAM & WORM"
+    security_iam: "Security & audit"
   },
   landing: {
     hero_title: "Port Artificial Intelligence, Quantile Inference and MLOps for Panama's Logistics Hub",
@@ -210,6 +211,32 @@ window.I18N_EN = {
     success: "Operation completed successfully",
     close: "Close",
     details: "View Details"
+  },
+  tour: {
+    btn_label: "Guided Tour",
+    btn_title: "Start interactive walkthrough / Tour",
+    step_prefix: "Step",
+    of: "of",
+    next: "Next →",
+    prev: "← Previous",
+    finish: "✓ Finish Tour",
+    skip: "Skip",
+    step_hero_title: "Panama Maritime Hub & Sovereign MLOps",
+    step_hero_desc: "Welcome to the industrial platform for logistics analytics, AI agent orchestration, and multi-algorithm benchmarking. Supervise Panama's 6 national ports, the interoceanic canal, and foreign trade flows.",
+    step_controls_title: "Languages & Nautical Visual Themes",
+    step_controls_desc: "Customize your environment in real-time. Switch between Spanish, English, and Portuguese, and choose among 6 high-contrast maritime themes (Atlantic Cyan, Balboa Amber, Canal Emerald, Pacific Sunset, etc.).",
+    step_iam_title: "Security Center IAM & RBAC Roles",
+    step_iam_desc: "Strict authorization engine with 31 auditable capabilities, multi-factor MFA (RFC 6238 TOTP), and segmented roles for auditors, operators, and data scientists.",
+    step_worm_title: "Cryptographic WORM SHA-256 Integrity",
+    step_worm_desc: "Immutable Write-Once-Read-Many ledger chained via SHA-256 hashes. Every inference, customs lookup, and transaction is sealed tamper-proof under Law 6 of 2002.",
+    step_cot_title: "Agent Swarm & CoT Reasoning Chains",
+    step_cot_desc: "Orchestration of autonomous agents with cryptographic souls (Customs, Logistics, Quantiles, Security). Inspect step-by-step CoT traces, anti-injection guardrails, and grounded citations.",
+    step_customs_title: "Customs, Tariff RAG & 5D Lakehouse",
+    step_customs_desc: "Vector and semantic search over the SAC National Tariff and DUA declarations. Computes DAI/ITBMS taxes and audits real microdata across Bronze, Silver, and Gold layers.",
+    step_forecast_title: "Quantile Inference & What-If Scenarios",
+    step_forecast_desc: "Champion forecast models from 1 to 6 months with calibrated P10 (Floor), P50 (Median), and P90 (Ceiling) quantiles. Simulate bunker fuel price shocks and transshipment shifts.",
+    step_simulation_title: "Stochastic Simulation & Maritime Risk",
+    step_simulation_desc: "Port resilience analysis using 5,000-path Monte Carlo simulations, Extreme Value Theory (EVT Gumbel), and M/M/c queuing models to estimate vessel wait times and Canal draft restrictions."
   },
   _coverage: {
     nav_theme_sunset: "Pacific Sunset (Coral / Neon)", nav_theme_cobalt: "Midnight Cobalt (Deep Blue)",

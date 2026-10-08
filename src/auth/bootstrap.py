@@ -183,41 +183,25 @@ Recovery Code: {recovery_code}
         """
         cursor = conn.cursor()
 
-        # Check or initialize canonical root
-        cursor.execute("SELECT user_id, username, must_change_password FROM users WHERE username = 'root' LIMIT 1;")
+        cursor.execute("SELECT must_change_password FROM users WHERE is_root=1 AND is_active=1 ORDER BY username='root' DESC LIMIT 1")
         root_row = cursor.fetchone()
-        if not root_row:
-            cls.initialize_root_user(conn)
-            cursor.execute("SELECT user_id, username, must_change_password FROM users WHERE username = 'root' LIMIT 1;")
-            root_row = cursor.fetchone()
-
-        root_must_change = bool(root_row[2]) if root_row else True
-
-        # Check for mandatory admins (case-insensitive search)
-        mandatory_keys = {
-            "SysAdmin": False,
-            "SecOpsAdmin": False,
-            "MlopsAdmin": False
-        }
-
-        cursor.execute("SELECT username FROM users;")
-        all_usernames = [r[0].lower() for r in cursor.fetchall()]
-
-        for key in mandatory_keys.keys():
-            if key.lower() in all_usernames:
-                mandatory_keys[key] = True
-
-        missing = [k for k, v in mandatory_keys.items() if not v]
-        admins_configured = len(missing) == 0
-
+        root_must_change = bool(root_row[0]) if root_row else True
+        required = {'SysAdmin':'platform_admin','SecOpsAdmin':'security_admin','MlopsAdmin':'mlops_engineer'}
+        cursor.execute("SELECT DISTINCT ur.role_id FROM user_roles ur JOIN users u ON u.user_id=ur.user_id WHERE u.is_active=1 AND u.is_root=0")
+        assigned = {row[0] for row in cursor.fetchall()}
+        missing = [name for name, role in required.items() if role not in assigned]
+        try:
+            setup = cursor.execute('SELECT completed FROM workspace_setup WHERE id=1').fetchone()
+            confirmed = bool(setup and setup[0])
+        except sqlite3.OperationalError:
+            confirmed = False
         return {
-            "root_exists": True,
-            "root_username": "root",
-            "root_must_change_password": root_must_change,
-            "admins_configured": admins_configured,
-            "configured_admins": [k for k, v in mandatory_keys.items() if v],
-            "missing_admins": missing,
-            "requires_first_run_setup": root_must_change or not admins_configured
+            'root_exists': bool(root_row), 'root_username':'root',
+            'root_must_change_password':root_must_change,
+            'admins_configured':not missing,
+            'configured_admins':[name for name in required if name not in missing],
+            'missing_admins':missing, 'configuration_confirmed':confirmed,
+            'requires_first_run_setup':root_must_change or bool(missing) or not confirmed
         }
 
     @classmethod

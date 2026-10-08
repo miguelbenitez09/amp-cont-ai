@@ -55,6 +55,7 @@ from src.guardrails.engine import PortOpsGuardrails
 from src.infrastructure.secrets.manager import SecretManager
 from src.infrastructure.db.postgres_audit import audit_manager
 from src.models.champion_suite import get_champion_suite
+from src.serving.browser_security import unsafe_browser_request
 
 # Enterprise RAG instance initialized once in memory
 rag_engine = MaritimeRAGEngine()
@@ -254,7 +255,60 @@ async def apply_gateway_security_headers(request: Request, call_next):
     all HTTP incoming requests into the immutable WORM audit ledger.
     """
     start_t = time.time()
-    response = await call_next(request)
+    rotation_required = False
+    setup_required = False
+    principal = None
+    authentication_failure = None
+    from src.auth.route_policy import required_capability, retired, PUBLIC_DEMO_ROUTES
+    route_capability = required_capability(request.method, request.url.path)
+    rotation_paths = {"/api/v1/auth/me", "/api/v1/auth/login", "/api/v1/auth/logout",
+                      "/api/v1/auth/password/change", "/api/v1/auth/mfa/verify", "/api/v1/auth/mfa/setup", "/api/v1/auth/mfa/confirm", "/api/workspace/session"}
+    if request.url.path.startswith("/api/") and request.url.path not in rotation_paths:
+        if request.cookies.get("portops_session") or request.headers.get("authorization"):
+            from src.serving.v1_router import get_current_user_and_session
+            from starlette.concurrency import run_in_threadpool
+            try:
+                principal = await run_in_threadpool(get_current_user_and_session, request,
+                    request.headers.get("authorization"), request.cookies.get("portops_session"))
+                rotation_required = bool(principal.get("must_change_password"))
+                request.state.principal = principal
+                if principal.get("is_authenticated") and not request.url.path.startswith("/api/workspace/"):
+                    import sqlite3
+                    try:
+                        from src.serving.v1_router import DB_PATH
+                        with sqlite3.connect(DB_PATH) as setup_db:
+                            row = setup_db.execute("SELECT completed FROM workspace_setup WHERE id=1").fetchone()
+                        setup_required = not row or not row[0]
+                    except sqlite3.OperationalError:
+                        setup_required = True
+            except HTTPException as error:
+                authentication_failure = error
+    from src.serving.workspace_router import capabilities as workspace_capabilities
+    if principal and principal.get('is_authenticated'):
+        from src.serving.workspace_router import initialize as initialize_workspace
+        initialize_workspace()
+    if request.url.path in {'/api/v1/auth/first-run/create-admins', '/api/v1/auth/first-run/change-root-password'}:
+        response = JSONResponse(status_code=410, content={'detail': 'Flujo retirado por seguridad. Inicie sesión y complete el espacio de gestión.', 'code': 'bootstrap_flow_retired'})
+    elif unsafe_browser_request(request):
+        response = JSONResponse(status_code=403, content={"detail": "Solicitud rechazada: origen o protección CSRF inválidos.", "code": "browser_request_rejected"})
+    elif authentication_failure:
+        response=JSONResponse(status_code=authentication_failure.status_code,content={'detail':authentication_failure.detail,'code':'session_rejected'})
+    elif rotation_required:
+        response = JSONResponse(status_code=403, content={"detail": "Debe cambiar la contraseña temporal antes de continuar.", "code": "password_change_required"})
+    elif principal and (principal.get('mfa_setup_required') or principal.get('mfa_verification_required')):
+        response=JSONResponse(status_code=403,content={'detail':'Completa la verificación MFA requerida por tu rol.','code':'mfa_required'})
+    elif setup_required:
+        response = JSONResponse(status_code=403, content={"detail": "Complete y confirme la configuración inicial en el espacio de gestión.", "code": "setup_required"})
+    elif route_capability and not principal and request.url.path not in PUBLIC_DEMO_ROUTES and not (request.method=='GET' and route_capability in {'forecast.read','models.read','datasets.read'}):
+        response = JSONResponse(status_code=401, content={'detail':'Inicia sesión para acceder a esta función.','code':'authentication_required'})
+    elif route_capability and principal and principal.get('is_authenticated') and route_capability not in workspace_capabilities(principal):
+        response = JSONResponse(status_code=403, content={'detail':f'Esta operación requiere {route_capability}.','code':'capability_required'})
+    elif retired(request.method,request.url.path):
+        response = JSONResponse(status_code=410, content={'detail':'Utiliza Usuarios y permisos o Secretos en el espacio de gestión; estas operaciones requieren confirmación.','code':'administration_flow_retired'})
+    else:
+        response = await call_next(request)
+    if request.url.path == "/api/v1/auth/me" and response.status_code == 401:
+        response.delete_cookie(key="portops_session", path="/")
     latency_ms = (time.time() - start_t) * 1000.0
 
     for header, value in SECURITY_HEADERS.items():
@@ -306,15 +360,17 @@ async def apply_gateway_security_headers(request: Request, call_next):
                 status_code=response.status_code,
                 latency_ms=latency_ms
             )
-        except Exception as e:
-            logger.debug(f"Audit log recording note: {e}")
+        except Exception:
+            logger.warning("No se pudo registrar la auditoría de la solicitud HTTP.")
 
     return response
 
 # Mount core v1 and health routers
-from src.serving.v1_router import health_router, v1_router
+from src.serving.v1_router import health_router, v1_router, require_admin_user, require_platform_operator
 app.include_router(health_router)
 app.include_router(v1_router)
+from src.serving.workspace_router import router as workspace_router
+app.include_router(workspace_router)
 
 # Mount static files directory if it exists
 if STATIC_DIR.exists():
@@ -983,13 +1039,15 @@ def predict_batch_all_ports(horizon_months: int = Query(default=3, ge=1, le=6)):
 
 @app.post("/simulate", tags=["Monte Carlo Simulation & Risk"])
 @app.post("/api/simulation/run", tags=["Monte Carlo Simulation & Risk"])
-def run_monte_carlo_simulation(req: SimulationRequest):
+def run_monte_carlo_simulation(req: SimulationRequest, request: Request = None):
     """
     Ejecuta simulación estocástica multivariada de Monte Carlo coordinada vía cópulas gaussianas (Cholesky)
     y procesos de difusión con saltos de Merton (1976), calculando Value at Risk (VaR) y CVaR.
     Registra telemetría, cuotas vCPU/GPU y bloque inmutable WORM con encadenamiento SHA-256 en PostgreSQL/TimescaleDB.
     """
     start_time = time.time()
+    principal = getattr(getattr(request, 'state', None), 'principal', None) or {}
+    req.user = principal.get('username') or req.user or 'guest_viewer'
     if req.port not in VALID_PORTS:
         raise HTTPException(status_code=400, detail=f"Puerto inválido: '{req.port}'")
 
@@ -1100,8 +1158,10 @@ def run_monte_carlo_simulation(req: SimulationRequest):
             "audit_block": audit_record,
             "audit_ledger": audit_record
         }
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Simulation error: {e}")
+        logger.exception("Simulation error")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -1128,7 +1188,7 @@ def get_simulation_user_quotas():
     }
 
 
-@app.get("/api/v1/audit/worm/blocks", tags=["Security & Cryptographic Audit"])
+@app.get("/api/v1/audit/worm/blocks", dependencies=[Depends(require_admin_user)], tags=["Security & Cryptographic Audit"])
 def get_worm_audit_blocks(limit: int = Query(25, ge=1, le=100)):
     """Retorna los bloques más recientes del libro inmutable WORM con encadenamiento SHA-256."""
     blocks = audit_manager.get_recent_audit_blocks(limit=limit)
@@ -1495,7 +1555,7 @@ def get_system_configuration():
     }
 
 
-@app.post("/api/config", tags=["System Health & Infrastructure"])
+@app.post("/api/config", dependencies=[Depends(require_platform_operator)], tags=["System Health & Infrastructure"])
 def update_system_configuration(req: SystemConfigRequest):
     """Actualiza dinámicamente los parámetros del motor de inferencia y simulación en tiempo real."""
     if req.confidence_quantile_band:
@@ -1637,7 +1697,7 @@ class DatabaseConnectionTestRequest(BaseModel):
     custom_query: Optional[str] = Field(None, description="Consulta SQL o comando opcional")
 
 
-@app.post("/api/infrastructure/database/test-connection", tags=["System Health & Infrastructure"])
+@app.post("/api/infrastructure/database/test-connection", dependencies=[Depends(require_platform_operator)], tags=["System Health & Infrastructure"])
 def test_database_connection_endpoint(req: DatabaseConnectionTestRequest):
     """
     Ejecuta un diagnóstico real de latencia, pooling y query testing en vivo
@@ -1935,7 +1995,7 @@ def get_role_guardrail_policy(role: str):
     return policy
 
 
-@app.post("/api/v1/guardrails/policies", tags=["Methodology & Data Governance"])
+@app.post("/api/v1/guardrails/policies", dependencies=[Depends(require_admin_user)], tags=["Methodology & Data Governance"])
 def set_role_guardrail_policy(payload: dict):
     """Actualiza la política dinámica de cuotas de tokens, RPM y permisos de invocación MCP por rol."""
     role = payload.get("role", "admin_maritimo")
@@ -2414,7 +2474,7 @@ class CustomPresetCreateRequest(BaseModel):
     python_snippet: Optional[str] = None
 
 
-@app.post("/api/models/presets", tags=["Model Serving & Forecasting"])
+@app.post("/api/models/presets", dependencies=[Depends(require_platform_operator)], tags=["Model Serving & Forecasting"])
 def create_custom_training_preset(req: CustomPresetCreateRequest):
     """Permite a ingenieros MLOps registrar un nuevo preset de hiperparámetros personalizado en caliente."""
     from src.models.training_presets import TrainingPresetManager
@@ -2450,7 +2510,7 @@ def get_training_preset_detail(preset_id: str):
     }
 
 
-@app.post("/api/models/reproducible-train", tags=["Model Serving & Forecasting"])
+@app.post("/api/models/reproducible-train", dependencies=[Depends(require_platform_operator)], tags=["Model Serving & Forecasting"])
 def verify_deterministic_reproducible_training(req: ReproducibleTrainRequest):
     """
     Ejecuta el protocolo de verificación determinista de entrenamiento.
@@ -2515,14 +2575,14 @@ def simulate_anonymization_pipeline(req: AnonymizationSimulationRequest):
 # GOVERNMENT SECURITY, RBAC & ADMINISTRATION ENDPOINTS
 # ==============================================================================
 
-@app.get("/api/admin/governance", tags=["System Health & Infrastructure"])
+@app.get("/api/admin/governance", dependencies=[Depends(require_admin_user)], tags=["System Health & Infrastructure"])
 def get_government_security_overview():
     """Retorna la matriz de roles RBAC, control de certificados TLS 1.3, sesiones y anti-ransomware."""
     from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
     return PanamaSecurityGovernancePanel.get_security_overview()
 
 
-@app.post("/api/admin/users", tags=["System Health & Infrastructure"])
+@app.post("/api/admin/users", dependencies=[Depends(require_admin_user)], tags=["System Health & Infrastructure"])
 def create_government_user(req: CreateUserRequest):
     """Registra y configura un nuevo usuario gubernamental con capacidades RBAC."""
     from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
@@ -2536,7 +2596,7 @@ def create_government_user(req: CreateUserRequest):
     )
 
 
-@app.post("/api/admin/revoke-sessions", tags=["System Health & Infrastructure"])
+@app.post("/api/admin/revoke-sessions", dependencies=[Depends(require_admin_user)], tags=["System Health & Infrastructure"])
 def revoke_active_sessions(req: RevokeSessionsRequest):
     """Invalida inmediatamente todas las sesiones y tokens activos en el cluster."""
     from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
@@ -2550,7 +2610,7 @@ class VerifyPermissionRequest(BaseModel):
     permission: Optional[str] = None
 
 
-@app.post("/api/admin/verify-permission", tags=["System Health & Infrastructure"])
+@app.post("/api/admin/verify-permission", dependencies=[Depends(require_admin_user)], tags=["System Health & Infrastructure"])
 def verify_user_action_permission(req: VerifyPermissionRequest):
     """Verifica si un usuario o rol cuenta con autorización para ejecutar una acción."""
     from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
@@ -2575,7 +2635,7 @@ class DeleteUserRequest(BaseModel):
     username: str
 
 
-@app.post("/api/admin/delete-user", tags=["System Health & Infrastructure"])
+@app.post("/api/admin/delete-user", dependencies=[Depends(require_admin_user)], tags=["System Health & Infrastructure"])
 def delete_enterprise_user(req: DeleteUserRequest):
     """Elimina un usuario del clúster (protegiendo la cuenta root)."""
     from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
@@ -2628,21 +2688,21 @@ def get_framework_profile_endpoint():
     return PanamaSecurityGovernancePanel.get_framework_profile()
 
 
-@app.post("/api/v1/framework/profile", tags=["System Health & Infrastructure"])
+@app.post("/api/v1/framework/profile", dependencies=[Depends(require_platform_operator)], tags=["System Health & Infrastructure"])
 def set_framework_profile_endpoint(req: FrameworkProfileRequest):
     """Establece y persiste el perfil de uso del framework."""
     from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
     return PanamaSecurityGovernancePanel.set_framework_profile(profile_id=req.profile_id, updated_by=req.updated_by or "root")
 
 
-@app.get("/api/v1/infra/config", tags=["System Health & Infrastructure"])
+@app.get("/api/v1/infra/config", dependencies=[Depends(require_admin_user)], tags=["System Health & Infrastructure"])
 def get_infra_config_endpoint():
     """Retorna el estado y configuración de la infraestructura soberana."""
     from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
     return PanamaSecurityGovernancePanel.get_infra_configuration()
 
 
-@app.post("/api/v1/infra/config/db", tags=["System Health & Infrastructure"])
+@app.post("/api/v1/infra/config/db", dependencies=[Depends(require_admin_user)], tags=["System Health & Infrastructure"])
 def save_database_config_endpoint(req: DatabaseConfigRequest):
     """Configura y persiste las credenciales y parámetros de la base de datos."""
     from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
@@ -2656,7 +2716,7 @@ def save_database_config_endpoint(req: DatabaseConfigRequest):
     )
 
 
-@app.post("/api/v1/infra/config/minio", tags=["System Health & Infrastructure"])
+@app.post("/api/v1/infra/config/minio", dependencies=[Depends(require_admin_user)], tags=["System Health & Infrastructure"])
 def save_minio_config_endpoint(req: MinioConfigRequest):
     """Configura y persiste los parámetros del Lakehouse MinIO S3."""
     from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
@@ -2669,7 +2729,7 @@ def save_minio_config_endpoint(req: MinioConfigRequest):
     )
 
 
-@app.post("/api/v1/infra/config/wazuh", tags=["System Health & Infrastructure"])
+@app.post("/api/v1/infra/config/wazuh", dependencies=[Depends(require_admin_user)], tags=["System Health & Infrastructure"])
 def save_wazuh_config_endpoint(req: WazuhConfigRequest):
     """Configura y persiste los parámetros de telemetría y SIEM Wazuh."""
     from src.infrastructure.security.governance_panel import PanamaSecurityGovernancePanel
@@ -2686,7 +2746,7 @@ def save_wazuh_config_endpoint(req: WazuhConfigRequest):
 # MCP (MODEL CONTEXT PROTOCOL) SOULS & TOOL RUNNER ENDPOINTS
 # ==============================================================================
 
-@app.get("/api/mcp/souls", tags=["Methodology & Data Governance"])
+@app.get("/api/mcp/souls", dependencies=[Depends(require_admin_user)], tags=["Methodology & Data Governance"])
 def list_mcp_agent_souls():
     """Retorna la lista de personalidades (souls) configuradas para agentes de IA con MCP."""
     from src.mcp.soul_manager import MCPSoulManager
@@ -2697,7 +2757,7 @@ def list_mcp_agent_souls():
     }
 
 
-@app.post("/api/mcp/souls", tags=["Methodology & Data Governance"])
+@app.post("/api/mcp/souls", dependencies=[Depends(require_admin_user)], tags=["Methodology & Data Governance"])
 def create_or_update_mcp_soul(req: MCPSoulRequest):
     """Crea o edita la personalidad (soul), instrucciones de sistema y guardrails de un agente MCP."""
     from src.mcp.soul_manager import MCPSoulManager
@@ -2713,7 +2773,7 @@ def create_or_update_mcp_soul(req: MCPSoulRequest):
     )
 
 
-@app.post("/api/mcp/execute-tool", tags=["Methodology & Data Governance"])
+@app.post("/api/mcp/execute-tool", dependencies=[Depends(require_platform_operator)], tags=["Methodology & Data Governance"])
 def execute_mcp_tool_visual_runner(req: MCPExecuteToolRequest):
     """Ejecuta una herramienta MCP y retorna el payload estandarizado JSON-RPC 2.0."""
     from src.mcp.soul_manager import MCPSoulManager
@@ -2728,7 +2788,7 @@ class LangGraphRouteRequest(BaseModel):
     query: str = Field(..., description="Consulta del usuario en lenguaje natural para enrutamiento multi-agente")
 
 
-@app.post("/api/mcp/langgraph-route", tags=["Methodology & Data Governance"])
+@app.post("/api/mcp/langgraph-route", dependencies=[Depends(require_platform_operator)], tags=["Methodology & Data Governance"])
 def route_query_via_langgraph(req: LangGraphRouteRequest):
     """Enruta una consulta en lenguaje natural mediante el orquestador Multi-Agente LangGraph."""
     from src.mcp.soul_manager import LangGraphAgentRouter

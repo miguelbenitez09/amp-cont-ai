@@ -18,6 +18,7 @@
 ---
 
 ## 📑 Tabla de Contenidos General
+- 🚀 **Guía de Uso del Sistema y Tutorial Interactivo Inmersivo:** [`docs/GUIA_DE_USO_Y_TUTORIAL_INTERACTIVO.md`](docs/GUIA_DE_USO_Y_TUTORIAL_INTERACTIVO.md) *(Manual de operación, tour guiado paso a paso, atajos de teclado y casos de uso)*.
 - 📘 **Tratado Maestro de Pipeline y Extensibilidad:** [`MANUAL_TECNICO_Y_ARQUITECTURA_MLOPS.md`](MANUAL_TECNICO_Y_ARQUITECTURA_MLOPS.md) *(Manual detallado con glosario para todo público, fórmulas, paso a paso e ingesta de APIs externas)*.
 - 🗺️ **Mapa Técnico y Auditoría Integral de Arquitectura:** [`MAPA_TECNICO_Y_ARQUITECTURA_DETALLADA.md`](MAPA_TECNICO_Y_ARQUITECTURA_DETALLADA.md) *(Auditoría completa de archivos, funciones, interfaces, seguridad y trazabilidad)*.
 - 🧠 **Project Brain & LOOP Engineering:** [`project_brain/`](project_brain/) *(Fuente de Verdad, Catálogo de Modelos y Registro de Brechas)*.

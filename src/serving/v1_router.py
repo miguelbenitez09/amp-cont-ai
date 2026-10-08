@@ -46,6 +46,7 @@ from src.auth.authorization import AuthorizationEngine
 from src.auth.password_policy import PasswordPolicy
 from src.auth.audit import SecurityAuditLogger
 from src.auth.bootstrap import BootstrapManager
+from src.serving.browser_security import csrf_token_for_session
 from src.infrastructure.secrets.manager import SecretManager
 from src.guardrails.user_guardrails import UserGuardrailManager
 from src.data.scrapers.ana_hscode_scraper import PanamaTariffDatabase
@@ -82,6 +83,7 @@ def is_secure_session_request(request: Request) -> bool:
 
 def set_session_cookie(response: Response, request: Request, token: str, max_age: int = 12 * 3600) -> None:
     """Issue the session cookie with the strongest attributes supported by the current transport."""
+    response.headers["X-CSRF-Token"] = csrf_token_for_session(token)
     response.set_cookie(
         key="portops_session",
         value=token,
@@ -257,12 +259,21 @@ def get_current_user_and_session(
         permissions = AuthorizationEngine.get_user_permissions(conn, user_id)
 
         cursor = conn.cursor()
-        cursor.execute("SELECT username, email, is_root, must_change_password FROM users WHERE user_id = ?;", (user_id,))
+        cursor.execute("SELECT username, email, is_root, must_change_password, is_active, mfa_enabled FROM users WHERE user_id = ?;", (user_id,))
         u = cursor.fetchone()
-        if not u:
+        if not u or not u["is_active"]:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario no encontrado.")
 
+        from src.auth.session_policy import local_test_account, local_request, mfa_required
+        local_only=local_test_account(conn,user_id)
+        if local_only and not local_request(request):raise HTTPException(403,'Esta cuenta de prueba sólo admite acceso local.')
+        needs_mfa=mfa_required(conn,user_id)
         return {
+            "local_test_account":local_only,
+            "mfa_required":needs_mfa,
+            "mfa_setup_required":needs_mfa and not bool(u['mfa_enabled']),
+            "mfa_verification_required":needs_mfa and bool(u['mfa_enabled']) and not payload.get('mfa_verified',False),
+            "mfa_verified":bool(payload.get('mfa_verified',False)),
             "user_id": user_id,
             "username": u["username"],
             "email": u["email"] or f"{u['username']}@portops.local",
@@ -317,9 +328,9 @@ def get_optional_current_user(
             permissions = AuthorizationEngine.get_user_permissions(conn, user_id)
 
             cursor = conn.cursor()
-            cursor.execute("SELECT username, email, is_root, must_change_password FROM users WHERE user_id = ?;", (user_id,))
+            cursor.execute("SELECT username, email, is_root, must_change_password, is_active FROM users WHERE user_id = ?;", (user_id,))
             u = cursor.fetchone()
-            if not u:
+            if not u or not u["is_active"]:
                 return guest_ctx
 
             return {
@@ -338,37 +349,30 @@ def get_optional_current_user(
         return guest_ctx
 
 
-def require_admin_user(
-    current_user: Dict[str, Any] = Depends(get_current_user_and_session),
-) -> Dict[str, Any]:
-    """Require an authenticated administrative role for IAM mutations and inventory."""
-    if not current_user.get("is_authenticated"):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail="Autenticación requerida para administrar usuarios.")
-    roles = set(current_user.get("roles", []))
-    allowed_roles = {"root", "platform_admin", "security_admin"}
-    if not roles.intersection(allowed_roles) and not current_user.get("is_root"):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail="El rol actual no puede administrar usuarios.")
+def _require_route_capability(current_user, request, fallback):
+    if not current_user.get('is_authenticated'):
+        raise HTTPException(401, 'Autenticación requerida.')
+    if current_user.get('must_change_password'):
+        raise HTTPException(403, 'Cambie la contraseña temporal antes de continuar.')
+    from src.auth.route_policy import required_capability
+    from src.serving.workspace_router import capabilities, initialize
+    initialize()
+    required = required_capability(request.method, request.url.path) or fallback
+    if required not in capabilities(current_user):
+        raise HTTPException(403, f'Esta operación requiere {required}.')
     return current_user
 
 
-def require_platform_operator(
-    current_user: Dict[str, Any] = Depends(get_current_user_and_session),
-) -> Dict[str, Any]:
-    """Require an authenticated role allowed to mutate platform configuration."""
-    if not current_user.get("is_authenticated"):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail="Autenticación requerida para modificar la plataforma.")
-    roles = set(current_user.get("roles", []))
-    allowed_roles = {"root", "platform_admin", "security_admin", "mlops_engineer"}
-    if not roles.intersection(allowed_roles) and not current_user.get("is_root"):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail="El rol actual no puede modificar la configuración de la plataforma.")
-    return current_user
+def require_admin_user(request: Request, current_user: Dict[str, Any] = Depends(get_current_user_and_session)):
+    return _require_route_capability(current_user, request, 'iam.write')
+
+
+def require_platform_operator(request: Request, current_user: Dict[str, Any] = Depends(get_current_user_and_session)):
+    return _require_route_capability(current_user, request, 'config.write')
 
 
 def require_install_secret_or_admin(
+    request: Request,
     x_install_secret: Optional[str] = Header(None),
     current_user: Dict[str, Any] = Depends(get_current_user_and_session),
 ) -> Dict[str, Any]:
@@ -379,7 +383,9 @@ def require_install_secret_or_admin(
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail="Se requiere el secreto de instalación de un solo uso.")
         return current_user
-    return require_admin_user(current_user)
+    if not current_user.get('is_authenticated'):raise HTTPException(401,'Autenticación requerida.')
+    if not current_user.get('is_root'):raise HTTPException(403,'Sólo root puede inicializar la identidad del sistema.')
+    return _require_route_capability(current_user,request,'iam.write')
 
 
 # ==============================================================================
@@ -458,6 +464,9 @@ def login(req: LoginRequest, request: Request, response: Response):
             )
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cuenta de usuario desactivada.")
 
+        from src.auth.session_policy import local_test_account, local_request
+        if local_test_account(conn,user['user_id']) and not local_request(request):
+            raise HTTPException(403,'Esta cuenta de prueba sólo admite acceso local.')
         # Verify password
         if not AuthenticationEngine.verify_password(req.password, user["password_hash"], user["salt"]):
             cursor.execute("UPDATE users SET failed_attempts = failed_attempts + 1 WHERE user_id = ?;", (user["user_id"],))
@@ -473,7 +482,7 @@ def login(req: LoginRequest, request: Request, response: Response):
         cursor.execute("UPDATE users SET failed_attempts = 0, updated_at = ? WHERE user_id = ?;", (datetime.now(timezone.utc).isoformat(), user["user_id"]))
         conn.commit()
 
-        mfa_deferred = should_defer_mfa_for_bootstrap(conn, user)
+        mfa_deferred = False
 
         # If MFA enabled after bootstrap, return challenge. During first-run
         # setup or mandatory password rotation, grant the session so the root
@@ -541,10 +550,12 @@ def verify_mfa(req: MFAVerifyRequest, request: Request, response: Response):
 
     with get_db_conn() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT user_id, username, email, mfa_secret, is_root, must_change_password FROM users WHERE user_id = ?;", (user_id,))
+        cursor.execute("SELECT user_id, username, email, mfa_secret, is_root, must_change_password, is_active FROM users WHERE user_id = ?;", (user_id,))
         user = cursor.fetchone()
-        if not user or not user["mfa_secret"]:
+        if not user or not user["is_active"] or not user["mfa_secret"]:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Configuración MFA no encontrada.")
+        from src.auth.session_policy import local_test_account, local_request
+        if local_test_account(conn,user_id) and not local_request(request):raise HTTPException(403,'Esta cuenta de prueba sólo admite acceso local.')
 
         if not AuthenticationEngine.verify_totp(user["mfa_secret"], req.totp_code):
             SecurityAuditLogger.log_event(
@@ -561,7 +572,7 @@ def verify_mfa(req: MFAVerifyRequest, request: Request, response: Response):
             "user_id": user["user_id"],
             "username": user["username"],
             "roles": roles,
-            "is_root": bool(user["is_root"])
+            "is_root": bool(user["is_root"]), "mfa_verified":True
         }, expires_in_seconds=12 * 3600)
 
         SessionManager.create_session(conn, user["user_id"], token, ip_address=client_ip, user_agent=user_agent)
@@ -582,7 +593,7 @@ def verify_mfa(req: MFAVerifyRequest, request: Request, response: Response):
                 "username": user["username"],
                 "email": user["email"] or f"{user['username']}@portops.local",
                 "full_name": user["username"],
-                "is_root": bool(user["is_root"])
+                "is_root": bool(user["is_root"]), "mfa_verified":True
             },
             "roles": roles,
             "permissions": permissions,
@@ -602,7 +613,11 @@ def setup_mfa(current_user: Dict[str, Any] = Depends(get_current_user_and_sessio
 
     with get_db_conn() as conn:
         cursor = conn.cursor()
-        cursor.execute("UPDATE users SET mfa_secret = ?, mfa_enabled = 1 WHERE user_id = ?;", (secret, current_user["user_id"]))
+        if conn.execute('SELECT mfa_enabled FROM users WHERE user_id=?',(current_user['user_id'],)).fetchone()[0]:
+            raise HTTPException(409,'MFA ya está activado. No se reemplaza un factor activo desde este formulario.')
+        cursor.execute('CREATE TABLE IF NOT EXISTS mfa_enrollments(user_id TEXT PRIMARY KEY,secret TEXT NOT NULL,expires REAL NOT NULL)')
+        import time
+        cursor.execute('INSERT INTO mfa_enrollments VALUES(?,?,?) ON CONFLICT(user_id) DO UPDATE SET secret=excluded.secret,expires=excluded.expires',(current_user['user_id'],secret,time.time()+600))
         conn.commit()
 
     return {
@@ -610,6 +625,30 @@ def setup_mfa(current_user: Dict[str, Any] = Depends(get_current_user_and_sessio
         "provisioning_uri": otp_uri,
         "instructions": "Escanee o ingrese este secreto en su aplicación compatible con RFC 6238 (Google Authenticator, Aegis, 1Password, etc.)."
     }
+
+class MFAEnrollmentConfirm(BaseModel):
+    code: str = Field(pattern=r'^\d{6}$')
+
+@v1_router.post('/auth/mfa/confirm')
+def confirm_mfa_enrollment(req:MFAEnrollmentConfirm, request:Request, response:Response,
+                           current_user:Dict[str,Any]=Depends(get_current_user_and_session)):
+    if not current_user.get('is_authenticated'):raise HTTPException(401,'Inicia sesión.')
+    import time
+    with get_db_conn() as conn:
+        conn.execute('CREATE TABLE IF NOT EXISTS mfa_enrollments(user_id TEXT PRIMARY KEY,secret TEXT NOT NULL,expires REAL NOT NULL)')
+        row=conn.execute('SELECT secret,expires FROM mfa_enrollments WHERE user_id=?',(current_user['user_id'],)).fetchone()
+        if not row or row['expires']<time.time():raise HTTPException(409,'La inscripción expiró. Genera un nuevo secreto.')
+        if not AuthenticationEngine.verify_totp(row['secret'],req.code):raise HTTPException(401,'Código TOTP incorrecto.')
+        conn.execute('UPDATE users SET mfa_secret=?,mfa_enabled=1 WHERE user_id=?',(row['secret'],current_user['user_id']))
+        conn.execute('DELETE FROM mfa_enrollments WHERE user_id=?',(current_user['user_id'],))
+        SessionManager.revoke_all_user_sessions(conn,current_user['user_id'])
+        token=AuthenticationEngine.create_token({'user_id':current_user['user_id'],'username':current_user['username'],
+            'roles':current_user['roles'],'is_root':current_user['is_root'],'mfa_verified':True},expires_in_seconds=12*3600)
+        SessionManager.create_session(conn,current_user['user_id'],token,ip_address=request.client.host,user_agent=request.headers.get('user-agent','Unknown'))
+        SecurityAuditLogger.log_event(conn,actor_id=current_user['user_id'],action='MFA_ENROLLED',resource_type='auth',result='SUCCESS')
+        conn.commit()
+    set_session_cookie(response,request,token)
+    return {'saved':True,'mfa_enabled':True}
 
 
 @v1_router.post("/auth/password/change")
@@ -639,6 +678,8 @@ def change_password(
 
         if not u or not AuthenticationEngine.verify_password(req.old_password, u["password_hash"], u["salt"]):
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="La contraseña actual es incorrecta.")
+        if AuthenticationEngine.verify_password(req.new_password, u["password_hash"], u["salt"]):
+            raise HTTPException(status_code=400, detail="La nueva contraseña debe ser diferente de la actual.")
 
         is_complex, complexity_errors = PasswordPolicy.validate_complexity(req.new_password)
         if not is_complex:
@@ -646,16 +687,22 @@ def change_password(
 
         # Hash new password
         new_hash, new_salt = AuthenticationEngine.hash_password(req.new_password)
-        history_ok, history_error = PasswordPolicy.check_history(conn, user_id, new_hash)
+        columns = {row[1] for row in cursor.execute('PRAGMA table_info(password_history)')}
+        if 'salt' not in columns:
+            cursor.execute('ALTER TABLE password_history ADD COLUMN salt TEXT')
+        previous = cursor.execute('SELECT password_hash,salt FROM password_history WHERE user_id=? ORDER BY id DESC LIMIT ?',
+                                  (user_id, PasswordPolicy.HISTORY_LIMIT)).fetchall()
+        history_ok = not any(row['salt'] and AuthenticationEngine.verify_password(req.new_password, row['password_hash'], row['salt']) for row in previous)
+        history_error = 'La contraseña no puede reutilizarse dentro del historial protegido.'
         if not history_ok:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=history_error)
         now_str = datetime.now(timezone.utc).isoformat()
 
         # Insert history
         cursor.execute("""
-        INSERT INTO password_history (user_id, password_hash, created_at)
-        VALUES (?, ?, ?);
-        """, (user_id, new_hash, now_str))
+        INSERT INTO password_history (user_id, password_hash, salt, created_at)
+        VALUES (?, ?, ?, ?);
+        """, (user_id, u['password_hash'], u['salt'], now_str))
 
         # Update user
         cursor.execute("""
@@ -674,7 +721,7 @@ def change_password(
             "user_id": user_id,
             "username": u["username"],
             "roles": roles,
-            "is_root": bool(u["is_root"])
+            "is_root": bool(u["is_root"]), "mfa_verified":current_user.get("mfa_verified",False)
         }, expires_in_seconds=12 * 3600)
 
         client_ip = request.client.host if request.client else "127.0.0.1"
@@ -695,7 +742,7 @@ def change_password(
                 "username": u["username"],
                 "email": u["email"] or f"{u['username']}@portops.local",
                 "full_name": u["username"],
-                "is_root": bool(u["is_root"])
+                "is_root": bool(u["is_root"]), "mfa_verified":current_user.get("mfa_verified",False)
             },
             "roles": roles,
             "permissions": permissions,
@@ -715,149 +762,9 @@ def get_first_run_status():
 
 
 @v1_router.post("/auth/first-run/change-root-password", tags=["Identity & Access Management"])
-def first_run_change_root_password(
-    req: FirstRunPasswordChangeRequest,
-    request: Request,
-    response: Response
-):
-    """
-    Cambio obligatorio de contraseña de superadministrador 'root' en el primer inicio.
-    Verifica doble coincidencia y emite token de sesión activo.
-    """
-    try:
-        with get_db_conn() as conn:
-            result = BootstrapManager.change_root_password(
-                conn,
-                old_password=req.old_password,
-                new_password=req.new_password,
-                confirm_password=req.confirm_password
-            )
-            cursor = conn.cursor()
-            cursor.execute("SELECT user_id, username, email, is_root FROM users WHERE username = 'root' LIMIT 1;")
-            root_u = cursor.fetchone()
-            user_id = root_u["user_id"]
-            roles = AuthorizationEngine.get_user_roles(conn, user_id)
-            permissions = AuthorizationEngine.get_user_permissions(conn, user_id)
-            new_token = AuthenticationEngine.create_token({
-                "user_id": user_id,
-                "username": root_u["username"],
-                "roles": roles,
-                "is_root": True
-            }, expires_in_seconds=12 * 3600)
-            client_ip = request.client.host if request.client else "127.0.0.1"
-            user_agent = request.headers.get("user-agent", "Unknown")
-            SessionManager.create_session(conn, user_id, new_token, ip_address=client_ip, user_agent=user_agent)
-            conn.commit()
-            set_session_cookie(response, request, new_token)
-            return {
-                **result,
-                "session_token": new_token,
-                "must_change_password": False,
-                "user": {
-                    "user_id": user_id,
-                    "username": root_u["username"],
-                    "email": root_u["email"] or "root@portops.pa",
-                    "full_name": root_u["username"],
-                    "is_root": True
-                },
-                "roles": roles,
-                "permissions": permissions,
-                "author": "Desarrollado v1.0.0 Miguel Benítez"
-            }
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error en cambio de contraseña: {str(e)}")
-
-
 @v1_router.post("/auth/first-run/create-admins", tags=["Identity & Access Management"])
-def first_run_create_mandatory_admins(
-    req: CreateMandatoryAdminsRequest,
-    request: Request,
-    response: Response,
-    authorization: Optional[str] = Header(None),
-    portops_session: Optional[str] = Cookie(None)
-):
-    """
-    Creación obligatoria de los 3 usuarios administrativos del sistema:
-    - SysAdmin: Administración general de infraestructura (platform_admin)
-    - SecOpsAdmin: Monitoreo de ciberseguridad, red y aprobación de agentes (security_admin)
-    - MlopsAdmin: Gestión de ciclo de vida de modelos, pipelines e inferencia (mlops_engineer)
-    """
-    try:
-        with get_db_conn() as conn:
-            # Si la plataforma ya completó la configuración inicial, requerir rol root/admin
-            setup_status = BootstrapManager.check_admin_setup_status(conn)
-            if not setup_status.get("requires_first_run_setup", False):
-                token = None
-                if authorization and authorization.startswith("Bearer "):
-                    token = authorization.split("Bearer ", 1)[1].strip()
-                elif portops_session:
-                    token = portops_session.strip()
-                if not token:
-                    raise HTTPException(
-                        status_code=status.HTTP_401_UNAUTHORIZED,
-                        detail="La plataforma ya fue inicializada. Se requieren credenciales administrativas activas."
-                    )
-                is_valid, payload, _ = AuthenticationEngine.verify_token(token)
-                if not is_valid or not payload or not payload.get("is_root"):
-                    raise HTTPException(
-                        status_code=status.HTTP_403_FORBIDDEN,
-                        detail="Solo el superadministrador 'root' puede reconfigurar los administradores."
-                    )
-
-            result = BootstrapManager.create_mandatory_admins(
-                conn,
-                sysadmin_data=req.sysadmin.model_dump(),
-                secops_data=req.secops_admin.model_dump(),
-                mlops_data=req.mlops_admin.model_dump()
-            )
-            cursor = conn.cursor()
-            cursor.execute("SELECT user_id, username, email, is_root FROM users WHERE username = 'root' LIMIT 1;")
-            root_u = cursor.fetchone()
-            if not root_u:
-                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Usuario root no encontrado tras inicialización.")
-            user_id = root_u["user_id"]
-            roles = AuthorizationEngine.get_user_roles(conn, user_id)
-            permissions = AuthorizationEngine.get_user_permissions(conn, user_id)
-
-            active_token = AuthenticationEngine.create_token({
-                "user_id": user_id,
-                "username": root_u["username"],
-                "roles": roles,
-                "is_root": True
-            }, expires_in_seconds=12 * 3600)
-            client_ip = request.client.host if request.client else "127.0.0.1"
-            user_agent = request.headers.get("user-agent", "Unknown")
-            SessionManager.create_session(conn, user_id, active_token, ip_address=client_ip, user_agent=user_agent)
-            conn.commit()
-            set_session_cookie(response, request, active_token)
-
-            return {
-                **result,
-                "session_token": active_token,
-                "session": {
-                    "token": active_token,
-                    "user_id": user_id,
-                    "username": root_u["username"]
-                },
-                "user": {
-                    "user_id": user_id,
-                    "username": root_u["username"],
-                    "email": root_u["email"] or "root@portops.pa",
-                    "full_name": root_u["username"],
-                    "is_root": True
-                },
-                "roles": roles,
-                "permissions": permissions,
-                "author": "Desarrollado v1.0.0 Miguel Benítez"
-            }
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error creando administradores: {str(e)}")
+def retired_bootstrap_mutation():
+    raise HTTPException(status_code=410, detail="Flujo retirado por seguridad. Inicie sesión y complete /static/workspace/index.html.")
 
 
 @v1_router.get("/auth/me")
@@ -865,7 +772,8 @@ def get_me(current_user: Dict[str, Any] = Depends(get_current_user_and_session))
     """Retorna información del perfil autenticado, roles activos y catálogo de permisos concedidos."""
     return {
         "author": "Desarrollado v1.0.0 Miguel Benítez",
-        **current_user
+        **{key: value for key, value in current_user.items() if key != "token"},
+        "csrf_token": csrf_token_for_session(current_user["token"]) if current_user.get("token") else None,
     }
 
 
@@ -875,6 +783,10 @@ def simulate_role(req: SimulateRoleRequest, current_user: Dict[str, Any] = Depen
     Permite simular en vivo la perspectiva de un rol específico (RBAC sandbox)
     para auditar interfaces, restricciones de acceso y permisos computados.
     """
+    if not current_user.get('is_authenticated'):raise HTTPException(401,'Inicia sesión para inspeccionar roles.')
+    from src.serving.workspace_router import initialize
+    from src.auth.capability_permissions import permission_names
+    initialize()
     with get_db_conn() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT role_id, role_name, description, tier FROM roles WHERE role_id = ?;", (req.target_role.strip(),))
@@ -882,8 +794,9 @@ def simulate_role(req: SimulateRoleRequest, current_user: Dict[str, Any] = Depen
         if not role:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Rol '{req.target_role}' no existe.")
 
-        cursor.execute("SELECT permission_id FROM role_permissions WHERE role_id = ?;", (req.target_role.strip(),))
-        permissions = [r[0] for r in cursor.fetchall()]
+        caps_row=cursor.execute('SELECT capabilities FROM workspace_roles WHERE role_id=?',(req.target_role.strip(),)).fetchone()
+        caps=json.loads(caps_row[0]) if caps_row else []
+        permissions=permission_names(caps)
 
         # Audit event for role simulation
         SecurityAuditLogger.log_event(
@@ -904,6 +817,8 @@ def simulate_role(req: SimulateRoleRequest, current_user: Dict[str, Any] = Depen
                 "tier": role["tier"]
             },
             "permissions": sorted(permissions),
+            "capabilities":caps,
+            "simulation_only":True,
             "simulated_by": current_user.get("username", "anonymous")
         }
 
@@ -927,6 +842,9 @@ def logout(response: Response, current_user: Dict[str, Any] = Depends(get_curren
 @v1_router.get("/roles")
 def list_roles():
     """Catálogo oficial de los 12 roles base de la plataforma con descripción y permisos asociados."""
+    from src.serving.workspace_router import initialize
+    from src.auth.capability_permissions import permission_names
+    initialize()
     with get_db_conn() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT role_id, role_name, tier, is_assignable, requires_mfa, description FROM roles ORDER BY role_id;")
@@ -934,8 +852,9 @@ def list_roles():
 
         result = []
         for r in roles:
-            cursor.execute("SELECT permission_id FROM role_permissions WHERE role_id = ?;", (r["role_id"],))
-            perms = [p[0] for p in cursor.fetchall()]
+            caps_row=cursor.execute('SELECT capabilities FROM workspace_roles WHERE role_id=?',(r['role_id'],)).fetchone()
+            caps=json.loads(caps_row[0]) if caps_row else []
+            perms=permission_names(caps)
             result.append({
                 "role_id": r["role_id"],
                 "name": r["role_name"],
@@ -945,6 +864,7 @@ def list_roles():
                 "requires_mfa": bool(r["requires_mfa"]),
                 "permissions_count": len(perms),
                 "permissions": perms
+                ,"capabilities":caps,"requires_root_identity":r['role_id']=='root'
             })
 
         return {
