@@ -260,8 +260,8 @@
 
         <!-- Direct Actions Group -->
         <div class="nav-control-group" style="display: flex; align-items: center; gap: 0.4rem;">
-          <button type="button" class="badge btn-security-hud" id="btn-nav-chat" onclick="document.getElementById('cot-reasoning-section') ? document.getElementById('cot-reasoning-section').scrollIntoView({behavior: 'smooth'}) : document.querySelector('[data-tab=tab-cot-swarm]').click()" title="Abrir Asistente Conversacional MLOps & RAG Aduanas" style="background: rgba(0, 245, 212, 0.12); color: #00F5D4; border-color: rgba(0, 245, 212, 0.4); cursor: pointer;">
-            <span>💬</span> <span>Asistente IA</span>
+          <button type="button" class="badge btn-security-hud" id="btn-nav-chat" onclick="window.openAIAssistant && window.openAIAssistant()" title="Abrir Asistente Conversacional MLOps & RAG Aduanas" style="background: rgba(0, 245, 212, 0.12); color: #00F5D4; border-color: rgba(0, 245, 212, 0.4); cursor: pointer;">
+            <span style="font-size: 1.15rem;">💬</span> <span>Asistente IA</span>
           </button>
           <button class="badge btn-gear" id="btn-settings-gear" title="Abrir panel de configuración del modelo y variables" style="cursor: pointer;">
             <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -329,71 +329,62 @@
         
         <!-- Hero Section -->
         <div class="landing-hero card">
-          <div class="hero-badge-row">
-            <span class="badge hero-law-badge interactive-nav-badge" role="button" tabindex="0" data-nav-tab="tab-data-platform" title="Abrir fuentes y datos">
-              <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-              Ley 6 de 2002 de Transparencia de Panamá • Datos Abiertos AMP & INEC (2015–2026)
-            </span>
-            <span class="badge hero-author-badge interactive-nav-badge" role="button" tabindex="0" data-nav-tab="tab-methodology" title="Abrir metodología">
-              Desarrollado v1.0.0 Miguel Benítez (UTP)
-            </span>
-            <span class="badge hero-license-badge interactive-nav-badge" role="button" tabindex="0" data-nav-tab="tab-security-iam" title="Abrir gobernanza y licencia">
-              GNU GPL-3.0 Copyleft
-            </span>
-          </div>
-
           <div class="hero-title-container">
-            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
-              <span class="panama-flag-pill" style="font-size: 0.78rem; font-weight: 700; background: rgba(0, 229, 255, 0.12); color: #00E5FF; border: 1px solid rgba(0, 229, 255, 0.35); padding: 0.2rem 0.6rem; border-radius: 4px;">
-                🇵🇦 REPÚBLICA DE PANAMÁ • HUB LOGÍSTICO INTEROCEÁNICO
-              </span>
-              <span class="badge" style="background: rgba(0, 245, 212, 0.1); color: #00F5D4; font-size: 0.75rem; border: 1px solid rgba(0, 245, 212, 0.3);">
-                ⚡ MLOps Industrial & Modelos de Frontera
-              </span>
-            </div>
-            <h1 class="hero-title">Panamá PortOps-AI <span class="version-highlight">v1.0</span></h1>
+            <h1 class="hero-title" style="margin-top: 0;">Panamá PortOps-AI <span class="version-highlight">v1.0</span></h1>
             <p class="hero-subtitle">
               Plataforma industrial de analítica logística, orquestación de agentes de IA de frontera, benchmarking multi-algoritmo y simulación estocástica multivariada sobre el sistema portuario y de comercio exterior de Panamá.
             </p>
           </div>
 
-          <div class="hero-description-box" style="background: rgba(10, 18, 36, 0.85); border-left: 4px solid #00E5FF; padding: 1.25rem 1.4rem; border-radius: 8px; margin-top: 1rem;">
-            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.65rem;">
-              <span style="font-size: 1.3rem;">⚓</span>
-              <h3 style="color: #00E5FF; font-size: 1.05rem; margin: 0; font-weight: 700;">Misión del Proyecto, Motivación Ingenieril & Transferencia Tecnológica</h3>
+          <div class="hero-description-box" style="background: rgba(10, 18, 36, 0.85); border-left: 4px solid #00E5FF; padding: 1.35rem 1.5rem; border-radius: 10px; margin-top: 1.1rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+              <span style="font-size: 1.6rem;">⚓</span>
+              <h3 style="color: #00E5FF; font-size: 1.12rem; margin: 0; font-weight: 700;">Misión del Proyecto, Motivación Ingenieril & Transferencia Tecnológica</h3>
             </div>
-            <p style="margin: 0 0 0.65rem 0; line-height: 1.6; color: #E2E8F0; font-size: 0.88rem;">
+            <p style="margin: 0 0 0.75rem 0; line-height: 1.65; color: #E2E8F0; font-size: 0.92rem;">
               Este framework de código abierto fue concebido y desarrollado por el <strong>Ing. Miguel Antonio Benítez González (Universidad Tecnológica de Panamá - UTP)</strong> con el objetivo fundamental de poner capacidades avanzadas de Inteligencia Artificial de frontera, razonamiento agéntico y MLOps industrial al servicio de la matriz productiva de Panamá. Su propósito es democratizar la analítica logística y aduanera de alto impacto tanto para <strong>pequeñas y medianas empresas (PyMEs)</strong> como para <strong>grandes operadores logísticos, agencias navieras y terminales portuarias</strong>, eliminando barreras de costo y dependencia tecnológica extranjera.
             </p>
-            <p style="margin: 0 0 0.85rem 0; line-height: 1.6; color: #CBD5E1; font-size: 0.86rem;">
+            <p style="margin: 0 0 1rem 0; line-height: 1.65; color: #CBD5E1; font-size: 0.89rem;">
               La plataforma permite realizar consultas estratégicas del sector logístico, diagnósticos macroeconómicos de la balanza comercial de Panamá para identificar productos y subpartidas arancelarias viables de importación, pronósticos de TEU por cuantil ($P_{10}, P_{50}, P_{90}$) para las 6 terminales portuarias y simulación de shocks de combustible búnker o calado del Canal. Al mismo tiempo, este proyecto constituye una demostración pública y verificable de destreza profesional en diseño de sistemas complejos, rigor matemático y orquestación de modelos de lenguaje para empresas e instituciones globales.
             </p>
             
-            <!-- 4 Pillars Grid -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.75rem; padding-top: 0.85rem; border-top: 1px solid rgba(0, 229, 255, 0.2); margin-bottom: 0.85rem;">
-              <div style="background: rgba(0, 229, 255, 0.05); padding: 0.6rem 0.75rem; border-radius: 6px; border: 1px solid rgba(0, 229, 255, 0.15);">
-                <span style="color: #00E5FF; font-weight: 700; font-size: 0.84rem; display: block;">🏢 PyMEs & Grandes Empresas</span>
-                <p style="font-size: 0.76rem; color: #94A3B8; margin: 3px 0 0 0;">Liquidación arancelaria RAG, costos DUA/ITBMS y detección de oportunidades de importación comercial.</p>
+            <!-- 4 Interactive Pillars Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 0.85rem; padding-top: 1rem; border-top: 1px solid rgba(0, 229, 255, 0.2); margin-bottom: 1rem;">
+              <div class="overview-nav-card" onclick="document.querySelector('[data-tab=tab-customs-lakehouse]').click()" role="button" tabindex="0" title="Ir a RAG Aduanas y Lakehouse" style="background: rgba(0, 229, 255, 0.07); padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid rgba(0, 229, 255, 0.28); cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+                <span style="color: #00E5FF; font-weight: 700; font-size: 0.92rem; display: flex; align-items: center; gap: 0.45rem;">
+                  <span style="font-size: 1.35rem;">🏢</span> PyMEs & Grandes Empresas →
+                </span>
+                <p style="font-size: 0.82rem; color: #94A3B8; margin: 5px 0 0 0; line-height: 1.45;">Liquidación arancelaria RAG, costos DUA/ITBMS y detección de oportunidades de importación comercial.</p>
               </div>
-              <div style="background: rgba(0, 245, 212, 0.05); padding: 0.6rem 0.75rem; border-radius: 6px; border: 1px solid rgba(0, 245, 212, 0.15);">
-                <span style="color: #00F5D4; font-weight: 700; font-size: 0.84rem; display: block;">🚢 6 Terminales Portuarias</span>
-                <p style="font-size: 0.76rem; color: #94A3B8; margin: 3px 0 0 0;">Pronósticos de patio a 1-6 meses para Balboa, MIT, PSA, Cristóbal, CCT y Bocas con semáforo de vacíos.</p>
+              <div class="overview-nav-card" onclick="document.querySelector('[data-tab=tab-forecast]').click()" role="button" tabindex="0" title="Ir a Pronósticos en Vivo" style="background: rgba(0, 245, 212, 0.07); padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid rgba(0, 245, 212, 0.28); cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+                <span style="color: #00F5D4; font-weight: 700; font-size: 0.92rem; display: flex; align-items: center; gap: 0.45rem;">
+                  <span style="font-size: 1.35rem;">🚢</span> 6 Terminales Portuarias →
+                </span>
+                <p style="font-size: 0.82rem; color: #94A3B8; margin: 5px 0 0 0; line-height: 1.45;">Pronósticos de patio a 1-6 meses para Balboa, MIT, PSA, Cristóbal, CCT y Bocas con semáforo de vacíos.</p>
               </div>
-              <div style="background: rgba(56, 189, 248, 0.05); padding: 0.6rem 0.75rem; border-radius: 6px; border: 1px solid rgba(56, 189, 248, 0.15);">
-                <span style="color: #38BDF8; font-weight: 700; font-size: 0.84rem; display: block;">🔬 Investigación & MLOps</span>
-                <p style="font-size: 0.76rem; color: #94A3B8; margin: 3px 0 0 0;">Torneo determinista de 8 algoritmos, Zero Lookahead y diagnóstico formal de residuos Durbin-Watson.</p>
+              <div class="overview-nav-card" onclick="document.querySelector('[data-tab=tab-benchmark]').click()" role="button" tabindex="0" title="Ir a Comparativa Multi-Algoritmo" style="background: rgba(56, 189, 248, 0.07); padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.28); cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+                <span style="color: #38BDF8; font-weight: 700; font-size: 0.92rem; display: flex; align-items: center; gap: 0.45rem;">
+                  <span style="font-size: 1.35rem;">🔬</span> Investigación & MLOps →
+                </span>
+                <p style="font-size: 0.82rem; color: #94A3B8; margin: 5px 0 0 0; line-height: 1.45;">Torneo determinista de 8 algoritmos, Zero Lookahead y diagnóstico formal de residuos Durbin-Watson.</p>
               </div>
-              <div style="background: rgba(255, 209, 102, 0.05); padding: 0.6rem 0.75rem; border-radius: 6px; border: 1px solid rgba(255, 209, 102, 0.15);">
-                <span style="color: #FFD166; font-weight: 700; font-size: 0.84rem; display: block;">🏛️ Transparencia & WORM</span>
-                <p style="font-size: 0.76rem; color: #94A3B8; margin: 3px 0 0 0;">Cumplimiento Ley 6 de 2002, anonimización Ley 81 de 2019 e integridad criptográfica SHA-256.</p>
+              <div class="overview-nav-card" onclick="document.querySelector('[data-tab=tab-security-iam]').click()" role="button" tabindex="0" title="Ir a Seguridad, IAM y WORM" style="background: rgba(255, 209, 102, 0.07); padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid rgba(255, 209, 102, 0.28); cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);">
+                <span style="color: #FFD166; font-weight: 700; font-size: 0.92rem; display: flex; align-items: center; gap: 0.45rem;">
+                  <span style="font-size: 1.35rem;">🏛️</span> Transparencia & WORM →
+                </span>
+                <p style="font-size: 0.82rem; color: #94A3B8; margin: 5px 0 0 0; line-height: 1.45;">Cumplimiento Ley 6 de 2002, anonimización Ley 81 de 2019 e integridad criptográfica SHA-256.</p>
               </div>
             </div>
 
-            <p class="hero-stat-line" style="margin: 0; font-size: 0.8rem; color: #94A3B8;">
-              <span>⚓ <strong id="hero-coverage-value">2015–2026</strong> de cobertura temporal oficial</span> •
-              <span>📦 <strong>353 boletines estadísticos</strong> procesados con deduplicación bitemporal</span> • 
-              <span>🎯 <strong>Auditoría Criptográfica:</strong> Integridad WORM SHA-256 en tiempo real</span>
-            </p>
+            <!-- Quantitative Telemetry Legend -->
+            <div class="hero-stat-line" style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; font-size: 0.84rem; color: #CBD5E1; padding-top: 0.6rem; border-top: 1px dashed rgba(255,255,255,0.12);">
+              <span>💾 <strong style="color: #00F5D4;">8.87 GB</strong> de almacenamiento procesado</span> •
+              <span>📦 <strong style="color: #00E5FF;">19,072+ archivos oficiales</strong></span> •
+              <span>📊 <strong style="color: #38BDF8;">14.2M+ registros</strong> aduaneros y portuarios</span> •
+              <span>⏳ <strong style="color: #FFD166;">348 meses (1997–2026)</strong> de series oficiales</span> •
+              <span>🧩 <strong style="color: #E2E8F0;">48 features</strong> (Anonimización Ley 81)</span> •
+              <span>🔐 <strong style="color: #00F5D4;">WORM SHA-256</strong> en tiempo real</span>
+            </div>
           </div>
 
           <div class="hero-cta-group">
@@ -1258,7 +1249,7 @@
           <div class="form-group">
             <label for="algo-select">Motor de Inferencia:</label>
             <select id="algo-select">
-              <option value="ensemble" selected>⏳ Cargando modelos activos desde el Catálogo MLOps...</option>
+              <option value="ensemble" selected>🏆 🟢 LightGBM Quantile Ensemble [CHAMPION - SERVING]</option>
             </select>
           </div>
 
@@ -1629,20 +1620,22 @@
             </div>
           </div>
 
-          <div class="card" style="margin-top: 1rem;">
-            <div class="card-header">
-              <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M3 12h3M18 12h3M12 3v3M12 18v3"></path></svg>
-              <div>
-                <h2>Catálogo y Tratamiento Causal de Variables Confundidoras</h2>
-                <p class="card-subtitle">Identificación vía Grafo Acíclico Dirigido (DAG de Judea Pearl) y Criterio Backdoor</p>
-              </div>
-            </div>
-            <div id="confounders-list">
-              <!-- Populated via JS with expandable cards -->
-            </div>
-          </div>
         </div>
 
+      </div>
+
+      <!-- Centered Full-Width Causal Confounders Catalog -->
+      <div class="card" style="margin-top: 1.5rem; border-left: 4px solid #00F5D4;">
+        <div class="card-header">
+          <svg class="card-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M3 12h3M18 12h3M12 3v3M12 18v3"></path></svg>
+          <div>
+            <h2>Catálogo y Tratamiento Causal de Variables Confundidoras</h2>
+            <p class="card-subtitle">Identificación vía Grafo Acíclico Dirigido (DAG de Judea Pearl) y Criterio Backdoor</p>
+          </div>
+        </div>
+        <div id="confounders-list">
+          <!-- Populated via JS with expandable cards -->
+        </div>
       </div>
     </section>
 
@@ -1678,6 +1671,8 @@
             <label for="sim-scenario-select">Escenario de Estrés / Shock Operacional:</label>
             <select id="sim-scenario-select" class="form-select">
               <option value="baseline">🎲 Línea Base Estocástica (Cholesky L·Lᵀ)</option>
+              <option value="gumbel_extreme_shock">⚡ Teoría de Valores Extremos (EVT) & Gumbel Tail Stress</option>
+              <option value="berth_sts_queue">🏗️ Asignación de Grúas STS & Colas de Muelle (Agente Estocástico)</option>
               <option value="canal_drought">📉 Sequía Severa en Canal de Panamá (-35% trasbordo)</option>
               <option value="empty_imbalance">📦 Shock de Reposicionamiento de Vacíos (+45% desbalance)</option>
               <option value="bunker_crisis">⛽ Shock Petrolero y Alza de Bunkering VLSFO (+60%)</option>
@@ -5051,8 +5046,11 @@ python scripts/train_reproducible.py --seed 42 --preset balanced_champion</code>
     <div class="footer-container">
       <div class="footer-left">
         <div class="footer-brand">Panamá PortOps-AI <span class="version-tag">v1.0.0</span></div>
-        <p class="footer-author" data-i18n="nav.developed_by">developed by Miguel Benítez</p>
-        <p class="footer-license">Licencia: GNU General Public License v3.0 (GPL-3.0) con Atribución Obligatoria (Sección 7)</p>
+        <p class="footer-author" data-i18n="nav.developed_by">Desarrollado v1.0.0 Miguel Benítez / Ing. Miguel Antonio Benítez González (UTP)</p>
+        <p class="footer-license">Licencia: GNU General Public License v3.0 (GPL-3.0) Copyleft con Atribución Obligatoria (Sección 7)</p>
+        <p class="footer-compliance" style="font-size: 0.76rem; color: #94A3B8; margin-top: 5px; line-height: 1.45;">
+          🇵🇦 Marco Jurídico: Ley 6 de 2002 de Transparencia de Panamá • Anonimización y Privacidad: Ley 81 de 2019 • Datos Abiertos Oficiales: AMP, INEC, ACP, ANA (1997–2026).
+        </p>
       </div>
 
       <div class="footer-right">

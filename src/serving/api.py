@@ -45,6 +45,7 @@ import joblib
 from src.utils.logger import logger
 from src.models.registry import ModelRegistryManager
 from src.simulation.stress_tester import PortStressTester
+from src.simulation.advanced_simulations import GumbelStressTester, BerthCraneQueueSimulator
 from src.infrastructure.db.factory import DatabaseFactory
 from src.mcp.tools import get_available_tools_schema
 from src.rag.engine import MaritimeRAGEngine
@@ -248,8 +249,14 @@ SECURITY_HEADERS = {
 
 @app.middleware("http")
 async def apply_gateway_security_headers(request: Request, call_next):
-    """Apply browser security policy at the FastAPI gateway for every UI/API response."""
+    """
+    Apply browser security policy at the FastAPI gateway and certify
+    all HTTP incoming requests into the immutable WORM audit ledger.
+    """
+    start_t = time.time()
     response = await call_next(request)
+    latency_ms = (time.time() - start_t) * 1000.0
+
     for header, value in SECURITY_HEADERS.items():
         response.headers.setdefault(header, value)
 
@@ -260,6 +267,28 @@ async def apply_gateway_security_headers(request: Request, call_next):
     if request.url.path == "/app" or request.url.path.startswith("/api/"):
         response.headers.setdefault("Cache-Control", "no-store")
         response.headers.setdefault("Pragma", "no-cache")
+
+    # Universal WORM Audit Certification for requests (skipping static asset noise)
+    req_path = request.url.path
+    if not (req_path.startswith("/static/") or req_path.endswith((".png", ".jpg", ".svg", ".ico", ".css", ".js"))):
+        try:
+            client_ip = request.client.host if request.client else "127.0.0.1"
+            auth_role = request.headers.get("x-auth-role", "invitado")
+            user_type = "authenticated_user" if auth_role != "invitado" else "guest_user"
+            audit_manager.record_request_audit(
+                ip_origin=client_ip,
+                path=req_path,
+                method=request.method,
+                query_params=str(request.query_params),
+                user_agent=request.headers.get("user-agent", ""),
+                user_type=user_type,
+                actor_role=auth_role,
+                status_code=response.status_code,
+                latency_ms=latency_ms
+            )
+        except Exception as e:
+            logger.debug(f"Audit log recording note: {e}")
+
     return response
 
 # Mount core v1 and health routers
@@ -944,22 +973,62 @@ def run_monte_carlo_simulation(req: SimulationRequest):
     if req.port not in VALID_PORTS:
         raise HTTPException(status_code=400, detail=f"Puerto inválido: '{req.port}'")
 
-    tester = ml_artifacts.get("stress_tester")
-    if tester is None:
-        raise HTTPException(status_code=503, detail="Motor estocástico de simulación no inicializado.")
-
     sc_name = req.scenario or req.scenario_type or "baseline"
     n_trajectories = req.n_paths or req.num_paths or 1000
 
     try:
-        sim_results = tester.run_stress_test(
-            port_name=req.port,
-            horizon=req.horizon_months,
-            num_paths=n_trajectories,
-            scenarios=[sc_name]
-        )
-        latency = round((time.time() - start_time) * 1000, 2)
-        sc_data = sim_results["scenarios"].get(sc_name, {})
+        if sc_name in ["gumbel_extreme_shock", "gumbel_evt", "extreme_value"]:
+            gumbel_tester = GumbelStressTester()
+            adv_res = gumbel_tester.run_gumbel_stress(
+                port_name=req.port,
+                horizon_months=req.horizon_months,
+                num_paths=n_trajectories
+            )
+            latency = adv_res["latency_ms"]
+            sc_data = {
+                "expected_volume": adv_res["expected_volume"],
+                "volatility_std": adv_res["volatility_std"],
+                "var_95_volume": adv_res["var_95_volume"],
+                "var_99_volume": adv_res["var_99_volume"],
+                "cvar_95_expected_shortfall": adv_res["cvar_95_expected_shortfall"],
+                "prob_severe_drop_25pct": adv_res["prob_severe_drop_25pct"],
+                "trajectory_profile": adv_res["trajectory_profile"],
+                "endpoint_sample": adv_res["endpoint_sample"]
+            }
+        elif sc_name in ["berth_sts_queue", "berth_crane_queue", "queue_agent"]:
+            berth_sim = BerthCraneQueueSimulator()
+            adv_res = berth_sim.run_berth_crane_simulation(
+                port_name=req.port,
+                horizon_months=req.horizon_months,
+                num_paths=n_trajectories
+            )
+            latency = adv_res["latency_ms"]
+            sc_data = {
+                "expected_volume": adv_res["expected_volume"],
+                "volatility_std": adv_res["volatility_std"],
+                "var_95_volume": adv_res["var_95_volume"],
+                "var_99_volume": adv_res["var_99_volume"],
+                "cvar_95_expected_shortfall": adv_res["cvar_95_expected_shortfall"],
+                "prob_severe_drop_25pct": adv_res["prob_severe_drop_25pct"],
+                "trajectory_profile": adv_res["trajectory_profile"],
+                "endpoint_sample": adv_res["endpoint_sample"],
+                "berths_allocated": adv_res.get("berths_allocated"),
+                "sts_cranes_operational": adv_res.get("sts_cranes_operational"),
+                "mean_berth_occupancy_pct": adv_res.get("mean_berth_occupancy_pct"),
+                "mean_vessel_turnaround_hrs": adv_res.get("mean_vessel_turnaround_hrs")
+            }
+        else:
+            tester = ml_artifacts.get("stress_tester")
+            if tester is None:
+                raise HTTPException(status_code=503, detail="Motor estocástico de simulación no inicializado.")
+            sim_results = tester.run_stress_test(
+                port_name=req.port,
+                horizon=req.horizon_months,
+                num_paths=n_trajectories,
+                scenarios=[sc_name]
+            )
+            latency = round((time.time() - start_time) * 1000, 2)
+            sc_data = sim_results["scenarios"].get(sc_name, {})
 
         # Record simulation execution to Enterprise PostgreSQL / TimescaleDB WORM Ledger
         audit_record = audit_manager.log_simulation_run(
@@ -1036,6 +1105,20 @@ def get_simulation_user_quotas():
         "status": "success",
         "author": "Desarrollado v1.0.0 Miguel Benítez",
         "quotas": quotas
+    }
+
+
+@app.get("/api/v1/audit/worm/blocks", tags=["Security & Cryptographic Audit"])
+def get_worm_audit_blocks(limit: int = Query(25, ge=1, le=100)):
+    """Retorna los bloques más recientes del libro inmutable WORM con encadenamiento SHA-256."""
+    blocks = audit_manager.get_recent_audit_blocks(limit=limit)
+    chain_status = audit_manager.verify_worm_chain()
+    return {
+        "status": "success",
+        "author": "Desarrollado v1.0.0 Miguel Benítez",
+        "total_blocks": len(blocks),
+        "chain_integrity": chain_status,
+        "blocks": blocks
     }
 
 

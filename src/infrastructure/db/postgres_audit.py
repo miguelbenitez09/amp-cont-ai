@@ -331,6 +331,73 @@ class PostgresAuditManager:
                 "integrity_status": "100% Cryptographically Sound (WORM Certified)"
             }
 
+    def record_request_audit(
+        self,
+        ip_origin: str,
+        path: str,
+        method: str,
+        query_params: str = "",
+        user_agent: str = "",
+        user_type: str = "guest_user",
+        actor_role: str = "invitado",
+        status_code: int = 200,
+        latency_ms: float = 0.0
+    ) -> Dict[str, Any]:
+        """
+        Certifies an incoming HTTP request in the immutable WORM ledger
+        with SHA-256 block hash chaining and cryptographic tamper-evidence.
+        """
+        now_str = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+        payload = {
+            "method": method,
+            "path": path,
+            "query": query_params,
+            "ip": ip_origin,
+            "user_type": user_type,
+            "user_agent": user_agent[:128] if user_agent else "",
+            "status_code": status_code,
+            "latency_ms": round(latency_ms, 2)
+        }
+        payload_str = json.dumps(payload, sort_keys=True)
+
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT block_id, block_hash FROM audit_ledger_worm ORDER BY block_id DESC LIMIT 1")
+            prev_row = cursor.fetchone()
+            prev_hash = prev_row["block_hash"] if prev_row else "0" * 64
+            next_block_id = (prev_row["block_id"] + 1) if prev_row else 1
+
+            new_hash = hashlib.sha256(f"{prev_hash}|{user_type}|{payload_str}|{now_str}".encode()).hexdigest()
+
+            cursor.execute("""
+            INSERT INTO audit_ledger_worm (
+                prev_block_hash, block_hash, event_type, actor_username, actor_role, payload_json, ip_origin, created_at
+            ) VALUES (?, ?, 'HTTP_REQUEST_AUDIT', ?, ?, ?, ?, ?);
+            """, (prev_hash, new_hash, user_type, actor_role, payload_str, ip_origin, now_str))
+            conn.commit()
+
+        return {
+            "block_id": next_block_id,
+            "block_hash": f"0x{new_hash[:16]}...{new_hash[-8:]}",
+            "full_hash": new_hash,
+            "prev_block_hash": prev_hash,
+            "timestamp": now_str,
+            "status": "worm_certified"
+        }
+
+    def get_recent_audit_blocks(self, limit: int = 25) -> List[Dict[str, Any]]:
+        """Returns the most recent WORM ledger blocks."""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+            SELECT block_id, prev_block_hash, block_hash, event_type,
+                   actor_username, actor_role, payload_json, ip_origin, created_at
+            FROM audit_ledger_worm
+            ORDER BY block_id DESC
+            LIMIT ?;
+            """, (limit,))
+            return [dict(r) for r in cursor.fetchall()]
+
 
 # Singleton Instance
 audit_manager = PostgresAuditManager()

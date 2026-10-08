@@ -7653,6 +7653,20 @@ executePortForecast();`;
     });
   }
 
+  window.openAIAssistant = function() {
+    const cotTabBtn = document.querySelector('[data-tab=tab-cot-swarm]');
+    if (cotTabBtn) {
+      cotTabBtn.click();
+      setTimeout(() => {
+        const promptInput = document.getElementById('cot-prompt-input');
+        if (promptInput) {
+          promptInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          promptInput.focus();
+        }
+      }, 150);
+    }
+  };
+
   // --- Bootstrapping ---
   initThemeSwitcher();
   window.initPasswordFieldsEnhancements();
