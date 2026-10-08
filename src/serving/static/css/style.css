@@ -6318,4 +6318,342 @@ select option:checked, select option:hover {
   font-weight: 900;
 }
 
+/* ==============================================================================
+   PANAMÁ PORTOPS-AI v1.0.0 - MODERN UI SYSTEM & ENHANCED INTERACTIVITY
+   Autor: Desarrollado v1.0.0 Miguel Benítez / Ing. Miguel Antonio Benítez González (UTP)
+   Licencia: GNU General Public License v3.0 (GPL-3.0)
+   ============================================================================== */
+
+/* 1. Universal Pointer Hand Cursor on All Dropdowns, Selects & Interactive Elements */
+select,
+.form-select,
+.theme-select,
+.perspective-select,
+select option,
+button,
+.tab-btn,
+.settings-tab-btn,
+.auth-tab-btn,
+.badge[onclick],
+.badge[role="button"],
+.interactive-nav-badge,
+.preset-card,
+.rbac-role-card,
+.fr-profile-card,
+.table tbody tr,
+.data-table tbody tr,
+.rbac-table tbody tr,
+.privacy-diff-table tbody tr,
+.api-spec-table tbody tr,
+.preview-table tbody tr,
+.customs-tariff-row,
+.btn-toggle-eye,
+.modal-close,
+.revocation-btn {
+  cursor: pointer !important;
+}
+
+/* 2. Sleek Custom Dropdown Menu Design (Desktop) with Touch-Friendly Mobile Fallback */
+select,
+.form-select,
+.theme-select,
+.perspective-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: rgba(11, 21, 40, 0.9) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2300E5FF' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 14px 14px !important;
+  padding-right: 2.2rem !important;
+  border: 1px solid rgba(0, 229, 255, 0.35) !important;
+  border-radius: 8px !important;
+  color: #F8FAFC !important;
+  font-family: var(--font-stack);
+  font-size: 0.85rem !important;
+  font-weight: 500;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+select:hover,
+.form-select:hover,
+.theme-select:hover,
+.perspective-select:hover {
+  border-color: #00E5FF !important;
+  box-shadow: 0 0 14px rgba(0, 229, 255, 0.28), 0 4px 12px rgba(0, 0, 0, 0.35) !important;
+  transform: translateY(-1px);
+}
+
+select:focus,
+.form-select:focus,
+.theme-select:focus,
+.perspective-select:focus {
+  outline: none !important;
+  border-color: #00E5FF !important;
+  box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.35), 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+select option {
+  background: #0B1528 !important;
+  color: #F8FAFC !important;
+  padding: 0.6rem 0.8rem;
+  font-weight: 500;
+}
+
+select option:checked {
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.3), rgba(2, 132, 199, 0.4)) !important;
+  color: #00E5FF !important;
+  font-weight: 700;
+}
+
+/* Touchscreens and Mobile: Natural classic touch target */
+@media (hover: none) and (pointer: coarse), (max-width: 768px) {
+  select,
+  .form-select,
+  .theme-select,
+  .perspective-select {
+    min-height: 44px;
+    font-size: 0.95rem !important;
+    padding-right: 2rem !important;
+  }
+}
+
+/* 3. Card Hangover Effects & Micro-Interactions */
+.card,
+.kpi-card,
+.preset-card,
+.editorial-card,
+.method-card,
+.rbac-role-card,
+.fr-profile-card,
+.fr-form-panel {
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.24s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.24s ease !important;
+  position: relative;
+}
+
+.card:hover,
+.kpi-card:hover,
+.editorial-card:hover,
+.method-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0, 229, 255, 0.4) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45), 0 0 20px rgba(0, 229, 255, 0.12) !important;
+}
+
+.card .card-hover-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: #38BDF8;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.card:hover .card-hover-hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 4. Interactive Table Rows & Selection Styling */
+table tbody tr,
+.data-table tbody tr,
+.rbac-table tbody tr,
+.api-spec-table tbody tr {
+  transition: background-color 0.18s ease, transform 0.15s ease, border-color 0.18s ease !important;
+}
+
+table tbody tr:hover,
+.data-table tbody tr:hover,
+.rbac-table tbody tr:hover,
+.api-spec-table tbody tr:hover {
+  background-color: rgba(0, 229, 255, 0.08) !important;
+  color: #FFFFFF !important;
+}
+
+table tbody tr.row-selected,
+.data-table tbody tr.row-selected,
+.rbac-table tbody tr.row-selected {
+  background: linear-gradient(90deg, rgba(0, 229, 255, 0.18), rgba(2, 132, 199, 0.08)) !important;
+  border-left: 3px solid #00E5FF !important;
+  box-shadow: inset 0 0 12px rgba(0, 229, 255, 0.12);
+}
+
+/* Floating Drawer / Popover for Selected Row Details */
+#table-row-detail-modal {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  max-width: 440px;
+  width: calc(100vw - 3rem);
+  max-height: 80vh;
+  background: rgba(11, 21, 40, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 229, 255, 0.5);
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 25px rgba(0, 229, 255, 0.2);
+  z-index: 1050;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: slideUpDrawer 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpDrawer {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.table-row-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 1.2rem;
+  background: rgba(15, 23, 42, 0.85);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.25);
+}
+
+.table-row-detail-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #00E5FF;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.table-row-detail-body {
+  padding: 1rem 1.2rem;
+  overflow-y: auto;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #CBD5E1;
+}
+
+.table-row-kv-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+.table-row-kv-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0.6rem;
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.table-row-kv-key {
+  font-size: 0.72rem;
+  color: #94A3B8;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table-row-kv-val {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: #F8FAFC;
+  font-weight: 600;
+  max-width: 60%;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.table-row-detail-footer {
+  padding: 0.75rem 1.2rem;
+  background: rgba(15, 23, 42, 0.75);
+  border-top: 1px solid rgba(148, 163, 184, 0.15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* 5. Skeleton Loaders / Shimmers for Smooth Loading States */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-box,
+.skeleton-card,
+.skeleton-line,
+.skeleton-circle {
+  background: linear-gradient(90deg, rgba(15, 23, 42, 0.75) 25%, rgba(56, 189, 248, 0.18) 50%, rgba(15, 23, 42, 0.75) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s infinite ease-in-out;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-card {
+  height: 180px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.skeleton-line {
+  height: 14px;
+  margin-bottom: 0.5rem;
+  border-radius: 4px;
+}
+
+.skeleton-line.short {
+  width: 45%;
+}
+
+.skeleton-line.medium {
+  width: 70%;
+}
+
+.skeleton-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+/* 6. Strict Role Guardrails & Unauthenticated View Protection */
+body.is-guest .auth-requires-login,
+body:not(.is-authenticated) .auth-requires-login {
+  display: none !important;
+}
+
+body.is-guest .settings-tab-btn.admin-requires-auth,
+body:not(.is-authenticated) .settings-tab-btn.admin-requires-auth {
+  display: none !important;
+}
+
+.guest-action-lock {
+  pointer-events: none !important;
+  opacity: 0.45 !important;
+  filter: grayscale(0.8) !important;
+  cursor: not-allowed !important;
+}
+
 

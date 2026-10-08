@@ -27,6 +27,10 @@
   }
 
   window.switchAuthTab = function (tabId) {
+    const isAuth = !!(window.activeSession && window.activeSession.token && window.activeSession.user);
+    if (!isAuth && tabId !== "atab-login") {
+      tabId = "atab-login";
+    }
     document.querySelectorAll(".auth-tab-btn").forEach(btn => {
       btn.classList.toggle("active", btn.getAttribute("data-atab") === tabId);
     });
@@ -44,7 +48,12 @@
       modal.style.opacity = "1";
       modal.style.pointerEvents = "auto";
     }
+    const isAuth = !!(window.activeSession && window.activeSession.token && window.activeSession.user);
+    if (!isAuth) {
+      initialTab = "atab-login";
+    }
     window.switchAuthTab(initialTab);
+    window.syncSessionUI();
   };
 
   window.closeAuthModal = function () {
@@ -72,18 +81,82 @@
     }
   };
 
-  window.syncSessionUI = window.syncSessionUI || function () {
+  window.syncSessionUI = function () {
     const isAuth = !!(window.activeSession && window.activeSession.token && window.activeSession.user);
     const user = isAuth ? window.activeSession.user : null;
     const role = isAuth ? (window.activeSession.roles[0] || "root") : "Invitado";
+
+    if (document.body) {
+      document.body.classList.toggle("is-authenticated", isAuth);
+      document.body.classList.toggle("is-guest", !isAuth);
+    }
+
     const navUserLabel = document.getElementById("nav-user-label");
-    if (navUserLabel) navUserLabel.textContent = isAuth ? `${user.username} (Salir)` : "Iniciar Sesión | Login In";
+    if (navUserLabel) navUserLabel.textContent = isAuth ? `👤 ${user.username} (Salir)` : "Iniciar Sesión | Login In";
+    
     const hudActiveRole = document.getElementById("hud-active-role");
-    if (hudActiveRole) hudActiveRole.textContent = isAuth ? `Rol: ${role}` : "Modo: Invitado";
+    if (hudActiveRole) {
+      hudActiveRole.textContent = isAuth ? `Rol: ${role}` : "Modo: Invitado";
+      hudActiveRole.style.background = isAuth ? "rgba(16, 185, 129, 0.2)" : "rgba(148, 163, 184, 0.15)";
+      hudActiveRole.style.color = isAuth ? "#10B981" : "#94A3B8";
+      hudActiveRole.style.borderColor = isAuth ? "rgba(16, 185, 129, 0.4)" : "rgba(148, 163, 184, 0.3)";
+    }
+    
+    const hudCapBadge = document.getElementById("hud-cap-badge");
+    if (hudCapBadge) {
+      const permCount = Array.isArray(window.activeSession?.permissions) ? window.activeSession.permissions.length : (isAuth ? 31 : 2);
+      hudCapBadge.textContent = `Cap: ${isAuth ? (role === 'root' || role === 'superadmin' ? '31/31' : `${permCount}/31`) : '2/31'}`;
+    }
+
     const iamUserKpi = document.getElementById("iam-user-kpi");
     if (iamUserKpi) iamUserKpi.textContent = isAuth ? user.username : "Invitado";
     const iamRoleKpi = document.getElementById("iam-role-kpi");
     if (iamRoleKpi) iamRoleKpi.textContent = isAuth ? role : "readonly_viewer";
+
+    // IAM Modal Tab Controls (Only Login tab visible when guest)
+    document.querySelectorAll(".auth-requires-login").forEach(el => {
+      el.style.display = isAuth ? "inline-flex" : "none";
+    });
+
+    const authSessionProfileView = document.getElementById("auth-session-profile-view");
+    const authLoginBox = document.getElementById("auth-login-box-wrapper");
+    if (authSessionProfileView) authSessionProfileView.style.display = isAuth ? "block" : "none";
+    if (authLoginBox) authLoginBox.style.display = isAuth ? "none" : "block";
+
+    const authProfileUser = document.getElementById("auth-profile-username");
+    if (authProfileUser && user) authProfileUser.textContent = user.username;
+    const authProfileRole = document.getElementById("auth-profile-role-badge");
+    if (authProfileRole) authProfileRole.textContent = `ROL: ${role}`;
+
+    // Settings Modal Tabs (Deploy, Secrets, Guardrails, RBAC, MCP, APIs hidden when guest)
+    document.querySelectorAll(".settings-tab-btn.admin-requires-auth").forEach(el => {
+      el.style.display = isAuth ? "inline-flex" : "none";
+    });
+
+    const settingsGuestBanner = document.getElementById("settings-guest-alert-banner");
+    if (settingsGuestBanner) settingsGuestBanner.style.display = isAuth ? "none" : "flex";
+
+    const perspectiveSelect = document.getElementById("settings-role-perspective-select");
+    const perspectiveBadge = document.getElementById("perspective-badge");
+    if (perspectiveSelect) {
+      if (!isAuth) {
+        perspectiveSelect.value = "readonly_viewer";
+        if (perspectiveBadge) perspectiveBadge.textContent = "Vista: Visualizador Cívico (Modo Consulta)";
+      }
+    }
+
+    // Safety fallback: if guest is on unauthorized tab, move to default
+    if (!isAuth) {
+      const activeSettingsTab = document.querySelector(".settings-tab-btn.active");
+      if (activeSettingsTab && activeSettingsTab.classList.contains("admin-requires-auth")) {
+        const configBtn = document.querySelector('[data-settings-tab="stab-config"]');
+        if (configBtn) configBtn.click();
+      }
+      const activeAuthTab = document.querySelector(".auth-tab-btn.active");
+      if (activeAuthTab && activeAuthTab.classList.contains("auth-requires-login")) {
+        window.switchAuthTab("atab-login");
+      }
+    }
   };
 
   window.activateAuthenticatedSession = async function (data, statusElementId, options = {}) {

@@ -22,9 +22,10 @@ client = TestClient(app)
 
 def admin_headers():
     for password in [
-        os.getenv("PORTOPS_ROOT_PASSWORD"),
-        "PortOpsSovereign2026!#",
         BootstrapManager.DEFAULT_ROOT_PASSWORD,
+        os.getenv("PORTOPS_ROOT_PASSWORD"),
+        "PanamaRootSecure_2026!",
+        "PortOpsSovereign2026!#",
     ]:
         if not password:
             continue

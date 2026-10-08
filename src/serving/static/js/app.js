@@ -69,14 +69,94 @@ document.addEventListener("DOMContentLoaded", () => {
   if (iamModal && new URLSearchParams(window.location.search).get("auth") === "1") {
     iamModal.classList.add("open");
   }
-  const projectLogo = document.querySelector(".nav-svg-icon");
-  if (projectLogo) {
-    const logo = document.createElement("img");
-    logo.src = "/static/framework/logo.svg";
-    logo.alt = "Símbolo AMP-CONT-AI";
-    logo.className = "nav-svg-icon project-logo";
-    projectLogo.replaceWith(logo);
+  // Sync guest/auth UI immediately on page load
+  if (typeof window.syncSessionUI === "function") {
+    window.syncSessionUI();
   }
+
+  // Universal Table Row Selection & Interactive Detail Drawer
+  document.addEventListener("click", (e) => {
+    const row = e.target.closest("table tbody tr");
+    if (!row) return;
+    
+    // Ignore clicks on buttons, inputs or links inside rows
+    if (e.target.closest("button, a, input, select, textarea, label")) return;
+
+    const table = row.closest("table");
+    if (!table) return;
+
+    // Deselect other rows
+    table.querySelectorAll("tbody tr.row-selected").forEach(r => r.classList.remove("row-selected"));
+    row.classList.add("row-selected");
+
+    const headers = Array.from(table.querySelectorAll("thead th")).map(th => th.textContent.trim());
+    const cells = Array.from(row.querySelectorAll("td")).map(td => td.textContent.trim());
+
+    const rowData = {};
+    headers.forEach((header, idx) => {
+      if (header && cells[idx] !== undefined) {
+        rowData[header] = cells[idx];
+      }
+    });
+
+    if (Object.keys(rowData).length === 0) {
+      cells.forEach((cell, idx) => {
+        rowData[`Columna ${idx + 1}`] = cell;
+      });
+    }
+
+    if (typeof window.openTableRowDetailDrawer === "function") {
+      window.openTableRowDetailDrawer(rowData, table.getAttribute("id") || "Registro");
+    }
+  });
+
+  window.openTableRowDetailDrawer = function(data, title) {
+    let drawer = document.getElementById("table-row-detail-modal");
+    if (!drawer) {
+      drawer = document.createElement("div");
+      drawer.id = "table-row-detail-modal";
+      document.body.appendChild(drawer);
+    }
+
+    const itemsHtml = Object.entries(data).map(([k, v]) => `
+      <div class="table-row-kv-item">
+        <span class="table-row-kv-key">${k}</span>
+        <span class="table-row-kv-val" title="${v}">${v}</span>
+      </div>
+    `).join("");
+
+    drawer.innerHTML = `
+      <div class="table-row-detail-header">
+        <div class="table-row-detail-title">
+          <span>📋</span>
+          <span>Ficha Técnica: ${title}</span>
+        </div>
+        <button class="modal-close" onclick="window.closeTableRowDetailDrawer()" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="table-row-detail-body">
+        <div class="table-row-kv-grid">
+          ${itemsHtml}
+        </div>
+      </div>
+      <div class="table-row-detail-footer">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText(JSON.stringify(${JSON.stringify(data)}, null, 2)); window.portopsNotify ? window.portopsNotify('Datos copiados al portapapeles', {type: 'success'}) : alert('Copiado');">
+          📋 Copiar JSON
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="window.closeTableRowDetailDrawer()">
+          Cerrar
+        </button>
+      </div>
+    `;
+    drawer.style.display = "flex";
+  };
+
+  window.closeTableRowDetailDrawer = function() {
+    const drawer = document.getElementById("table-row-detail-modal");
+    if (drawer) {
+      drawer.style.display = "none";
+      document.querySelectorAll("table tbody tr.row-selected").forEach(r => r.classList.remove("row-selected"));
+    }
+  };
   // Chart instances registry
   let forecastChartInst = null;
   let algoWapeChartInst = null;
